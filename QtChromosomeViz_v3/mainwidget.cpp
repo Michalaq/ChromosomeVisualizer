@@ -5,9 +5,9 @@ MainWidget::MainWidget(QWidget *parent) : QWidget(parent), ui(new Ui::Form)
 {
     ui->setupUi(this);
 
-    ui->widget_3->load(QString("../QtChromosomeViz/move_icon.svg"));
-    ui->widget_2->load(QString("../QtChromosomeViz/rotate_icon.svg"));
-    ui->widget->load(QString("../QtChromosomeViz/scale_icon.svg"));
+    ui->widget_3->load(QString("../QtChromosomeViz_v3/move_icon.svg"));
+    ui->widget_2->load(QString("../QtChromosomeViz_v3/rotate_icon.svg"));
+    ui->widget->load(QString("../QtChromosomeViz_v3/scale_icon.svg"));
 
     QPalette p(palette());
     p.setColor(QPalette::Background, QColor::fromCmykF(0.0, 0.0, 0.0, 0.9));
