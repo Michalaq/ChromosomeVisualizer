@@ -115,14 +115,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>VizWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
-   <slots>
-    <slot>setModelView(QMatrix4x4)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>Control</class>
    <extends>QWidget</extends>
    <header>control.h</header>
@@ -143,6 +135,11 @@
     <slot>rotate(int,int)</slot>
     <slot>scale(int,int)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>VizWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>../QtChromosomeViz_v3/VizWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

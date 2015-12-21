@@ -3,7 +3,7 @@
 
 #include "draggable.h"
 #include "camera.h"
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
+#include "../QtChromosomeViz_v3/VizWidget.hpp"
 
 
 /* viewport widget */

@@ -106,7 +106,8 @@ VizWidget::VizWidget(QWidget * widget)
 {
 	// diffProvider = std::make_shared<DummyDiffProvider>();
 	simulation = std::make_shared<PDBSimulation>(
-		"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb"
+                "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb"
+        // "D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb"
 		// "D:\\kodziki\\bio\\prefix2.pdb"
 	);
 
