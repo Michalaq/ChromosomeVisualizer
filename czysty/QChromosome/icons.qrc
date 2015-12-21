@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="move">icons/move_icon.svg</file>
+        <file alias="rotate">icons/rotate_icon.svg</file>
+        <file alias="scale">icons/scale_icon.svg</file>
+    </qresource>
+</RCC>
