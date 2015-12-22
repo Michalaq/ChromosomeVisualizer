@@ -16,6 +16,7 @@ Draggable::~Draggable()
 }
 
 #include <QMouseEvent>
+#include <QApplication>
 
 void Draggable::mousePressEvent(QMouseEvent *event)
 {
@@ -23,7 +24,7 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
     initial = event->globalPos();
 
-    setCursor(Qt::BlankCursor);
+    QApplication::setOverrideCursor(Qt::BlankCursor);
     QCursor::setPos(center);
 }
 
@@ -44,7 +45,7 @@ void Draggable::mouseReleaseEvent(QMouseEvent *event)
     QWidget::mouseReleaseEvent(event);
 
     QCursor::setPos(initial);
-    unsetCursor();
+    QApplication::restoreOverrideCursor();
 }
 
 #include <QPainter>
