@@ -14,19 +14,19 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         display.cpp\
-../QtChromosomeViz_v3/VizWidget.cpp\
-../QtChromosomeViz_v3/bartekm_code/PDBSimulation.cpp\
-../QtChromosomeViz_v3/bartekm_code/Simulation.cpp \
+../QtChromosomeViz_v2/VizWidget.cpp\
+../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
+../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     canvas.cpp \
     control.cpp \
     camera.cpp
 
 HEADERS  += display.h\
-../QtChromosomeViz_v3/VizWidget.hpp\
-../QtChromosomeViz_v3/bartekm_code/PDBSimulation.h\
-../QtChromosomeViz_v3/bartekm_code/Simulation.h\
-../QtChromosomeViz_v3/bartekm_code/common.h \
+../QtChromosomeViz_v2/VizWidget.hpp\
+../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h\
+../QtChromosomeViz_v2/bartekm_code/Simulation.h\
+../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     canvas.h \
     control.h \

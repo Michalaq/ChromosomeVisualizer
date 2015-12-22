@@ -139,7 +139,7 @@
   <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>../QtChromosomeViz_v3/VizWidget.hpp</header>
+   <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>
