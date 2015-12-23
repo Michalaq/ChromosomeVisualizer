@@ -1,4 +1,4 @@
-#include "display.h"
+#include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     format.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(format);
 
-    Display w;
+    MainWindow w;
     w.show();
 
     return a.exec();

@@ -13,6 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+        mainwindow.cpp\
         display.cpp\
 ../QtChromosomeViz_v2/VizWidget.cpp\
 ../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
@@ -22,7 +23,8 @@ SOURCES += main.cpp\
     control.cpp \
     camera.cpp
 
-HEADERS  += display.h\
+HEADERS  += mainwindow.h\
+        display.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
 ../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.h\
@@ -32,7 +34,8 @@ HEADERS  += display.h\
     control.h \
     camera.h
 
-FORMS    += display.ui
+FORMS    += mainwindow.ui\
+        display.ui
 
 CONFIG += c++11
 

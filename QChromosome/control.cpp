@@ -12,14 +12,14 @@ Control::~Control()
 
 void Control::enterEvent(QEvent *event)
 {
-    QWidget::enterEvent(event);
+    Draggable::enterEvent(event);
 
     setStyleSheet("background: #333333");
 }
 
 void Control::leaveEvent(QEvent *event)
 {
-    QWidget::leaveEvent(event);
+    Draggable::leaveEvent(event);
 
     setStyleSheet("background: none");
 }

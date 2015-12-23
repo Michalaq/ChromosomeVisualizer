@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Display</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background: #1a1a1a</string>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
