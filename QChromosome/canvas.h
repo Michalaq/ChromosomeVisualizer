@@ -29,7 +29,7 @@ private:
 
     void updateScene();
 
-    const qreal distanceFactor = 0.02;
+    const qreal distanceFactor = 0.025;
     const qreal angleFactor = 0.05;
     const qreal wheelFactor = 2.00;
 

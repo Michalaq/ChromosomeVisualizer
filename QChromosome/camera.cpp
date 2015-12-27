@@ -15,10 +15,10 @@ void Camera::updateModelView()
 void Camera::move(qreal dx, qreal dy, qreal dz)
 {
     /* change to global coordinates */
-    QVector3D delta = dx * x + dy * y + dz * z;
+    QVector3D delta = x * dx + y * dy + z * dz;
 
     /* update eye position */
-    eye -= delta;
+    eye -= delta * (eye-origin).length()*0.02;
 
     /* update modelview matrix */
     updateModelView();
