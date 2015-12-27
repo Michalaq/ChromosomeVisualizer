@@ -101,20 +101,26 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 	//rotation = QQuaternion::
 }
 
-VizWidget::VizWidget(QWidget *parent)
-    : QOpenGLWidget(parent)
-{
-	// diffProvider = std::make_shared<DummyDiffProvider>();
-	simulation = std::make_shared<PDBSimulation>(
-                "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb"
-        // "D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb"
-	);
+// @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
+static const char * SIMULATION_PATH =
+        //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
+        "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb";
 
-	QMatrix4x4 mv;
-	mv.translate(0.f, -50.f, -100.f);
-	mv.rotate(105.f, 0.f, 1.f, 0.f);
-	mv.rotate(15.f, 0.f, 0.f, 1.f);
-	setModelView(mv);
+VizWidget::VizWidget(QWidget *parent)
+    : VizWidget(std::make_shared<PDBSimulation>(SIMULATION_PATH), parent)
+{
+
+}
+
+VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
+    : QOpenGLWidget(parent)
+    , simulation(std::move(simulation))
+{
+    QMatrix4x4 mv;
+    mv.translate(0.f, -50.f, -100.f);
+    mv.rotate(105.f, 0.f, 1.f, 0.f);
+    mv.rotate(15.f, 0.f, 0.f, 1.f);
+    setModelView(mv);
 }
 
 VizWidget::~VizWidget()

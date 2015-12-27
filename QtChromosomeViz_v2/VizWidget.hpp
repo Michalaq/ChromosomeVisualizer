@@ -36,6 +36,7 @@ class VizWidget :	public QOpenGLWidget,
 
 public:
     VizWidget(QWidget *parent = 0);
+    VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent = 0);
 	virtual ~VizWidget();
 
 	virtual void initializeGL() override;
