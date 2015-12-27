@@ -4,7 +4,6 @@
 #include <QObject>
 
 #include <QVector3D>
-#include <QMatrix3x3>
 #include <QMatrix4x4>
 
 class Camera : public QObject
@@ -26,6 +25,7 @@ public slots:
 private:
     /* eye position */
     QVector3D eye;
+
     /* direction vectors */
     QVector3D x, y, z;
 
