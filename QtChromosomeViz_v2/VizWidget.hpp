@@ -47,6 +47,7 @@ public:
 	void setSimulation(std::shared_ptr<Simulation> dp);
 
 	void advanceFrame();
+    void setFrame(frameNumber_t frame);
 
 protected:
 	// Generates vertices for a solid of revolution based on the given outline.

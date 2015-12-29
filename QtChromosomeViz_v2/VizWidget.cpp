@@ -289,20 +289,15 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
 
 void VizWidget::advanceFrame()
 {
-	/*atomPositions.bind();
+    setFrame(frameNumber + 1);
+}
 
-	QVector3D * data = (QVector3D*)atomPositions.map(QOpenGLBuffer::WriteOnly);
-	auto diff = diffProvider->getNextDiff();
-	for (const auto & a : diff->atoms)
-		data[a.id - 1] = QVector3D(a.x, a.y, a.z);
-	atomPositions.unmap();
-
-	atomPositions.release();*/
-
-	frameNumber++;
-	auto diff = simulation->getFrame(frameNumber);
-	for (const auto & a : diff->atoms)
-		frameState[a.id - 1] = QVector4D(a.x, a.y, a.z, (float)atomTypeToInt(a.type));
+void VizWidget::setFrame(frameNumber_t frame)
+{
+    frameNumber = frame;
+    auto diff = simulation->getFrame(frameNumber);
+    for (const auto & a : diff->atoms)
+        frameState[a.id - 1] = QVector4D(a.x, a.y, a.z, (float)atomTypeToInt(a.type));
 }
 
 QVector<VizVertex> VizWidget::generateSolidOfRevolution(
