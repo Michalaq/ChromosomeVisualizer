@@ -115,6 +115,7 @@ VizWidget::VizWidget(QWidget *parent)
 VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation(std::move(simulation))
+    , needVBOUpdate(true)
 {
     QMatrix4x4 mv;
     mv.translate(0.f, -50.f, -100.f);
@@ -229,8 +230,12 @@ void VizWidget::initializeGL()
 void VizWidget::paintGL()
 {
     //advanceFrame();
-	generateSortedState();
-	updateWholeFrameData();
+    if (needVBOUpdate)
+    {
+        generateSortedState();
+        updateWholeFrameData();
+        needVBOUpdate = false;
+    }
 
 	QMatrix4x4 m = modelView;
     //m.rotate(1.f, 0.f, 1.f, 0.f);
@@ -279,6 +284,8 @@ void VizWidget::setModelView(const QMatrix4x4 & mat)
 	modelView = mat;
 	modelViewNormal = mat.normalMatrix();
 	modelViewProjection = projection * modelView;
+
+    needVBOUpdate = true;
 }
 
 void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
@@ -298,6 +305,8 @@ void VizWidget::setFrame(frameNumber_t frame)
     auto diff = simulation->getFrame(frameNumber);
     for (const auto & a : diff->atoms)
         frameState[a.id - 1] = QVector4D(a.x, a.y, a.z, (float)atomTypeToInt(a.type));
+
+    needVBOUpdate = true;
 }
 
 QVector<VizVertex> VizWidget::generateSolidOfRevolution(

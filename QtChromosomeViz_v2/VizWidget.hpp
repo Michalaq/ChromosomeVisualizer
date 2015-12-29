@@ -88,6 +88,7 @@ private:
 	std::shared_ptr<Simulation> simulation;
 	frameNumber_t frameNumber;
 	
+    bool needVBOUpdate;
 	QVector<QVector4D> frameState, sortedState;
 	void generateSortedState();
 };
