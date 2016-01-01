@@ -1,7 +1,3 @@
-//
-// Created by bartek on 09.12.15.
-//
-
 #ifndef PDB_PARSER_SIMULATION_H
 #define PDB_PARSER_SIMULATION_H
 
@@ -9,11 +5,17 @@
 #include <memory>
 #include <cstdint>
 
-using frameNumber_t = uint64_t;
 
 class Simulation {
+protected:
+    std::string name_;
+    frameNumber_t frameCount_;
 public:
-	virtual ~Simulation() {};
+    Simulation(const std::string & name);
+    virtual ~Simulation() {};
+    frameNumber_t getFrameCount() const;
+    void setSimulationName(const std::string & name);
+    const std::string & getSimulationName() const;
 	virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) = 0;
 };
 

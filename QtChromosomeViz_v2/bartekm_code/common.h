@@ -17,6 +17,8 @@
     inline void print_dbg(const std::string & str) {};
 #endif
 
+using frameNumber_t = uint64_t;
+
 struct Atom {
     int id;
     char type[4];
@@ -37,7 +39,7 @@ inline std::ostream& operator <<(std::ostream& o, const Atom& a) {
 }
 
 struct Frame {
-    int no, step; // no - which frame is it in the visualisation, step - which frame is it in the simulation
+    frameNumber_t no, step; // no - which frame is it in the visualisation, step - which frame is it in the simulation
     std::vector<Atom> atoms;
     std::map<std::string, float> functionValues;
 //    Frame(std::vector<Atom> tmp_atoms) : atoms(tmp_atoms) {};

@@ -12,14 +12,15 @@
 class PDBSimulation : public Simulation {
 private:
 	std::string fileName_;
-	std::ifstream file_;
+    std::ifstream file_;
 
 	std::map<frameNumber_t, uint64_t> cachedFramePositions_;
 	std::shared_ptr<Frame> cachedFrame_;
 
 	static Atom getAtomFromString(const std::string & str);
-	std::shared_ptr<Frame> readCurrentFrame();
+    std::shared_ptr<Frame> readCurrentFrame();
 public:
+    PDBSimulation(const std::string & name, const std::string & fileName);
     PDBSimulation(const std::string & fileName);
 	virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
 };

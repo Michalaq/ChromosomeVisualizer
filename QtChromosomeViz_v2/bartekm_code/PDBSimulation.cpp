@@ -1,22 +1,24 @@
-//
-// Created by bartek on 13.12.15.
-//
-
 #include <sstream>
 #include <cassert>
 #include "PDBSimulation.h"
 
-PDBSimulation::PDBSimulation(const std::string & fileName)
-	: fileName_(fileName)
-	, file_(fileName)
+PDBSimulation::PDBSimulation(const std::string &name, const std::string &fileName)
+    : fileName_(fileName)
+    , file_(fileName)
+    , Simulation(name)
 {
-	cachedFramePositions_[0] = 0;
+    cachedFramePositions_[0] = 0;
 }
 
-std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position) {
+PDBSimulation::PDBSimulation(const std::string & fileName)
+    : PDBSimulation(fileName, fileName)
+{}
+
+std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position)
+{
 	auto it = cachedFramePositions_.upper_bound(position);
 
-	// Find cached frame before posiiton
+    // Find cached frame before position
 	if (it == cachedFramePositions_.end())
 		--it;
 
@@ -33,16 +35,21 @@ std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position) {
 		cachedFramePositions_[cachedPosition] = file_.tellg();
 	}
 
+    if (position >= frameCount_)
+        frameCount_ = position + 1;
+
 	return ret;
 }
 
-static std::pair<int, int> getStepInfo(const std::string & line) {
+static std::pair<int, int> getStepInfo(const std::string & line)
+{
 	int no, step;
 	sscanf(line.c_str(), "HEADER %d %*d step %d", &no, &step);
 	return std::pair<int, int>(no, step);
 }
 
-static std::map<std::string, float> getFunctionValues(const std::string & line) {
+static std::map<std::string, float> getFunctionValues(const std::string & line)
+{
 	std::stringstream ss(line);
 	std::string item;
 	std::map<std::string, float> functionValues;
@@ -57,19 +64,15 @@ static std::map<std::string, float> getFunctionValues(const std::string & line) 
 	return functionValues;
 }
 
-std::shared_ptr<Frame> PDBSimulation::readCurrentFrame() {
+std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
+{
 	std::string line;
 	getline(file_, line); // HEADER
 	int no, step;
 	auto vals = getStepInfo(line);
-	no = vals.first; step = vals.second;
-	// print_dbg("lalala" + line);
+    no = vals.first; step = vals.second;
 	getline(file_, line); // TITLE
 	std::map<std::string, float> functionValues = getFunctionValues(line);
-	/* for (const auto &p : functionValues) {
-	std::cout << "m[" << p.first << "] = " << p.second << '\n';
-	}*/
-	// print_dbg(line);
 	std::vector<Atom> atoms;
 	getline(file_, line);
 	while (line.find("END") == std::string::npos) {
@@ -93,7 +96,8 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame() {
 	return cachedFrame_;
 }
 
-Atom PDBSimulation::getAtomFromString(const std::string & str) {
+Atom PDBSimulation::getAtomFromString(const std::string & str)
+{
 	Atom a;
 
 	sscanf(str.c_str(), "ATOM %d %*c %s %*d %f %f %f",
