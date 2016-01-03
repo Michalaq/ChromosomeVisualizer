@@ -50,7 +50,7 @@ public:
     void setFrame(frameNumber_t frame);
 
 protected:
-	// Generates vertices for a solid of revolution based on the given outline.
+    // Generates vertices for a solid of revolution based on the given outline.
 	//   quads - line segments disjoint from the axis of rotation
 	//   axis - axis of rotation. Must not be zero.
 	//   segments - number of segments to be generated.
@@ -80,6 +80,7 @@ private:
 
 	QOpenGLShaderProgram program;
 	QOpenGLShaderProgram planeProgram;
+    QOpenGLShaderProgram pickingProgram;
 
 	QMatrix4x4 projection;
 	QMatrix4x4 modelViewProjection;
@@ -94,11 +95,15 @@ private:
 	
     bool needVBOUpdate;
 	QVector<QVector4D> frameState, sortedState;
-	void generateSortedState();
+    void generateSortedState();
 
     bool isSelecting_;
     QPoint selectionPoints_[2];
+//    std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
+    QOpenGLFramebufferObject * pickingFramebuffer_;
+
     QRect selectionRect() const;
+    QList<unsigned int> pickSpheres();
 };
 
 #endif /* VIZWINDOW_HPP */

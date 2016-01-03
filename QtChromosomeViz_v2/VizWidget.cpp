@@ -10,10 +10,12 @@ static const char * sphereVertexShaderCode =
 "uniform mat4 mvp;"
 "uniform mat3 mvNormal;"
 "out vec3 vNormal;"
+"flat out int iInstanceID;"
 "flat out int iType;"
 "void main() {"
 	"gl_Position = mvp * vec4(vVertexPosition + vInstancePosition.xyz, 1);"
 	"vNormal = normalize(mvNormal * vVertexNormal);"
+    "iInstanceID = gl_InstanceID;"
 	"iType = int(vInstancePosition.w);"
 "}"
 ;
@@ -41,6 +43,18 @@ static const char * fragmentShaderCode =
 "}"
 ;
 
+static const char * pickingFragmentShaderCode =
+"#version 330 core\n"
+"flat in int iInstanceID;"
+"out vec4 cColor;"
+"void main() {"
+    "cColor.a = float((iInstanceID >> 24) & 0xFF) / 255.f;"
+    "cColor.r = float((iInstanceID >> 16) & 0xFF) / 255.f;"
+    "cColor.g = float((iInstanceID >>  8) & 0xFF) / 255.f;"
+    "cColor.b = float((iInstanceID >>  0) & 0xFF) / 255.f;"
+"}"
+;
+
 static const char * planeVertexShaderCode =
 "#version 330 core\n"
 "uniform mat4 mvp;"
@@ -61,6 +75,7 @@ static const char * planeFragmentShaderCode =
 ;
 
 static const float EPSILON = 1e-4;
+static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -117,6 +132,7 @@ VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     , simulation(std::move(simulation))
     , needVBOUpdate(true)
     , isSelecting_(false)
+    , pickingFramebuffer_(nullptr)
 {
     QMatrix4x4 mv;
     mv.translate(0.f, -50.f, -100.f);
@@ -127,7 +143,7 @@ VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
 
 VizWidget::~VizWidget()
 {
-	
+    delete pickingFramebuffer_;
 }
 
 void VizWidget::initializeGL()
@@ -217,6 +233,13 @@ void VizWidget::initializeGL()
 	planeProgram.addShaderFromSourceCode(QOpenGLShader::Vertex, planeVertexShaderCode);
 	planeProgram.addShaderFromSourceCode(QOpenGLShader::Fragment, planeFragmentShaderCode);
 	assert(planeProgram.link());
+
+    assert(pickingProgram.create());
+    pickingProgram.addShaderFromSourceCode(QOpenGLShader::Vertex,
+                                           sphereVertexShaderCode);
+    pickingProgram.addShaderFromSourceCode(QOpenGLShader::Fragment,
+                                           pickingFragmentShaderCode);
+    assert(pickingProgram.link());
 }
 
 void VizWidget::paintGL()
@@ -488,6 +511,7 @@ void VizWidget::mousePressEvent(QMouseEvent * event)
 {
     isSelecting_ = true;
     selectionPoints_[0] = event->pos();
+    selectionPoints_[1] = event->pos();
 }
 
 void VizWidget::mouseMoveEvent(QMouseEvent * event)
@@ -505,6 +529,9 @@ void VizWidget::mouseMoveEvent(QMouseEvent * event)
 void VizWidget::mouseReleaseEvent(QMouseEvent * event)
 {
     isSelecting_ = false;
+    const auto spheres = pickSpheres();
+    for (const auto & sphere : spheres)
+        qDebug() << sphere;
     update();
 }
 
@@ -526,5 +553,92 @@ QRect VizWidget::selectionRect() const
 {
     QRect r1(selectionPoints_[0], QSize(1, 1));
     QRect r2(selectionPoints_[1], QSize(1, 1));
-    return r1.united(r2);
+    return r1.united(r2).intersected(geometry());
+}
+
+QList<unsigned int> VizWidget::pickSpheres()
+{
+    makeCurrent();
+
+    QSize downSize(size().width() / PICKING_FRAMEBUFFER_DOWNSCALE + 1,
+                   size().height() / PICKING_FRAMEBUFFER_DOWNSCALE + 1);
+
+    // Check if the framebuffer is large enough to
+    // have whole scene rendered to it
+    if (pickingFramebuffer_)
+    {
+        const auto realSize = pickingFramebuffer_->size().scaled(
+                    PICKING_FRAMEBUFFER_DOWNSCALE,
+                    PICKING_FRAMEBUFFER_DOWNSCALE,
+                    Qt::IgnoreAspectRatio);
+
+        if (pickingFramebuffer_->size().width() < downSize.width() ||
+            pickingFramebuffer_->size().height() < downSize.height())
+        {
+            delete pickingFramebuffer_;
+            pickingFramebuffer_ = nullptr;
+        }
+    }
+
+    if (!pickingFramebuffer_)
+    {
+        pickingFramebuffer_ = new QOpenGLFramebufferObject(
+                    downSize, QOpenGLFramebufferObject::Depth);
+    }
+
+    assert(pickingFramebuffer_->bind());
+    // This is important!
+    glViewport(0, 0,
+               pickingFramebuffer_->size().width(),
+               pickingFramebuffer_->size().height());
+
+    // Render the scene with a special shader
+    glClearColor(1.f, 1.f, 1.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+
+    if (sphereCount > 0)
+    {
+        vao.bind();
+        pickingProgram.bind();
+
+        pickingProgram.setUniformValue("mvp", modelViewProjection);
+        pickingProgram.setUniformValue("mvNormal", modelViewNormal);
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount, sphereCount);
+
+        pickingProgram.release();
+        vao.release();
+    }
+
+    assert(pickingFramebuffer_->release());
+
+    // Get rendered content
+    // Stupid workaround for avoiding premultiplied alpha
+    auto fboImage = pickingFramebuffer_->toImage();
+    QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(),
+                 QImage::Format_ARGB32);
+
+    QSet<unsigned int> ballIDs;
+
+    const auto r = selectionRect();
+    const QRect rscaled(r.left() / PICKING_FRAMEBUFFER_DOWNSCALE,
+                        r.top() / PICKING_FRAMEBUFFER_DOWNSCALE,
+                        r.width() / PICKING_FRAMEBUFFER_DOWNSCALE,
+                        r.height() / PICKING_FRAMEBUFFER_DOWNSCALE);
+    for (int y = rscaled.top(); y <= rscaled.bottom(); y++)
+    {
+        for (int x = rscaled.left(); x <= rscaled.right(); x++)
+        {
+            auto color = image.pixel(x, y);
+            if (color != 0xFFFFFFFFU)
+                ballIDs.insert(color);
+        }
+    }
+
+    return ballIDs.toList();
 }
