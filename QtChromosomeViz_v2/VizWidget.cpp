@@ -131,8 +131,8 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 
 // @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
 static const char * SIMULATION_PATH =
-        "D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
-        //"/home/bartek/Dokumenty/zpp/test.pdb";
+        //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
+        "/home/bartek/Dokumenty/zpp/test.pdb";
 
 VizWidget::VizWidget(QWidget *parent)
     : VizWidget(std::make_shared<PDBSimulation>(SIMULATION_PATH), parent)
