@@ -18,6 +18,14 @@ public:
 	VizVertex rotated(const QQuaternion & q) const;
 };
 
+struct VizBallInstance
+{
+public:
+    QVector3D position;
+    unsigned int flags;
+    unsigned int atomID;
+};
+
 struct VizLink
 {
 public:
@@ -71,6 +79,8 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent * event) override final;
     virtual void mouseReleaseEvent(QMouseEvent * event) override final;
 
+    QList<unsigned int> selectedSpheres() const;
+
 private:
 	QOpenGLBuffer sphereModel;
 	QOpenGLBuffer atomPositions;
@@ -94,13 +104,15 @@ private:
 	frameNumber_t frameNumber;
 	
     bool needVBOUpdate;
-	QVector<QVector4D> frameState, sortedState;
+    QVector<VizBallInstance> frameState, sortedState;
     void generateSortedState();
 
     bool isSelecting_;
     QPoint selectionPoints_[2];
 //    std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     QOpenGLFramebufferObject * pickingFramebuffer_;
+    QList<unsigned int> selectedSpheres_;
+    QVector<bool> selectedBitmap_;
 
     QRect selectionRect() const;
     QList<unsigned int> pickSpheres();

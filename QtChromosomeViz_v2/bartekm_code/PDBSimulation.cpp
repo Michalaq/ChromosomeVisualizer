@@ -19,8 +19,8 @@ std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position)
 	auto it = cachedFramePositions_.upper_bound(position);
 
     // Find cached frame before position
-	if (it == cachedFramePositions_.end())
-		--it;
+    if (it != cachedFramePositions_.begin())
+        --it;
 
 	frameNumber_t cachedPosition = it->first;
 	assert(cachedPosition <= position);

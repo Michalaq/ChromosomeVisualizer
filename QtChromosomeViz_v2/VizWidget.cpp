@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstddef>
 #include "bartekm_code/PDBSimulation.h"
 #include "VizWidget.hpp"
 
@@ -6,17 +7,22 @@ static const char * sphereVertexShaderCode =
 "#version 330 core\n"
 "layout(location = 0) in vec3 vVertexPosition;"
 "layout(location = 1) in vec3 vVertexNormal;"
-"layout(location = 2) in vec4 vInstancePosition;"
+"layout(location = 2) in vec3 vInstancePosition;"
+"layout(location = 3) in uint iInstanceFlags;"
+"layout(location = 4) in uint iAtomID;"
 "uniform mat4 mvp;"
 "uniform mat3 mvNormal;"
+"out vec4 vPosition;"
 "out vec3 vNormal;"
-"flat out int iInstanceID;"
-"flat out int iType;"
+"flat out uint iInstanceID;"
+"flat out uint iFlags;"
 "void main() {"
-	"gl_Position = mvp * vec4(vVertexPosition + vInstancePosition.xyz, 1);"
+    "vec4 pos = mvp * vec4(vVertexPosition + vInstancePosition.xyz, 1);"
+    "gl_Position = pos;"
+    "vPosition = pos;"
 	"vNormal = normalize(mvNormal * vVertexNormal);"
-    "iInstanceID = gl_InstanceID;"
-	"iType = int(vInstancePosition.w);"
+    "iInstanceID = iAtomID;"
+    "iFlags = iInstanceFlags;"
 "}"
 ;
 
@@ -31,27 +37,33 @@ static const char * cylinderVertexShaderCode =
 static const char * fragmentShaderCode =
 "#version 330 core\n"
 "uniform vec4 ucColorTable[4];"
+"uniform vec2 uvScreenSize;"
+"in vec4 vPosition;"
 "in vec3 vNormal;"
-"flat in int iType;"
+"flat in uint iFlags;"
 "out vec4 cColor;"
 "void main() {"
-//"float alpha = 0.25 + float(iType) / 4;"
-	"vec4 baseColor = ucColorTable[iType];"
+    "vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;"
+    "float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);"
+    "float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);"
+    "vec4 baseColor = ucColorTable[iFlags & 3u];"
 	"float lightness = (0.5 + 0.5 * 0.7 * (vNormal.x + vNormal.z));"
-	"cColor = vec4(baseColor.xyz * lightness, baseColor.a);"
+    "vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);"
+    "float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;"
+    "cColor = mix(cDiffuse, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);"
 	//"cColor = vec4(1, 1, 1, 1);"
 "}"
 ;
 
 static const char * pickingFragmentShaderCode =
 "#version 330 core\n"
-"flat in int iInstanceID;"
+"flat in uint iInstanceID;"
 "out vec4 cColor;"
 "void main() {"
-    "cColor.a = float((iInstanceID >> 24) & 0xFF) / 255.f;"
-    "cColor.r = float((iInstanceID >> 16) & 0xFF) / 255.f;"
-    "cColor.g = float((iInstanceID >>  8) & 0xFF) / 255.f;"
-    "cColor.b = float((iInstanceID >>  0) & 0xFF) / 255.f;"
+    "cColor.a = float((iInstanceID >> 24u) & 0xFFu) / 255.f;"
+    "cColor.r = float((iInstanceID >> 16u) & 0xFFu) / 255.f;"
+    "cColor.g = float((iInstanceID >>  8u) & 0xFFu) / 255.f;"
+    "cColor.b = float((iInstanceID >>  0u) & 0xFFu) / 255.f;"
 "}"
 ;
 
@@ -76,6 +88,7 @@ static const char * planeFragmentShaderCode =
 
 static const float EPSILON = 1e-4;
 static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
+static const int SELECTED_FLAG = 1 << 2;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -194,14 +207,34 @@ void VizWidget::initializeGL()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(
 		2,
-		4,
+        3,
 		GL_FLOAT,
 		GL_FALSE,
-		sizeof(QVector4D),
+        sizeof(VizBallInstance),
 		nullptr
 	);
 
+    glEnableVertexAttribArray(3);
+    glVertexAttribIPointer(
+        3,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, flags)
+    );
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribIPointer(
+        4,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, atomID)
+    );
+
 	glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
 
 	atomPositions.release();
 	vao.release();
@@ -293,6 +326,9 @@ void VizWidget::paintGL()
 
 		program.setUniformValue("mvp", modelViewProjection);
 		program.setUniformValue("mvNormal", modelViewNormal);
+        program.setUniformValue("uvScreenSize",
+                                (float)size().width(),
+                                (float)size().height());
 
 		glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount, sphereCount);
 
@@ -349,12 +385,35 @@ void VizWidget::advanceFrame()
     setFrame(frameNumber + 1);
 }
 
+void VizWidget::setFirstFrame()
+{
+    auto frame = simulation->getFrame(0);
+
+    atomPositions.bind();
+    atomPositions.allocate(frame->atoms.size() * sizeof(VizBallInstance));
+    atomPositions.release();
+
+    sphereCount = frame->atoms.size();
+    selectedBitmap_.fill(false, frame->atoms.size());
+
+    VizBallInstance dummy;
+    frameState.fill(dummy, frame->atoms.size());
+
+    setFrame(0);
+}
+
 void VizWidget::setFrame(frameNumber_t frame)
 {
     frameNumber = frame;
     auto diff = simulation->getFrame(frameNumber);
     for (const auto & a : diff->atoms)
-        frameState[a.id - 1] = QVector4D(a.x, a.y, a.z, (float)atomTypeToInt(a.type));
+    {
+        frameState[a.id - 1].position = QVector3D(a.x, a.y, a.z);
+        frameState[a.id - 1].flags = atomTypeToInt(a.type);
+        if (selectedBitmap_[a.id - 1])
+            frameState[a.id - 1].flags |= SELECTED_FLAG;
+        frameState[a.id - 1].atomID = a.id - 1;
+    }
 
     needVBOUpdate = true;
 }
@@ -478,30 +537,12 @@ QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
 	return generateSolidOfRevolution(segs, axis, segments);
 }
 
-void VizWidget::setFirstFrame()
-{
-	frameNumber = 0;
-	auto frame = simulation->getFrame(frameNumber);
-
-	QVector<QVector4D> instances;
-	for (const auto & a : frame->atoms)
-		instances.push_back(QVector4D(a.x, a.y, a.z, (float)atomTypeToInt(a.type)));
-
-	sphereCount = instances.size();
-
-	atomPositions.bind();
-	atomPositions.allocate(instances.data(), instances.size() * sizeof(QVector4D));
-	atomPositions.release();
-
-	frameState = std::move(instances);
-}
-
 void VizWidget::updateWholeFrameData()
 {
 	atomPositions.bind();
-	QVector4D * data = (QVector4D*)atomPositions.map(QOpenGLBuffer::WriteOnly);
+    auto * data = (VizBallInstance*)atomPositions.map(QOpenGLBuffer::WriteOnly);
 
-	memcpy(data, sortedState.constData(), sortedState.size() * sizeof(QVector4D));
+    memcpy(data, sortedState.constData(), sortedState.size() * sizeof(VizBallInstance));
 	
 	atomPositions.unmap();
 	atomPositions.release();
@@ -528,20 +569,38 @@ void VizWidget::mouseMoveEvent(QMouseEvent * event)
 
 void VizWidget::mouseReleaseEvent(QMouseEvent * event)
 {
-    isSelecting_ = false;
-    const auto spheres = pickSpheres();
-    for (const auto & sphere : spheres)
-        qDebug() << sphere;
-    update();
+    if (isSelecting_)
+    {
+        isSelecting_ = false;
+
+        // Clear old selection
+        for (auto & sphere : selectedBitmap_)
+            sphere = false;
+
+        selectedSpheres_ = pickSpheres();
+
+        // New selection
+        for (const auto & id : selectedSpheres_)
+            selectedBitmap_[id] = true;
+
+        // That's a hack, but it forces updating the flags
+        setFrame(frameNumber);
+        update();
+    }
+}
+
+QList<unsigned int> VizWidget::selectedSpheres() const
+{
+    return selectedSpheres_;
 }
 
 void VizWidget::generateSortedState()
 {
-	auto sorter = [&](const QVector4D & a, const QVector4D & b) -> bool {
+    auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
 		float z1 = QVector4D::dotProduct(modelViewProjection.row(2),
-			QVector4D(a.toVector3D(), 1.f));
+            QVector4D(a.position, 1.f));
 		float z2 = QVector4D::dotProduct(modelViewProjection.row(2),
-			QVector4D(b.toVector3D(), 1.f));
+            QVector4D(b.position, 1.f));
 		return z1 > z2;
 	};
 
