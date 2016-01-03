@@ -573,15 +573,21 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
     {
         isSelecting_ = false;
 
-        // Clear old selection
-        for (auto & sphere : selectedBitmap_)
-            sphere = false;
+        const bool ctrl = event->modifiers() & Qt::ControlModifier;
+        const bool shift = event->modifiers() & Qt::ShiftModifier;
+
+        if (!(ctrl || shift))
+        {
+            // Clear old selection
+            for (auto & sphere : selectedBitmap_)
+                sphere = false;
+        }
 
         selectedSpheres_ = pickSpheres();
 
         // New selection
         for (const auto & id : selectedSpheres_)
-            selectedBitmap_[id] = true;
+            selectedBitmap_[id] = !ctrl;
 
         // That's a hack, but it forces updating the flags
         setFrame(frameNumber);
