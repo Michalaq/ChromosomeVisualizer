@@ -103,8 +103,8 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 
 // @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
 static const char * SIMULATION_PATH =
-        //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
-        "/home/bartek/Dokumenty/zpp/test.pdb";
+        "D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
+        //"/home/bartek/Dokumenty/zpp/test.pdb";
 
 VizWidget::VizWidget(QWidget *parent)
     : VizWidget(std::make_shared<PDBSimulation>(SIMULATION_PATH), parent)
@@ -116,6 +116,7 @@ VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation(std::move(simulation))
     , needVBOUpdate(true)
+    , isSelecting_(false)
 {
     QMatrix4x4 mv;
     mv.translate(0.f, -50.f, -100.f);
@@ -135,15 +136,6 @@ void VizWidget::initializeGL()
 
 	glEnable(GL_DEPTH_TEST);
 
-	// Enable alpha blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	// Enable culling
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
-
 	assert(sphereModel.create());
 	sphereModel.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
@@ -151,7 +143,7 @@ void VizWidget::initializeGL()
 	atomPositions.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
 	assert(vao.create());
-	
+
 	// Create sphere model
 	QVector<VizVertex> sphereVerts = generateSphere(6, 8);
 	sphereVertCount = sphereVerts.size();
@@ -237,9 +229,28 @@ void VizWidget::paintGL()
         needVBOUpdate = false;
     }
 
+	QPainter painter;
+	painter.begin(this);
+	painter.setRenderHint(QPainter::Antialiasing);
+
+	//advanceFrame();
+	generateSortedState();
+	updateWholeFrameData();
+
 	QMatrix4x4 m = modelView;
-    //m.rotate(1.f, 0.f, 1.f, 0.f);
+	//m.rotate(1.f, 0.f, 1.f, 0.f);
 	setModelView(m);
+
+	painter.beginNativePainting();
+
+	// Enable alpha blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Enable culling
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
 
 	glClearColor(0.f, 0.f, 0.f, 0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -265,6 +276,22 @@ void VizWidget::paintGL()
 		program.release();
 		vao.release();
 	}
+
+	glDisable(GL_CULL_FACE);
+
+	painter.endNativePainting();
+
+	if (isSelecting_)
+	{
+		QBrush brush(Qt::gray, Qt::Dense4Pattern);
+
+		QRect r = selectionRect();
+		painter.fillRect(r, brush);
+		painter.setPen(Qt::white);
+		painter.drawRect(r);
+	}
+
+	painter.end();
 }
 
 void VizWidget::resizeGL(int w, int h)
@@ -457,6 +484,30 @@ void VizWidget::updateWholeFrameData()
 	atomPositions.release();
 }
 
+void VizWidget::mousePressEvent(QMouseEvent * event)
+{
+    isSelecting_ = true;
+    selectionPoints_[0] = event->pos();
+}
+
+void VizWidget::mouseMoveEvent(QMouseEvent * event)
+{
+    if (isSelecting_)
+    {
+        QRegion r;
+        r += selectionRect();
+        selectionPoints_[1] = event->pos();
+        r += selectionRect();
+        update(r);
+    }
+}
+
+void VizWidget::mouseReleaseEvent(QMouseEvent * event)
+{
+    isSelecting_ = false;
+    update();
+}
+
 void VizWidget::generateSortedState()
 {
 	auto sorter = [&](const QVector4D & a, const QVector4D & b) -> bool {
@@ -469,4 +520,11 @@ void VizWidget::generateSortedState()
 
 	sortedState = frameState;
 	qSort(sortedState.begin(), sortedState.end(), sorter); // Lol xD
+}
+
+QRect VizWidget::selectionRect() const
+{
+    QRect r1(selectionPoints_[0], QSize(1, 1));
+    QRect r2(selectionPoints_[1], QSize(1, 1));
+    return r1.united(r2);
 }

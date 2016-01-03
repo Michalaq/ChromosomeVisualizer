@@ -40,7 +40,7 @@ public:
 	virtual ~VizWidget();
 
 	virtual void initializeGL() override;
-	virtual void paintGL() override;
+    virtual void paintGL() override;
 	virtual void resizeGL(int w, int h) override;
 
 	void setModelView(const QMatrix4x4 & mat);
@@ -67,6 +67,10 @@ protected:
 	void setFirstFrame();
 	void updateWholeFrameData();
 
+    virtual void mousePressEvent(QMouseEvent * event) override final;
+    virtual void mouseMoveEvent(QMouseEvent * event) override final;
+    virtual void mouseReleaseEvent(QMouseEvent * event) override final;
+
 private:
 	QOpenGLBuffer sphereModel;
 	QOpenGLBuffer atomPositions;
@@ -91,6 +95,10 @@ private:
     bool needVBOUpdate;
 	QVector<QVector4D> frameState, sortedState;
 	void generateSortedState();
+
+    bool isSelecting_;
+    QPoint selectionPoints_[2];
+    QRect selectionRect() const;
 };
 
 #endif /* VIZWINDOW_HPP */
