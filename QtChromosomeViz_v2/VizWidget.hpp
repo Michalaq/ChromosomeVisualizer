@@ -57,6 +57,10 @@ public:
 	void advanceFrame();
     void setFrame(frameNumber_t frame);
 
+signals:
+    void selectionChanged(const QList<unsigned int> & selected,
+                          const QList<unsigned int> & deselected);
+
 protected:
     // Generates vertices for a solid of revolution based on the given outline.
 	//   quads - line segments disjoint from the axis of rotation

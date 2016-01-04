@@ -583,7 +583,8 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
                 sphere = false;
         }
 
-        selectedSpheres_ = pickSpheres();
+        auto oldSelection = pickSpheres();
+        qSwap(oldSelection, selectedSpheres_);
 
         // New selection
         for (const auto & id : selectedSpheres_)
@@ -592,6 +593,8 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
         // That's a hack, but it forces updating the flags
         setFrame(frameNumber);
         update();
+
+        emit selectionChanged(selectedSpheres_, oldSelection);
     }
 }
 
