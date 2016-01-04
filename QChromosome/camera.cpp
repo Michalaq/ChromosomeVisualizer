@@ -1,5 +1,15 @@
 #include "camera.h"
 
+/* TODO wymiary klatki animacji, dostępne w przyszłości jako pola pewnej klasy */
+const qreal __w = 320;
+const qreal __h = 240;
+
+const qreal Camera::distanceFactor = 0.25;
+const qreal Camera::angleFactor = 0.05;
+const qreal Camera::wheelFactor = 2.00;
+
+#include <QtMath>
+
 Camera::Camera(QWidget *parent)
     : Draggable(parent),
       eye(60, 30, 60),
@@ -7,8 +17,9 @@ Camera::Camera(QWidget *parent)
       y(0, 1, 0),
       z(0, 0, 1),
       h(45), p(-20), b(0),
+      focalLength(36),
+      apertureWidth(36),
       origin(0, 0, 0),
-      verticalAngle(45),
       modifier(Qt::Key_unknown)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
@@ -16,6 +27,10 @@ Camera::Camera(QWidget *parent)
     x = q.rotatedVector(x);
     y = q.rotatedVector(y);
     z = q.rotatedVector(z);
+
+    updateModelView();
+
+    updateVerticalAngle();
 
     setFocus();
 }
@@ -65,13 +80,9 @@ void Camera::keyReleaseEvent(QKeyEvent *event)
     Draggable::keyReleaseEvent(event);
 }
 
-#include <QtMath>
-
 void Camera::resizeEvent(QResizeEvent *event)
 {
-    focalLength = (qreal)event->size().height() / qTan(verticalAngle / 2) / 2;
-
-    emit projectionChanged(projection());
+    emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
 }
@@ -88,10 +99,10 @@ void Camera::wheelEvent(QWheelEvent *event)
 void Camera::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&Camera::modelViewChanged))
-        emit modelViewChanged(modelView());
+        emit modelViewChanged(modelView);
 
     if (signal == QMetaMethod::fromSignal(&Camera::projectionChanged))
-        emit projectionChanged(projection());
+        emit projectionChanged(projection);
 }
 
 void Camera::move(int dx, int dy)
@@ -121,7 +132,7 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     eye -= delta;
 
     /* update scene */
-    emit modelViewChanged(modelView());
+    emit modelViewChanged(updateModelView());
 }
 
 void Camera::rotate(qreal dh, qreal dp, qreal db)
@@ -164,29 +175,30 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     eye = origin + dq.rotatedVector(eye - origin);
 
     /* update scene */
-    emit modelViewChanged(modelView());
+    emit modelViewChanged(updateModelView());
 }
 
-QMatrix4x4 Camera::modelView() const
+QMatrix4x4& Camera::updateModelView()
 {
-    QMatrix4x4 modelView;
-
     modelView.setToIdentity();
 
     modelView.translate(eye);
     modelView.rotate(QQuaternion::fromAxes(x, y, z));
 
-    return modelView.inverted();
+    return modelView = modelView.inverted();
 }
 
-QMatrix4x4 Camera::projection() const
+QMatrix4x4& Camera::updateProjection()
 {
     const qreal aspectRatio = (qreal)width() / height();
-
-    QMatrix4x4 projection;
 
     projection.setToIdentity();
     projection.perspective(verticalAngle, aspectRatio, .1, 1000.);
 
     return projection;
+}
+
+qreal& Camera::updateVerticalAngle()
+{
+    return verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / focalLength / 2));
 }

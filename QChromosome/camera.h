@@ -46,23 +46,29 @@ private:
     /* rotates camera with respect to current coordinates system */
     void rotate(qreal dh, qreal dp, qreal db);
 
-    QVector3D origin;
-
+    qreal focalLength;
+    qreal apertureWidth;
     qreal verticalAngle;
 
-    qreal focalLength;
-
-    /* returns modelview matrix */
-    QMatrix4x4 modelView() const;
-
-    /* returns projection matrix */
-    QMatrix4x4 projection() const;
-
-    const qreal distanceFactor = 0.25;
-    const qreal angleFactor = 0.05;
-    const qreal wheelFactor = 2.00;
-
     Qt::Key modifier;
+
+    QVector3D origin;
+
+    QMatrix4x4 modelView;
+    QMatrix4x4 projection;
+
+    /* updates modelview matrix */
+    QMatrix4x4& updateModelView();
+
+    /* updates projection matrix */
+    QMatrix4x4& updateProjection();
+
+    /* updates vertical angle */
+    qreal& updateVerticalAngle();
+
+    static const qreal distanceFactor;
+    static const qreal angleFactor;
+    static const qreal wheelFactor;
 
 signals:
     void modelViewChanged(QMatrix4x4);
