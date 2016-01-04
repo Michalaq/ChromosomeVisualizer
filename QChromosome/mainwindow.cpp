@@ -6,6 +6,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->move->load(":/move");
+    ui->rotate->load(":/rotate");
+    ui->scale->load(":/scale");
 }
 
 MainWindow::~MainWindow()
