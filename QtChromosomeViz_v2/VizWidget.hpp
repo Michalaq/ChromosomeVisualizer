@@ -50,12 +50,13 @@ public:
 	virtual void initializeGL() override;
     virtual void paintGL() override;
 
+public slots:
 	void setSimulation(std::shared_ptr<Simulation> dp);
 
 	void advanceFrame();
     void setFrame(frameNumber_t frame);
+    void setFrame(int frame);
 
-public slots:
 	void setModelView(QMatrix4x4 mat);
 	void setProjection(QMatrix4x4 mat);
 

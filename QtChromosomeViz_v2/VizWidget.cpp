@@ -408,6 +408,12 @@ void VizWidget::setFrame(frameNumber_t frame)
     needVBOUpdate = true;
 }
 
+void VizWidget::setFrame(int frame)
+{
+    setFrame((frameNumber_t)frame);
+    update();
+}
+
 QVector<VizVertex> VizWidget::generateSolidOfRevolution(
 	const QVector<VizSegment> & quads,
 	QVector3D axis,

@@ -203,6 +203,7 @@
    <slots>
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
+    <slot>setFrame(int)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -298,6 +299,22 @@
     <hint type="destinationlabel">
      <x>117</x>
      <y>205</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scene</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>202</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>200</x>
+     <y>197</y>
     </hint>
    </hints>
   </connection>
