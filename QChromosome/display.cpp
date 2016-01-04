@@ -10,8 +10,6 @@ Display::Display(QWidget *parent) :
     ui->move->load(":/move");
     ui->rotate->load(":/rotate");
     ui->scale->load(":/scale");
-
-    ui->view->setScene(ui->scene);
 }
 
 Display::~Display()

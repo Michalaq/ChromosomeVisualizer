@@ -1,15 +1,115 @@
 #include "camera.h"
 
-Camera::Camera(QObject *parent)
-    : QObject(parent), eye(QVector3D(0, 50, 400)), x(QVector3D(1, 0, 0)), y(QVector3D(0, 1, 0)), z(QVector3D(0, 0, 1))
+Camera::Camera(QWidget *parent)
+    : Draggable(parent),
+      eye(60, 30, 60),
+      x(1, 0, 0),
+      y(0, 1, 0),
+      z(0, 0, 1),
+      h(45), p(-20), b(0),
+      origin(0, 0, 0),
+      verticalAngle(45),
+      modifier(Qt::Key_unknown)
 {
-    updateModelView();
+    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
+
+    x = q.rotatedVector(x);
+    y = q.rotatedVector(y);
+    z = q.rotatedVector(z);
+
+    setFocus();
 }
 
-void Camera::updateModelView()
+#include <QKeyEvent>
+
+void Camera::keyPressEvent(QKeyEvent *event)
 {
-    modelView = QMatrix4x4(QQuaternion::fromAxes(x, y, z).toRotationMatrix()).inverted();
-    modelView.translate(-eye);
+    if (event->isAutoRepeat())
+        return event->ignore();
+
+    if (modifier == Qt::Key_unknown)
+    {
+        switch (event->key())
+        {
+        case Qt::Key_M:
+            modifier = Qt::Key_M;
+            connect(this, SIGNAL(delta(int,int)), this, SLOT(move(int,int)));
+            break;
+
+        case Qt::Key_R:
+            modifier = Qt::Key_R;
+            connect(this, SIGNAL(delta(int,int)), this, SLOT(rotate(int,int)));
+            break;
+
+        case Qt::Key_S:
+            modifier = Qt::Key_S;
+            connect(this, SIGNAL(delta(int,int)), this, SLOT(scale(int,int)));
+            break;
+        }
+    }
+
+    Draggable::keyPressEvent(event);
+}
+
+void Camera::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->isAutoRepeat())
+        return event->ignore();
+
+    if (modifier == event->key())
+    {
+        modifier = Qt::Key_unknown;
+        disconnect();
+    }
+
+    Draggable::keyReleaseEvent(event);
+}
+
+#include <QtMath>
+
+void Camera::resizeEvent(QResizeEvent *event)
+{
+    focalLength = (qreal)event->size().height() / qTan(verticalAngle / 2) / 2;
+
+    emit projectionChanged(projection());
+
+    Draggable::resizeEvent(event);
+}
+
+void Camera::wheelEvent(QWheelEvent *event)
+{
+    scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
+
+    Draggable::wheelEvent(event);
+}
+
+#include <QMetaMethod>
+
+void Camera::connectNotify(const QMetaMethod &signal)
+{
+    if (signal == QMetaMethod::fromSignal(&Camera::modelViewChanged))
+        emit modelViewChanged(modelView());
+
+    if (signal == QMetaMethod::fromSignal(&Camera::projectionChanged))
+        emit projectionChanged(projection());
+}
+
+void Camera::move(int dx, int dy)
+{
+    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
+
+    move(scale * dx, -scale * dy, 0.);
+}
+
+void Camera::rotate(int dx, int dy)
+{
+    rotate(-angleFactor * dx, -angleFactor * dy, 0.);
+}
+
+void Camera::scale(int dx, int dy)
+{
+    Q_UNUSED(dy)
+    move(0., 0., distanceFactor * dx);
 }
 
 void Camera::move(qreal dx, qreal dy, qreal dz)
@@ -18,10 +118,10 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     QVector3D delta = x * dx + y * dy + z * dz;
 
     /* update eye position */
-    eye -= delta * (eye-origin).length()*0.02;
+    eye -= delta;
 
-    /* update modelview matrix */
-    updateModelView();
+    /* update scene */
+    emit modelViewChanged(modelView());
 }
 
 void Camera::rotate(qreal dh, qreal dp, qreal db)
@@ -63,11 +163,30 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
 
     eye = origin + dq.rotatedVector(eye - origin);
 
-    /* update modelview matrix */
-    updateModelView();
+    /* update scene */
+    emit modelViewChanged(modelView());
 }
 
-QMatrix4x4 Camera::getModelView() const
+QMatrix4x4 Camera::modelView() const
 {
-    return modelView;
+    QMatrix4x4 modelView;
+
+    modelView.setToIdentity();
+
+    modelView.translate(eye);
+    modelView.rotate(QQuaternion::fromAxes(x, y, z));
+
+    return modelView.inverted();
+}
+
+QMatrix4x4 Camera::projection() const
+{
+    const qreal aspectRatio = (qreal)width() / height();
+
+    QMatrix4x4 projection;
+
+    projection.setToIdentity();
+    projection.perspective(verticalAngle, aspectRatio, .1, 1000.);
+
+    return projection;
 }

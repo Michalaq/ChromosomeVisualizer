@@ -49,13 +49,15 @@ public:
 
 	virtual void initializeGL() override;
     virtual void paintGL() override;
-	virtual void resizeGL(int w, int h) override;
 
-	void setModelView(const QMatrix4x4 & mat);
 	void setSimulation(std::shared_ptr<Simulation> dp);
 
 	void advanceFrame();
     void setFrame(frameNumber_t frame);
+
+public slots:
+	void setModelView(QMatrix4x4 mat);
+	void setProjection(QMatrix4x4 mat);
 
 signals:
     void selectionChanged(const QList<unsigned int> & selected,

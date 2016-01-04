@@ -130,9 +130,9 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 }
 
 // @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
-static const char * SIMULATION_PATH =
+static const char * SIMULATION_PATH = "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb";
         //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
-        "/home/bartek/Dokumenty/zpp/test.pdb";
+        //"/home/bartek/Dokumenty/zpp/test.pdb";
 
 VizWidget::VizWidget(QWidget *parent)
     : VizWidget(std::make_shared<PDBSimulation>(SIMULATION_PATH), parent)
@@ -147,11 +147,7 @@ VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
 {
-    QMatrix4x4 mv;
-    mv.translate(0.f, -50.f, -100.f);
-    mv.rotate(105.f, 0.f, 1.f, 0.f);
-    mv.rotate(15.f, 0.f, 0.f, 1.f);
-    setModelView(mv);
+
 }
 
 VizWidget::~VizWidget()
@@ -293,10 +289,6 @@ void VizWidget::paintGL()
 	generateSortedState();
 	updateWholeFrameData();
 
-	QMatrix4x4 m = modelView;
-	//m.rotate(1.f, 0.f, 1.f, 0.f);
-	setModelView(m);
-
 	painter.beginNativePainting();
 
 	// Enable alpha blending
@@ -353,25 +345,23 @@ void VizWidget::paintGL()
 	painter.end();
 }
 
-void VizWidget::resizeGL(int w, int h)
-{
-	if (w == 0 || h == 0)
-		return;
-
-	const float ratio = (float)w / (float)h;
-
-	projection.setToIdentity();
-	projection.perspective(45.f, ratio, 0.1f, 1000.f);
-	modelViewProjection = projection * modelView;
-}
-
-void VizWidget::setModelView(const QMatrix4x4 & mat)
+void VizWidget::setModelView(QMatrix4x4 mat)
 {
 	modelView = mat;
 	modelViewNormal = mat.normalMatrix();
 	modelViewProjection = projection * modelView;
 
     needVBOUpdate = true;
+    update();
+}
+
+void VizWidget::setProjection(QMatrix4x4 mat)
+{
+	projection = mat;
+	modelViewProjection = projection * modelView;
+
+    needVBOUpdate = true;
+    update();
 }
 
 void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)

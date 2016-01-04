@@ -19,7 +19,6 @@ SOURCES += main.cpp\
 ../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
-    canvas.cpp \
     control.cpp \
     camera.cpp
 
@@ -30,7 +29,6 @@ HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.h\
 ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
-    canvas.h \
     control.h \
     camera.h
 

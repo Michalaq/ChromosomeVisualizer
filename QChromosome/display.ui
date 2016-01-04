@@ -84,11 +84,11 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="Canvas" name="view" native="true">
+    <widget class="QWidget" name="canvas" native="true">
      <property name="styleSheet">
-      <string notr="true">background: #4d4d4d</string>
+      <string notr="true">background: #4d4d4d;</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
        <number>1</number>
       </property>
@@ -102,7 +102,25 @@
        <number>1</number>
       </property>
       <item row="0" column="0">
-       <widget class="VizWidget" name="scene"/>
+       <widget class="Camera" name="camera" native="true">
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="VizWidget" name="scene"/>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -121,22 +139,26 @@
    </slots>
   </customwidget>
   <customwidget>
-   <class>Canvas</class>
+   <class>VizWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
+   <slots>
+    <slot>setModelView(QMatrix4x4)</slot>
+    <slot>setProjection(QMatrix4x4)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>Camera</class>
    <extends>QWidget</extends>
-   <header>canvas.h</header>
+   <header>camera.h</header>
    <container>1</container>
    <slots>
-    <signal>delta(int,int)</signal>
     <signal>modelViewChanged(QMatrix4x4)</signal>
+    <signal>projectionChanged(QMatrix4x4)</signal>
     <slot>move(int,int)</slot>
     <slot>rotate(int,int)</slot>
     <slot>scale(int,int)</slot>
    </slots>
-  </customwidget>
-  <customwidget>
-   <class>VizWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -144,48 +166,80 @@
   <connection>
    <sender>move</sender>
    <signal>delta(int,int)</signal>
-   <receiver>view</receiver>
+   <receiver>camera</receiver>
    <slot>move(int,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>319</x>
-     <y>79</y>
+     <x>318</x>
+     <y>82</y>
     </hint>
     <hint type="destinationlabel">
-     <x>316</x>
-     <y>158</y>
+     <x>317</x>
+     <y>162</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>rotate</sender>
    <signal>delta(int,int)</signal>
-   <receiver>view</receiver>
+   <receiver>camera</receiver>
    <slot>rotate(int,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>344</x>
-     <y>84</y>
+     <x>348</x>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
      <x>346</x>
-     <y>161</y>
+     <y>157</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>scale</sender>
    <signal>delta(int,int)</signal>
-   <receiver>view</receiver>
+   <receiver>camera</receiver>
    <slot>scale(int,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>382</x>
-     <y>75</y>
+     <x>378</x>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
-     <x>375</x>
-     <y>157</y>
+     <x>376</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>camera</sender>
+   <signal>modelViewChanged(QMatrix4x4)</signal>
+   <receiver>scene</receiver>
+   <slot>setModelView(QMatrix4x4)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>47</x>
+     <y>162</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>76</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>camera</sender>
+   <signal>projectionChanged(QMatrix4x4)</signal>
+   <receiver>scene</receiver>
+   <slot>setProjection(QMatrix4x4)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>202</y>
     </hint>
    </hints>
   </connection>
