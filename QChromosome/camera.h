@@ -48,6 +48,8 @@ private:
 
     qreal focalLength;
     qreal apertureWidth;
+
+    qreal horizontalAngle;
     qreal verticalAngle;
 
     Qt::Key modifier;
@@ -63,8 +65,8 @@ private:
     /* updates projection matrix */
     QMatrix4x4& updateProjection();
 
-    /* updates vertical angle */
-    qreal& updateVerticalAngle();
+    /* updates field of view */
+    void updateAngles();
 
     static const qreal distanceFactor;
     static const qreal angleFactor;
