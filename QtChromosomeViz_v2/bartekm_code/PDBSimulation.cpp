@@ -99,9 +99,14 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
 Atom PDBSimulation::getAtomFromString(const std::string & str)
 {
 	Atom a;
+    int x, y, z;
 
-    sscanf(str.c_str(), "ATOM %d %*c %s %*d %f.0 %f.0 %f.0",
-        &a.id, &a.type, &a.x, &a.y, &a.z);
+    sscanf(str.c_str(), "ATOM %d %*c %s %*d %d.0 %d.0 %d.0",
+        &a.id, &a.type, &x, &y, &z);
+
+    a.x = x;
+    a.y = y;
+    a.z = z;
 
     return a;
 }
