@@ -75,7 +75,7 @@ void Camera::keyReleaseEvent(QKeyEvent *event)
     if (modifier == event->key())
     {
         modifier = Qt::Key_unknown;
-        disconnect();
+        disconnect(SIGNAL(delta(int,int)), this);
     }
 
     Draggable::keyReleaseEvent(event);
