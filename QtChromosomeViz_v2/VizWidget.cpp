@@ -613,23 +613,36 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
         }
 
         auto oldSelection = pickSpheres();
-        qSwap(oldSelection, selectedSpheres_);
+        auto oldAtoms = selectedSpheres();
+        qSwap(oldSelection, selectedSphereIndices_);
 
         // New selection
-        for (const auto & id : selectedSpheres_)
+        for (const auto & id : selectedSphereIndices_)
             selectedBitmap_[id] = !ctrl;
 
         // That's a hack, but it forces updating the flags
         setFrame(frameNumber_);
         update();
 
-        emit selectionChanged(selectedSpheres_, oldSelection);
+        emit selectionChangedIndices(selectedSphereIndices_, oldSelection);
+        emit selectionChanged(selectedSpheres(), oldAtoms);
     }
 }
 
-QList<unsigned int> VizWidget::selectedSpheres() const
+QList<unsigned int> VizWidget::selectedSphereIndices() const
 {
-    return selectedSpheres_;
+    return selectedSphereIndices_;
+}
+
+QList<Atom> VizWidget::selectedSpheres() const
+{
+    QList<Atom> ret;
+    auto frame = simulation_->getFrame(frameNumber_);
+
+    for (unsigned int i : selectedSphereIndices_)
+        ret.push_back(frame->atoms[i]);
+
+    return ret;
 }
 
 void VizWidget::generateSortedState()
