@@ -100,8 +100,8 @@ Atom PDBSimulation::getAtomFromString(const std::string & str)
 {
 	Atom a;
 
-	sscanf(str.c_str(), "ATOM %d %*c %s %*d %f %f %f",
-		&a.id, &a.type, &a.x, &a.y, &a.z);
+    sscanf(str.c_str(), "ATOM %d %*c %s %*d %f.0 %f.0 %f.0",
+        &a.id, &a.type, &a.x, &a.y, &a.z);
 
-	return a;
+    return a;
 }
