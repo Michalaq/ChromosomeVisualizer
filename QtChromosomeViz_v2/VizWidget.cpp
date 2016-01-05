@@ -369,15 +369,10 @@ void VizWidget::setSelectingState(bool flag)
         unsetCursor();
 }
 
-void VizWidget::loadSimulation()
+void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
-
-    if (!path.isEmpty())
-    {
-        simulation = std::make_shared<PDBSimulation>(path.toStdString());
-        setFirstFrame();
-    }
+    simulation = std::move(dp);
+    setFirstFrame();
 }
 
 void VizWidget::advanceFrame()

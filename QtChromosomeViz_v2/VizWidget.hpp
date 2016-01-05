@@ -40,7 +40,7 @@ using VizSegment = QPair<VizVertex, VizVertex>;
 class VizWidget :	public QOpenGLWidget,
 					protected QOpenGLFunctions_3_3_Core
 {
-	Q_OBJECT;
+    Q_OBJECT
 
 public:
     VizWidget(QWidget *parent = 0);
@@ -49,9 +49,9 @@ public:
 	virtual void initializeGL() override;
     virtual void paintGL() override;
 
-public slots:
-    void loadSimulation();
+    void setSimulation(std::shared_ptr<Simulation> dp);
 
+public slots:
 	void advanceFrame();
     void setFrame(frameNumber_t frame);
     void setFrame(int frame);

@@ -16,3 +16,20 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
+
+void MainWindow::openSimulation()
+{
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+
+    if (!path.isEmpty())
+    {
+        auto simulation = std::make_shared<PDBSimulation>(path.toStdString());
+
+        ui->scene->setSimulation(simulation);
+
+        ui->horizontalSlider->setValue(0);
+        ui->spinBox->setValue(0);
+    }
+}
