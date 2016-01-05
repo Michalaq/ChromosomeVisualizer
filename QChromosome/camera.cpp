@@ -32,8 +32,6 @@ Camera::Camera(QWidget *parent)
     updateModelView();
 
     updateAngles();
-
-    setFocus();
 }
 
 #include <QKeyEvent>
