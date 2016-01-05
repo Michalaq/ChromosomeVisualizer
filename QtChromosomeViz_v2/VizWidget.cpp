@@ -135,14 +135,8 @@ static const char * SIMULATION_PATH = "/home/bart/Pobrane/MC_random_r10_avoid_la
         //"/home/bartek/Dokumenty/zpp/test.pdb";
 
 VizWidget::VizWidget(QWidget *parent)
-    : VizWidget(std::make_shared<PDBSimulation>(SIMULATION_PATH), parent)
-{
-
-}
-
-VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     : QOpenGLWidget(parent)
-    , simulation(std::move(simulation))
+    , simulation(std::make_shared<PDBSimulation>(SIMULATION_PATH))
     , needVBOUpdate(true)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
@@ -375,10 +369,15 @@ void VizWidget::setSelectingState(bool flag)
         unsetCursor();
 }
 
-void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
+void VizWidget::loadSimulation()
 {
-	simulation = std::move(dp);
-	setFirstFrame();
+    QString path = QFileDialog::getOpenFileName(this);
+
+    if (!path.isEmpty())
+    {
+        simulation = std::make_shared<PDBSimulation>(path.toStdString());
+        setFirstFrame();
+    }
 }
 
 void VizWidget::advanceFrame()

@@ -227,6 +227,7 @@
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
     <slot>setSelectingState(bool)</slot>
+    <slot>loadSimulation()</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -402,6 +403,22 @@
     <hint type="destinationlabel">
      <x>176</x>
      <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>scene</receiver>
+   <slot>loadSimulation()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>140</y>
     </hint>
    </hints>
   </connection>

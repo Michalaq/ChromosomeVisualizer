@@ -44,14 +44,13 @@ class VizWidget :	public QOpenGLWidget,
 
 public:
     VizWidget(QWidget *parent = 0);
-    VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent = 0);
 	virtual ~VizWidget();
 
 	virtual void initializeGL() override;
     virtual void paintGL() override;
 
 public slots:
-	void setSimulation(std::shared_ptr<Simulation> dp);
+    void loadSimulation();
 
 	void advanceFrame();
     void setFrame(frameNumber_t frame);
