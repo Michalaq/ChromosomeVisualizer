@@ -170,6 +170,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionSelect"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="styleSheet">
@@ -182,6 +183,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select</string>
    </property>
   </action>
  </widget>
@@ -204,6 +213,7 @@
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
+    <slot>setSelectingState(bool)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -315,6 +325,22 @@
     <hint type="destinationlabel">
      <x>200</x>
      <y>197</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSelect</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>scene</receiver>
+   <slot>setSelectingState(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>200</y>
     </hint>
    </hints>
   </connection>

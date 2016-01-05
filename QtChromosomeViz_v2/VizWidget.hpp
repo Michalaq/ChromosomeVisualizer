@@ -60,6 +60,8 @@ public slots:
 	void setModelView(QMatrix4x4 mat);
 	void setProjection(QMatrix4x4 mat);
 
+    void setSelectingState(bool flag);
+
 signals:
     void selectionChanged(const QList<unsigned int> & selected,
                           const QList<unsigned int> & deselected);
@@ -115,6 +117,7 @@ private:
     void generateSortedState();
 
     bool isSelecting_;
+    bool isSelectingState_;
     QPoint selectionPoints_[2];
 //    std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     QOpenGLFramebufferObject * pickingFramebuffer_;

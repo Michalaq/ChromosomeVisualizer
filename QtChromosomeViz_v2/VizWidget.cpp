@@ -146,6 +146,7 @@ VizWidget::VizWidget(std::shared_ptr<Simulation> simulation, QWidget *parent)
     , needVBOUpdate(true)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
+    , isSelectingState_(false)
 {
 
 }
@@ -364,6 +365,16 @@ void VizWidget::setProjection(QMatrix4x4 mat)
     update();
 }
 
+void VizWidget::setSelectingState(bool flag)
+{
+    isSelectingState_ = flag;
+
+    if (flag)
+        setCursor(Qt::CrossCursor);
+    else
+        unsetCursor();
+}
+
 void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
 {
 	simulation = std::move(dp);
@@ -546,6 +557,9 @@ void VizWidget::updateWholeFrameData()
 
 void VizWidget::mousePressEvent(QMouseEvent * event)
 {
+    if (!isSelectingState_)
+        return event->ignore();
+
     isSelecting_ = true;
     selectionPoints_[0] = event->pos();
     selectionPoints_[1] = event->pos();
@@ -553,6 +567,9 @@ void VizWidget::mousePressEvent(QMouseEvent * event)
 
 void VizWidget::mouseMoveEvent(QMouseEvent * event)
 {
+    if (!isSelectingState_)
+        return event->ignore();
+
     if (isSelecting_)
     {
         QRegion r;
@@ -565,6 +582,9 @@ void VizWidget::mouseMoveEvent(QMouseEvent * event)
 
 void VizWidget::mouseReleaseEvent(QMouseEvent * event)
 {
+    if (!isSelectingState_)
+        return event->ignore();
+
     if (isSelecting_)
     {
         isSelecting_ = false;
