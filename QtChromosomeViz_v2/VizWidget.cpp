@@ -371,7 +371,7 @@ void VizWidget::setSelectingState(bool flag)
 
 void VizWidget::loadSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this);
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
 
     if (!path.isEmpty())
     {
