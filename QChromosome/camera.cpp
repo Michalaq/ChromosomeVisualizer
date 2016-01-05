@@ -1,9 +1,11 @@
 #include "camera.h"
 
-/* TODO wymiary klatki animacji, dostępne w przyszłości jako pola pewnej klasy */
-const qreal __aspectRatio = 320. / 240.;
+namespace RenderSettings
+{
+    const qreal aspectRatio = 320. / 240.;
+}
 
-const qreal Camera::distanceFactor = 0.25;
+const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
 const qreal Camera::wheelFactor = 2.00;
 
@@ -193,7 +195,7 @@ QMatrix4x4& Camera::updateProjection()
 
     projection.setToIdentity();
 
-    if (aspectRatio < __aspectRatio)
+    if (aspectRatio < RenderSettings::aspectRatio)
     {
         projection.rotate(-90, {0, 0, 1});
         projection.perspective(horizontalAngle, 1. / aspectRatio, .1, 1000.);
@@ -209,6 +211,6 @@ QMatrix4x4& Camera::updateProjection()
 
 void Camera::updateAngles()
 {
-    horizontalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / focalLength / 2));
-    verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / __aspectRatio / focalLength / 2));
+    horizontalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength));
+    verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / RenderSettings::aspectRatio / 2 / focalLength));
 }
