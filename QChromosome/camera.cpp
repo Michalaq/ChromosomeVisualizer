@@ -47,18 +47,18 @@ void Camera::keyPressEvent(QKeyEvent *event)
     {
         switch (event->key())
         {
-        case Qt::Key_M:
-            modifier = Qt::Key_M;
+        case Qt::Key_Q:
+            modifier = Qt::Key_Q;
             connect(this, SIGNAL(delta(int,int)), this, SLOT(move(int,int)));
             break;
 
-        case Qt::Key_R:
-            modifier = Qt::Key_R;
+        case Qt::Key_W:
+            modifier = Qt::Key_W;
             connect(this, SIGNAL(delta(int,int)), this, SLOT(rotate(int,int)));
             break;
 
-        case Qt::Key_S:
-            modifier = Qt::Key_S;
+        case Qt::Key_E:
+            modifier = Qt::Key_E;
             connect(this, SIGNAL(delta(int,int)), this, SLOT(scale(int,int)));
             break;
         }
