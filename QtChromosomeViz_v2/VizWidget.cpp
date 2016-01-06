@@ -11,19 +11,23 @@ static const char * sphereVertexShaderCode =
 "layout(location = 2) in vec3 vInstancePosition;"
 "layout(location = 3) in uint iInstanceFlags;"
 "layout(location = 4) in uint iAtomID;"
+"layout(location = 5) in uint cInstanceColor;"
+"layout(location = 6) in float fInstanceSize;"
 "uniform mat4 mvp;"
 "uniform mat3 mvNormal;"
 "out vec4 vPosition;"
 "out vec3 vNormal;"
 "flat out uint iInstanceID;"
 "flat out uint iFlags;"
+"flat out uint iColor;"
 "void main() {"
-    "vec4 pos = mvp * vec4(vVertexPosition + vInstancePosition.xyz, 1);"
+    "vec4 pos = mvp * vec4(vVertexPosition * fInstanceSize + vInstancePosition.xyz, 1);"
     "gl_Position = pos;"
     "vPosition = pos;"
     "vNormal = normalize(mvNormal * vVertexNormal);"
     "iInstanceID = iAtomID;"
     "iFlags = iInstanceFlags;"
+    "iColor = cInstanceColor;"
 "}"
 ;
 
@@ -37,17 +41,25 @@ static const char * cylinderVertexShaderCode =
 
 static const char * fragmentShaderCode =
 "#version 330 core\n"
-"uniform vec4 ucColorTable[4];"
 "uniform vec2 uvScreenSize;"
 "in vec4 vPosition;"
 "in vec3 vNormal;"
 "flat in uint iFlags;"
+"flat in uint iColor;"
 "out vec4 cColor;"
+"vec4 colorFromARGB8(uint color) {"
+    "vec4 ret;"
+    "ret.a = float((color >> 24u) & 0xFFu) / 255.f;"
+    "ret.r = float((color >> 16u) & 0xFFu) / 255.f;"
+    "ret.g = float((color >>  8u) & 0xFFu) / 255.f;"
+    "ret.b = float((color >>  0u) & 0xFFu) / 255.f;"
+    "return ret;"
+"}"
 "void main() {"
     "vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;"
     "float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);"
     "float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);"
-    "vec4 baseColor = ucColorTable[iFlags & 3u];"
+    "vec4 baseColor = colorFromARGB8(iColor);"
     "float lightness = (0.5 + 0.5 * 0.7 * (vNormal.x + vNormal.z));"
     "vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);"
     "float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;"
@@ -100,21 +112,6 @@ inline static bool isDegenerate(const QVector3D & a, const QVector3D & b, const 
     return triangleField(a, b, c) < EPSILON;
 }
 
-static int atomTypeToInt(const std::string & s)
-{
-    if (s == "UNB")
-        return 0;
-    if (s == "BOU")
-        return 1;
-    if (s == "LAM")
-        return 2;
-    if (s == "BIN")
-        return 3;
-
-    assert(false);
-    return -1;
-}
-
 VizVertex VizVertex::rotated(const QQuaternion & q) const
 {
     return {
@@ -135,6 +132,7 @@ VizWidget::VizWidget(QWidget *parent)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
+    , currentSelection_(this)
     , ballQualityParameters_(0, 0)
 {
 
@@ -160,7 +158,7 @@ void VizWidget::initializeGL()
     assert(vao_.create());
 
     // Create sphere model
-    setBallQuality(0.f);
+    setBallQuality(1.f);
     vao_.bind();
 
     sphereModel_.bind();
@@ -216,9 +214,30 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, atomID)
     );
 
+    glEnableVertexAttribArray(5);
+    glVertexAttribIPointer(
+        5,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, color)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, size)
+    );
+
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
 
     atomPositions_.release();
     vao_.release();
@@ -233,18 +252,6 @@ void VizWidget::initializeGL()
     program_.addShaderFromSourceCode(QOpenGLShader::Vertex, sphereVertexShaderCode);
     program_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
     assert(program_.link());
-
-    // Set atom colors
-    static const QVector4D colors[] = {
-        { 1.f, 0.f, 0.f, 1.f },
-        { 0.f, 1.f, 0.f, 1.f },
-        { 0.f, 0.f, 1.f, 1.f },
-        { 1.f, 1.f, 1.f, 0.5f }
-    };
-
-    program_.bind();
-    program_.setUniformValueArray("ucColorTable", colors, 4);
-    program_.release();
 
     assert(planeProgram_.create());
     planeProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, planeVertexShaderCode);
@@ -383,9 +390,20 @@ void VizWidget::setFirstFrame()
     selectedBitmap_.fill(false, frame->atoms.size());
 
     VizBallInstance dummy;
+    dummy.color = 0xFF777777;
+    dummy.size = 1.f;
     frameState_.fill(dummy, frame->atoms.size());
 
     setFrame(0);
+
+    // Assign appropriate default colors
+    atomTypeSelection("UNB").setColor(0xFF0000);
+    atomTypeSelection("BOU").setColor(0x00FF00);
+    atomTypeSelection("LAM").setColor(0x0000FF);
+
+    auto selection = atomTypeSelection("BIN");
+    selection.setColor(Qt::white);
+    selection.setAlpha(0.5f);
 }
 
 void VizWidget::setFrame(frameNumber_t frame)
@@ -395,7 +413,7 @@ void VizWidget::setFrame(frameNumber_t frame)
     for (const auto & a : diff->atoms)
     {
         frameState_[a.id - 1].position = QVector3D(a.x, a.y, a.z);
-        frameState_[a.id - 1].flags = atomTypeToInt(a.type);
+        frameState_[a.id - 1].flags = 0;
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
@@ -608,26 +626,38 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
                 sphere = false;
         }
 
-        auto oldSelection = pickSpheres();
         auto oldAtoms = selectedSpheres();
-        qSwap(oldSelection, selectedSphereIndices_);
+        auto oldIndices = selectedSphereIndices();
+        auto pickedIndices = pickSpheres();
 
         // New selection
-        for (const auto & id : selectedSphereIndices_)
+        for (const auto & id : pickedIndices)
             selectedBitmap_[id] = !ctrl;
+
+        // Now we can get the real list of all selected atoms
+        QList<unsigned int> newIndices;
+        for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
+        {
+            if (selectedBitmap_[i])
+                newIndices.push_back(i);
+        }
+
+        AtomSelection nuSelectionObject(newIndices, this);
+        qSwap(currentSelection_, nuSelectionObject);
 
         // That's a hack, but it forces updating the flags
         setFrame(frameNumber_);
         update();
 
-        emit selectionChangedIndices(selectedSphereIndices_, oldSelection);
+        emit selectionChangedIndices(newIndices, oldIndices);
         emit selectionChanged(selectedSpheres(), oldAtoms);
+        emit selectionChangedObject(selectedSpheresObject());
     }
 }
 
 QList<unsigned int> VizWidget::selectedSphereIndices() const
 {
-    return selectedSphereIndices_;
+    return currentSelection_.selectedIndices();
 }
 
 QList<Atom> VizWidget::selectedSpheres() const
@@ -635,10 +665,55 @@ QList<Atom> VizWidget::selectedSpheres() const
     QList<Atom> ret;
     auto frame = simulation_->getFrame(frameNumber_);
 
-    for (unsigned int i : selectedSphereIndices_)
+    for (unsigned int i : currentSelection_.selectedIndices())
         ret.push_back(frame->atoms[i]);
 
     return ret;
+}
+
+const AtomSelection & VizWidget::selectedSpheresObject() const
+{
+    return currentSelection_;
+}
+
+AtomSelection VizWidget::allSelection()
+{
+    QList<unsigned int> l;
+    for (unsigned int i = 0; i < sphereCount_; i++)
+        l.push_back(i);
+
+    return AtomSelection(l, this);
+}
+
+AtomSelection VizWidget::atomTypeSelection(const char * s)
+{
+    QList<unsigned int> l;
+    const auto frame = simulation_->getFrame(0);
+    for (unsigned int i = 0; i < sphereCount_; i++)
+    {
+        if (strcmp(frame->atoms[i].type, s) == 0)
+            l.push_back(i);
+    }
+
+    return AtomSelection(l, this);
+}
+
+AtomSelection VizWidget::atomTypeSelection(const std::string & s)
+{
+    return atomTypeSelection(s.c_str());
+}
+
+void VizWidget::setVisibleSelection(AtomSelection s)
+{
+    auto oldAtoms = selectedSpheres();
+    qSwap(currentSelection_, s);
+    auto newAtoms = selectedSpheres();
+
+    emit selectionChangedIndices(
+                currentSelection_.selectedIndices(),
+                s.selectedIndices());
+    emit selectionChanged(selectedSpheres(), oldAtoms);
+    emit selectionChangedObject(selectedSpheresObject());
 }
 
 void VizWidget::generateSortedState()
@@ -743,4 +818,78 @@ QList<unsigned int> VizWidget::pickSpheres()
     }
 
     return ballIDs.toList();
+}
+
+AtomSelection::AtomSelection(VizWidget * widget)
+    : widget_(widget)
+{
+
+}
+
+AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
+    : selectedIndices_(std::move(indices))
+    , widget_(widget)
+{
+
+}
+
+void AtomSelection::setColor(QColor color)
+{
+    unsigned int code = color.rgb();
+    for (unsigned int i : selectedIndices_)
+    {
+        auto & loc = widget_->frameState_[i].color;
+        loc = (loc & 0xFF000000) | code;
+    }
+
+    widget_->needVBOUpdate_ = true;
+}
+
+void AtomSelection::setAlpha(float alpha)
+{
+    unsigned int code = ((unsigned int)(alpha * 255.f) << 24) & 0xFF000000U;
+    for (unsigned int i : selectedIndices_)
+    {
+        auto & loc = widget_->frameState_[i].color;
+        loc = (loc & 0x00FFFFFF) | code;
+    }
+
+    widget_->needVBOUpdate_ = true;
+}
+
+void AtomSelection::setSize(float size)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->frameState_[i].size = size;
+
+    widget_->needVBOUpdate_ = true;
+}
+
+unsigned int AtomSelection::atomCount() const
+{
+    return selectedIndices_.size();
+}
+
+QVector3D AtomSelection::weightCenter() const
+{
+    if (atomCount() == 0)
+        return QVector3D(0.f, 0.f, 0.f);
+
+    QVector3D sum(0.f, 0.f, 0.f);
+    auto frame = widget_->simulation_->getFrame(0);
+
+    for (unsigned int i : selectedIndices_)
+    {
+        QVector3D atomPos(frame->atoms[i].x,
+                          frame->atoms[i].y,
+                          frame->atoms[i].z);
+        sum += atomPos;
+    }
+
+    return sum /= (float)atomCount();
+}
+
+const QList<unsigned int> & AtomSelection::selectedIndices() const
+{
+    return selectedIndices_;
 }
