@@ -18,7 +18,8 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     simulation_ = std::move(dp);
 
     data = QPainterPath(QPoint(0, simulation_->getFrame(0)->functionValues["bonds"]));
-    size = QSize(0, 1);
+
+    databr = data.boundingRect();
 
     lastFrame = 0;
 
@@ -35,9 +36,7 @@ void Plot::setMaximum(int m)
 
     lastFrame = m;
 
-    QRectF rect = data.boundingRect();
-
-    size = QSize(rect.width(), rect.y() + rect.height());
+    databr = data.boundingRect();
 
     update();
 }
@@ -48,7 +47,7 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_)
+    if (!simulation_ || !databr.width() || !databr.height())
         return;
 
     QPainter painter(this);
@@ -56,14 +55,13 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setWindow(0, height(), width(), -height());
     painter.setRenderHint(QPainter::Antialiasing);
 
-    if (!size.width()) return;
-
     QPainterPath path(data);
     path.lineTo(data.currentPosition().x(), 0);
     path.lineTo(0, 0);
     path.closeSubpath();
 
-    painter.scale((qreal) width() / size.width(), (qreal) height() / size.height());
+    painter.scale((qreal) width() / databr.width(), (qreal) height() / databr.height());
+    painter.translate(-databr.topLeft());
 
     painter.fillPath(path, QColor("#002255"));
 }

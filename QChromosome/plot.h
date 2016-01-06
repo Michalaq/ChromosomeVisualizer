@@ -23,7 +23,7 @@ private:
     std::shared_ptr<Simulation> simulation_;
 
     QPainterPath data;
-    QSize size;
+    QRectF databr;
 
     int lastFrame;
 
