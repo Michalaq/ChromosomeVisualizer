@@ -28,6 +28,7 @@ void MainWindow::openSimulation()
         auto simulation = std::make_shared<PDBSimulation>(path.toStdString());
 
         ui->scene->setSimulation(simulation);
+        ui->plot->setSimulation(simulation);
 
         ui->horizontalSlider->setValue(0);
         ui->spinBox->setValue(0);

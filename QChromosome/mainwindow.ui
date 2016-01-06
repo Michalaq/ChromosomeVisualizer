@@ -162,7 +162,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="Plot" name="widget" native="true"/>
+      <widget class="Plot" name="plot" native="true"/>
      </widget>
     </item>
    </layout>
