@@ -79,7 +79,7 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
 	getline(file_, line);
     bool connectionStarted = false;
     int currentConnectionCount = 0;
-	while (line.find("END") == std::string::npos) {
+    while (line.find("END") == std::string::npos) {
 		if (line.substr(0, 4) == "ATOM")
 			atoms.push_back(getAtomFromString(line));
         else if (connectionCount_< 0) {
@@ -88,8 +88,9 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
             if (connectionStarted)
                 currentConnectionCount++;
         }
-		getline(file_, line);
-	}
+        if(!getline(file_, line))
+            break;
+    }
     if (connectionCount_ < 0)
         connectionCount_ = currentConnectionCount;
 	Frame d = {

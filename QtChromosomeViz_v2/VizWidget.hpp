@@ -22,6 +22,8 @@ struct VizBallInstance
     QVector3D position;
     unsigned int flags;
     unsigned int atomID;
+    unsigned int color;
+    float size;
 };
 
 struct VizLink
@@ -32,19 +34,45 @@ struct VizLink
     void update(const QVector3D & p1, const QVector3D & p2);
 };
 
+class VizWidget;
+
+class AtomSelection
+{
+    friend class VizWidget;
+
+public:
+    AtomSelection(const AtomSelection &) = default;
+
+    void setColor(QColor color);
+    void setAlpha(float alpha);
+    void setSize(float size);
+
+    unsigned int atomCount() const;
+    QVector3D weightCenter() const;
+    const QList<unsigned int> & selectedIndices() const;
+
+private:
+    AtomSelection(VizWidget * widget);
+    AtomSelection(QList<unsigned int> indices, VizWidget * widget);
+
+    QList<unsigned int> selectedIndices_;
+    VizWidget * widget_;
+};
+
 using VizSegment = QPair<VizVertex, VizVertex>;
 
 class VizWidget :   public QOpenGLWidget,
                     protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
+    friend class AtomSelection;
 
 public:
     VizWidget(QWidget *parent = 0);
     virtual ~VizWidget();
 
     virtual void initializeGL() override;
-    virtual void paintGL() override;\
+    virtual void paintGL() override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
 
@@ -66,6 +94,7 @@ signals:
                                  const QList<unsigned int> & deselected);
     void selectionChanged(const QList<Atom> & selected,
                           const QList<Atom> & deselected);
+    void selectionChangedObject(const AtomSelection & selection);
 
 protected:
     // Generates vertices for a solid of revolution based on the given outline.
@@ -91,6 +120,13 @@ protected:
 
     QList<unsigned int> selectedSphereIndices() const;
     QList<Atom> selectedSpheres() const;
+    const AtomSelection & selectedSpheresObject() const;
+
+    AtomSelection allSelection();
+    AtomSelection atomTypeSelection(const char * s);
+    AtomSelection atomTypeSelection(const std::string & s);
+
+    void setVisibleSelection(AtomSelection s);
 
 private:
     QOpenGLBuffer sphereModel_;
@@ -122,7 +158,7 @@ private:
     bool isSelectingState_;
     QPoint selectionPoints_[2];
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
-    QList<unsigned int> selectedSphereIndices_;
+    AtomSelection currentSelection_;
     QVector<bool> selectedBitmap_;
 
     QRect selectionRect() const;
