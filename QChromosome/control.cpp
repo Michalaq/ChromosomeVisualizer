@@ -1,6 +1,8 @@
 #include "control.h"
 
-Control::Control(QWidget *parent) : Draggable(parent), icon(new QSvgRenderer(this))
+Control::Control(QWidget *parent) :
+    Draggable(parent),
+    icon(new QSvgRenderer(this))
 {
 
 }

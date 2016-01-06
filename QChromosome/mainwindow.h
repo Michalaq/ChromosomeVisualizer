@@ -18,6 +18,13 @@ public:
 public slots:
     void openSimulation();
 
+    void bb();
+    void ab();
+    void pb();
+    void pf();
+    void af();
+    void ff();
+
 private:
     Ui::MainWindow *ui;
 };
