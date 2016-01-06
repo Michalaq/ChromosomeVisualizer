@@ -1,8 +1,11 @@
 #include "plot.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
-Plot::Plot(QWidget *parent) : QWidget(parent), simulation_(std::make_shared<NullSimulation>())
+Plot::Plot(QWidget *parent) :
+    QWidget(parent),
+    simulation_(std::make_shared<NullSimulation>())
 {
+
 }
 
 Plot::~Plot()
@@ -14,7 +17,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 {
     simulation_ = std::move(dp);
 
-    frameNumber_t n = simulation_->getFrameCount()+100;
+    /*frameNumber_t n = simulation_->getFrameCount();
 
     data = QPainterPath(QPoint(0, simulation_->getFrame(0)->functionValues["bonds"]));
 
@@ -28,7 +31,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     size = QSize(rect.width(), rect.y() + rect.height());
 
-    update();
+    update();*/
 }
 
 #include <QPainter>

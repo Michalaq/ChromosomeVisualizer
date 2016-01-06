@@ -27,6 +27,8 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+
+    int frameCount;
 };
 
 #endif // MAINWINDOW_H

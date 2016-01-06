@@ -143,6 +143,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QSlider" name="horizontalSlider">
+            <property name="maximum">
+             <number>0</number>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -155,6 +158,9 @@
             </property>
             <property name="suffix">
              <string>F</string>
+            </property>
+            <property name="maximum">
+             <number>0</number>
             </property>
            </widget>
           </item>

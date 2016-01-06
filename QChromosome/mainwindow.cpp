@@ -3,15 +3,14 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    frameCount(0)
 {
     ui->setupUi(this);
 
     ui->move->load(":/move");
     ui->rotate->load(":/rotate");
     ui->scale->load(":/scale");
-
-    openSimulation(); //TODO do wywalenia
 }
 
 MainWindow::~MainWindow()
@@ -20,24 +19,29 @@ MainWindow::~MainWindow()
 }
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
+#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
 void MainWindow::openSimulation()
 {
     QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
 
+    std::shared_ptr<Simulation> simulation;
+
     if (!path.isEmpty())
-    {
-        auto simulation = std::make_shared<PDBSimulation>(path.toStdString());
+        simulation = std::make_shared<PDBSimulation>(path.toStdString());
+    else
+        simulation = std::make_shared<NullSimulation>();
 
-        ui->scene->setSimulation(simulation);
-        ui->plot->setSimulation(simulation);
+    ui->scene->setSimulation(simulation);
+    ui->plot->setSimulation(simulation);
 
-        ui->horizontalSlider->setMaximum(100);//simulation_->getFrameCount() - 1
-        ui->horizontalSlider->setValue(0);
+    frameCount = simulation->getFrameCount();
 
-        ui->spinBox->setMaximum(100);//simulation_->getFrameCount() - 1
-        ui->spinBox->setValue(0);
-    }
+    ui->horizontalSlider->setMaximum(frameCount - 1);
+    ui->horizontalSlider->setValue(0);
+
+    ui->spinBox->setMaximum(frameCount - 1);
+    ui->spinBox->setValue(0);
 }
 
 void MainWindow::bb()
@@ -52,7 +56,7 @@ void MainWindow::ab()
     int n = ui->spinBox->value() - 1;
 
     if (n < 0)
-        n = ui->spinBox->maximum();
+        n = frameCount - 1;
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
@@ -73,7 +77,7 @@ void MainWindow::af()
 {
     int n = ui->spinBox->value() + 1;
 
-    if (n > ui->spinBox->maximum())
+    if (n == frameCount)
         n = 0;
 
     ui->horizontalSlider->setValue(n);
@@ -83,7 +87,7 @@ void MainWindow::af()
 
 void MainWindow::ff()
 {
-    int n = ui->spinBox->maximum();
+    int n = frameCount;
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
