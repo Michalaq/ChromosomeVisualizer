@@ -19,34 +19,7 @@ static const char * sphereVertexShaderCode =
 "out vec3 vNormal;"
 "flat out uint iInstanceID;"
 "flat out uint iFlags;"
-"flat out uint iColor;"
-"void main() {"
-    "vec4 pos = mvp * vec4(vVertexPosition * fInstanceSize + vInstancePosition.xyz, 1);"
-    "gl_Position = pos;"
-    "vPosition = pos;"
-    "vNormal = normalize(mvNormal * vVertexNormal);"
-    "iInstanceID = iAtomID;"
-    "iFlags = iInstanceFlags;"
-    "iColor = cInstanceColor;"
-"}"
-;
-
-static const char * cylinderVertexShaderCode =
-"#version 330 core\n"
-"layout(location = 0) in vec3 vVertexPosition;"
-"layout(location = 1) in vec3 vVertexNormal;"
-"layout(location = 2) in vec3 vConnectionStart;"
-"layout(location = 3) in vec4 vRotationQuat;"
-;
-
-static const char * fragmentShaderCode =
-"#version 330 core\n"
-"uniform vec2 uvScreenSize;"
-"in vec4 vPosition;"
-"in vec3 vNormal;"
-"flat in uint iFlags;"
-"flat in uint iColor;"
-"out vec4 cColor;"
+"out vec4 vColor;"
 "vec4 colorFromARGB8(uint color) {"
     "vec4 ret;"
     "ret.a = float((color >> 24u) & 0xFFu) / 255.f;"
@@ -56,10 +29,72 @@ static const char * fragmentShaderCode =
     "return ret;"
 "}"
 "void main() {"
+    "vec4 pos = mvp * vec4(vVertexPosition * fInstanceSize + vInstancePosition.xyz, 1);"
+    "gl_Position = pos;"
+    "vPosition = pos;"
+    "vNormal = normalize(mvNormal * vVertexNormal);"
+    "iInstanceID = iAtomID;"
+    "iFlags = iInstanceFlags;"
+    "vColor = colorFromARGB8(cInstanceColor);"
+"}"
+;
+
+static const char * cylinderVertexShaderCode =
+"#version 330 core\n"
+"layout(location = 0) in vec3 vVertexPosition;\n"
+"layout(location = 1) in vec3 vVertexNormal;\n"
+"layout(location = 2) in vec3 vInstancePosition;\n"
+"layout(location = 3) in vec4 vInstanceRotation;\n"
+"layout(location = 4) in uvec2 cInstanceColor;\n"
+"layout(location = 5) in vec3 fInstanceSize;\n"
+"uniform mat4 mvp;\n"
+"uniform mat3 mvNormal;\n"
+"out vec4 vPosition;\n"
+"out vec3 vNormal;\n"
+"flat out uint iInstanceID;\n"
+"flat out uint iFlags;\n"
+"out vec4 vColor;\n"
+"vec4 colorFromARGB8(uint color) {\n"
+    "vec4 ret;\n"
+    "ret.a = float((color >> 24u) & 0xFFu) / 255.f;\n"
+    "ret.r = float((color >> 16u) & 0xFFu) / 255.f;\n"
+    "ret.g = float((color >>  8u) & 0xFFu) / 255.f;\n"
+    "ret.b = float((color >>  0u) & 0xFFu) / 255.f;\n"
+    "return ret;\n"
+"}\n"
+"vec3 rotate_vector(vec4 quat, vec3 vec) {\n"
+    "return vec + 2.0 * cross(cross(vec, quat.xyz) + quat.w * vec, quat.xyz);\n"
+"}\n"
+"void main() {\n"
+    "float blendFactor = 0.5 + 0.5 * vVertexPosition.z;\n"
+    "float size = mix(fInstanceSize.x, fInstanceSize.y, blendFactor) * 0.5;"
+    "vec3 pos3 = vVertexPosition * -vec3(size, size, fInstanceSize.z);\n"
+    "pos3 = rotate_vector(vInstanceRotation.wxyz, pos3);\n"
+    "vec4 pos = mvp * vec4(pos3 + vInstancePosition.xyz, 1);\n"
+    "gl_Position = pos;\n"
+    "vPosition = pos;\n"
+    "vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));\n"
+    "iInstanceID = 0u;\n"
+    "iFlags = 0u;\n"
+    "vColor = mix(colorFromARGB8(cInstanceColor.x | 0xFF000000U),\n"
+                 "colorFromARGB8(cInstanceColor.y | 0xFF000000U),\n"
+                 "blendFactor);\n"
+"}\n"
+;
+
+static const char * fragmentShaderCode =
+"#version 330 core\n"
+"uniform vec2 uvScreenSize;"
+"in vec4 vPosition;"
+"in vec3 vNormal;"
+"flat in uint iFlags;"
+"in vec4 vColor;"
+"out vec4 cColor;"
+"void main() {"
     "vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;"
     "float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);"
     "float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);"
-    "vec4 baseColor = colorFromARGB8(iColor);"
+    "vec4 baseColor = vColor;"
     "float lightness = (0.5 + 0.5 * 0.7 * (vNormal.x + vNormal.z));"
     "vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);"
     "float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;"
@@ -123,6 +158,8 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
 void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 {
     position = (p1 + p2) * 0.5f;
+    rotation = QQuaternion::rotationTo(QVector3D(0.f, 0.f, 1.f), (p2 - p1).normalized());
+    size[2] = (p1 - p2).length() * 0.5f;
 }
 
 VizWidget::VizWidget(QWidget *parent)
@@ -155,11 +192,11 @@ void VizWidget::initializeGL()
     assert(atomPositions_.create());
     atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    assert(vao_.create());
+    assert(vaoSpheres_.create());
 
     // Create sphere model
     setBallQuality(1.f);
-    vao_.bind();
+    vaoSpheres_.bind();
 
     sphereModel_.bind();
 
@@ -240,7 +277,95 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(6, 1);
 
     atomPositions_.release();
-    vao_.release();
+    vaoSpheres_.release();
+
+    assert(cylinderModel_.create());
+    sphereModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+
+    assert(cylinderPositions_.create());
+    atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    assert(vaoCylinders_.create());
+
+    // Create cylinder model
+    QVector<VizVertex> cylinderVerts = generateCylinder(8);
+    cylinderVertCount_ = cylinderVerts.size();
+    cylinderModel_.bind();
+    cylinderModel_.allocate(cylinderVerts.data(), cylinderVerts.size() * sizeof(VizVertex));
+    cylinderModel_.release();
+
+    vaoCylinders_.bind();
+    cylinderModel_.bind();
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizVertex),
+        nullptr
+    );
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizVertex),
+        nullptr
+    );
+
+    cylinderModel_.release();
+    cylinderPositions_.bind();
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        nullptr
+    );
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(
+        3,
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, rotation)
+    );
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribIPointer(
+        4,
+        2,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, color)
+    );
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, size)
+    );
+
+    glVertexAttribDivisor(2, 1);
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+
+    cylinderPositions_.release();
+    vaoCylinders_.release();
 
     planeVAO_.create();
 
@@ -248,10 +373,15 @@ void VizWidget::initializeGL()
     setFirstFrame();
 
     // Shaders
-    assert(program_.create());
-    program_.addShaderFromSourceCode(QOpenGLShader::Vertex, sphereVertexShaderCode);
-    program_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
-    assert(program_.link());
+    assert(sphereProgram_.create());
+    sphereProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, sphereVertexShaderCode);
+    sphereProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
+    assert(sphereProgram_.link());
+
+    assert(cylinderProgram_.create());
+    cylinderProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, cylinderVertexShaderCode);
+    cylinderProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
+    assert(cylinderProgram_.link());
 
     assert(planeProgram_.create());
     planeProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, planeVertexShaderCode);
@@ -293,32 +423,48 @@ void VizWidget::paintGL()
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
 
+    glEnable(GL_DEPTH_TEST);
+
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    vao_.bind();
+    vaoSpheres_.bind();
     planeProgram_.bind();
     planeProgram_.setUniformValue("mvp", modelViewProjection_);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     planeProgram_.release();
-    vao_.release();
+    vaoSpheres_.release();
 
     // If there are no spheres, my driver crashes
     if (sphereCount_ > 0)
     {
-        vao_.bind();
-        program_.bind();
+        vaoCylinders_.bind();
+        cylinderProgram_.bind();
 
-        program_.setUniformValue("mvp", modelViewProjection_);
-        program_.setUniformValue("mvNormal", modelViewNormal_);
-        program_.setUniformValue("uvScreenSize",
+        cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
+        cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
+        cylinderProgram_.setUniformValue("uvScreenSize",
+                                (float)size().width(),
+                                (float)size().height());
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
+
+        cylinderProgram_.release();
+        vaoCylinders_.release();
+
+        vaoSpheres_.bind();
+        sphereProgram_.bind();
+
+        sphereProgram_.setUniformValue("mvp", modelViewProjection_);
+        sphereProgram_.setUniformValue("mvNormal", modelViewNormal_);
+        sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
-        program_.release();
-        vao_.release();
+        sphereProgram_.release();
+        vaoSpheres_.release();
     }
 
     glDisable(GL_CULL_FACE);
@@ -402,17 +548,25 @@ void VizWidget::setFirstFrame()
 {
     auto frame = simulation_->getFrame(0);
 
+    sphereCount_ = frame->atoms.size();
+
     atomPositions_.bind();
-    atomPositions_.allocate(frame->atoms.size() * sizeof(VizBallInstance));
+    atomPositions_.allocate(sphereCount_ * sizeof(VizBallInstance));
     atomPositions_.release();
 
-    sphereCount_ = frame->atoms.size();
-    selectedBitmap_.fill(false, frame->atoms.size());
+    cylinderPositions_.bind();
+    cylinderPositions_.allocate((sphereCount_ - 1) * sizeof(VizLink));
+    cylinderPositions_.release();
+
+    selectedBitmap_.fill(false, sphereCount_);
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
     dummy.size = 1.f;
-    frameState_.fill(dummy, frame->atoms.size());
+    frameState_.fill(dummy, sphereCount_);
+
+    VizLink dummy2;
+    linksState_.fill(dummy2, sphereCount_ - 1);
 
     setFrame(0);
 
@@ -424,6 +578,9 @@ void VizWidget::setFirstFrame()
     auto selection = atomTypeSelection("BIN");
     selection.setColor(Qt::white);
     selection.setAlpha(0.5f);
+
+    // Run this again to update link colours
+    setFrame(0);
 }
 
 void VizWidget::setFrame(frameNumber_t frame)
@@ -437,6 +594,25 @@ void VizWidget::setFrame(frameNumber_t frame)
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
+    }
+
+    for (int i = 0; i < linksState_.size(); i++)
+    {
+        auto & link = linksState_[i];
+
+        if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
+            (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
+        {
+            link.size[0] = 0.f;
+            link.size[1] = 0.f;
+            continue;
+        }
+
+        link.update(frameState_[i].position, frameState_[i + 1].position);
+        link.color[0] = frameState_[i].color;
+        link.color[1] = frameState_[i + 1].color;
+        link.size[0] = frameState_[i].size;
+        link.size[1] = frameState_[i + 1].size;
     }
 
     needVBOUpdate_ = true;
@@ -595,11 +771,15 @@ void VizWidget::updateWholeFrameData()
 {
     atomPositions_.bind();
     auto * data = (VizBallInstance*)atomPositions_.map(QOpenGLBuffer::WriteOnly);
-
     memcpy(data, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
-    
     atomPositions_.unmap();
     atomPositions_.release();
+
+    cylinderPositions_.bind();
+    auto * data2 = (VizLink*)cylinderPositions_.map(QOpenGLBuffer::WriteOnly);
+    memcpy(data2, linksState_.constData(), linksState_.size() * sizeof(VizLink));
+    cylinderPositions_.unmap();
+    cylinderPositions_.release();
 }
 
 void VizWidget::mousePressEvent(QMouseEvent * event)
@@ -809,7 +989,7 @@ QList<unsigned int> VizWidget::pickSpheres()
 
     if (sphereCount_ > 0)
     {
-        vao_.bind();
+        vaoSpheres_.bind();
         pickingProgram_.bind();
 
         pickingProgram_.setUniformValue("mvp", modelViewProjection_);
@@ -818,7 +998,7 @@ QList<unsigned int> VizWidget::pickSpheres()
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
         pickingProgram_.release();
-        vao_.release();
+        vaoSpheres_.release();
     }
 
     assert(pickingFramebuffer_->release());
