@@ -32,5 +32,22 @@ void Plot::paintEvent(QPaintEvent *event)
         return;
 
     QPainter painter(this);
-    painter.fillRect(QRect(0, 0, 100, 100), Qt::red);
+    painter.setWindow(0, height(), width(), -height());
+
+    qreal x = 0, y;
+    qreal dx = (qreal)width() / 99;
+
+    QPainterPath path;
+    path.moveTo(0, 0);
+
+    for (int i = 0; i < 100; i++, x += dx)
+    {
+        y = simulation_->getFrame(i)->functionValues["bonds"];
+        path.lineTo(x, y);
+    }
+
+    path.lineTo(x, 0);
+    path.closeSubpath();
+
+    painter.fillPath(path, Qt::red);
 }
