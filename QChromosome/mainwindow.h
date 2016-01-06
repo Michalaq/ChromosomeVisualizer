@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -21,8 +22,8 @@ public slots:
 
     void bb();
     void ab();
-    void pb();
-    void pf();
+    void pb(bool f);
+    void pf(bool f);
     void af();
     void ff();
 
@@ -30,6 +31,8 @@ private:
     Ui::MainWindow *ui;
 
     int lastFrame;
+
+    QTimer timer;
 };
 
 #endif // MAINWINDOW_H

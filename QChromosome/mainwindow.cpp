@@ -74,14 +74,42 @@ void MainWindow::ab()
     ui->scene->setFrame(n);
 }
 
-void MainWindow::pb()
+void MainWindow::pb(bool f)
 {
+    if (f)
+    {
+        if (ui->pushButton_4->isChecked())
+            ui->pushButton_4->click();
 
+        ui->pushButton_3->setText("||");
+        connect(&timer, SIGNAL(timeout()), this, SLOT(ab()));
+        timer.start();
+    }
+    else
+    {
+        ui->pushButton_3->setText("<");
+        timer.stop();
+        timer.disconnect();
+    }
 }
 
-void MainWindow::pf()
+void MainWindow::pf(bool f)
 {
+    if (f)
+    {
+        if (ui->pushButton_3->isChecked())
+            ui->pushButton_3->click();
 
+        ui->pushButton_4->setText("||");
+        connect(&timer, SIGNAL(timeout()), this, SLOT(af()));
+        timer.start();
+    }
+    else
+    {
+        ui->pushButton_4->setText(">");
+        timer.stop();
+        timer.disconnect();
+    }
 }
 
 void MainWindow::af()
