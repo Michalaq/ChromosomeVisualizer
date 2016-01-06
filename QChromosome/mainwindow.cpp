@@ -25,6 +25,7 @@ MainWindow::~MainWindow()
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
+std::shared_ptr<Simulation> tmp;//TODO paskudny hack, usunąć po dodaniu wątku
 void MainWindow::openSimulation()
 {
     QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
@@ -48,6 +49,8 @@ void MainWindow::openSimulation()
     lastFrame = 0;
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    tmp=simulation;//TODO paskudny hack, usunąć po dodaniu wątku
+    simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::updateFrameCount(int n)
@@ -126,11 +129,12 @@ void MainWindow::af()
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
+    tmp->getFrame(n+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::ff()
 {
-    int n = lastFrame+1;//TODO za dużo!
+    int n = lastFrame;
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
