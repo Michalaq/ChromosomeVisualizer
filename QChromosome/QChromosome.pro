@@ -19,7 +19,8 @@ SOURCES += main.cpp\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     control.cpp \
-    camera.cpp
+    camera.cpp \
+    plot.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     control.h \
-    camera.h
+    camera.h \
+    plot.h
 
 FORMS    += mainwindow.ui
 

@@ -157,6 +157,9 @@
       </item>
      </layout>
     </item>
+    <item row="1" column="0">
+     <widget class="Plot" name="widget" native="true"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -244,6 +247,12 @@
     <slot>rotate(int,int)</slot>
     <slot>scale(int,int)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>Plot</class>
+   <extends>QWidget</extends>
+   <header>plot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
