@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstddef>
 #include "bartekm_code/PDBSimulation.h"
+#include "bartekm_code/NullSimulation.h"
 #include "VizWidget.hpp"
 
 static const char * sphereVertexShaderCode =
@@ -127,14 +128,9 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
     position = (p1 + p2) * 0.5f;
 }
 
-// @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
-static const char * SIMULATION_PATH = "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb";
-        //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
-        //"/home/bartek/Dokumenty/zpp/test.pdb";
-
 VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    , simulation_(std::make_shared<PDBSimulation>(SIMULATION_PATH))
+    , simulation_(std::make_shared<NullSimulation>())
     , needVBOUpdate_(true)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
