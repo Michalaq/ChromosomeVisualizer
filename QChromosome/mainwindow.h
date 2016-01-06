@@ -17,6 +17,7 @@ public:
 
 public slots:
     void openSimulation();
+    void updateFrameCount(int n);
 
     void bb();
     void ab();
@@ -28,7 +29,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-    int frameCount;
+    int lastFrame;
 };
 
 #endif // MAINWINDOW_H

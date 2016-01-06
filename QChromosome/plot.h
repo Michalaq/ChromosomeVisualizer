@@ -14,6 +14,7 @@ public:
     ~Plot();
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void setMaximum(int m);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -23,6 +24,8 @@ private:
 
     QPainterPath data;
     QSize size;
+
+    int lastFrame;
 
 signals:
 

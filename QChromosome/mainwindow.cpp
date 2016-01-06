@@ -4,7 +4,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    frameCount(0)
+    lastFrame(0)//TODO być może wywalić
 {
     ui->setupUi(this);
 
@@ -35,13 +35,24 @@ void MainWindow::openSimulation()
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
 
-    frameCount = simulation->getFrameCount();
-
-    ui->horizontalSlider->setMaximum(frameCount - 1);
+    ui->horizontalSlider->setMaximum(0);
     ui->horizontalSlider->setValue(0);
 
-    ui->spinBox->setMaximum(frameCount - 1);
+    ui->spinBox->setMaximum(0);
     ui->spinBox->setValue(0);
+
+    lastFrame = 0;
+
+    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+}
+
+void MainWindow::updateFrameCount(int n)
+{
+    lastFrame = n - 1;
+
+    ui->horizontalSlider->setMaximum(lastFrame);
+    ui->spinBox->setMaximum(lastFrame);
+    ui->plot->setMaximum(lastFrame);
 }
 
 void MainWindow::bb()
@@ -56,7 +67,7 @@ void MainWindow::ab()
     int n = ui->spinBox->value() - 1;
 
     if (n < 0)
-        n = frameCount - 1;
+        n = lastFrame;
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
@@ -77,7 +88,7 @@ void MainWindow::af()
 {
     int n = ui->spinBox->value() + 1;
 
-    if (n == frameCount)
+    if (n > lastFrame)
         n = 0;
 
     ui->horizontalSlider->setValue(n);
@@ -87,7 +98,7 @@ void MainWindow::af()
 
 void MainWindow::ff()
 {
-    int n = frameCount;
+    int n = lastFrame+1;//TODO za dużo!
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);

@@ -17,21 +17,29 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 {
     simulation_ = std::move(dp);
 
-    /*frameNumber_t n = simulation_->getFrameCount();
-
     data = QPainterPath(QPoint(0, simulation_->getFrame(0)->functionValues["bonds"]));
+    size = QSize(0, 1);
 
-    for (frameNumber_t i = 1; i < n; i++)
+    lastFrame = 0;
+
+    update();
+}
+
+void Plot::setMaximum(int m)
+{
+    for (int i = lastFrame + 1; i <= m; i++)
     {
         qreal y = simulation_->getFrame(i)->functionValues["bonds"];
         data.lineTo(i, y);
     }
 
+    lastFrame = m;
+
     QRectF rect = data.boundingRect();
 
     size = QSize(rect.width(), rect.y() + rect.height());
 
-    update();*/
+    update();
 }
 
 #include <QPainter>
@@ -47,6 +55,8 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setWindow(0, height(), width(), -height());
     painter.setRenderHint(QPainter::Antialiasing);
+
+    if (!size.width()) return;
 
     QPainterPath path(data);
     path.lineTo(data.currentPosition().x(), 0);
