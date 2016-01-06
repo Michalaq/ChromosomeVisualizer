@@ -671,7 +671,7 @@ QList<Atom> VizWidget::selectedSpheres() const
     return ret;
 }
 
-const AtomSelection & VizWidget::selectedSpheresObject() const
+AtomSelection VizWidget::selectedSpheresObject() const
 {
     return currentSelection_;
 }
@@ -705,15 +705,24 @@ AtomSelection VizWidget::atomTypeSelection(const std::string & s)
 
 void VizWidget::setVisibleSelection(AtomSelection s)
 {
+    for (const auto & id : currentSelection_.selectedIndices())
+        selectedBitmap_[id] = false;
+
     auto oldAtoms = selectedSpheres();
     qSwap(currentSelection_, s);
     auto newAtoms = selectedSpheres();
+
+    for (const auto & id : currentSelection_.selectedIndices())
+        selectedBitmap_[id] = true;
 
     emit selectionChangedIndices(
                 currentSelection_.selectedIndices(),
                 s.selectedIndices());
     emit selectionChanged(selectedSpheres(), oldAtoms);
     emit selectionChangedObject(selectedSpheresObject());
+
+    setFrame(frameNumber_);
+    update();
 }
 
 void VizWidget::generateSortedState()
@@ -843,6 +852,7 @@ void AtomSelection::setColor(QColor color)
     }
 
     widget_->needVBOUpdate_ = true;
+    widget_->update();
 }
 
 void AtomSelection::setAlpha(float alpha)
@@ -855,6 +865,7 @@ void AtomSelection::setAlpha(float alpha)
     }
 
     widget_->needVBOUpdate_ = true;
+    widget_->update();
 }
 
 void AtomSelection::setSize(float size)
@@ -863,6 +874,7 @@ void AtomSelection::setSize(float size)
         widget_->frameState_[i].size = size;
 
     widget_->needVBOUpdate_ = true;
+    widget_->update();
 }
 
 unsigned int AtomSelection::atomCount() const

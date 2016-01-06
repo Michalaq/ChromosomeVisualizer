@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     control.cpp \
     camera.cpp \
     plot.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp \
+    ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h\
     control.h \
     camera.h \
     plot.h \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h \
+    ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp
 
 FORMS    += mainwindow.ui
 

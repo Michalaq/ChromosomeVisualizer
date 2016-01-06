@@ -89,6 +89,16 @@ public slots:
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
 
+    QList<unsigned int> selectedSphereIndices() const;
+    QList<Atom> selectedSpheres() const;
+    AtomSelection selectedSpheresObject() const;
+
+    AtomSelection allSelection();
+    AtomSelection atomTypeSelection(const char * s);
+    AtomSelection atomTypeSelection(const std::string & s);
+
+    void setVisibleSelection(AtomSelection s);
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -117,16 +127,6 @@ protected:
     virtual void mousePressEvent(QMouseEvent * event) override final;
     virtual void mouseMoveEvent(QMouseEvent * event) override final;
     virtual void mouseReleaseEvent(QMouseEvent * event) override final;
-
-    QList<unsigned int> selectedSphereIndices() const;
-    QList<Atom> selectedSpheres() const;
-    const AtomSelection & selectedSpheresObject() const;
-
-    AtomSelection allSelection();
-    AtomSelection atomTypeSelection(const char * s);
-    AtomSelection atomTypeSelection(const std::string & s);
-
-    void setVisibleSelection(AtomSelection s);
 
 private:
     QOpenGLBuffer sphereModel_;

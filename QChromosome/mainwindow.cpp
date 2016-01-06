@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->move->load(":/move");
     ui->rotate->load(":/rotate");
     ui->scale->load(":/scale");
+
+    auto * panel = new SelectionOperationsWidget(ui->scene);
+    panel->show();
 }
 
 MainWindow::~MainWindow()
