@@ -75,12 +75,21 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
 	std::map<std::string, float> functionValues = getFunctionValues(line);
 	std::vector<Atom> atoms;
 	getline(file_, line);
+    bool connectionStarted = false;
+    int currentConnectionCount = 0;
 	while (line.find("END") == std::string::npos) {
 		if (line.substr(0, 4) == "ATOM")
 			atoms.push_back(getAtomFromString(line));
+        else if (connectionCount_< 0) {
+            if (!connectionStarted && line.substr(0, 6) == "CONNECT")
+                connectionStarted = true;
+            if (connectionStarted)
+                currentConnectionCount++;
+        }
 		getline(file_, line);
 	}
-
+    if (connectionCount_ < 0)
+        connectionCount_ = currentConnectionCount;
 	Frame d = {
 		no,
 		step,
