@@ -1,14 +1,8 @@
 #include "plot.h"
+#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
-// @bartekz: to będzie można usunąć jak zaczniesz używać drugiego konstruktora
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
-static const char * SIMULATION_PATH = "/home/bart/Pobrane/MC_random_r10_avoid_last_b700.pdb";
-        //"D:\\kodziki\\bio\\MC_random_r10_avoid_last_b700.pdb";
-        //"/home/bartek/Dokumenty/zpp/test.pdb";
-
-Plot::Plot(QWidget *parent) : QWidget(parent), simulation_(nullptr)
+Plot::Plot(QWidget *parent) : QWidget(parent), simulation_(std::make_shared<NullSimulation>())
 {
-    setSimulation(std::make_shared<PDBSimulation>(SIMULATION_PATH)); //TODO do wywalenia
 }
 
 Plot::~Plot()
