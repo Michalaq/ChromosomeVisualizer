@@ -21,6 +21,9 @@ protected:
 private:
     std::shared_ptr<Simulation> simulation_;
 
+    QPainterPath data;
+    QSize size;
+
 signals:
 
 public slots:
