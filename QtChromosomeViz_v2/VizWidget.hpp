@@ -62,8 +62,10 @@ public slots:
     void setBallQuality(float quality);
 
 signals:
-    void selectionChanged(const QList<unsigned int> & selected,
-                          const QList<unsigned int> & deselected);
+    void selectionChangedIndices(const QList<unsigned int> & selected,
+                                 const QList<unsigned int> & deselected);
+    void selectionChanged(const QList<Atom> & selected,
+                          const QList<Atom> & deselected);
 
 protected:
     // Generates vertices for a solid of revolution based on the given outline.
@@ -87,7 +89,8 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent * event) override final;
     virtual void mouseReleaseEvent(QMouseEvent * event) override final;
 
-    QList<unsigned int> selectedSpheres() const;
+    QList<unsigned int> selectedSphereIndices() const;
+    QList<Atom> selectedSpheres() const;
 
 private:
     QOpenGLBuffer sphereModel_;
@@ -119,7 +122,7 @@ private:
     bool isSelectingState_;
     QPoint selectionPoints_[2];
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
-    QList<unsigned int> selectedSpheres_;
+    QList<unsigned int> selectedSphereIndices_;
     QVector<bool> selectedBitmap_;
 
     QRect selectionRect() const;
