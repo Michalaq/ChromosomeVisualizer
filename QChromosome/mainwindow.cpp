@@ -33,24 +33,26 @@ void MainWindow::openSimulation()
     std::shared_ptr<Simulation> simulation;
 
     if (!path.isEmpty())
+    {
+        QObject::disconnect(this, SLOT(updateFrameCount(int)));
+
         simulation = std::make_shared<PDBSimulation>(path.toStdString());
-    else
-        simulation = std::make_shared<NullSimulation>();
 
-    ui->scene->setSimulation(simulation);
-    ui->plot->setSimulation(simulation);
+        ui->scene->setSimulation(simulation);
+        ui->plot->setSimulation(simulation);
 
-    ui->horizontalSlider->setMaximum(0);
-    ui->horizontalSlider->setValue(0);
+        ui->horizontalSlider->setMaximum(0);
+        ui->horizontalSlider->setValue(0);
 
-    ui->spinBox->setMaximum(0);
-    ui->spinBox->setValue(0);
+        ui->spinBox->setMaximum(0);
+        ui->spinBox->setValue(0);
 
-    lastFrame = 0;
+        lastFrame = 0;
 
-    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-    tmp=simulation;//TODO paskudny hack, usunąć po dodaniu wątku
-    simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+        tmp=simulation;//TODO paskudny hack, usunąć po dodaniu wątku
+        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+    }
 }
 
 void MainWindow::updateFrameCount(int n)
@@ -139,4 +141,5 @@ void MainWindow::ff()
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
+    tmp->getFrame(n+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
