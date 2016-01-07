@@ -64,4 +64,10 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.translate(-databr.topLeft());
 
     painter.fillPath(path, QColor("#002255"));
+
+    QPen pen(QColor("#003380"), 2., Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    pen.setCosmetic(true);
+
+    painter.setPen(pen);
+    painter.drawPath(data);
 }
