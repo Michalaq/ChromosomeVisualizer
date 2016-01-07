@@ -46,6 +46,7 @@ public:
     void setColor(QColor color);
     void setAlpha(float alpha);
     void setSize(float size);
+    void setLabel(const QString & label);
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -107,6 +108,8 @@ signals:
     void selectionChangedObject(const AtomSelection & selection);
 
 protected:
+    void paintLabels(QPainter &painter);
+
     // Generates vertices for a solid of revolution based on the given outline.
     //   quads - line segments disjoint from the axis of rotation
     //   axis - axis of rotation. Must not be zero.
@@ -165,6 +168,8 @@ private:
     QList<unsigned int> pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;
+
+    QMap<unsigned int, QString> atomLabels_;
 };
 
 #endif /* VIZWINDOW_HPP */

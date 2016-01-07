@@ -325,6 +325,8 @@ void VizWidget::paintGL()
 
     painter.endNativePainting();
 
+    paintLabels(painter);
+
     if (isSelecting_)
     {
         QBrush brush(Qt::gray, Qt::Dense4Pattern);
@@ -336,6 +338,24 @@ void VizWidget::paintGL()
     }
 
     painter.end();
+}
+
+void VizWidget::paintLabels(QPainter & painter)
+{
+    const float A_LOT = 1024.f * 1024.f;
+    const QPointF BIG_PT(A_LOT, A_LOT);
+
+    for (auto it = atomLabels_.begin(); it != atomLabels_.end(); it++)
+    {
+        auto position = frameState_[it.key()].position;
+        auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
+        QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
+                              -transformedPosition.y() / transformedPosition.w());
+        QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
+                               (float)height() * (0.5 + 0.5 * ndcPosition.y()));
+        QRectF rect(screenPosition - BIG_PT, screenPosition + BIG_PT);
+        painter.drawText(rect, Qt::AlignCenter, it.value());
+    }
 }
 
 void VizWidget::setModelView(QMatrix4x4 mat)
@@ -874,6 +894,22 @@ void AtomSelection::setSize(float size)
         widget_->frameState_[i].size = size;
 
     widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
+void AtomSelection::setLabel(const QString & label)
+{
+    if (label == "")
+    {
+        for (unsigned int i : selectedIndices_)
+            widget_->atomLabels_.remove(i);
+    }
+    else
+    {
+        for (unsigned int i : selectedIndices_)
+            widget_->atomLabels_[i] = label;
+    }
+
     widget_->update();
 }
 
