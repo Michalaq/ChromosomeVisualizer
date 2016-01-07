@@ -24,6 +24,7 @@ void SelectionOperationsWidget::initializeControls()
     setColorButton_ = new QPushButton("Color");
     setOpacityButton_ = new QPushButton("Opacity");
     setSizeButton_ = new QPushButton("Size");
+    setLabelButton_ = new QPushButton("Label");
 
     auto * mainLayout = new QVBoxLayout();
     mainLayout->addWidget(label1);
@@ -33,6 +34,7 @@ void SelectionOperationsWidget::initializeControls()
     mainLayout->addWidget(setColorButton_);
     mainLayout->addWidget(setOpacityButton_);
     mainLayout->addWidget(setSizeButton_);
+    mainLayout->addWidget(setLabelButton_);
     setLayout(mainLayout);
 }
 
@@ -75,5 +77,16 @@ void SelectionOperationsWidget::initializeSignals()
                                                  0.5, 0.0, 1e9, 2, &ok);
         if (ok)
             vizWidget_->selectedSpheresObject().setSize(size);
+    });
+
+    connect(setLabelButton_, &QPushButton::clicked, [this](bool) {
+        bool ok = false;
+        QString label = QInputDialog::getText(this, "Input label",
+                                              "Enter the label you want to display on selected atoms:",
+                                              QLineEdit::Normal,
+                                              QString(),
+                                              &ok);
+        if (ok)
+            vizWidget_->selectedSpheresObject().setLabel(label);
     });
 }

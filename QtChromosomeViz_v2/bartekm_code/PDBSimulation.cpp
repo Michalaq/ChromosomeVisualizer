@@ -35,8 +35,8 @@ std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position)
 		cachedFramePositions_[cachedPosition] = file_.tellg();
 	}
 
-    if (ret->no >= frameCount_) {
-        frameCount_ = ret->no + 1;
+    if (position >= frameCount_) {
+        frameCount_ = position + 1;
         emit frameCountChanged(frameCount_);
     }
 

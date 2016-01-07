@@ -26,6 +26,7 @@ private:
     QPushButton * setColorButton_;
     QPushButton * setOpacityButton_;
     QPushButton * setSizeButton_;
+    QPushButton * setLabelButton_;
 };
 
 #endif // SELECTIONOPERATIONSWIDGET_HPP

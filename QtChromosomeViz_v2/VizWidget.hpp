@@ -30,6 +30,8 @@ struct VizLink
 {
     QVector3D position;
     QQuaternion rotation;
+    unsigned int color[2];
+    float size[3];
 
     void update(const QVector3D & p1, const QVector3D & p2);
 };
@@ -46,6 +48,7 @@ public:
     void setColor(QColor color);
     void setAlpha(float alpha);
     void setSize(float size);
+    void setLabel(const QString & label);
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -107,6 +110,8 @@ signals:
     void selectionChangedObject(const AtomSelection & selection);
 
 protected:
+    void paintLabels(QPainter &painter);
+
     // Generates vertices for a solid of revolution based on the given outline.
     //   quads - line segments disjoint from the axis of rotation
     //   axis - axis of rotation. Must not be zero.
@@ -131,11 +136,16 @@ protected:
 private:
     QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
-    QOpenGLVertexArrayObject vao_;
+    QOpenGLVertexArrayObject vaoSpheres_;
+
+    QOpenGLBuffer cylinderModel_;
+    QOpenGLBuffer cylinderPositions_;
+    QOpenGLVertexArrayObject vaoCylinders_;
 
     QOpenGLVertexArrayObject planeVAO_;
 
-    QOpenGLShaderProgram program_;
+    QOpenGLShaderProgram sphereProgram_;
+    QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram planeProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
@@ -145,6 +155,7 @@ private:
     QMatrix3x3 modelViewNormal_;
 
     unsigned int sphereVertCount_;
+    unsigned int cylinderVertCount_;
     unsigned int sphereCount_;
 
     std::shared_ptr<Simulation> simulation_;
@@ -152,6 +163,7 @@ private:
     
     bool needVBOUpdate_;
     QVector<VizBallInstance> frameState_, sortedState_;
+    QVector<VizLink> linksState_;
     void generateSortedState();
 
     bool isSelecting_;
@@ -165,6 +177,8 @@ private:
     QList<unsigned int> pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;
+
+    QMap<unsigned int, QString> atomLabels_;
 };
 
 #endif /* VIZWINDOW_HPP */
