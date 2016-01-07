@@ -5,7 +5,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    lastFrame(0)//TODO być może wywalić
+    lastFrame(0)//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
 {
     ui->setupUi(this);
 
@@ -33,7 +33,7 @@ void MainWindow::openSimulation()
     std::shared_ptr<Simulation> simulation;
 
     if (!path.isEmpty())
-    {
+    {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
         simulation = std::make_shared<PDBSimulation>(path.toStdString());
