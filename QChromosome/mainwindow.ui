@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>574</width>
     <height>300</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -182,21 +182,21 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="start">
             <property name="text">
              <string>|&lt;&lt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="previous">
             <property name="text">
              <string>&lt;|</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="reverse">
             <property name="text">
              <string>&lt;</string>
             </property>
@@ -206,7 +206,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_4">
+           <widget class="QPushButton" name="play">
             <property name="text">
              <string>&gt;</string>
             </property>
@@ -216,14 +216,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="next">
             <property name="text">
              <string>|&gt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_6">
+           <widget class="QPushButton" name="end">
             <property name="text">
              <string>&gt;&gt;|</string>
             </property>
@@ -256,7 +256,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>574</width>
      <height>27</height>
     </rect>
    </property>
@@ -523,10 +523,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>start</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>bb()</slot>
+   <slot>start()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>44</x>
@@ -539,10 +539,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>previous</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>ab()</slot>
+   <slot>previous()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>106</x>
@@ -555,10 +555,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_5</sender>
+   <sender>next</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>af()</slot>
+   <slot>next()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>292</x>
@@ -571,10 +571,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_6</sender>
+   <sender>end</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>ff()</slot>
+   <slot>end()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>354</x>
@@ -587,10 +587,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_4</sender>
+   <sender>play</sender>
    <signal>clicked(bool)</signal>
    <receiver>MainWindow</receiver>
-   <slot>pf(bool)</slot>
+   <slot>play(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
@@ -603,10 +603,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>reverse</sender>
    <signal>clicked(bool)</signal>
    <receiver>MainWindow</receiver>
-   <slot>pb(bool)</slot>
+   <slot>reverse(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>168</x>
@@ -621,11 +621,11 @@
  </connections>
  <slots>
   <slot>openSimulation()</slot>
-  <slot>bb()</slot>
-  <slot>ab()</slot>
-  <slot>pb(bool)</slot>
-  <slot>pf(bool)</slot>
-  <slot>af()</slot>
-  <slot>ff()</slot>
+  <slot>start()</slot>
+  <slot>previous()</slot>
+  <slot>reverse(bool)</slot>
+  <slot>play(bool)</slot>
+  <slot>next()</slot>
+  <slot>end()</slot>
  </slots>
 </ui>

@@ -5,6 +5,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0)//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
 {
     ui->setupUi(this);
@@ -64,77 +65,77 @@ void MainWindow::updateFrameCount(int n)
     ui->plot->setMaximum(lastFrame);
 }
 
-void MainWindow::bb()
+void MainWindow::start()
 {
     ui->horizontalSlider->setValue(0);
     ui->spinBox->setValue(0);
     ui->scene->setFrame(0);
 }
 
-void MainWindow::ab()
+void MainWindow::previous()
 {
-    int n = ui->spinBox->value() - 1;
+    if (--currentFrame < 0)
+        currentFrame = lastFrame;
 
-    if (n < 0)
-        n = lastFrame;
-
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
-    ui->scene->setFrame(n);
+    ui->horizontalSlider->setValue(currentFrame);
+    ui->spinBox->setValue(currentFrame);
+    ui->scene->setFrame(currentFrame);
 }
 
-void MainWindow::pb(bool f)
+void MainWindow::reverse(bool checked)
 {
-    if (f)
+    if (checked)
     {
-        if (ui->pushButton_4->isChecked())
-            ui->pushButton_4->click();
+        if (ui->play->isChecked())
+            ui->play->click();
 
-        ui->pushButton_3->setText("||");
-        connect(&timer, SIGNAL(timeout()), this, SLOT(ab()));
+        ui->reverse->setText("||");
+
+        connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
     }
     else
     {
-        ui->pushButton_3->setText("<");
         timer.stop();
         timer.disconnect();
+
+        ui->reverse->setText("<");
     }
 }
 
-void MainWindow::pf(bool f)
+void MainWindow::play(bool checked)
 {
-    if (f)
+    if (checked)
     {
-        if (ui->pushButton_3->isChecked())
-            ui->pushButton_3->click();
+        if (ui->reverse->isChecked())
+            ui->reverse->click();
 
-        ui->pushButton_4->setText("||");
-        connect(&timer, SIGNAL(timeout()), this, SLOT(af()));
+        ui->play->setText("||");
+
+        connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
     }
     else
     {
-        ui->pushButton_4->setText(">");
         timer.stop();
         timer.disconnect();
+
+        ui->play->setText(">");
     }
 }
 
-void MainWindow::af()
+void MainWindow::next()
 {
-    int n = ui->spinBox->value() + 1;
+    if (++currentFrame > lastFrame)
+        currentFrame = 0;
 
-    if (n > lastFrame)
-        n = 0;
-
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
-    ui->scene->setFrame(n);
-    tmp->getFrame(n+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    ui->horizontalSlider->setValue(currentFrame);
+    ui->spinBox->setValue(currentFrame);
+    ui->scene->setFrame(currentFrame);
+    tmp->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
-void MainWindow::ff()
+void MainWindow::end()
 {
     int n = lastFrame;
 

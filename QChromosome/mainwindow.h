@@ -20,16 +20,17 @@ public slots:
     void openSimulation();
     void updateFrameCount(int n);
 
-    void bb();
-    void ab();
-    void pb(bool f);
-    void pf(bool f);
-    void af();
-    void ff();
+    void start();
+    void previous();
+    void reverse(bool checked);
+    void play(bool checked);
+    void next();
+    void end();
 
 private:
     Ui::MainWindow *ui;
 
+    int currentFrame;
     int lastFrame;
 
     QTimer timer;
