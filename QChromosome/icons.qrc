@@ -1,7 +1,17 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/mouse">
         <file alias="move">icons/move_icon.svg</file>
         <file alias="rotate">icons/rotate_icon.svg</file>
         <file alias="scale">icons/scale_icon.svg</file>
+    </qresource>
+    <qresource prefix="/media">
+        <file alias="end">icons/end.svg</file>
+        <file alias="next">icons/next.svg</file>
+        <file alias="pause">icons/pause.svg</file>
+        <file alias="play">icons/play.svg</file>
+        <file alias="previous">icons/previous.svg</file>
+        <file alias="record">icons/record.svg</file>
+        <file alias="reverse">icons/reverse.svg</file>
+        <file alias="start">icons/start.svg</file>
     </qresource>
 </RCC>

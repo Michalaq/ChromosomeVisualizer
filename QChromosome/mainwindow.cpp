@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"
+#include "mediacontrol.h"                            //TODO do wywalenia po zaimplementowaniu pluginu do designera
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,9 +11,16 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->move->load(":/move");
-    ui->rotate->load(":/rotate");
-    ui->scale->load(":/scale");
+    ui->move->load(":/mouse/move");
+    ui->rotate->load(":/mouse/rotate");
+    ui->scale->load(":/mouse/scale");
+
+    ui->start->load(":/media/start");
+    ui->previous->load(":/media/previous");
+    ui->reverse->load(":/media/reverse");
+    ui->play->load(":/media/play");
+    ui->next->load(":/media/next");
+    ui->end->load(":/media/end");
 
     auto * panel = new SelectionOperationsWidget(ui->scene);
     panel->show();

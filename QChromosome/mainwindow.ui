@@ -182,21 +182,21 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="start">
+           <widget class="MediaControl" name="start">
             <property name="text">
              <string>|&lt;&lt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="previous">
+           <widget class="MediaControl" name="previous">
             <property name="text">
              <string>&lt;|</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="reverse">
+           <widget class="MediaControl" name="reverse">
             <property name="text">
              <string>&lt;</string>
             </property>
@@ -206,7 +206,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="play">
+           <widget class="MediaControl" name="play">
             <property name="text">
              <string>&gt;</string>
             </property>
@@ -216,14 +216,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="next">
+           <widget class="MediaControl" name="next">
             <property name="text">
              <string>|&gt;</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="end">
+           <widget class="MediaControl" name="end">
             <property name="text">
              <string>&gt;&gt;|</string>
             </property>
@@ -342,6 +342,11 @@
    <extends>QWidget</extends>
    <header>plot.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
