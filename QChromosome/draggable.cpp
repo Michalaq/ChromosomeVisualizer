@@ -1,5 +1,7 @@
 #include "draggable.h"
 
+Qt::MouseButton Draggable::pressed = Qt::NoButton;
+
 #include <QGuiApplication>
 #include <QScreen>
 
@@ -22,6 +24,8 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
 
+    pressed = event->button();
+
     initial = event->globalPos();
 
     QApplication::setOverrideCursor(Qt::BlankCursor);
@@ -30,14 +34,14 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
 void Draggable::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->globalPos() == center)
-        return event->ignore();
-
     QWidget::mouseMoveEvent(event);
 
-    emit delta(event->globalX() - center.x(), event->globalY() - center.y());
+    if (event->globalPos() != center)
+    {
+        emit delta(event->globalX() - center.x(), event->globalY() - center.y());
 
-    QCursor::setPos(center);
+        QCursor::setPos(center);
+    }
 }
 
 void Draggable::mouseReleaseEvent(QMouseEvent *event)
@@ -46,6 +50,8 @@ void Draggable::mouseReleaseEvent(QMouseEvent *event)
 
     QCursor::setPos(initial);
     QApplication::restoreOverrideCursor();
+
+    pressed = Qt::NoButton;
 }
 
 #include <QPainter>
@@ -60,6 +66,11 @@ void Draggable::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
     style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+}
+
+Qt::MouseButton Draggable::pressedButton()
+{
+    return pressed;
 }
 
 void Draggable::updateScreenGeometry(QRect geometry)

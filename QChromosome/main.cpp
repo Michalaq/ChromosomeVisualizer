@@ -15,5 +15,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.showMaximized();
 
+    a.installEventFilter(&w);
+
     return a.exec();
 }

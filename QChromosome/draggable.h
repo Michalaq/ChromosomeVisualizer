@@ -17,9 +17,13 @@ public:
 
     void paintEvent(QPaintEvent*);
 
+    static Qt::MouseButton pressedButton();
+
 private:
     QPoint initial;
     QPoint center;
+
+    static Qt::MouseButton pressed;
 
 signals:
     void delta(int, int);

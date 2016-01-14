@@ -16,6 +16,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool eventFilter(QObject *watched, QEvent *event);
+
 public slots:
     void openSimulation();
     void updateFrameCount(int n);

@@ -31,6 +31,20 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+#include <QMouseEvent>
+#include "draggable.h"
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (Draggable::pressedButton() != Qt::NoButton && event->type() == QEvent::MouseButtonPress && event->spontaneous())
+        return true;
+
+    if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
+        return true;
+
+    return QMainWindow::eventFilter(watched, event);
+}
+
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
