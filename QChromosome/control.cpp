@@ -2,9 +2,10 @@
 
 Control::Control(QWidget *parent) :
     Draggable(parent),
-    icon(new QSvgRenderer(this))
+    icon(new QSvgRenderer(this)),
+    clicked(false)
 {
-
+    setStyleSheet(":hover {background: #333333;} :pressed {background: #4d4d4d;}");
 }
 
 Control::~Control()
@@ -12,39 +13,36 @@ Control::~Control()
 
 }
 
-void Control::enterEvent(QEvent *event)
-{
-    Draggable::enterEvent(event);
-
-    setStyleSheet("background: #333333");
-}
-
-void Control::leaveEvent(QEvent *event)
-{
-    Draggable::leaveEvent(event);
-
-    setStyleSheet("background: none");
-}
-
 void Control::mousePressEvent(QMouseEvent *event)
 {
     Draggable::mousePressEvent(event);
 
-    setStyleSheet("background: #4d4d4d");
+    clicked = true;
+    update();
 }
 
 void Control::mouseReleaseEvent(QMouseEvent *event)
 {
     Draggable::mouseReleaseEvent(event);
 
-    setStyleSheet("background: #333333");
+    clicked = false;
 }
 
+#include <QStylePainter>
+#include <QStyleOption>
 #include <QPainter>
 
 void Control::paintEvent(QPaintEvent *event)
 {
     Draggable::paintEvent(event);
+
+    QStyleOption option;
+    option.initFrom(this);
+
+    if (clicked)
+        option.state |= QStyle::State_Sunken;
+
+    QStylePainter(this).drawPrimitive(QStyle::PE_Widget, option);
 
     QPainter painter(this);
     icon->render(&painter);

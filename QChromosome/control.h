@@ -13,9 +13,6 @@ public:
     Control(QWidget *parent = 0);
     virtual ~Control();
 
-    void enterEvent(QEvent*);
-    void leaveEvent(QEvent*);
-
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
@@ -25,6 +22,8 @@ public:
 
 private:
     QSvgRenderer *icon;
+
+    bool clicked;
 };
 
 #endif // CONTROL_H
