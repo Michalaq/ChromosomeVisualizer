@@ -7,9 +7,9 @@ Qt::MouseButton Draggable::pressed = Qt::NoButton;
 
 Draggable::Draggable(QWidget *parent) : QWidget(parent)
 {
-    updateScreenGeometry(QGuiApplication::primaryScreen()->geometry());
+    setScreenGeometry(QGuiApplication::primaryScreen()->geometry());
 
-    connect(QGuiApplication::primaryScreen(), SIGNAL(geometryChanged(QRect)), this, SLOT(updateScreenGeometry(QRect)));
+    connect(QGuiApplication::primaryScreen(), SIGNAL(geometryChanged(QRect)), this, SLOT(setScreenGeometry(QRect)));
 }
 
 Draggable::~Draggable()
@@ -23,6 +23,9 @@ Draggable::~Draggable()
 void Draggable::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
+
+    state |= QStyle::State_Sunken;
+    update();
 
     pressed = event->button();
 
@@ -52,6 +55,8 @@ void Draggable::mouseReleaseEvent(QMouseEvent *event)
     QApplication::restoreOverrideCursor();
 
     pressed = Qt::NoButton;
+
+    state &= ~QStyle::State_Sunken;
 }
 
 #include <QPainter>
@@ -63,6 +68,7 @@ void Draggable::paintEvent(QPaintEvent *event)
 
     QStyleOption option;
     option.initFrom(this);
+    option.state |= state;
 
     QPainter painter(this);
     style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
@@ -73,7 +79,7 @@ Qt::MouseButton Draggable::pressedButton()
     return pressed;
 }
 
-void Draggable::updateScreenGeometry(QRect geometry)
+void Draggable::setScreenGeometry(QRect geometry)
 {
     center = geometry.center();
 }

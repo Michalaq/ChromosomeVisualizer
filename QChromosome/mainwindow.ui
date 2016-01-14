@@ -14,7 +14,9 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {background: #1a1a1a;}</string>
+   <string notr="true">QMainWindow { background: #1a1a1a; }
+Control:hover { background: #333333; }
+Control:pressed { background: #4d4d4d; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">

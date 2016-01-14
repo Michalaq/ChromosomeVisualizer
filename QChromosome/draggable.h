@@ -2,6 +2,7 @@
 #define DRAGGABLE_H
 
 #include <QWidget>
+#include <QStyle>
 
 class Draggable : public QWidget
 {
@@ -23,13 +24,15 @@ private:
     QPoint initial;
     QPoint center;
 
+    QFlags<QStyle::StateFlag> state;
+
     static Qt::MouseButton pressed;
 
 signals:
     void delta(int, int);
 
 public slots:
-    void updateScreenGeometry(QRect);
+    void setScreenGeometry(QRect);
 };
 
 #endif // DRAGGABLE_H
