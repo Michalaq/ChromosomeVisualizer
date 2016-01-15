@@ -2,7 +2,8 @@
 #define CONTROL_H
 
 #include "draggable.h"
-#include <QSvgRenderer>
+#include <QSvgWidget>
+#include <QGraphicsColorizeEffect>
 
 
 class Control : public Draggable
@@ -13,12 +14,11 @@ public:
     Control(QWidget *parent = 0);
     virtual ~Control();
 
-    void paintEvent(QPaintEvent *event);
-
     void load(const QString &file);
 
 private:
-    QSvgRenderer *icon;
+    QSvgWidget *icon;
+    QGraphicsColorizeEffect *effect;
 };
 
 #endif // CONTROL_H

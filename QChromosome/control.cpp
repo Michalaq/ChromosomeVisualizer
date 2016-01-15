@@ -1,10 +1,18 @@
 #include "control.h"
+#include <QVBoxLayout>
 
 Control::Control(QWidget *parent) :
     Draggable(parent),
-    icon(new QSvgRenderer(this))
+    icon(new QSvgWidget(this)),
+    effect(new QGraphicsColorizeEffect(this))
 {
+    new QVBoxLayout(this);
 
+    layout()->setMargin(0);
+    layout()->addWidget(icon);
+
+    effect->setColor("#cccccc");
+    icon->setGraphicsEffect(effect);
 }
 
 Control::~Control()
@@ -12,26 +20,7 @@ Control::~Control()
 
 }
 
-#include <QPainter>
-
-void Control::paintEvent(QPaintEvent *event)
-{
-    Draggable::paintEvent(event);
-
-    QPainter painter(this);
-    icon->render(&painter);
-}
-
-#include <QFile>
-#include <QRegularExpression>
-
 void Control::load(const QString &file)
 {
-    QFile svg(file);
-    svg.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString content(svg.readAll());
-    content.replace(QRegularExpression("#[a-f0-9]{6}"), "#cccccc");
-
-    icon->load(content.toUtf8());
+    icon->load(file);
 }
