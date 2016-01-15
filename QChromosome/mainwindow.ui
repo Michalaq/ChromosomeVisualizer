@@ -15,8 +15,8 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow { background: #1a1a1a; }
-Control:hover { background: #333333; }
-Control:pressed { background: #4d4d4d; }</string>
+MouseControl:hover { background: #333333; }
+MouseControl:pressed { background: #4d4d4d; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -45,7 +45,7 @@ Control:pressed { background: #4d4d4d; }</string>
              </spacer>
             </item>
             <item>
-             <widget class="Control" name="move" native="true">
+             <widget class="MouseControl" name="move" native="true">
               <property name="minimumSize">
                <size>
                 <width>24</width>
@@ -61,7 +61,7 @@ Control:pressed { background: #4d4d4d; }</string>
              </widget>
             </item>
             <item>
-             <widget class="Control" name="rotate" native="true">
+             <widget class="MouseControl" name="rotate" native="true">
               <property name="minimumSize">
                <size>
                 <width>24</width>
@@ -77,7 +77,7 @@ Control:pressed { background: #4d4d4d; }</string>
              </widget>
             </item>
             <item>
-             <widget class="Control" name="scale" native="true">
+             <widget class="MouseControl" name="scale" native="true">
               <property name="minimumSize">
                <size>
                 <width>24</width>
@@ -307,15 +307,6 @@ Control:pressed { background: #4d4d4d; }</string>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>Control</class>
-   <extends>QWidget</extends>
-   <header>control.h</header>
-   <container>1</container>
-   <slots>
-    <signal>delta(int,int)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
@@ -349,6 +340,12 @@ Control:pressed { background: #4d4d4d; }</string>
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MouseControl</class>
+   <extends>QWidget</extends>
+   <header>mousecontrol.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

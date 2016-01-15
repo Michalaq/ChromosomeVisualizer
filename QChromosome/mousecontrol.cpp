@@ -1,7 +1,7 @@
-#include "control.h"
+#include "mousecontrol.h"
 #include <QVBoxLayout>
 
-Control::Control(QWidget *parent) :
+MouseControl::MouseControl(QWidget *parent) :
     Draggable(parent),
     icon(new QSvgWidget(this)),
     effect(new QGraphicsColorizeEffect(this))
@@ -15,12 +15,12 @@ Control::Control(QWidget *parent) :
     icon->setGraphicsEffect(effect);
 }
 
-Control::~Control()
+MouseControl::~MouseControl()
 {
 
 }
 
-void Control::load(const QString &file)
+void MouseControl::load(const QString &file)
 {
     icon->load(file);
 }

@@ -1,18 +1,18 @@
-#ifndef CONTROL_H
-#define CONTROL_H
+#ifndef MOUSECONTROL_H
+#define MOUSECONTROL_H
 
 #include "draggable.h"
 #include <QSvgWidget>
 #include <QGraphicsColorizeEffect>
 
 
-class Control : public Draggable
+class MouseControl : public Draggable
 {
     Q_OBJECT
 
 public:
-    Control(QWidget *parent = 0);
-    virtual ~Control();
+    MouseControl(QWidget *parent = 0);
+    virtual ~MouseControl();
 
     void load(const QString &file);
 

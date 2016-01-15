@@ -18,12 +18,12 @@ SOURCES += main.cpp\
 ../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
-    control.cpp \
     camera.cpp \
     plot.cpp \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
-    mediacontrol.cpp
+    mediacontrol.cpp \
+    mousecontrol.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -31,12 +31,12 @@ HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.h\
 ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
-    control.h \
     camera.h \
     plot.h \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
-    mediacontrol.h
+    mediacontrol.h \
+    mousecontrol.h
 
 FORMS    += mainwindow.ui
 
