@@ -36,11 +36,14 @@ MainWindow::~MainWindow()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
-    if (Draggable::pressedButton() != Qt::NoButton && event->type() == QEvent::MouseButtonPress && event->spontaneous())
-        return true;
+    if (Draggable::pressedButton() != Qt::NoButton)
+    {
+        if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
+            return true;
 
-    if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
-        return true;
+        if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
+            return true;
+    }
 
     return QMainWindow::eventFilter(watched, event);
 }
