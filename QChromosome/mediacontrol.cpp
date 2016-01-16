@@ -16,28 +16,28 @@ void MediaControl::enterEvent(QEvent *event)
 {
     QPushButton::enterEvent(event);
 
-    setStyleSheet("background: #333333");
+    //setStyleSheet("background: #333333");
 }
 
 void MediaControl::leaveEvent(QEvent *event)
 {
     QPushButton::leaveEvent(event);
 
-    setStyleSheet("background: none");
+    //setStyleSheet("background: none");
 }
 
 void MediaControl::mousePressEvent(QMouseEvent *event)
 {
     QPushButton::mousePressEvent(event);
 
-    setStyleSheet("background: #4d4d4d");
+    //setStyleSheet("background: #4d4d4d");
 }
 
 void MediaControl::mouseReleaseEvent(QMouseEvent *event)
 {
     QPushButton::mouseReleaseEvent(event);
 
-    setStyleSheet("background: #333333");
+    //setStyleSheet("background: #333333");
 }
 
 #include <QPainter>

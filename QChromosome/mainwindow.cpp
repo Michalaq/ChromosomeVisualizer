@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->play->load(":/media/play");
     ui->next->load(":/media/next");
     ui->end->load(":/media/end");
+    ui->record->load(":/media/record");
 
     auto * panel = new SelectionOperationsWidget(ui->scene);
     panel->show();
