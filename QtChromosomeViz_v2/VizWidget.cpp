@@ -468,6 +468,7 @@ void VizWidget::paintGL()
     }
 
     glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 
     painter.endNativePainting();
 
@@ -490,6 +491,9 @@ void VizWidget::paintLabels(QPainter & painter)
 {
     const float A_LOT = 1024.f * 1024.f;
     const QPointF BIG_PT(A_LOT, A_LOT);
+
+    painter.setPen(Qt::black);
+    painter.setBrush(QBrush(Qt::black));
 
     for (auto it = atomLabels_.begin(); it != atomLabels_.end(); it++)
     {
