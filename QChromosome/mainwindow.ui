@@ -525,22 +525,6 @@ MouseControl:pressed { background: #4d4d4d; }</string>
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scene</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>202</x>
-     <y>262</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>200</x>
-     <y>197</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionSelect</sender>
    <signal>triggered(bool)</signal>
    <receiver>scene</receiver>
@@ -553,54 +537,6 @@ MouseControl:pressed { background: #4d4d4d; }</string>
     <hint type="destinationlabel">
      <x>199</x>
      <y>200</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>176</x>
-     <y>218</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>368</x>
-     <y>219</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>scene</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>368</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>141</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>368</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>176</x>
-     <y>218</y>
     </hint>
    </hints>
   </connection>
@@ -716,6 +652,38 @@ MouseControl:pressed { background: #4d4d4d; }</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>542</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -725,5 +693,6 @@ MouseControl:pressed { background: #4d4d4d; }</string>
   <slot>play(bool)</slot>
   <slot>next()</slot>
   <slot>end()</slot>
+  <slot>setFrame(int)</slot>
  </slots>
 </ui>

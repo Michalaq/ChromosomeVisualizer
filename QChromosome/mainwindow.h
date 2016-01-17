@@ -20,6 +20,8 @@ public:
 
 public slots:
     void openSimulation();
+
+    void setFrame(int n);
     void updateFrameCount(int n);
 
     void start();

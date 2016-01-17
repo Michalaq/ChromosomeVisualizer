@@ -91,21 +91,25 @@ void MainWindow::updateFrameCount(int n)
     ui->plot->setMaximum(lastFrame);
 }
 
+void MainWindow::setFrame(int n)
+{
+    Q_ASSERT(0 <= n && n <= lastFrame);
+
+    currentFrame = n;
+
+    ui->horizontalSlider->setValue(n);
+    ui->spinBox->setValue(n);
+    ui->scene->setFrame(n);
+}
+
 void MainWindow::start()
 {
-    ui->horizontalSlider->setValue(0);
-    ui->spinBox->setValue(0);
-    ui->scene->setFrame(0);
+    setFrame(0);
 }
 
 void MainWindow::previous()
 {
-    if (--currentFrame < 0)
-        currentFrame = lastFrame;
-
-    ui->horizontalSlider->setValue(currentFrame);
-    ui->spinBox->setValue(currentFrame);
-    ui->scene->setFrame(currentFrame);
+    setFrame(currentFrame != 0 ? currentFrame - 1 : lastFrame);
 }
 
 void MainWindow::reverse(bool checked)
@@ -152,21 +156,12 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    if (++currentFrame > lastFrame)
-        currentFrame = 0;
-
-    ui->horizontalSlider->setValue(currentFrame);
-    ui->spinBox->setValue(currentFrame);
-    ui->scene->setFrame(currentFrame);
+    setFrame(currentFrame != lastFrame ? currentFrame + 1 : 0);
     tmp->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
 {
-    int n = lastFrame;
-
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
-    ui->scene->setFrame(n);
-    tmp->getFrame(n+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    setFrame(lastFrame);
+    tmp->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
