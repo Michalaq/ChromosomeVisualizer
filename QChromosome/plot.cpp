@@ -3,7 +3,9 @@
 
 Plot::Plot(QWidget *parent) :
     QWidget(parent),
-    simulation_(std::make_shared<NullSimulation>())
+    simulation_(std::make_shared<NullSimulation>()),
+    currentFrame(0),
+    lastFrame(0)
 {
 
 }
@@ -80,5 +82,5 @@ void Plot::paintEvent(QPaintEvent *event)
     pen.setColor(Qt::white);
 
     painter.setPen(pen);
-    painter.drawLine(currentFrame, 0, currentFrame, simulation_->getFrame(currentFrame)->functionValues["bonds"]);
+    painter.drawLine(currentFrame, 0, currentFrame, QPointF(data.elementAt(currentFrame)).y());
 }
