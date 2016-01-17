@@ -11,8 +11,10 @@ class SelectionOperationsWidget : public QWidget
     Q_OBJECT;
 
 public:
-    SelectionOperationsWidget(VizWidget * vizWidget, QWidget * parent = nullptr);
+    SelectionOperationsWidget(QWidget * parent = nullptr);
     virtual ~SelectionOperationsWidget();
+
+    void setVizWidget(VizWidget * vizWidget);
 
 private:
     void initializeControls();

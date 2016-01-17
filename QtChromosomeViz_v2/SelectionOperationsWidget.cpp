@@ -1,17 +1,21 @@
 #include "SelectionOperationsWidget.hpp"
 #include "VizWidget.hpp"
 
-SelectionOperationsWidget::SelectionOperationsWidget(VizWidget * vizWidget, QWidget * parent)
+SelectionOperationsWidget::SelectionOperationsWidget(QWidget * parent)
     : QWidget(parent)
-    , vizWidget_(vizWidget)
 {
     initializeControls();
-    initializeSignals();
 }
 
 SelectionOperationsWidget::~SelectionOperationsWidget()
 {
 
+}
+
+void SelectionOperationsWidget::setVizWidget(VizWidget *vizWidget)
+{
+    vizWidget_ = vizWidget;
+    initializeSignals();
 }
 
 void SelectionOperationsWidget::initializeControls()
