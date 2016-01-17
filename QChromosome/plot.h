@@ -15,6 +15,7 @@ public:
 
     void setSimulation(std::shared_ptr<Simulation> dp);
     void setMaximum(int m);
+    void setFrame(int n);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -25,6 +26,7 @@ private:
     QPainterPath data;
     QRectF databr;
 
+    int currentFrame;
     int lastFrame;
 
 signals:

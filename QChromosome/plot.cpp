@@ -41,6 +41,12 @@ void Plot::setMaximum(int m)
     update();
 }
 
+void Plot::setFrame(int n)
+{
+    currentFrame = n;
+    update();
+}
+
 #include <QPainter>
 
 void Plot::paintEvent(QPaintEvent *event)
@@ -70,4 +76,9 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen);
     painter.drawPath(data);
+
+    pen.setColor(Qt::white);
+
+    painter.setPen(pen);
+    painter.drawLine(currentFrame, 0, currentFrame, simulation_->getFrame(currentFrame)->functionValues["bonds"]);
 }
