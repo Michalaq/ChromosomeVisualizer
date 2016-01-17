@@ -5,6 +5,7 @@ SelectionOperationsWidget::SelectionOperationsWidget(QWidget * parent)
     : QWidget(parent)
 {
     initializeControls();
+    setStyleSheet("QLabel { color: white; }");
 }
 
 SelectionOperationsWidget::~SelectionOperationsWidget()

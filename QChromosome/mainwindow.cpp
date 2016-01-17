@@ -28,9 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->end->load(":/media/end");
     ui->record->load(":/media/record");
 
-    auto * panel = new SelectionOperationsWidget(0);
-    panel->setVizWidget(ui->scene);
-    panel->show();
+    ui->panel->setVizWidget(ui->scene);
 }
 
 MainWindow::~MainWindow()

@@ -390,7 +390,7 @@ MouseControl:pressed { background: #4d4d4d; }</string>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="SelectionOperationsWidget" name="panel"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_3">
    <attribute name="dockWidgetArea">
@@ -456,6 +456,12 @@ MouseControl:pressed { background: #4d4d4d; }</string>
    <class>MouseControl</class>
    <extends>QWidget</extends>
    <header>mousecontrol.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SelectionOperationsWidget</class>
+   <extends>QWidget</extends>
+   <header>../QtChromosomeViz_v2/SelectionOperationsWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
