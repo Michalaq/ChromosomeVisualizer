@@ -8,3 +8,6 @@ Instalacja:
        gdzie [nasz kompilator] to nazwa folderu w qt-path/5.5/ ktory najlepiej nam odpowiada (w przypadku linuxa powinien to byc gcc_64)
     5. Uruchamiamy ./install.sh
     6. W folderze build znajduje sie program wykonywalny QChromosome
+
+Resintalacja:
+    Po dokonaniu zmian w kodzie, ponownie uruchamiamy install.sh.
