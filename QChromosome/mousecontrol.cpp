@@ -11,7 +11,6 @@ MouseControl::MouseControl(QWidget *parent) :
     layout()->setMargin(0);
     layout()->addWidget(icon);
 
-    effect->setColor("#cccccc");
     icon->setGraphicsEffect(effect);
 }
 
@@ -20,7 +19,17 @@ MouseControl::~MouseControl()
 
 }
 
-void MouseControl::load(const QString &file)
+QColor MouseControl::getColor() const
+{
+    return effect->color();
+}
+
+void MouseControl::setColor(const QColor &c)
+{
+    effect->setColor(c);
+}
+
+void MouseControl::setIcon(const QString &file)
 {
     icon->load(file);
 }

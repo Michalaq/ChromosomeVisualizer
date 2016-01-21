@@ -14,9 +14,7 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background: #262626; }
-MouseControl:hover { background: #333333; }
-MouseControl:pressed { background: #4d4d4d; }</string>
+   <string notr="true">QMainWindow { background: #262626; }</string>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
@@ -26,7 +24,10 @@ MouseControl:pressed { background: #4d4d4d; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">#centralWidget { background: #1a1a1a; }</string>
+    <string notr="true">#centralWidget { background: #1a1a1a; }
+MouseControl { qproperty-color: #cccccc; }
+MouseControl:hover { background: #333333; }
+MouseControl:pressed { background: #4d4d4d; }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
