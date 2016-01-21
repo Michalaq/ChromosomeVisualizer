@@ -3,15 +3,15 @@
 
 MouseControl::MouseControl(QWidget *parent) :
     Draggable(parent),
-    icon(new QSvgWidget(this)),
+    svg(new QSvgWidget(this)),
     effect(new QGraphicsColorizeEffect(this))
 {
     new QVBoxLayout(this);
 
     layout()->setMargin(0);
-    layout()->addWidget(icon);
+    layout()->addWidget(svg);
 
-    icon->setGraphicsEffect(effect);
+    svg->setGraphicsEffect(effect);
 }
 
 MouseControl::~MouseControl()
@@ -19,17 +19,22 @@ MouseControl::~MouseControl()
 
 }
 
-QColor MouseControl::getColor() const
+QColor MouseControl::color() const
 {
     return effect->color();
 }
 
-void MouseControl::setColor(const QColor &c)
+void MouseControl::setColor(const QColor &color)
 {
-    effect->setColor(c);
+    effect->setColor(color);
 }
 
-void MouseControl::setIcon(const QString &file)
+QString MouseControl::icon() const
 {
-    icon->load(file);
+    return "";
+}
+
+void MouseControl::setIcon(const QString &icon)
+{
+    svg->load(icon);
 }

@@ -16,10 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->move->setIcon(":/mouse/move");
-    ui->rotate->setIcon(":/mouse/rotate");
-    ui->scale->setIcon(":/mouse/scale");
-
     ui->start->load(":/media/start");
     ui->previous->load(":/media/previous");
     ui->reverse->load(":/media/reverse");

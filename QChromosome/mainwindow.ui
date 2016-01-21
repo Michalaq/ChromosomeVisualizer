@@ -61,6 +61,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
             <height>24</height>
            </size>
           </property>
+          <property name="icon" stdset="0">
+           <string>:/mouse/move</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -77,6 +80,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
             <height>24</height>
            </size>
           </property>
+          <property name="icon" stdset="0">
+           <string>:/mouse/rotate</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -92,6 +98,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="icon" stdset="0">
+           <string>:mouse/scale</string>
           </property>
          </widget>
         </item>
