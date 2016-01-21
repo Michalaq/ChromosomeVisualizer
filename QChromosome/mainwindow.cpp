@@ -124,7 +124,7 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        ui->reverse->setText("||");
+        ui->reverse->load(":/media/pause");
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
@@ -134,7 +134,7 @@ void MainWindow::reverse(bool checked)
         timer.stop();
         timer.disconnect();
 
-        ui->reverse->setText("<");
+        ui->reverse->load(":/media/reverse");
     }
 }
 
@@ -145,7 +145,7 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        ui->play->setText("||");
+        ui->play->load(":/media/pause");
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
@@ -155,7 +155,7 @@ void MainWindow::play(bool checked)
         timer.stop();
         timer.disconnect();
 
-        ui->play->setText(">");
+        ui->play->load(":/media/play");
     }
 }
 

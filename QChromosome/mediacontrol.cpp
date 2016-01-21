@@ -62,4 +62,5 @@ void MediaControl::load(const QString &file)
     content.replace(QRegularExpression("#[a-f0-9]{6}"), "#cccccc");
 
     icon->load(content.toUtf8());
+    update();
 }
