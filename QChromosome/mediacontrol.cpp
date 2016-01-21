@@ -33,5 +33,5 @@ void MediaControl::leaveEvent(QEvent *event)
 void MediaControl::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    icon().paint(&painter, rect());
+    icon().paint(&painter, rect(), Qt::AlignCenter, QIcon::Normal, isChecked() ? QIcon::On : QIcon::Off);
 }

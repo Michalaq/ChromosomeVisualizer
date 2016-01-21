@@ -254,7 +254,8 @@ MouseControl:pressed { background: #4d4d4d; }</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
-          <normaloff>:/media/reverse</normaloff>:/media/reverse</iconset>
+          <normaloff>:/media/reverse</normaloff>
+          <normalon>:/media/pause</normalon>:/media/reverse</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -277,7 +278,8 @@ MouseControl:pressed { background: #4d4d4d; }</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
-          <normaloff>:/media/play</normaloff>:/media/play</iconset>
+          <normaloff>:/media/play</normaloff>
+          <normalon>:/media/pause</normalon>:/media/play</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
