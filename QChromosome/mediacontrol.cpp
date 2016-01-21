@@ -1,10 +1,18 @@
 #include "mediacontrol.h"
+#include <QVBoxLayout>
 
 MediaControl::MediaControl(QWidget *parent) :
     QPushButton(parent),
-    icon(new QSvgRenderer(this))
+    icon(new QSvgWidget(this)),
+    effect(new QGraphicsColorizeEffect(this))
 {
+    new QVBoxLayout(this);
 
+    layout()->setMargin(0);
+    layout()->addWidget(icon);
+
+    effect->setColor("#b3b3b3");
+    icon->setGraphicsEffect(effect);
 }
 
 MediaControl::~MediaControl()
@@ -16,51 +24,23 @@ void MediaControl::enterEvent(QEvent *event)
 {
     QPushButton::enterEvent(event);
 
-    //setStyleSheet("background: #333333");
+    effect->setColor("#ffffff");
 }
 
 void MediaControl::leaveEvent(QEvent *event)
 {
     QPushButton::leaveEvent(event);
 
-    //setStyleSheet("background: none");
+    if (!isChecked())
+        effect->setColor("#b3b3b3");
 }
 
-void MediaControl::mousePressEvent(QMouseEvent *event)
+void MediaControl::paintEvent(QPaintEvent *)
 {
-    QPushButton::mousePressEvent(event);
 
-    //setStyleSheet("background: #4d4d4d");
 }
-
-void MediaControl::mouseReleaseEvent(QMouseEvent *event)
-{
-    QPushButton::mouseReleaseEvent(event);
-
-    //setStyleSheet("background: #333333");
-}
-
-#include <QPainter>
-
-void MediaControl::paintEvent(QPaintEvent *event)
-{
-    //QPushButton::paintEvent(event);
-
-    QPainter painter(this);
-    icon->render(&painter);
-}
-
-#include <QFile>
-#include <QRegularExpression>
 
 void MediaControl::load(const QString &file)
 {
-    QFile svg(file);
-    svg.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    QString content(svg.readAll());
-    content.replace(QRegularExpression("#[a-f0-9]{6}"), "#b3b3b3");
-
-    icon->load(content.toUtf8());
-    update();
+    icon->load(file);
 }

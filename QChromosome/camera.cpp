@@ -116,9 +116,8 @@ void Camera::rotate(int dx, int dy)
     rotate(-angleFactor * dx, -angleFactor * dy, 0.);
 }
 
-void Camera::scale(int dx, int dy)
+void Camera::scale(int dx, int)
 {
-    Q_UNUSED(dy)
     move(0., 0., distanceFactor * dx);
 }
 
