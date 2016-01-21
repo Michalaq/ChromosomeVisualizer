@@ -2,7 +2,6 @@
 #define MEDIACONTROL_H
 
 #include <QPushButton>
-#include <QSvgWidget>
 #include <QGraphicsColorizeEffect>
 
 class MediaControl : public QPushButton
@@ -17,10 +16,7 @@ public:
 
     void paintEvent(QPaintEvent *event);
 
-    void load(const QString &file);
-
 private:
-    QSvgWidget *icon;
     QGraphicsColorizeEffect *effect;
 };
 

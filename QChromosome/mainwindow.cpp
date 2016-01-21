@@ -16,14 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->start->load(":/media/start");
-    ui->previous->load(":/media/previous");
-    ui->reverse->load(":/media/reverse");
-    ui->play->load(":/media/play");
-    ui->next->load(":/media/next");
-    ui->end->load(":/media/end");
-    ui->record->load(":/media/record");
-
     ui->panel->setVizWidget(ui->scene);
 }
 
@@ -120,7 +112,7 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        ui->reverse->load(":/media/pause");
+        //ui->reverse->load(":/media/pause");
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
@@ -130,7 +122,7 @@ void MainWindow::reverse(bool checked)
         timer.stop();
         timer.disconnect();
 
-        ui->reverse->load(":/media/reverse");
+        //ui->reverse->load(":/media/reverse");
     }
 }
 
@@ -141,7 +133,7 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        ui->play->load(":/media/pause");
+        //ui->play->load(":/media/pause");
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
@@ -151,7 +143,7 @@ void MainWindow::play(bool checked)
         timer.stop();
         timer.disconnect();
 
-        ui->play->load(":/media/play");
+        //ui->play->load(":/media/play");
     }
 }
 

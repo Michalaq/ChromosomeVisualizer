@@ -1,18 +1,11 @@
 #include "mediacontrol.h"
-#include <QVBoxLayout>
 
 MediaControl::MediaControl(QWidget *parent) :
     QPushButton(parent),
-    icon(new QSvgWidget(this)),
     effect(new QGraphicsColorizeEffect(this))
 {
-    new QVBoxLayout(this);
-
-    layout()->setMargin(0);
-    layout()->addWidget(icon);
-
     effect->setColor("#b3b3b3");
-    icon->setGraphicsEffect(effect);
+    setGraphicsEffect(effect);
 }
 
 MediaControl::~MediaControl()
@@ -35,12 +28,10 @@ void MediaControl::leaveEvent(QEvent *event)
         effect->setColor("#b3b3b3");
 }
 
+#include <QPainter>
+
 void MediaControl::paintEvent(QPaintEvent *)
 {
-
-}
-
-void MediaControl::load(const QString &file)
-{
-    icon->load(file);
+    QPainter painter(this);
+    icon().paint(&painter, rect());
 }
