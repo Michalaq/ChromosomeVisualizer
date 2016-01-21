@@ -5,7 +5,6 @@ SelectionOperationsWidget::SelectionOperationsWidget(QWidget * parent)
     : QWidget(parent)
 {
     initializeControls();
-    setStyleSheet("QLabel { color: white; }");
 }
 
 SelectionOperationsWidget::~SelectionOperationsWidget()
@@ -22,10 +21,12 @@ void SelectionOperationsWidget::setVizWidget(VizWidget *vizWidget)
 void SelectionOperationsWidget::initializeControls()
 {
     auto * label1 = new QLabel("Select:");
+    label1->setStyleSheet("color: white;");
     selectAllButton_ = new QPushButton("All");
     selectTypeButton_ = new QPushButton("Type");
 
     auto * label2 = new QLabel("Set:");
+    label2->setStyleSheet("color: white;");
     setColorButton_ = new QPushButton("Color");
     setOpacityButton_ = new QPushButton("Opacity");
     setSizeButton_ = new QPushButton("Size");

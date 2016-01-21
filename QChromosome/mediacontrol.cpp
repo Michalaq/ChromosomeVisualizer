@@ -59,7 +59,7 @@ void MediaControl::load(const QString &file)
     svg.open(QIODevice::ReadOnly | QIODevice::Text);
 
     QString content(svg.readAll());
-    content.replace(QRegularExpression("#[a-f0-9]{6}"), "#cccccc");
+    content.replace(QRegularExpression("#[a-f0-9]{6}"), "#b3b3b3");
 
     icon->load(content.toUtf8());
     update();
