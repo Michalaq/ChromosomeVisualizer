@@ -25,9 +25,13 @@
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
     <string notr="true">#centralWidget { background: #1a1a1a; }
+
 MouseControl { qproperty-color: #cccccc; }
 MouseControl:hover { background: #333333; }
-MouseControl:pressed { background: #4d4d4d; }</string>
+MouseControl:pressed { background: #4d4d4d; }
+
+MediaControl { qproperty-color: #b3b3b3; qproperty-hoverColor: #ffffff; }
+</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -252,6 +256,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
           <height>32</height>
          </size>
         </property>
+        <property name="styleSheet">
+         <string notr="true">qproperty-color: #3771c8;</string>
+        </property>
         <property name="icon">
          <iconset resource="icons.qrc">
           <normaloff>:/media/reverse</normaloff>
@@ -275,6 +282,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
           <width>32</width>
           <height>32</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">qproperty-color: #3771c8;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -339,6 +349,9 @@ MouseControl:pressed { background: #4d4d4d; }</string>
           <width>32</width>
           <height>32</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">qproperty-color: #d40000;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
