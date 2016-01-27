@@ -9,7 +9,7 @@ class MediaControl : public QPushButton
     Q_OBJECT
 
     Q_PROPERTY(QColor color READ color WRITE setColor)
-    Q_PROPERTY(QColor hoverColor READ hoverColor WRITE setHoverColor)
+    Q_PROPERTY(QColor hover READ hover WRITE setHover)
 
 public:
     explicit MediaControl(QWidget *parent = 0);
@@ -18,9 +18,9 @@ public:
     QColor color() const;
     void setColor(const QColor &c);
 
-    QColor hoverColor() const;
-    void setHoverColor(const QColor &c);
     /* cf. QTBUG-2982 */
+    QColor hover() const;
+    void setHover(const QColor &c);
 
     void click();
 
@@ -34,7 +34,7 @@ private:
     QGraphicsColorizeEffect *effect;
 
     QColor __color;
-    QColor __hoverColor;
+    QColor __hover;
 };
 
 #endif // MEDIACONTROL_H

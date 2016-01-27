@@ -3,7 +3,7 @@
 MediaControl::MediaControl(QWidget *parent) :
     QPushButton(parent),
     __color(Qt::transparent),
-    __hoverColor(Qt::transparent),
+    __hover(Qt::transparent),
     effect(new QGraphicsColorizeEffect(this))
 {
     effect->setColor(Qt::transparent);
@@ -26,14 +26,14 @@ void MediaControl::setColor(const QColor &c)
     effect->setColor(__color = c);
 }
 
-QColor MediaControl::hoverColor() const
+QColor MediaControl::hover() const
 {
-    return __hoverColor;
+    return __hover;
 }
 
-void MediaControl::setHoverColor(const QColor &c)
+void MediaControl::setHover(const QColor &c)
 {
-    __hoverColor = c;
+    __hover = c;
 }
 
 void MediaControl::click()
@@ -47,7 +47,7 @@ void MediaControl::enterEvent(QEvent *event)
 {
     QPushButton::enterEvent(event);
 
-    effect->setColor(hoverColor());
+    effect->setColor(hover());
 }
 
 void MediaControl::leaveEvent(QEvent *event)
