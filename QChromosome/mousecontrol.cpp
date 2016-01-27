@@ -1,22 +1,43 @@
 #include "mousecontrol.h"
-#include <QVBoxLayout>
+#include <QGridLayout>
 
 MouseControl::MouseControl(QWidget *parent) :
     Draggable(parent),
-    svg(new QSvgWidget(this)),
+    label(new QLabel(this)),
     effect(new QGraphicsColorizeEffect(this))
 {
-    new QVBoxLayout(this);
+    new QGridLayout(this);
 
     layout()->setMargin(0);
-    layout()->addWidget(svg);
+    layout()->addWidget(label);
 
-    svg->setGraphicsEffect(effect);
+    label->setGraphicsEffect(effect);
 }
 
 MouseControl::~MouseControl()
 {
 
+}
+
+#include <QResizeEvent>
+
+void MouseControl::resizeEvent(QResizeEvent *event)
+{
+    Draggable::resizeEvent(event);
+
+    label->setPixmap(__icon.pixmap(event->size()));
+}
+
+QIcon MouseControl::icon() const
+{
+    return __icon;
+}
+
+void MouseControl::setIcon(const QIcon &icon)
+{
+    __icon = icon;
+
+    updateGeometry();
 }
 
 QColor MouseControl::color() const
@@ -27,14 +48,4 @@ QColor MouseControl::color() const
 void MouseControl::setColor(const QColor &color)
 {
     effect->setColor(color);
-}
-
-QString MouseControl::icon() const
-{
-    return "";
-}
-
-void MouseControl::setIcon(const QString &icon)
-{
-    svg->load(icon);
 }

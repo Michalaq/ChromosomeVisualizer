@@ -65,7 +65,8 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
            </size>
           </property>
           <property name="icon" stdset="0">
-           <string>:/mouse/move</string>
+           <iconset resource="icons.qrc">
+            <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
           </property>
          </widget>
         </item>
@@ -84,7 +85,8 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
            </size>
           </property>
           <property name="icon" stdset="0">
-           <string>:/mouse/rotate</string>
+           <iconset resource="icons.qrc">
+            <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
           </property>
          </widget>
         </item>
@@ -103,7 +105,8 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
            </size>
           </property>
           <property name="icon" stdset="0">
-           <string>:mouse/scale</string>
+           <iconset resource="icons.qrc">
+            <normaloff>:/mouse/scale</normaloff>:/mouse/scale</iconset>
           </property>
          </widget>
         </item>

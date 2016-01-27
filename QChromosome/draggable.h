@@ -31,7 +31,7 @@ private:
 signals:
     void delta(int, int);
 
-public slots:
+protected slots:
     void setScreenGeometry(QRect);
 };
 
