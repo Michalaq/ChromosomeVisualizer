@@ -15,8 +15,6 @@ public:
     void mouseMoveEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
 
-    void paintEvent(QPaintEvent*);
-
     static Qt::MouseButton pressedButton();
 
 private:

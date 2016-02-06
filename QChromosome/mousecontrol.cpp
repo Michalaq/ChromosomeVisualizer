@@ -25,7 +25,7 @@ void MouseControl::resizeEvent(QResizeEvent *event)
 {
     Draggable::resizeEvent(event);
 
-    label->setPixmap(__icon.pixmap(event->size()));
+    label->setPixmap(icon().pixmap(size()));
 }
 
 QIcon MouseControl::icon() const
@@ -72,4 +72,19 @@ void MouseControl::mouseReleaseEvent(QMouseEvent *event)
     Draggable::mouseReleaseEvent(event);
 
     effect->setColor(color());
+}
+
+#include <QPainter>
+#include <QStyleOption>
+
+void MouseControl::paintEvent(QPaintEvent *event)
+{
+    Draggable::paintEvent(event);
+
+    QStyleOption option;
+    option.initFrom(this);
+
+    QPainter painter(this);
+
+    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 }

@@ -54,21 +54,6 @@ void Draggable::mouseReleaseEvent(QMouseEvent *event)
     pressed = Qt::NoButton;
 }
 
-#include <QPainter>
-#include <QStyleOption>
-
-void Draggable::paintEvent(QPaintEvent *event)
-{
-    QWidget::paintEvent(event);
-
-    QStyleOption option;
-    option.initFrom(this);
-
-    QPainter painter(this);
-
-    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
-}
-
 Qt::MouseButton Draggable::pressedButton()
 {
     return pressed;
