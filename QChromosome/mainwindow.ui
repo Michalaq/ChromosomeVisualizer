@@ -63,6 +63,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
             <height>24</height>
            </size>
           </property>
+          <property name="cursor">
+           <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
           <property name="icon" stdset="0">
            <iconset resource="icons.qrc">
             <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
@@ -83,6 +86,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
             <height>24</height>
            </size>
           </property>
+          <property name="cursor">
+           <cursorShape>ClosedHandCursor</cursorShape>
+          </property>
           <property name="icon" stdset="0">
            <iconset resource="icons.qrc">
             <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
@@ -102,6 +108,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>ClosedHandCursor</cursorShape>
           </property>
           <property name="icon" stdset="0">
            <iconset resource="icons.qrc">
@@ -217,6 +226,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <height>32</height>
          </size>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="icon">
          <iconset resource="icons.qrc">
           <normaloff>:/media/start</normaloff>:/media/start</iconset>
@@ -237,6 +249,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <height>32</height>
          </size>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="icon">
          <iconset resource="icons.qrc">
           <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
@@ -256,6 +271,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <width>32</width>
           <height>32</height>
          </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
          <string notr="true">qproperty-hover: #0066ff;</string>
@@ -284,6 +302,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <height>32</height>
          </size>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="styleSheet">
          <string notr="true">qproperty-hover: #0066ff;</string>
         </property>
@@ -311,6 +332,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <height>32</height>
          </size>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="icon">
          <iconset resource="icons.qrc">
           <normaloff>:/media/next</normaloff>:/media/next</iconset>
@@ -331,6 +355,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <height>32</height>
          </size>
         </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
         <property name="icon">
          <iconset resource="icons.qrc">
           <normaloff>:/media/end</normaloff>:/media/end</iconset>
@@ -350,6 +377,9 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
           <width>32</width>
           <height>32</height>
          </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
          <string notr="true">qproperty-hover: #d40000;</string>
