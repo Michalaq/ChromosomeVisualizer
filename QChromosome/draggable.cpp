@@ -30,9 +30,6 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
     QApplication::setOverrideCursor(Qt::BlankCursor);
     QCursor::setPos(center);
-
-    state |= QStyle::State_Sunken;
-    update();
 }
 
 void Draggable::mouseMoveEvent(QMouseEvent *event)
@@ -51,8 +48,6 @@ void Draggable::mouseReleaseEvent(QMouseEvent *event)
 {
     QWidget::mouseReleaseEvent(event);
 
-    state &= ~QStyle::State_Sunken;
-
     QCursor::setPos(initial);
     QApplication::restoreOverrideCursor();
 
@@ -68,9 +63,9 @@ void Draggable::paintEvent(QPaintEvent *event)
 
     QStyleOption option;
     option.initFrom(this);
-    option.state |= state;
 
     QPainter painter(this);
+
     style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
 }
 

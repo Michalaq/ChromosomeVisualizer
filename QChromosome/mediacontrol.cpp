@@ -21,9 +21,9 @@ QColor MediaControl::color() const
     return __color;
 }
 
-void MediaControl::setColor(const QColor &c)
+void MediaControl::setColor(const QColor &color)
 {
-    effect->setColor(__color = c);
+    effect->setColor(__color = color);
 }
 
 QColor MediaControl::hover() const
@@ -31,9 +31,9 @@ QColor MediaControl::hover() const
     return __hover;
 }
 
-void MediaControl::setHover(const QColor &c)
+void MediaControl::setHover(const QColor &color)
 {
-    __hover = c;
+    __hover = color;
 }
 
 void MediaControl::click()
