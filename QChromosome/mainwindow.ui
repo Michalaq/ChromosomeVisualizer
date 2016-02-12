@@ -276,7 +276,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">qproperty-hover: #0066ff;</string>
+         <string notr="true">qproperty-color: #0066ff;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -306,7 +306,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">qproperty-hover: #0066ff;</string>
+         <string notr="true">qproperty-color: #0066ff;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -382,7 +382,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
          <cursorShape>PointingHandCursor</cursorShape>
         </property>
         <property name="styleSheet">
-         <string notr="true">qproperty-hover: #d40000;</string>
+         <string notr="true">qproperty-color: #d40000;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
