@@ -5,6 +5,8 @@
 
 #include <QVector3D>
 #include <QMatrix4x4>
+#include <QStack>
+#include <QMetaMethod>
 
 class Camera : public Draggable
 {
@@ -52,8 +54,6 @@ private:
     qreal horizontalAngle;
     qreal verticalAngle;
 
-    Qt::Key modifier;
-
     QVector3D origin;
 
     QMatrix4x4 modelView;
@@ -71,6 +71,19 @@ private:
     static const qreal distanceFactor;
     static const qreal angleFactor;
     static const qreal wheelFactor;
+
+    /* camera motion modifier type */
+    QMetaObject::Connection connection;
+
+    QStack<int> buffer;
+
+    Qt::Key modifier;
+
+    void pushIndex(int index);
+    void popIndex();
+
+    /* signal delta(int,int) */
+    const QMetaMethod deltaMetaMethod;
 
 signals:
     void modelViewChanged(QMatrix4x4);
