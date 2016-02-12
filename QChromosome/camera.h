@@ -73,17 +73,16 @@ private:
     static const qreal wheelFactor;
 
     /* camera motion modifier type */
-    QMetaObject::Connection connection;
-
     QStack<int> buffer;
 
     Qt::Key modifier;
 
+    QMetaObject::Connection connection;
+
+    const QMetaMethod signal;
+
     void pushIndex(int index);
     void popIndex();
-
-    /* signal delta(int,int) */
-    const QMetaMethod deltaMetaMethod;
 
 signals:
     void modelViewChanged(QMatrix4x4);

@@ -22,7 +22,7 @@ Camera::Camera(QWidget *parent)
       apertureWidth(36),
       origin(0, 0, 0),
       modifier(Qt::Key_unknown),
-      deltaMetaMethod(metaObject()->method(metaObject()->indexOfSignal("delta(int,int)")))
+      signal(metaObject()->method(metaObject()->indexOfSignal("delta(int,int)")))
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -40,7 +40,7 @@ void Camera::pushIndex(int index)
     if (!buffer.empty())
         disconnect(connection);
 
-    connection = connect(this, deltaMetaMethod, this, metaObject()->method(index));
+    connection = connect(this, signal, this, metaObject()->method(index));
 
     buffer.push(index);
 }
@@ -52,7 +52,7 @@ void Camera::popIndex()
     disconnect(connection);
 
     if (!buffer.empty())
-        connection = connect(this, deltaMetaMethod, this, metaObject()->method(buffer.top()));
+        connection = connect(this, signal, this, metaObject()->method(buffer.top()));
 }
 
 #include <QKeyEvent>
