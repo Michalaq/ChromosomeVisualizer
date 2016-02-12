@@ -532,6 +532,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
    <slots>
+    <signal>selectionChangedObject(AtomSelection)</signal>
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
@@ -819,6 +820,22 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>scene</sender>
+   <signal>selectionChangedObject(AtomSelection)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>handleSelection(AtomSelection)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>249</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -829,5 +846,6 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
   <slot>next()</slot>
   <slot>end()</slot>
   <slot>setFrame(int)</slot>
+  <slot>handleSelection(AtomSelection)</slot>
  </slots>
 </ui>

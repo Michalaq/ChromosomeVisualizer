@@ -22,6 +22,10 @@ protected:
 
     void connectNotify(const QMetaMethod &signal);
 
+public:
+    /* sets new origin */
+    void setOrigin(const QVector3D& o);
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);

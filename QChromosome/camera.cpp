@@ -125,6 +125,11 @@ void Camera::connectNotify(const QMetaMethod &signal)
         emit projectionChanged(projection);
 }
 
+void Camera::setOrigin(const QVector3D &o)
+{
+    origin = o;
+}
+
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;

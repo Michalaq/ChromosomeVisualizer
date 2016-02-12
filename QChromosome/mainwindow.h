@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QTimer>
 
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
+
 namespace Ui {
 class MainWindow;
 }
@@ -30,6 +32,8 @@ public slots:
     void play(bool checked);
     void next();
     void end();
+
+    void handleSelection(const AtomSelection & selection);
 
 private:
     Ui::MainWindow *ui;

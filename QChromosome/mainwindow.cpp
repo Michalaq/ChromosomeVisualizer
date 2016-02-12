@@ -150,3 +150,8 @@ void MainWindow::end()
     setFrame(lastFrame);
     tmp->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
+
+void MainWindow::handleSelection(const AtomSelection &selection)
+{
+    ui->camera->setOrigin(selection.weightCenter());
+}
