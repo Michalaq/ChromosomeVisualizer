@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>574</width>
+    <width>658</width>
     <height>300</height>
    </rect>
   </property>
@@ -26,11 +26,10 @@ QToolBar { background: #333333; border: none; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">#centralWidget { background: #1a1a1a; }
+    <string notr="true">QWidget#centralWidget { background: #1a1a1a; }
 MouseControl { qproperty-color: #cccccc; qproperty-pressed: #ffffff; }
 MouseControl:hover { background: #333333; }
-MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
-</string>
+MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -414,7 +413,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>574</width>
+     <width>658</width>
      <height>27</height>
     </rect>
    </property>
@@ -458,7 +457,13 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
        <property name="styleSheet">
-        <string notr="true">::tab { min-width: 75px; }</string>
+        <string notr="true">QTabWidget { color: #d9d9d9; }
+::tab { border: 1px solid #4d4d4d; height: 30px; min-width: 75px; color: #d9d9d9; }
+::tab:selected { background: #1a1a1a; border-bottom: 1px solid #1a1a1a; }
+::tab:!selected { background: #262626; }
+::tab:!last { border-right: none; }
+::pane { background: #1a1a1a; border: 1px solid #4d4d4d; }
+::tab-bar { bottom: -1px; }</string>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -472,7 +477,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
        </widget>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
-         <string>Cząstka</string>
+         <string>Molekuła</string>
         </attribute>
        </widget>
        <widget class="QWidget" name="tab_4">

@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
+    x->setStyleSheet("QLabel { color: #d9d9d9; }");
 }
 
 MainWindow::~MainWindow()
