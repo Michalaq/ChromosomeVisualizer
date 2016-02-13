@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"
-#include "mediacontrol.h"                            //TODO do wywalenia po zaimplementowaniu pluginu do designera
+#include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->panel->setVizWidget(ui->scene);
+    auto x = new SelectionOperationsWidget(ui->tab);
+    x->setVizWidget(ui->scene);
 }
 
 MainWindow::~MainWindow()

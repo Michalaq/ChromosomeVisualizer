@@ -453,7 +453,37 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="SelectionOperationsWidget" name="panel"/>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="styleSheet">
+        <string notr="true">::tab { min-width: 75px; }</string>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Atom</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Typ</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>Cząstka</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="tab_4">
+        <attribute name="title">
+         <string>Grupa</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_3">
    <attribute name="dockWidgetArea">
@@ -556,12 +586,6 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }
    <class>MouseControl</class>
    <extends>QWidget</extends>
    <header>mousecontrol.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SelectionOperationsWidget</class>
-   <extends>QWidget</extends>
-   <header>../QtChromosomeViz_v2/SelectionOperationsWidget.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
