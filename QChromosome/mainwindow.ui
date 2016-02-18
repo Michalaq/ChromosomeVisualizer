@@ -28,8 +28,7 @@ QToolBar { background: #333333; border: none; }</string>
    <property name="styleSheet">
     <string notr="true">QWidget#centralWidget { background: #1a1a1a; }
 MouseControl { qproperty-color: #cccccc; }
-MouseControl:hover { background: #333333; }
-MouseControl:pressed { qproperty-color: #ffffff; }
+MouseControl:hover { qproperty-color: #ffffff; }
 MediaControl { qproperty-color: #b3b3b3; }
 MediaControl:hover { qproperty-color: #ffffff; }</string>
    </property>

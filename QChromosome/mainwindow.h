@@ -42,6 +42,9 @@ private:
     int lastFrame;
 
     QTimer timer;
+
+    /* cf. QTBUG-2982 */
+    void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache);
 };
 
 #endif // MAINWINDOW_H

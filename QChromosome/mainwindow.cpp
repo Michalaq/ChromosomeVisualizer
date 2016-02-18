@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+    cacheProperties(this, {});
+
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
     x->setStyleSheet("QLabel { color: #d9d9d9; }");
@@ -155,4 +157,11 @@ void MainWindow::end()
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
     ui->camera->setOrigin(selection.weightCenter());
+}
+
+void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache)
+{
+    for (auto child : widget->children())
+        if (auto tmp = qobject_cast<QWidget*>(child))
+            cacheProperties(tmp, cache);
 }
