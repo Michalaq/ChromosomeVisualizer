@@ -27,9 +27,11 @@ QToolBar { background: #333333; border: none; }</string>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
     <string notr="true">QWidget#centralWidget { background: #1a1a1a; }
-MouseControl { qproperty-color: #cccccc; qproperty-pressed: #ffffff; }
+MouseControl { qproperty-color: #cccccc; }
 MouseControl:hover { background: #333333; }
-MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }</string>
+MouseControl:pressed { qproperty-color: #ffffff; }
+MediaControl { qproperty-color: #b3b3b3; }
+MediaControl:hover { qproperty-color: #ffffff; }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -67,7 +69,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }</string>
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
           <property name="icon" stdset="0">
-           <iconset resource="icons.qrc">
+           <iconset>
             <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
           </property>
          </widget>
@@ -517,7 +519,7 @@ MediaControl { qproperty-color: #b3b3b3; qproperty-hover: #ffffff; }</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset>
      <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
    </property>
    <property name="text">

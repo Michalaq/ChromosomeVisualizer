@@ -42,36 +42,12 @@ void MouseControl::setIcon(const QIcon &icon)
 
 QColor MouseControl::color() const
 {
-    return __color;
+    return effect->color();
 }
 
 void MouseControl::setColor(const QColor &color)
 {
-    effect->setColor(__color = color);
-}
-
-QColor MouseControl::pressed() const
-{
-    return __pressed;
-}
-
-void MouseControl::setPressed(const QColor &color)
-{
-    __pressed = color;
-}
-
-void MouseControl::mousePressEvent(QMouseEvent *event)
-{
-    Draggable::mousePressEvent(event);
-
-    effect->setColor(pressed());
-}
-
-void MouseControl::mouseReleaseEvent(QMouseEvent *event)
-{
-    Draggable::mouseReleaseEvent(event);
-
-    effect->setColor(color());
+    effect->setColor(color);
 }
 
 #include <QPainter>
