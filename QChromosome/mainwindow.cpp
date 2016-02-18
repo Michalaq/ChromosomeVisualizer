@@ -30,6 +30,9 @@ MainWindow::~MainWindow()
 #include <QMouseEvent>
 #include "draggable.h"
 
+static const QHash<QEvent::Type, QString> enterEvents = { { QEvent::HoverEnter, "hover" }, { QEvent::MouseButtonPress, "pressed" } };
+static const QHash<QEvent::Type, QString> leaveEvents = { { QEvent::HoverLeave, "hover" }, { QEvent::MouseButtonRelease, "pressed" } };
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (Draggable::pressedButton() != Qt::NoButton)
@@ -39,6 +42,44 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
         if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
             return true;
+    }
+
+    auto pseudostate = enterEvents.find(event->type());
+
+    if (pseudostate != enterEvents.end())
+    {
+        QVariant variant = watched->property(("_qproperty_" + pseudostate.value() + "_values").toUtf8().constData());
+
+        if (variant.isValid())
+        {
+            QHash<QString, QVariant> backup;
+            QHash<QString, QVariant> style = variant.toHash();
+
+            for (auto i = style.cbegin(); i != style.cend(); i++)
+            {
+                backup[i.key()] = watched->property(i.key().toUtf8().constData());
+                watched->setProperty(i.key().toUtf8().constData(), i.value());
+            }
+
+            watched->setProperty(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData(), backup);
+        }
+    }
+
+    pseudostate = leaveEvents.find(event->type());
+
+    if (pseudostate != leaveEvents.end())
+    {
+        QVariant variant = watched->property(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData());
+
+        if (variant.isValid())
+        {
+            QHash<QString, QVariant> backup = variant.toHash();
+
+            for (auto i = backup.cbegin(); i != backup.cend(); i++)
+                watched->setProperty(i.key().toUtf8().constData(), i.value());
+
+            watched->setProperty(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData(), QVariant());
+        }
     }
 
     return QMainWindow::eventFilter(watched, event);
@@ -161,6 +202,37 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
 void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache)
 {
+    static const QRegularExpression styleRegExp("(?<class>\\w*)\\s*:(?<pseudostate>\\w+)\\s*{(?<stylesheet>[^{}]*)}");
+    QRegularExpressionMatchIterator i = styleRegExp.globalMatch(widget->styleSheet());
+
+    while (i.hasNext())
+    {
+        QRegularExpressionMatch style = i.next();
+
+        auto& stylesheet = cache[style.captured("class")][style.captured("pseudostate")];
+
+        static const QRegularExpression propertyRegExp("qproperty-(?<name>\\w+)\\s*:\\s*(?<value>\\S+)\\s*;");
+        QRegularExpressionMatchIterator j = propertyRegExp.globalMatch(style.captured("stylesheet"));
+
+        while (j.hasNext())
+        {
+            QRegularExpressionMatch property = j.next();
+
+            stylesheet[property.captured("name")] = property.captured("value");
+        }
+    }
+
+    QHash<QString, QHash<QString, QVariant> > stylesheet = cache[widget->metaObject()->className()];
+
+    for (auto i = cache[""].cbegin(); i != cache[""].cend(); i++)
+        for (auto j = i.value().cbegin(); j != i.value().cend(); j++)
+            stylesheet[i.key()][j.key()] = j.value();
+
+    cache.remove("");
+
+    for (auto i = stylesheet.cbegin(); i != stylesheet.cend(); i++)
+        widget->setProperty(("_qproperty_" + i.key() + "_values").toUtf8().constData(), i.value());
+
     for (auto child : widget->children())
         if (auto tmp = qobject_cast<QWidget*>(child))
             cacheProperties(tmp, cache);
