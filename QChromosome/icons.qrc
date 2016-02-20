@@ -14,4 +14,7 @@
         <file alias="reverse">icons/reverse.svg</file>
         <file alias="start">icons/start.svg</file>
     </qresource>
+    <qresource prefix="/selection">
+        <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
+    </qresource>
 </RCC>

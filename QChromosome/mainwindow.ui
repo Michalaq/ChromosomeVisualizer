@@ -54,8 +54,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
          <widget class="MouseControl" name="move" native="true">
           <property name="minimumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -68,7 +68,7 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
           <property name="icon" stdset="0">
-           <iconset>
+           <iconset resource="icons.qrc">
             <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
           </property>
          </widget>
@@ -77,8 +77,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
          <widget class="MouseControl" name="rotate" native="true">
           <property name="minimumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -100,8 +100,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
          <widget class="MouseControl" name="scale" native="true">
           <property name="minimumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -509,6 +509,10 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/rectangular</normaloff>:/selection/rectangular</iconset>
+   </property>
    <property name="text">
     <string>Select</string>
    </property>
@@ -518,7 +522,7 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="icons.qrc">
      <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
    </property>
    <property name="text">
