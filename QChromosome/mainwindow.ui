@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background: #262626; }
-QDockWidget { background: #262626; border: 1px solid #4d4d4d; }
+   <string notr="true">QMainWindow { background: #1a1a1a; }
+QDockWidget { background: #1a1a1a; border: 1px solid #4d4d4d; }
 QToolBar { background: #333333; border: none; }</string>
   </property>
   <property name="dockNestingEnabled">
@@ -60,8 +60,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
           </property>
           <property name="maximumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="cursor">
@@ -83,8 +83,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
           </property>
           <property name="maximumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="cursor">
@@ -106,8 +106,8 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
           </property>
           <property name="maximumSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="cursor">
@@ -198,7 +198,7 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="spacing">
-       <number>32</number>
+       <number>24</number>
       </property>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -460,10 +460,10 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
        <property name="styleSheet">
         <string notr="true">QTabWidget { color: #d9d9d9; }
 ::tab { border: 1px solid #4d4d4d; height: 30px; min-width: 75px; color: #d9d9d9; }
-::tab:selected { background: #1a1a1a; border-bottom: 1px solid #1a1a1a; }
+::tab:selected { background: #333333; border-bottom: 1px solid #333333; }
 ::tab:!selected { background: #262626; }
 ::tab:!last { border-right: none; }
-::pane { background: #1a1a1a; border: 1px solid #4d4d4d; }
+::pane { background: #333333; border: 1px solid #4d4d4d; }
 ::tab-bar { bottom: -1px; }</string>
        </property>
        <widget class="QWidget" name="tab">
