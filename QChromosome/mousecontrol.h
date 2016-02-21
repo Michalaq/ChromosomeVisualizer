@@ -4,7 +4,6 @@
 
 #include "draggable.h"
 #include <QIcon>
-#include <QLabel>
 #include <QGraphicsColorizeEffect>
 
 class MouseControl : public Draggable
@@ -18,8 +17,6 @@ public:
     MouseControl(QWidget *parent = 0);
     virtual ~MouseControl();
 
-    void resizeEvent(QResizeEvent *event);
-
     QIcon icon() const;
     void setIcon(const QIcon &icon);
 
@@ -31,9 +28,8 @@ protected:
 
 private:
     QGraphicsColorizeEffect *effect;
-    QLabel *label;
 
-    QIcon __icon;
+    QIcon _icon;
 };
 
 #endif // CONTROL_H

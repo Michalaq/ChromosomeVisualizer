@@ -1,17 +1,10 @@
 #include "mousecontrol.h"
-#include <QGridLayout>
 
 MouseControl::MouseControl(QWidget *parent) :
     Draggable(parent),
-    label(new QLabel(this)),
     effect(new QGraphicsColorizeEffect(this))
 {
-    new QGridLayout(this);
-
-    layout()->setMargin(0);
-    layout()->addWidget(label);
-
-    label->setGraphicsEffect(effect);
+    setGraphicsEffect(effect);
 }
 
 MouseControl::~MouseControl()
@@ -19,25 +12,14 @@ MouseControl::~MouseControl()
 
 }
 
-#include <QResizeEvent>
-
-void MouseControl::resizeEvent(QResizeEvent *event)
-{
-    Draggable::resizeEvent(event);
-
-    label->setPixmap(icon().pixmap(size()));
-}
-
 QIcon MouseControl::icon() const
 {
-    return __icon;
+    return _icon;
 }
 
 void MouseControl::setIcon(const QIcon &icon)
 {
-    __icon = icon;
-
-    updateGeometry();
+    _icon = icon;
 }
 
 QColor MouseControl::color() const
@@ -51,16 +33,12 @@ void MouseControl::setColor(const QColor &color)
 }
 
 #include <QPainter>
-#include <QStyleOption>
 
 void MouseControl::paintEvent(QPaintEvent *event)
 {
     Draggable::paintEvent(event);
 
-    QStyleOption option;
-    option.initFrom(this);
-
     QPainter painter(this);
 
-    style()->drawPrimitive(QStyle::PE_Widget, &option, &painter, this);
+    _icon.paint(&painter, rect());
 }
