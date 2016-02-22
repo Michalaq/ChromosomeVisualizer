@@ -15,9 +15,18 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow { background: #1a1a1a; }
+
 QDockWidget { background: #1a1a1a; border: 1px solid #4d4d4d; }
 QDockWidget::title { background: #262626; }
-QToolBar { background: #333333; border: none; }</string>
+
+QToolBar { background: #333333; border: none; }
+
+QTabWidget { color: #d9d9d9; }
+::tab { border: 1px solid #4d4d4d; height: 30px; min-width: 75px; color: #d9d9d9; }
+::tab:selected { background: #262626; border-bottom: none; border-top: 2px solid #0044aa; padding-top: -1px; }
+::tab:!selected { background: none; border: none; }
+::pane { background: #262626; border: 1px solid #4d4d4d; }
+::tab-bar { bottom: -1px; }</string>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
@@ -458,15 +467,6 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
-       <property name="styleSheet">
-        <string notr="true">QTabWidget { color: #d9d9d9; }
-::tab { border: 1px solid #4d4d4d; height: 30px; min-width: 75px; color: #d9d9d9; }
-::tab:selected { background: #333333; border-bottom: 1px solid #333333; }
-::tab:!selected { background: #262626; }
-::tab:!last { border-right: none; }
-::pane { background: #333333; border: 1px solid #4d4d4d; }
-::tab-bar { bottom: -1px; }</string>
-       </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
          <string>Atom</string>
