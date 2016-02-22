@@ -22,11 +22,17 @@ QDockWidget::title { background: #262626; }
 QToolBar { background: #333333; border: none; }
 
 QTabWidget { color: #d9d9d9; }
-::tab { border: 1px solid #4d4d4d; height: 30px; min-width: 75px; color: #d9d9d9; }
-::tab:selected { background: #262626; border-bottom: none; border-top: 2px solid #0044aa; padding-top: -1px; }
-::tab:!selected { background: none; border: none; }
+::tab { border: 1px solid #4d4d4d; height: 27px; width: 75px; color: #d9d9d9; }
+::tab:!last { border-right: none; }
+::tab:selected { background: #262626; border-bottom: none; border-top: 2px solid #0044aa; }
+::tab:!selected { background: none; }
+::tab:!selected:hover { border-top: 2px solid #0044aa; padding-top: 0px; }
 ::pane { background: #262626; border: 1px solid #4d4d4d; }
-::tab-bar { bottom: -1px; }</string>
+::tab-bar { bottom: -1px; }
+
+QPushButton { color: #ffffff; background: #0044aa; border: none; width: 85px; height: 27px; }
+QPushButton:hover { background: #0055d4; }
+QPushButton:pressed { background: #003380; }</string>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
