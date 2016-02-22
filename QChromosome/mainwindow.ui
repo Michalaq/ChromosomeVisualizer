@@ -16,6 +16,7 @@
   <property name="styleSheet">
    <string notr="true">QMainWindow { background: #1a1a1a; }
 QDockWidget { background: #1a1a1a; border: 1px solid #4d4d4d; }
+QDockWidget::title { background: #262626; }
 QToolBar { background: #333333; border: none; }</string>
   </property>
   <property name="dockNestingEnabled">
