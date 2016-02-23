@@ -91,6 +91,15 @@ QPushButton:hover {
 
 QPushButton:pressed {
 	background: #003380;
+}
+
+QToolBox::tab {
+	background: #333333;
+	color: darkgray;
+}
+
+QToolBox::tab:selected {
+	font: bold;
 }</string>
   </property>
   <property name="dockNestingEnabled">

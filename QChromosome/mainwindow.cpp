@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+    ui->tabWidget->hide();
+
     cacheProperties(this, {});
 
     auto x = new SelectionOperationsWidget(ui->tab);
@@ -200,6 +202,11 @@ void MainWindow::end()
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
     ui->camera->setOrigin(selection.weightCenter());
+
+    if (selection.atomCount())
+        ui->tabWidget->show();
+    else
+        ui->tabWidget->hide();
 }
 
 void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache)
