@@ -114,25 +114,6 @@ static const char * pickingFragmentShaderCode =
 "}"
 ;
 
-static const char * planeVertexShaderCode =
-"#version 330 core\n"
-"uniform mat4 mvp;"
-"void main() {"
-    "float r = 100.0;"
-    "float x = ((gl_VertexID & 1) == 1) ? r : -r;"
-    "float z = ((gl_VertexID & 2) == 2) ? -r : r;"
-    "gl_Position = mvp * vec4(x, 0, z, 1);"
-"}"
-;
-
-static const char * planeFragmentShaderCode =
-"#version 330 core\n"
-"out vec4 cColor;"
-"void main() {"
-    "cColor = vec4(1, 1, 1, 1);"
-"}"
-;
-
 static const float EPSILON = 1e-4;
 static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
 static const int SELECTED_FLAG = 1 << 2;
@@ -383,11 +364,6 @@ void VizWidget::initializeGL()
     cylinderProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
     assert(cylinderProgram_.link());
 
-    assert(planeProgram_.create());
-    planeProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, planeVertexShaderCode);
-    planeProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, planeFragmentShaderCode);
-    assert(planeProgram_.link());
-
     assert(pickingProgram_.create());
     pickingProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex,
                                            sphereVertexShaderCode);
@@ -427,13 +403,6 @@ void VizWidget::paintGL()
 
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    vaoSpheres_.bind();
-    planeProgram_.bind();
-    planeProgram_.setUniformValue("mvp", modelViewProjection_);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    planeProgram_.release();
-    vaoSpheres_.release();
 
     // If there are no spheres, my driver crashes
     if (sphereCount_ > 0)
