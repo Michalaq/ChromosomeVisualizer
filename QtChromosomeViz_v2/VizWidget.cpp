@@ -376,8 +376,7 @@ void VizWidget::paintGL()
 {
     if (needVBOUpdate_)
     {
-        generateSortedState();
-        updateWholeFrameData();
+        setFrame(frameNumber_);
         needVBOUpdate_ = false;
     }
 
