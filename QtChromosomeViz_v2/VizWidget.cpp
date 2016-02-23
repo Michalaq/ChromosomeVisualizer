@@ -467,12 +467,15 @@ void VizWidget::paintLabels(QPainter & painter)
     {
         auto position = frameState_[it.key()].position;
         auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
-        QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
-                              -transformedPosition.y() / transformedPosition.w());
-        QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
-                               (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-        QRectF rect(screenPosition - BIG_PT, screenPosition + BIG_PT);
-        painter.drawText(rect, Qt::AlignCenter, it.value());
+        if (transformedPosition.z() >= 0.f)
+        {
+            QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
+                                  -transformedPosition.y() / transformedPosition.w());
+            QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
+                                   (float)height() * (0.5 + 0.5 * ndcPosition.y()));
+            QRectF rect(screenPosition - BIG_PT, screenPosition + BIG_PT);
+            painter.drawText(rect, Qt::AlignCenter, it.value());
+        }
     }
 }
 
