@@ -24,11 +24,17 @@ QStatusBar {
 }
 
 QDockWidget {
-	background: #1a1a1a; border: 1px solid #4d4d4d;
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: darkgray;
+	font: bold;
 }
 
 QDockWidget::title {
 	background: #262626;
+	position: relative;
+	padding-left: 10px;
+	text-align: left center;
 }
 
 QToolBar {
@@ -523,12 +529,18 @@ MediaControl:hover {
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>QDockWidget 1</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
+   <property name="windowTitle">
+    <string>QDockWidget 2</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
@@ -567,6 +579,9 @@ MediaControl:hover {
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_3">
+   <property name="windowTitle">
+    <string>QPlotWidget 1</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
