@@ -6,34 +6,86 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>658</width>
-    <height>300</height>
+    <width>848</width>
+    <height>477</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow { background: #1a1a1a; }
+   <string notr="true">QMainWindow {
+	background: #1a1a1a;
+	color: lightgrey;
+}
 
-QDockWidget { background: #1a1a1a; border: 1px solid #4d4d4d; }
-QDockWidget::title { background: #262626; }
+QStatusBar {
+	background: #672178;
+}
 
-QToolBar { background: #333333; border: none; }
+QDockWidget {
+	background: #1a1a1a; border: 1px solid #4d4d4d;
+}
 
-QTabWidget { color: #d9d9d9; }
-QTabWidget::pane { background: #262626; border: 1px solid #4d4d4d; }
-QTabWidget::tab-bar { bottom: -1px; }
+QDockWidget::title {
+	background: #262626;
+}
 
-QTabBar::tab { border: 1px solid #4d4d4d; height: 27px; width: 75px; color: #d9d9d9; }
-QTabBar::tab:!last { border-right: none; }
-QTabBar::tab:selected { background: #262626; border-bottom: none; border-top: 2px solid #0044aa; }
-QTabBar::tab:!selected { background: none; }
-QTabBar::tab:!selected:hover { border-top: 2px solid #0044aa; padding-top: 0px; }
+QToolBar {
+	background: #333333;
+	border: none;
+}
 
-QPushButton { color: #ffffff; background: #0044aa; border: none; width: 85px; height: 27px; }
-QPushButton:hover { background: #0055d4; }
-QPushButton:pressed { background: #003380; }</string>
+QTabWidget::pane {
+	background: #262626;
+	border: 1px solid #4d4d4d;
+}
+
+QTabWidget::tab-bar {
+	bottom: -1px;
+}
+
+QTabBar::tab {
+	border: 1px solid #4d4d4d;
+	width: 75px;
+	height: 27px;
+	color: lightgrey;
+}
+
+QTabBar::tab:!last {
+	border-right: none;
+}
+
+QTabBar::tab:selected {
+	background: #262626;
+	border-bottom: none;
+	border-top: 2px solid #0044aa;
+}
+
+QTabBar::tab:!selected {
+	background: none;
+}
+
+QTabBar::tab:!selected:hover {
+	border-top: 2px solid #0044aa;
+	padding-top: 0px;
+}
+
+QPushButton {
+	background: #0044aa;
+	border: none;
+	width: 85px;
+	height: 27px;
+	color: white;
+}
+
+QPushButton:hover {
+	background: #0055d4;
+}
+
+QPushButton:pressed {
+	background: #003380;
+}</string>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>
@@ -43,11 +95,25 @@ QPushButton:pressed { background: #003380; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">QWidget#centralWidget { background: #1a1a1a; }
-MouseControl { qproperty-color: #cccccc; }
-MouseControl:hover { qproperty-color: #ffffff; }
-MediaControl { qproperty-color: #b3b3b3; }
-MediaControl:hover { qproperty-color: #ffffff; }</string>
+    <string notr="true">centralWidget {
+	background: #1a1a1a;
+}
+
+MouseControl {
+	qproperty-color: #cccccc;
+}
+
+MouseControl:hover {
+	qproperty-color: #ffffff;
+}
+
+MediaControl {
+	qproperty-color: #b3b3b3;
+}
+
+MediaControl:hover {
+	qproperty-color: #ffffff;
+}</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
@@ -431,7 +497,7 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>658</width>
+     <width>848</width>
      <height>27</height>
     </rect>
    </property>
@@ -455,11 +521,7 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="styleSheet">
-    <string notr="true">background: #672178;</string>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -475,7 +537,9 @@ MediaControl:hover { qproperty-color: #ffffff; }</string>
      <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
        <property name="styleSheet">
-        <string notr="true">QTabWidget { width: 375; }</string>
+        <string notr="true">#tabWidget {
+	width: 375px;
+}</string>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
