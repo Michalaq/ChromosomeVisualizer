@@ -449,6 +449,7 @@ void VizWidget::paintGL()
         QRect r = selectionRect();
         painter.fillRect(r, brush);
         painter.setPen(Qt::white);
+        painter.setBrush(Qt::transparent);
         painter.drawRect(r);
     }
 
