@@ -315,14 +315,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="start">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">
@@ -338,14 +338,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="previous">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">
@@ -361,14 +361,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="reverse">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">
@@ -421,14 +421,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="next">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">
@@ -444,14 +444,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="end">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">
@@ -467,14 +467,14 @@ MediaControl:hover {
        <widget class="MediaControl" name="record">
         <property name="minimumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>32</width>
-          <height>32</height>
+          <width>24</width>
+          <height>24</height>
          </size>
         </property>
         <property name="cursor">

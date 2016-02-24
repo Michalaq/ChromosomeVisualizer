@@ -92,7 +92,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
-std::shared_ptr<Simulation> tmp;//TODO paskudny hack, usunąć po dodaniu wątku
+std::shared_ptr<Simulation> tmp = std::make_shared<NullSimulation>(); //TODO paskudny hack, usunąć po dodaniu wątku
 void MainWindow::openSimulation()
 {
     QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
@@ -150,7 +150,11 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    setFrame(currentFrame != 0 ? currentFrame - 1 : lastFrame);
+    if (currentFrame != 0)
+        setFrame(--currentFrame);
+    else
+        if (ui->reverse->isChecked())
+            ui->reverse->click();
 }
 
 void MainWindow::reverse(bool checked)
@@ -189,8 +193,12 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    setFrame(currentFrame != lastFrame ? currentFrame + 1 : 0);
     tmp->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    if (currentFrame != lastFrame)
+        setFrame(++currentFrame);
+    else
+        if (ui->play->isChecked())
+            ui->play->click();
 }
 
 void MainWindow::end()
