@@ -64,11 +64,12 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing);
 
     QPainterPath path(data);
-    path.lineTo(data.currentPosition().x(), 0);
-    path.lineTo(0, 0);
+    path.lineTo(data.currentPosition().x(), databr.y());
+    path.lineTo(0, databr.y());
     path.closeSubpath();
 
-    painter.scale((qreal) width() / databr.width(), (qreal) height() / databr.height());
+    painter.translate(12, 12);
+    painter.scale((qreal) (width() - 24) / databr.width(), (qreal) (height() - 24) / databr.height());
     painter.translate(-databr.topLeft());
 
     painter.fillPath(path, QColor("#002255"));
@@ -82,5 +83,6 @@ void Plot::paintEvent(QPaintEvent *event)
     pen.setColor(Qt::white);
 
     painter.setPen(pen);
-    painter.drawLine(currentFrame, 0, currentFrame, QPointF(data.elementAt(currentFrame)).y());
+    painter.drawLine(currentFrame, databr.y(), currentFrame, databr.y() + databr.height());
+    //QPointF(data.elementAt(currentFrame)).y()
 }
