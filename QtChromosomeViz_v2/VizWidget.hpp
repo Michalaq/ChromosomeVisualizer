@@ -104,6 +104,9 @@ public slots:
     void select(const QList<unsigned int>& selected);//ZAMIENNIK
 
     void setColor(const QList<unsigned int>& selected, QColor color);//NOWY
+    void setAlpha(const QList<unsigned int>& selected, float alpha);//NOWY
+    void setSize(const QList<unsigned int>& selected, float size);//NOWY
+    void setLabel(const QList<unsigned int>& selected, const QString& label);//NOWY
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,

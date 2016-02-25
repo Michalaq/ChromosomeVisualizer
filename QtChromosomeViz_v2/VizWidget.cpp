@@ -716,6 +716,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
         emit selectionChangedIndices(newIndices, oldIndices);
         emit selectionChanged(selectedSpheres(), oldAtoms);
         emit selectionChangedObject(selectedSpheresObject());
+        emit selectionChanged(newIndices);
     }
 }
 
@@ -950,6 +951,7 @@ void VizWidget::setColor(const QList<unsigned int> &selected, QColor color)
 
 void AtomSelection::setAlpha(float alpha)
 {
+    return widget_->setAlpha(selectedIndices_, alpha);
     unsigned int code = ((unsigned int)(alpha * 255.f) << 24) & 0xFF000000U;
     for (unsigned int i : selectedIndices_)
     {
@@ -960,18 +962,41 @@ void AtomSelection::setAlpha(float alpha)
     widget_->needVBOUpdate_ = true;
     widget_->update();
 }
+void VizWidget::setAlpha(const QList<unsigned int>& selected, float alpha)
+{
+    unsigned int code = ((unsigned int)(alpha * 255.f) << 24) & 0xFF000000U;
+
+    for (unsigned int i : selected)
+    {
+        auto & loc = frameState_[i].color;
+        loc = (loc & 0x00FFFFFF) | code;
+    }
+
+    needVBOUpdate_ = true;
+    update();
+}
 
 void AtomSelection::setSize(float size)
 {
+    return widget_->setSize(selectedIndices_, size);
     for (unsigned int i : selectedIndices_)
         widget_->frameState_[i].size = size;
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
 }
+void VizWidget::setSize(const QList<unsigned int>& selected, float size)
+{
+    for (unsigned int i : selected)
+        frameState_[i].size = size;
+
+    needVBOUpdate_ = true;
+    update();
+}
 
 void AtomSelection::setLabel(const QString & label)
 {
+    return widget_->setLabel(selectedIndices_, label);
     if (label == "")
     {
         for (unsigned int i : selectedIndices_)
@@ -984,6 +1009,21 @@ void AtomSelection::setLabel(const QString & label)
     }
 
     widget_->update();
+}
+void VizWidget::setLabel(const QList<unsigned int>& selected, const QString& label)
+{
+    if (label.isEmpty())
+    {
+        for (unsigned int i : selected)
+            atomLabels_.remove(i);
+    }
+    else
+    {
+        for (unsigned int i : selected)
+            atomLabels_[i] = label;
+    }
+
+    update();
 }
 
 unsigned int AtomSelection::atomCount() const
