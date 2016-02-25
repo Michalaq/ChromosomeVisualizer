@@ -788,17 +788,17 @@ void VizWidget::setVisibleSelection(AtomSelection s)
     setFrame(frameNumber_);
     update();
 }
-void VizWidget::select(const QList<unsigned int>& s)
+void VizWidget::select(const QList<unsigned int>& selected)
 {
     for (const auto & id : currentSelection_.selectedIndices())
         selectedBitmap_[id] = false;
 
-    currentSelection_.selectedIndices_= s;
+    currentSelection_.selectedIndices_= selected;
 
     for (const auto & id : currentSelection_.selectedIndices())
         selectedBitmap_[id] = true;
 
-    emit selectionChanged(s);
+    emit selectionChanged(selected);
 
     setFrame(frameNumber_);
     update();
@@ -923,6 +923,7 @@ AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
 
 void AtomSelection::setColor(QColor color)
 {
+    return widget_->setColor(selectedIndices_, color);
     unsigned int code = color.rgb();
     for (unsigned int i : selectedIndices_)
     {
@@ -932,6 +933,19 @@ void AtomSelection::setColor(QColor color)
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
+}
+void VizWidget::setColor(const QList<unsigned int> &selected, QColor color)
+{
+    unsigned int code = color.rgb();
+
+    for (unsigned int i : selected)
+    {
+        auto & loc = frameState_[i].color;
+        loc = (loc & 0xFF000000) | code;
+    }
+
+    needVBOUpdate_ = true;
+    update();
 }
 
 void AtomSelection::setAlpha(float alpha)

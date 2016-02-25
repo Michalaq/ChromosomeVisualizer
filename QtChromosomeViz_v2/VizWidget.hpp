@@ -101,7 +101,9 @@ public slots:
     AtomSelection atomTypeSelection(const std::string & s);
 
     void setVisibleSelection(AtomSelection s);
-    void select(const QList<unsigned int>& s);//ZAMIENNIK
+    void select(const QList<unsigned int>& selected);//ZAMIENNIK
+
+    void setColor(const QList<unsigned int>& selected, QColor color);//NOWY
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
