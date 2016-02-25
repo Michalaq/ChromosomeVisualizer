@@ -101,6 +101,7 @@ public slots:
     AtomSelection atomTypeSelection(const std::string & s);
 
     void setVisibleSelection(AtomSelection s);
+    void select(const QList<unsigned int>& s);//ZAMIENNIK
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -108,6 +109,7 @@ signals:
     void selectionChanged(const QList<Atom> & selected,
                           const QList<Atom> & deselected);
     void selectionChangedObject(const AtomSelection & selection);
+    void selectionChanged(const QList<unsigned int>& selected);//ZAMIENNIK
 
 protected:
     void paintLabels(QPainter &painter);

@@ -210,10 +210,12 @@ void MainWindow::selectAll()
 {
     QList<unsigned int> all;
 
-    for (unsigned int i = 0; i < simulation->getFrame(currentFrame)->atoms.size(); i++)
+    auto atomsCount = simulation->getFrame(currentFrame)->atoms.size();
+
+    for (unsigned int i = 0; i < atomsCount; i++)
         all.push_back(i);
 
-    //ui->scene->setVisibleSelection(all);
+    ui->scene->select(all);
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)

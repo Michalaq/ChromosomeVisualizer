@@ -788,6 +788,21 @@ void VizWidget::setVisibleSelection(AtomSelection s)
     setFrame(frameNumber_);
     update();
 }
+void VizWidget::select(const QList<unsigned int>& s)
+{
+    for (const auto & id : currentSelection_.selectedIndices())
+        selectedBitmap_[id] = false;
+
+    currentSelection_.selectedIndices_= s;
+
+    for (const auto & id : currentSelection_.selectedIndices())
+        selectedBitmap_[id] = true;
+
+    emit selectionChanged(s);
+
+    setFrame(frameNumber_);
+    update();
+}
 
 void VizWidget::generateSortedState()
 {
