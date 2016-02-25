@@ -4,116 +4,6 @@
 #include "bartekm_code/NullSimulation.h"
 #include "VizWidget.hpp"
 
-static const char * sphereVertexShaderCode =
-"#version 330 core\n"
-"layout(location = 0) in vec3 vVertexPosition;"
-"layout(location = 1) in vec3 vVertexNormal;"
-"layout(location = 2) in vec3 vInstancePosition;"
-"layout(location = 3) in uint iInstanceFlags;"
-"layout(location = 4) in uint iAtomID;"
-"layout(location = 5) in uint cInstanceColor;"
-"layout(location = 6) in float fInstanceSize;"
-"uniform mat4 mvp;"
-"uniform mat3 mvNormal;"
-"out vec4 vPosition;"
-"out vec3 vNormal;"
-"flat out uint iInstanceID;"
-"flat out uint iFlags;"
-"out vec4 vColor;"
-"vec4 colorFromARGB8(uint color) {"
-    "vec4 ret;"
-    "ret.a = float((color >> 24u) & 0xFFu) / 255.f;"
-    "ret.r = float((color >> 16u) & 0xFFu) / 255.f;"
-    "ret.g = float((color >>  8u) & 0xFFu) / 255.f;"
-    "ret.b = float((color >>  0u) & 0xFFu) / 255.f;"
-    "return ret;"
-"}"
-"void main() {"
-    "vec4 pos = mvp * vec4(vVertexPosition * fInstanceSize + vInstancePosition.xyz, 1);"
-    "gl_Position = pos;"
-    "vPosition = pos;"
-    "vNormal = normalize(mvNormal * vVertexNormal);"
-    "iInstanceID = iAtomID;"
-    "iFlags = iInstanceFlags;"
-    "vColor = colorFromARGB8(cInstanceColor);"
-"}"
-;
-
-static const char * cylinderVertexShaderCode =
-"#version 330 core\n"
-"layout(location = 0) in vec3 vVertexPosition;\n"
-"layout(location = 1) in vec3 vVertexNormal;\n"
-"layout(location = 2) in vec3 vInstancePosition;\n"
-"layout(location = 3) in vec4 vInstanceRotation;\n"
-"layout(location = 4) in uvec2 cInstanceColor;\n"
-"layout(location = 5) in vec3 fInstanceSize;\n"
-"uniform mat4 mvp;\n"
-"uniform mat3 mvNormal;\n"
-"out vec4 vPosition;\n"
-"out vec3 vNormal;\n"
-"flat out uint iInstanceID;\n"
-"flat out uint iFlags;\n"
-"out vec4 vColor;\n"
-"vec4 colorFromARGB8(uint color) {\n"
-    "vec4 ret;\n"
-    "ret.a = float((color >> 24u) & 0xFFu) / 255.f;\n"
-    "ret.r = float((color >> 16u) & 0xFFu) / 255.f;\n"
-    "ret.g = float((color >>  8u) & 0xFFu) / 255.f;\n"
-    "ret.b = float((color >>  0u) & 0xFFu) / 255.f;\n"
-    "return ret;\n"
-"}\n"
-"vec3 rotate_vector(vec4 quat, vec3 vec) {\n"
-    "return vec + 2.0 * cross(cross(vec, quat.xyz) + quat.w * vec, quat.xyz);\n"
-"}\n"
-"void main() {\n"
-    "float blendFactor = 0.5 + 0.5 * vVertexPosition.z;\n"
-    "float size = mix(fInstanceSize.x, fInstanceSize.y, blendFactor) * 0.5;"
-    "vec3 pos3 = vVertexPosition * -vec3(size, size, fInstanceSize.z);\n"
-    "pos3 = rotate_vector(vInstanceRotation.wxyz, pos3);\n"
-    "vec4 pos = mvp * vec4(pos3 + vInstancePosition.xyz, 1);\n"
-    "gl_Position = pos;\n"
-    "vPosition = pos;\n"
-    "vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));\n"
-    "iInstanceID = 0u;\n"
-    "iFlags = 0u;\n"
-    "vColor = mix(colorFromARGB8(cInstanceColor.x | 0xFF000000U),\n"
-                 "colorFromARGB8(cInstanceColor.y | 0xFF000000U),\n"
-                 "blendFactor);\n"
-"}\n"
-;
-
-static const char * fragmentShaderCode =
-"#version 330 core\n"
-"uniform vec2 uvScreenSize;"
-"in vec4 vPosition;"
-"in vec3 vNormal;"
-"flat in uint iFlags;"
-"in vec4 vColor;"
-"out vec4 cColor;"
-"void main() {"
-    "vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;"
-    "float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);"
-    "float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);"
-    "vec4 baseColor = vColor;"
-    "float lightness = (0.5 + 0.5 * 0.7 * (vNormal.x + vNormal.z));"
-    "vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);"
-    "float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;"
-    "cColor = mix(cDiffuse, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);"
-"}"
-;
-
-static const char * pickingFragmentShaderCode =
-"#version 330 core\n"
-"flat in uint iInstanceID;"
-"out vec4 cColor;"
-"void main() {"
-    "cColor.a = float((iInstanceID >> 24u) & 0xFFu) / 255.f;"
-    "cColor.r = float((iInstanceID >> 16u) & 0xFFu) / 255.f;"
-    "cColor.g = float((iInstanceID >>  8u) & 0xFFu) / 255.f;"
-    "cColor.b = float((iInstanceID >>  0u) & 0xFFu) / 255.f;"
-"}"
-;
-
 static const float EPSILON = 1e-4;
 static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
 static const int SELECTED_FLAG = 1 << 2;
@@ -355,20 +245,18 @@ void VizWidget::initializeGL()
 
     // Shaders
     assert(sphereProgram_.create());
-    sphereProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, sphereVertexShaderCode);
-    sphereProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/sphere.vert");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragment.frag");
     assert(sphereProgram_.link());
 
     assert(cylinderProgram_.create());
-    cylinderProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex, cylinderVertexShaderCode);
-    cylinderProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderCode);
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/cylinder.vert");
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragment.frag");
     assert(cylinderProgram_.link());
 
     assert(pickingProgram_.create());
-    pickingProgram_.addShaderFromSourceCode(QOpenGLShader::Vertex,
-                                           sphereVertexShaderCode);
-    pickingProgram_.addShaderFromSourceCode(QOpenGLShader::Fragment,
-                                           pickingFragmentShaderCode);
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/sphere.vert");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/picking.frag");
     assert(pickingProgram_.link());
 }
 

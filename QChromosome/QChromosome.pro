@@ -44,3 +44,5 @@ CONFIG += c++11
 
 RESOURCES += \
     icons.qrc
+
+OTHER_FILES +=
