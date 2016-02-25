@@ -146,7 +146,6 @@ private:
 
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
-    QOpenGLShaderProgram planeProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
     QMatrix4x4 projection_;
