@@ -26,6 +26,7 @@ public slots:
     void setFrame(int n);
     void updateFrameCount(int n);
 
+    /* animation */
     void start();
     void previous();
     void reverse(bool checked);
@@ -33,10 +34,14 @@ public slots:
     void next();
     void end();
 
+    /* selection */
+    void selectAll();
     void handleSelection(const AtomSelection & selection);
 
 private:
     Ui::MainWindow *ui;
+
+    std::shared_ptr<Simulation> simulation;
 
     int currentFrame;
     int lastFrame;
@@ -44,7 +49,7 @@ private:
     QTimer timer;
 
     /* cf. QTBUG-2982 */
-    void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache);
+    void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache = {});
 };
 
 #endif // MAINWINDOW_H

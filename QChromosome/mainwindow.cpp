@@ -1,10 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    simulation(std::make_shared<NullSimulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0)//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
 {
@@ -17,8 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabWidget->hide();
 
-    cacheProperties(this, {});
+    cacheProperties(this);
 
+    //TODO do wywalenia po zaimplementowaniu widgeta
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
     x->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
@@ -90,14 +94,10 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 }
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 
-std::shared_ptr<Simulation> tmp = std::make_shared<NullSimulation>(); //TODO paskudny hack, usunąć po dodaniu wątku
 void MainWindow::openSimulation()
 {
     QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
-
-    std::shared_ptr<Simulation> simulation;
 
     if (!path.isEmpty())
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
@@ -117,7 +117,6 @@ void MainWindow::openSimulation()
         lastFrame = 0;
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-        tmp=simulation;//TODO paskudny hack, usunąć po dodaniu wątku
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
     }
 }
@@ -193,7 +192,7 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    tmp->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
     if (currentFrame != lastFrame)
         setFrame(++currentFrame);
     else
@@ -204,7 +203,17 @@ void MainWindow::next()
 void MainWindow::end()
 {
     setFrame(lastFrame);
-    tmp->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+}
+
+void MainWindow::selectAll()
+{
+    QList<unsigned int> all;
+
+    for (unsigned int i = 0; i < simulation->getFrame(currentFrame)->atoms.size(); i++)
+        all.push_back(i);
+
+    //ui->scene->setVisibleSelection(all);
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)

@@ -110,11 +110,7 @@ QToolBox::tab:selected {
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
-    <string notr="true">centralWidget {
-	background: #1a1a1a;
-}
-
-MouseControl {
+    <string notr="true">MouseControl {
 	qproperty-color: #cccccc;
 }
 
@@ -527,7 +523,6 @@ MediaControl:hover {
     </item>
    </layout>
    <zorder></zorder>
-   <zorder>horizontalLayoutWidget_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -544,7 +539,14 @@ MediaControl:hover {
     </property>
     <addaction name="actionOpen"/>
    </widget>
+   <widget class="QMenu" name="menuSelection">
+    <property name="title">
+     <string>Selection</string>
+    </property>
+    <addaction name="actionSelect_All"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSelection"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -672,6 +674,14 @@ MediaControl:hover {
    </property>
    <property name="text">
     <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionSelect_All">
+   <property name="text">
+    <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>
@@ -980,6 +990,22 @@ MediaControl:hover {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSelect_All</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -991,5 +1017,6 @@ MediaControl:hover {
   <slot>end()</slot>
   <slot>setFrame(int)</slot>
   <slot>handleSelection(AtomSelection)</slot>
+  <slot>selectAll()</slot>
  </slots>
 </ui>
