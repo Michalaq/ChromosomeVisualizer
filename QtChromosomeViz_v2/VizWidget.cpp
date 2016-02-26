@@ -789,14 +789,14 @@ void VizWidget::setVisibleSelection(AtomSelection s)
     setFrame(frameNumber_);
     update();
 }
-void VizWidget::select(const QList<unsigned int>& selected)
+void VizWidget::select(const AtomCollection& selected)
 {
-    for (const auto & id : currentSelection_.selectedIndices())
+    for (const auto & id : selected_)
         selectedBitmap_[id] = false;
 
-    currentSelection_.selectedIndices_= selected;
+    selected_= selected;
 
-    for (const auto & id : currentSelection_.selectedIndices())
+    for (const auto & id : selected_)
         selectedBitmap_[id] = true;
 
     emit selectionChanged(selected);
@@ -935,7 +935,7 @@ void AtomSelection::setColor(QColor color)
     widget_->needVBOUpdate_ = true;
     widget_->update();
 }
-void VizWidget::setColor(const QList<unsigned int> &selected, QColor color)
+void VizWidget::setColor(const AtomCollection& selected, QColor color)
 {
     unsigned int code = color.rgb();
 
@@ -962,7 +962,7 @@ void AtomSelection::setAlpha(float alpha)
     widget_->needVBOUpdate_ = true;
     widget_->update();
 }
-void VizWidget::setAlpha(const QList<unsigned int>& selected, float alpha)
+void VizWidget::setAlpha(const AtomCollection& selected, float alpha)
 {
     unsigned int code = ((unsigned int)(alpha * 255.f) << 24) & 0xFF000000U;
 
@@ -985,7 +985,7 @@ void AtomSelection::setSize(float size)
     widget_->needVBOUpdate_ = true;
     widget_->update();
 }
-void VizWidget::setSize(const QList<unsigned int>& selected, float size)
+void VizWidget::setSize(const AtomCollection& selected, float size)
 {
     for (unsigned int i : selected)
         frameState_[i].size = size;
@@ -1010,7 +1010,7 @@ void AtomSelection::setLabel(const QString & label)
 
     widget_->update();
 }
-void VizWidget::setLabel(const QList<unsigned int>& selected, const QString& label)
+void VizWidget::setLabel(const AtomCollection& selected, const QString& label)
 {
     if (label.isEmpty())
     {

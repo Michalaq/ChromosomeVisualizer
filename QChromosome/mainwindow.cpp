@@ -208,7 +208,7 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    QList<unsigned int> all;
+    AtomCollection all;
 
     auto atomsCount = simulation->getFrame(currentFrame)->atoms.size();
 
@@ -218,11 +218,11 @@ void MainWindow::selectAll()
     ui->scene->select(all);
 }
 
-void MainWindow::handleSelection(const AtomSelection &selection)
+void MainWindow::handleSelection(const AtomCollection &selected)
 {
-    ui->camera->setOrigin(selection.weightCenter());
+    //ui->camera->setOrigin(selection.weightCenter());
 
-    if (selection.atomCount())
+    if (!selected.isEmpty())
         ui->tabWidget->show();
     else
         ui->tabWidget->hide();

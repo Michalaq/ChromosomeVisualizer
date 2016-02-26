@@ -61,6 +61,7 @@ private:
     QList<unsigned int> selectedIndices_;
     VizWidget * widget_;
 };
+using AtomCollection = QList<unsigned int>;//NOWY
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
@@ -101,12 +102,12 @@ public slots:
     AtomSelection atomTypeSelection(const std::string & s);
 
     void setVisibleSelection(AtomSelection s);
-    void select(const QList<unsigned int>& selected);//ZAMIENNIK
+    void select(const AtomCollection& selected);//ZAMIENNIK
 
-    void setColor(const QList<unsigned int>& selected, QColor color);//NOWY
-    void setAlpha(const QList<unsigned int>& selected, float alpha);//NOWY
-    void setSize(const QList<unsigned int>& selected, float size);//NOWY
-    void setLabel(const QList<unsigned int>& selected, const QString& label);//NOWY
+    void setColor(const AtomCollection& selected, QColor color);//NOWY
+    void setAlpha(const AtomCollection& selected, float alpha);//NOWY
+    void setSize(const AtomCollection& selected, float size);//NOWY
+    void setLabel(const AtomCollection& selected, const QString& label);//NOWY
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -114,7 +115,7 @@ signals:
     void selectionChanged(const QList<Atom> & selected,
                           const QList<Atom> & deselected);
     void selectionChangedObject(const AtomSelection & selection);
-    void selectionChanged(const QList<unsigned int>& selected);//ZAMIENNIK
+    void selectionChanged(const AtomCollection& selected);//ZAMIENNIK
 
 protected:
     void paintLabels(QPainter &painter);
@@ -177,6 +178,7 @@ private:
     QPoint selectionPoints_[2];
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     AtomSelection currentSelection_;
+    AtomCollection selected_;//ZAMIENNIK
     QVector<bool> selectedBitmap_;
 
     QRect selectionRect() const;

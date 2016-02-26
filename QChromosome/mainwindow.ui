@@ -692,7 +692,7 @@ MediaControl:hover {
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
    <slots>
-    <signal>selectionChangedObject(AtomSelection)</signal>
+    <signal>selectionChanged(AtomCollection)</signal>
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
@@ -976,9 +976,9 @@ MediaControl:hover {
   </connection>
   <connection>
    <sender>scene</sender>
-   <signal>selectionChangedObject(AtomSelection)</signal>
+   <signal>selectionChanged(AtomCollection)</signal>
    <receiver>MainWindow</receiver>
-   <slot>handleSelection(AtomSelection)</slot>
+   <slot>handleSelection(AtomCollection)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>249</x>
@@ -1016,7 +1016,7 @@ MediaControl:hover {
   <slot>next()</slot>
   <slot>end()</slot>
   <slot>setFrame(int)</slot>
-  <slot>handleSelection(AtomSelection)</slot>
+  <slot>handleSelection(AtomCollection)</slot>
   <slot>selectAll()</slot>
  </slots>
 </ui>
