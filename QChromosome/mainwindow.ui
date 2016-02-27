@@ -561,7 +561,7 @@ MediaControl:hover {
    <addaction name="actionScale"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="DockWidget" name="dockWidget">
    <property name="windowTitle">
     <string>QDockWidget 1</string>
    </property>
@@ -570,7 +570,7 @@ MediaControl:hover {
    </attribute>
    <widget class="QWidget" name="dockWidgetContents"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
     <string>QDockWidget 2</string>
    </property>
@@ -611,7 +611,7 @@ MediaControl:hover {
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
+  <widget class="DockWidget" name="dockWidget_3">
    <property name="windowTitle">
     <string>QPlotWidget 1</string>
    </property>
@@ -688,6 +688,11 @@ MediaControl:hover {
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
@@ -719,14 +724,15 @@ MediaControl:hover {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
    <class>MouseControl</class>
    <extends>QWidget</extends>
    <header>mousecontrol.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DockWidget</class>
+   <extends>QDockWidget</extends>
+   <header>dockwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
