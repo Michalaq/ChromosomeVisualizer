@@ -23,23 +23,14 @@ QStatusBar {
 	background: #672178;
 }
 
-QDockWidget {
-	background: #1a1a1a;
-	border: 1px solid #4d4d4d;
-	color: darkgray;
-	font: bold;
-}
-
-QDockWidget::title {
-	background: #262626;
-	position: relative;
-	padding-left: 10px;
-	text-align: left center;
-}
-
 QToolBar {
 	background: #333333;
 	border: none;
+}
+
+QDockWidget {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
 }
 
 QTabWidget::pane {

@@ -6,10 +6,12 @@ DockWidget::DockWidget(QWidget *parent) :
     ui(new Ui::DockWidget)
 {
     auto a = new QWidget(this);
-    a->setFixedHeight(25);
     ui->setupUi(a);
     setTitleBarWidget(a);
-    setMinimumHeight(25);
+
+    connect(ui->floatButton, &QPushButton::toggled, this, &QDockWidget::setFloating);
+    connect(ui->closeButton, &QPushButton::clicked, this, &QDockWidget::close);
+    //connect(this, &QDockWidget::topLevelChanged, ui->floatButton, &QPushButton::setChecked);
 }
 
 DockWidget::~DockWidget()
