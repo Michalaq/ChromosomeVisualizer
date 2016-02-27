@@ -38,7 +38,8 @@ HEADERS  += mainwindow.h\
     mediacontrol.h \
     mousecontrol.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dockwidget.ui
 
 CONFIG += c++11
 
