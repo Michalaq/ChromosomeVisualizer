@@ -36,7 +36,7 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomCollection& selected);
+    void selectEvent(const AtomSelection& selected);
 
 private:
     Ui::MainWindow *ui;

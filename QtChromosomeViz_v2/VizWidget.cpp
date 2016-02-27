@@ -40,7 +40,7 @@ VizWidget::VizWidget(QWidget *parent)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
-    , currentSelection_(this)
+    , currentSelection_({}, this)
     , ballQualityParameters_(0, 0)
 {
 
@@ -716,13 +716,13 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
         emit selectionChangedIndices(newIndices, oldIndices);
         emit selectionChanged(selectedSpheres(), oldAtoms);
         emit selectionChangedObject(selectedSpheresObject());
-        emit selectionChanged(newIndices);
+        emit selectionChanged(AtomSelection(newIndices, this));
     }
 }
 
 QList<unsigned int> VizWidget::selectedSphereIndices() const
 {
-    return currentSelection_.selectedIndices();
+    return currentSelection_.collection();
 }
 
 QList<Atom> VizWidget::selectedSpheres() const
@@ -730,7 +730,7 @@ QList<Atom> VizWidget::selectedSpheres() const
     QList<Atom> ret;
     auto frame = simulation_->getFrame(frameNumber_);
 
-    for (unsigned int i : currentSelection_.selectedIndices())
+    for (unsigned int i : currentSelection_.collection())
         ret.push_back(frame->atoms[i]);
 
     return ret;
@@ -770,19 +770,19 @@ AtomSelection VizWidget::atomTypeSelection(const std::string & s)
 
 void VizWidget::setVisibleSelection(AtomSelection s)
 {
-    for (const auto & id : currentSelection_.selectedIndices())
+    for (const auto & id : currentSelection_.collection())
         selectedBitmap_[id] = false;
 
     auto oldAtoms = selectedSpheres();
     qSwap(currentSelection_, s);
     auto newAtoms = selectedSpheres();
 
-    for (const auto & id : currentSelection_.selectedIndices())
+    for (const auto & id : currentSelection_.collection())
         selectedBitmap_[id] = true;
 
     emit selectionChangedIndices(
-                currentSelection_.selectedIndices(),
-                s.selectedIndices());
+                currentSelection_.collection(),
+                s.collection());
     emit selectionChanged(selectedSpheres(), oldAtoms);
     emit selectionChangedObject(selectedSpheresObject());
 
@@ -799,7 +799,7 @@ void VizWidget::select(const AtomCollection& selected)
     for (const auto & id : selected_)
         selectedBitmap_[id] = true;
 
-    emit selectionChanged(selected);
+    emit selectionChanged(AtomSelection(selected, this));
 
     setFrame(frameNumber_);
     update();
@@ -909,14 +909,8 @@ QList<unsigned int> VizWidget::pickSpheres()
     return ballIDs.toList();
 }
 
-AtomSelection::AtomSelection(VizWidget * widget)
-    : widget_(widget)
-{
-
-}
-
-AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
-    : selectedIndices_(std::move(indices))
+AtomSelection::AtomSelection(AtomCollection collection, VizWidget * widget)
+    : selectedIndices_(std::move(collection))
     , widget_(widget)
 {
 
@@ -1031,7 +1025,7 @@ unsigned int AtomSelection::atomCount() const
     return selectedIndices_.size();
 }
 
-QVector3D AtomSelection::weightCenter() const
+QVector3D AtomSelection::centroid() const
 {
     if (atomCount() == 0)
         return QVector3D(0.f, 0.f, 0.f);
@@ -1050,7 +1044,7 @@ QVector3D AtomSelection::weightCenter() const
     return sum /= (float)atomCount();
 }
 
-const QList<unsigned int> & AtomSelection::selectedIndices() const
+const AtomCollection& AtomSelection::collection() const
 {
     return selectedIndices_;
 }

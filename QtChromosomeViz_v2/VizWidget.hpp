@@ -36,6 +36,8 @@ struct VizLink
     void update(const QVector3D & p1, const QVector3D & p2);
 };
 
+using AtomCollection = QList<unsigned int>;
+
 class VizWidget;
 
 class AtomSelection
@@ -51,17 +53,16 @@ public:
     void setLabel(const QString & label);
 
     unsigned int atomCount() const;
-    QVector3D weightCenter() const;
-    const QList<unsigned int> & selectedIndices() const;
+    QVector3D centroid() const;
+
+    const AtomCollection& collection() const;
 
 private:
-    AtomSelection(VizWidget * widget);
-    AtomSelection(QList<unsigned int> indices, VizWidget * widget);
+    AtomSelection(AtomCollection collection, VizWidget * widget);
 
-    QList<unsigned int> selectedIndices_;
+    AtomCollection selectedIndices_;
     VizWidget * widget_;
 };
-using AtomCollection = QList<unsigned int>;//NOWY
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
@@ -115,7 +116,7 @@ signals:
     void selectionChanged(const QList<Atom> & selected,
                           const QList<Atom> & deselected);
     void selectionChangedObject(const AtomSelection & selection);
-    void selectionChanged(const AtomCollection& selected);//ZAMIENNIK
+    void selectionChanged(const AtomSelection& selected);//ZAMIENNIK
 
 protected:
     void paintLabels(QPainter &painter);

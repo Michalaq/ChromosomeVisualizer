@@ -218,11 +218,11 @@ void MainWindow::selectAll()
     ui->scene->select(all);
 }
 
-void MainWindow::handleSelection(const AtomCollection &selected)
+void MainWindow::selectEvent(const AtomSelection& selected)
 {
-    //ui->camera->setOrigin(selection.weightCenter());
+    ui->camera->setOrigin(selected.centroid());
 
-    if (!selected.isEmpty())
+    if (selected.atomCount() > 0)
         ui->tabWidget->show();
     else
         ui->tabWidget->hide();
