@@ -43,6 +43,7 @@ FORMS    += mainwindow.ui
 CONFIG += c++11
 
 RESOURCES += \
-    icons.qrc
+    icons.qrc \
+    ../QtChromosomeViz_v2/shaders.qrc
 
 OTHER_FILES +=

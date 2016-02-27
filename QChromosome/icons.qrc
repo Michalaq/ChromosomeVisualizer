@@ -17,10 +17,4 @@
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
     </qresource>
-    <qresource prefix="/shaders">
-        <file>sphere.vert</file>
-        <file>cylinder.vert</file>
-        <file>fragment.frag</file>
-        <file>picking.frag</file>
-    </qresource>
 </RCC>

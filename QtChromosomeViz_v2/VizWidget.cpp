@@ -245,18 +245,18 @@ void VizWidget::initializeGL()
 
     // Shaders
     assert(sphereProgram_.create());
-    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/sphere.vert");
-    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragment.frag");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
     assert(sphereProgram_.link());
 
     assert(cylinderProgram_.create());
-    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/cylinder.vert");
-    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragment.frag");
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/cylinder.vert");
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
     assert(cylinderProgram_.link());
 
     assert(pickingProgram_.create());
-    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/sphere.vert");
-    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/picking.frag");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
 }
 
