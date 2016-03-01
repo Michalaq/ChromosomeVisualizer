@@ -102,6 +102,8 @@ QToolBox::tab:selected {
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
     <string notr="true">MouseControl {
+	background: none;
+	border: none;
 	qproperty-color: #cccccc;
 }
 
@@ -136,7 +138,7 @@ MediaControl:hover {
          </spacer>
         </item>
         <item>
-         <widget class="MouseControl" name="move" native="true">
+         <widget class="MouseControl" name="move">
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -152,14 +154,20 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
-          <property name="icon" stdset="0">
+          <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
           </property>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="MouseControl" name="rotate" native="true">
+         <widget class="MouseControl" name="rotate">
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -175,14 +183,20 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
-          <property name="icon" stdset="0">
+          <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
           </property>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="MouseControl" name="scale" native="true">
+         <widget class="MouseControl" name="scale">
           <property name="minimumSize">
            <size>
             <width>20</width>
@@ -198,9 +212,15 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>ClosedHandCursor</cursorShape>
           </property>
-          <property name="icon" stdset="0">
+          <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/mouse/scale</normaloff>:/mouse/scale</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -226,6 +246,12 @@ MediaControl:hover {
          </property>
          <item row="0" column="0">
           <widget class="Camera" name="camera" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
@@ -715,70 +741,24 @@ MediaControl:hover {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>MouseControl</class>
-   <extends>QWidget</extends>
-   <header>mousecontrol.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DockWidget</class>
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MouseControl</class>
+   <extends>QPushButton</extends>
+   <header>mousecontrol.h</header>
+   <slots>
+    <signal>delta(int,int)</signal>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>move</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>move(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>317</x>
-     <y>110</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>315</x>
-     <y>170</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotate</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>rotate(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>347</x>
-     <y>111</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>346</x>
-     <y>174</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scale</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>scale(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>378</x>
-     <y>109</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>168</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>camera</sender>
    <signal>modelViewChanged(QMatrix4x4)</signal>
@@ -1000,6 +980,54 @@ MediaControl:hover {
     <hint type="destinationlabel">
      <x>423</x>
      <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>move</sender>
+   <signal>delta(int,int)</signal>
+   <receiver>camera</receiver>
+   <slot>move(int,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>376</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rotate</sender>
+   <signal>delta(int,int)</signal>
+   <receiver>camera</receiver>
+   <slot>rotate(int,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>402</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scale</sender>
+   <signal>delta(int,int)</signal>
+   <receiver>camera</receiver>
+   <slot>scale(int,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>428</x>
+     <y>98</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>154</y>
     </hint>
    </hints>
   </connection>

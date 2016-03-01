@@ -5,7 +5,7 @@ Qt::MouseButton Draggable::pressed = Qt::NoButton;
 #include <QGuiApplication>
 #include <QScreen>
 
-Draggable::Draggable(QWidget *parent) : QWidget(parent)
+Draggable::Draggable(QWidget *parent) : QPushButton(parent)
 {
     setScreenGeometry(QGuiApplication::primaryScreen()->geometry());
 
