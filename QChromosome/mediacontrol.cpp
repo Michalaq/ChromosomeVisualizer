@@ -4,7 +4,6 @@ MediaControl::MediaControl(QWidget *parent) :
     QPushButton(parent),
     effect(new QGraphicsColorizeEffect(this))
 {
-    effect->setColor(Qt::transparent);
     setGraphicsEffect(effect);
 }
 
@@ -21,13 +20,4 @@ QColor MediaControl::color() const
 void MediaControl::setColor(const QColor &color)
 {
     effect->setColor(color);
-}
-
-#include <QPainter>
-
-void MediaControl::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-
-    icon().paint(&painter, rect(), Qt::AlignCenter, QIcon::Normal, isChecked() ? QIcon::On : QIcon::Off);
 }

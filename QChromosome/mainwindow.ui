@@ -112,6 +112,8 @@ MouseControl:hover {
 }
 
 MediaControl {
+	background: none;
+	border: none;
 	qproperty-color: #b3b3b3;
 }
 
@@ -456,6 +458,12 @@ MediaControl:hover {
            <iconset resource="icons.qrc">
             <normaloff>:/media/play</normaloff>
             <normalon>:/media/pause</normalon>:/media/play</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>32</width>
+            <height>32</height>
+           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>

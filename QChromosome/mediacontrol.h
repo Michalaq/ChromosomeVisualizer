@@ -17,9 +17,6 @@ public:
     QColor color() const;
     void setColor(const QColor &c);
 
-protected:
-    void paintEvent(QPaintEvent *event);
-
 private:
     QGraphicsColorizeEffect *effect;
 };
