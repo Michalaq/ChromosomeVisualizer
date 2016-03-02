@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     simulation(std::make_shared<NullSimulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
-    modifier(Qt::Key_unknown)
+    actionGroup(new QActionGroup(this))
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -19,11 +19,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    auto motionGroup = new QActionGroup(this);
-    motionGroup->addAction(ui->actionSelect);
-    motionGroup->addAction(ui->actionMove);
-    motionGroup->addAction(ui->actionRotate);
-    motionGroup->addAction(ui->actionScale);
+    actionGroup->addAction(ui->actionSelect);
+    actionGroup->addAction(ui->actionMove);
+    actionGroup->addAction(ui->actionRotate);
+    actionGroup->addAction(ui->actionScale);
+
+    modifiers.push_back(ui->actionMove);
 
     ui->tabWidget->hide();
 
@@ -233,35 +234,36 @@ void MainWindow::handleSelection(const AtomSelection &selection)
         ui->tabWidget->hide();
 }
 
+void MainWindow::setBaseAction(bool enabled)
+{
+    if (enabled)
+        modifiers.last() = qobject_cast<QAction*>(sender());
+}
+
 #include <QKeyEvent>
-QStack<QAction*> akcje;
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->isAutoRepeat())
         return event->ignore();
 
-    if (modifier == Qt::Key_unknown)
+    switch (event->key())
     {
-        switch (event->key())
-        {
-        case Qt::Key_Q:
-            ui->actionMove->setChecked(true);
-            akcje.push(ui->actionMove);
-            modifier = Qt::Key_Q;
-            break;
-
-        case Qt::Key_W:
-            ui->actionRotate->setChecked(true);
-            akcje.push(ui->actionRotate);
-            modifier = Qt::Key_W;
-            break;
-
-        case Qt::Key_E:
-            ui->actionScale->setChecked(true);
-            akcje.push(ui->actionScale);
-            modifier = Qt::Key_E;
-            break;
-        }
+    case Qt::Key_Q:
+        bindings[Qt::Key_Q] = modifiers.insert(modifiers.end(), ui->actionMove);
+        ui->actionMove->setChecked(true);
+        actionGroup->setDisabled(true);
+        break;
+    case Qt::Key_W:
+        bindings[Qt::Key_W] = modifiers.insert(modifiers.end(), ui->actionRotate);
+        ui->actionRotate->setChecked(true);
+        actionGroup->setDisabled(true);
+        break;
+    case Qt::Key_E:
+        bindings[Qt::Key_E] = modifiers.insert(modifiers.end(), ui->actionScale);
+        ui->actionScale->setChecked(true);
+        actionGroup->setDisabled(true);
+        break;
     }
 
     QMainWindow::keyPressEvent(event);
@@ -272,11 +274,17 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     if (event->isAutoRepeat())
         return event->ignore();
 
-    if (modifier == event->key())
+    auto i = bindings.find(event->key());
+
+    if (i != bindings.end())
     {
-        akcje.pop();
-        if (!akcje.empty()) akcje.top()->setChecked(true);
-        modifier = Qt::Key_unknown;
+        modifiers.erase(i.value());
+        modifiers.last()->setChecked(true);
+
+        bindings.erase(i);
+
+        if (bindings.isEmpty())
+            actionGroup->setEnabled(true);
     }
 
     QMainWindow::keyReleaseEvent(event);

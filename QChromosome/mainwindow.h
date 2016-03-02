@@ -38,6 +38,9 @@ public slots:
     void selectAll();
     void handleSelection(const AtomSelection & selection);
 
+    /* actions */
+    void setBaseAction(bool enabled);
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
@@ -55,7 +58,9 @@ private:
     /* cf. QTBUG-2982 */
     void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache = {});
 
-    Qt::Key modifier;
+    QActionGroup *actionGroup;
+    QLinkedList<QAction*> modifiers;
+    QHash<int, QLinkedList<QAction*>::Iterator> bindings;
 };
 
 #endif // MAINWINDOW_H
