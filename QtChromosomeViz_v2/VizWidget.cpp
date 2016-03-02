@@ -5,7 +5,6 @@
 #include "VizWidget.hpp"
 
 static const float EPSILON = 1e-4;
-static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
 static const int SELECTED_FLAG = 1 << 2;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
@@ -818,8 +817,7 @@ QList<unsigned int> VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    QSize downSize(size().width() / PICKING_FRAMEBUFFER_DOWNSCALE + 1,
-                   size().height() / PICKING_FRAMEBUFFER_DOWNSCALE + 1);
+    QSize downSize(size().width(), size().height());
 
     // Check if the framebuffer is large enough to
     // have whole scene rendered to it
@@ -842,9 +840,7 @@ QList<unsigned int> VizWidget::pickSpheres()
 
     assert(pickingFramebuffer_->bind());
     // This is important!
-    glViewport(0, 0,
-               pickingFramebuffer_->size().width(),
-               pickingFramebuffer_->size().height());
+    glViewport(0, pickingFramebuffer_->size().height() - downSize.height(), downSize.width(), downSize.height());
 
     // Render the scene with a special shader
     glClearColor(1.f, 1.f, 1.f, 1.f);
@@ -880,13 +876,9 @@ QList<unsigned int> VizWidget::pickSpheres()
     QSet<unsigned int> ballIDs;
 
     const auto r = selectionRect();
-    const QRect rscaled(r.left() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.top() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.width() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.height() / PICKING_FRAMEBUFFER_DOWNSCALE);
-    for (int y = rscaled.top(); y <= rscaled.bottom(); y++)
+    for (int y = r.top(); y <= r.bottom(); y++)
     {
-        for (int x = rscaled.left(); x <= rscaled.right(); x++)
+        for (int x = r.left(); x <= r.right(); x++)
         {
             auto color = image.pixel(x, y);
             if (color != 0xFFFFFFFFU)
