@@ -15,8 +15,6 @@ public:
     explicit Camera(QWidget *parent = 0);
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
     void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
 
@@ -75,18 +73,6 @@ private:
     static const qreal distanceFactor;
     static const qreal angleFactor;
     static const qreal wheelFactor;
-
-    /* camera motion modifier type */
-    QStack<int> buffer;
-
-    Qt::Key modifier;
-
-    QMetaObject::Connection connection;
-
-    const QMetaMethod signal;
-
-    void pushIndex(int index);
-    void popIndex();
 
 signals:
     void modelViewChanged(QMatrix4x4);

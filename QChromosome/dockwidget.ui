@@ -89,8 +89,8 @@ MediaControl:hover {
      </property>
      <property name="icon">
       <iconset resource="icons.qrc">
-       <normaloff>:/widget/float</normaloff>
-       <normalon>:/widget/dock</normalon>:/widget/float</iconset>
+       <normaloff>:/dock/float</normaloff>
+       <normalon>:/dock/dock</normalon>:/dock/float</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -122,7 +122,7 @@ MediaControl:hover {
      </property>
      <property name="icon">
       <iconset resource="icons.qrc">
-       <normaloff>:/widget/close</normaloff>:/widget/close</iconset>
+       <normaloff>:/dock/close</normaloff>:/dock/close</iconset>
      </property>
      <property name="iconSize">
       <size>

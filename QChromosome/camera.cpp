@@ -20,9 +20,7 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      origin(0, 0, 0),
-      modifier(Qt::Key_unknown),
-      signal(metaObject()->method(metaObject()->indexOfSignal("delta(int,int)")))
+      origin(0, 0, 0)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -35,77 +33,14 @@ Camera::Camera(QWidget *parent)
     updateAngles();
 }
 
-void Camera::pushIndex(int index)
-{
-    if (!buffer.empty())
-        disconnect(connection);
-
-    connection = connect(this, signal, this, metaObject()->method(index));
-
-    buffer.push(index);
-}
-
-void Camera::popIndex()
-{
-    buffer.pop();
-
-    disconnect(connection);
-
-    if (!buffer.empty())
-        connection = connect(this, signal, this, metaObject()->method(buffer.top()));
-}
-
-#include <QKeyEvent>
-
-void Camera::keyPressEvent(QKeyEvent *event)
-{
-    if (event->isAutoRepeat())
-        return event->ignore();
-
-    if (modifier == Qt::Key_unknown)
-    {
-        switch (event->key())
-        {
-        case Qt::Key_Q:
-            pushIndex(metaObject()->indexOfSlot("move(int,int)"));
-            modifier = Qt::Key_Q;
-            break;
-
-        case Qt::Key_W:
-            pushIndex(metaObject()->indexOfSlot("rotate(int,int)"));
-            modifier = Qt::Key_W;
-            break;
-
-        case Qt::Key_E:
-            pushIndex(metaObject()->indexOfSlot("scale(int,int)"));
-            modifier = Qt::Key_E;
-            break;
-        }
-    }
-
-    Draggable::keyPressEvent(event);
-}
-
-void Camera::keyReleaseEvent(QKeyEvent *event)
-{
-    if (event->isAutoRepeat())
-        return event->ignore();
-
-    if (modifier == event->key())
-    {
-        modifier = Qt::Key_unknown;
-        popIndex();
-    }
-
-    Draggable::keyReleaseEvent(event);
-}
-
 void Camera::resizeEvent(QResizeEvent *event)
 {
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
 }
+
+#include <QWheelEvent>
 
 void Camera::wheelEvent(QWheelEvent *event)
 {

@@ -669,6 +669,9 @@ MediaControl:hover {
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>

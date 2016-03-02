@@ -38,6 +38,10 @@ public slots:
     void selectAll();
     void handleSelection(const AtomSelection & selection);
 
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 private:
     Ui::MainWindow *ui;
 
@@ -50,6 +54,8 @@ private:
 
     /* cf. QTBUG-2982 */
     void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache = {});
+
+    Qt::Key modifier;
 };
 
 #endif // MAINWINDOW_H
