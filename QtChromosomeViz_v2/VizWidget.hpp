@@ -8,6 +8,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 
 #include "bartekm_code/Simulation.h"
+#include "LabelRenderer.hpp"
 
 struct VizVertex
 {
@@ -76,6 +77,7 @@ public:
 
     virtual void initializeGL() override;
     virtual void paintGL() override;
+    virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
 
@@ -178,6 +180,8 @@ private:
     QPair<unsigned int, unsigned int> ballQualityParameters_;
 
     QMap<unsigned int, QString> atomLabels_;
+
+    LabelRenderer labelRenderer_;
 };
 
 #endif /* VIZWINDOW_HPP */

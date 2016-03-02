@@ -42,6 +42,7 @@ VizWidget::VizWidget(QWidget *parent)
     , isSelectingState_(false)
     , currentSelection_(this)
     , ballQualityParameters_(0, 0)
+    , labelRenderer_(QSizeF(800, 600))
 {
 
 }
@@ -54,6 +55,7 @@ VizWidget::~VizWidget()
 void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    labelRenderer_.initGL();
 
     glEnable(GL_DEPTH_TEST);
 
@@ -344,13 +346,14 @@ void VizWidget::paintGL()
     painter.end();
 }
 
+void VizWidget::resizeGL(int w, int h)
+{
+    labelRenderer_.setViewportSize(QSizeF(w, h));
+}
+
 void VizWidget::paintLabels(QPainter & painter)
 {
-    const float A_LOT = 1024.f * 1024.f;
-    const QPointF BIG_PT(A_LOT, A_LOT);
-
-    painter.setPen(Qt::white);
-    painter.setBrush(QBrush(Qt::white));
+    labelRenderer_.begin();
 
     for (auto it = atomLabels_.begin(); it != atomLabels_.end(); it++)
     {
@@ -362,10 +365,11 @@ void VizWidget::paintLabels(QPainter & painter)
                                   -transformedPosition.y() / transformedPosition.w());
             QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
                                    (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            QRectF rect(screenPosition - BIG_PT, screenPosition + BIG_PT);
-            painter.drawText(rect, Qt::AlignCenter, it.value());
+            labelRenderer_.renderAt(screenPosition, it.value());
         }
     }
+
+    labelRenderer_.end();
 }
 
 void VizWidget::setModelView(QMatrix4x4 mat)
@@ -946,12 +950,20 @@ void AtomSelection::setLabel(const QString & label)
     if (label == "")
     {
         for (unsigned int i : selectedIndices_)
+        {
+            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_.remove(i);
+        }
     }
     else
     {
+        widget_->labelRenderer_.addRef(label, selectedIndices_.size());
+
         for (unsigned int i : selectedIndices_)
+        {
+            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_[i] = label;
+        }
     }
 
     widget_->update();
