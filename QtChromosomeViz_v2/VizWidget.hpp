@@ -104,6 +104,9 @@ public slots:
 
     void setVisibleSelection(AtomSelection s);
 
+    void setBackgroundColor(QColor color);
+    QColor backgroundColor();
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -182,6 +185,8 @@ private:
     QMap<unsigned int, QString> atomLabels_;
 
     LabelRenderer labelRenderer_;
+
+    QColor backgroundColor_;
 };
 
 #endif /* VIZWINDOW_HPP */

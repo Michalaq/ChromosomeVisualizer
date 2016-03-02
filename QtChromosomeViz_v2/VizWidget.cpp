@@ -42,6 +42,7 @@ VizWidget::VizWidget(QWidget *parent)
     , currentSelection_(this)
     , ballQualityParameters_(0, 0)
     , labelRenderer_(QSizeF(800, 600))
+    , backgroundColor_(0, 0, 0)
 {
 
 }
@@ -289,7 +290,10 @@ void VizWidget::paintGL()
 
     glEnable(GL_DEPTH_TEST);
 
-    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClearColor(backgroundColor_.redF(),
+                 backgroundColor_.greenF(),
+                 backgroundColor_.blueF(),
+                 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
@@ -790,6 +794,16 @@ void VizWidget::setVisibleSelection(AtomSelection s)
 
     setFrame(frameNumber_);
     update();
+}
+
+void VizWidget::setBackgroundColor(QColor color)
+{
+    backgroundColor_ = color;
+}
+
+QColor VizWidget::backgroundColor()
+{
+    return backgroundColor_;
 }
 
 void VizWidget::generateSortedState()
