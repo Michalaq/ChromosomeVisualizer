@@ -91,6 +91,32 @@ QToolBox::tab {
 
 QToolBox::tab:selected {
 	font: bold;
+}
+
+QSpinBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QSpinBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+	border: none;
+}
+
+QSpinBox::up-arrow {
+	image: url(:/arrows/up);
+}
+
+QSpinBox::down-arrow {
+	image: url(:/arrows/down);
 }</string>
   </property>
   <property name="dockNestingEnabled">

@@ -22,4 +22,8 @@
         <file alias="dock">icons/dock_icon.svg</file>
         <file alias="close">icons/close_icon.svg</file>
     </qresource>
+    <qresource prefix="/arrows">
+        <file alias="up">icons/up_arrow.svg</file>
+        <file alias="down">icons/down_arrow.svg</file>
+    </qresource>
 </RCC>
