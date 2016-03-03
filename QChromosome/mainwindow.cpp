@@ -19,14 +19,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+    ui->tabWidget->hide();
+
     actionGroup->addAction(ui->actionSelect);
     actionGroup->addAction(ui->actionMove);
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
 
-    modifiers.push_back(ui->actionMove);
+    bindings.insert(Qt::Key_Q, ui->actionMove);
+    bindings.insert(Qt::Key_W, ui->actionRotate);
+    bindings.insert(Qt::Key_E, ui->actionScale);
 
-    ui->tabWidget->hide();
+    modifiers.push_back(ui->actionMove);
 
     cacheProperties(this);
 
@@ -247,23 +251,13 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if (event->isAutoRepeat())
         return event->ignore();
 
-    switch (event->key())
+    auto i = bindings.find(event->key());
+
+    if (i != bindings.end())
     {
-    case Qt::Key_Q:
-        bindings[Qt::Key_Q] = modifiers.insert(modifiers.end(), ui->actionMove);
-        ui->actionMove->setChecked(true);
+        lookup[i.key()] = modifiers.insert(modifiers.end(), i.value());
         actionGroup->setDisabled(true);
-        break;
-    case Qt::Key_W:
-        bindings[Qt::Key_W] = modifiers.insert(modifiers.end(), ui->actionRotate);
-        ui->actionRotate->setChecked(true);
-        actionGroup->setDisabled(true);
-        break;
-    case Qt::Key_E:
-        bindings[Qt::Key_E] = modifiers.insert(modifiers.end(), ui->actionScale);
-        ui->actionScale->setChecked(true);
-        actionGroup->setDisabled(true);
-        break;
+        i.value()->setChecked(true);
     }
 
     QMainWindow::keyPressEvent(event);
@@ -274,16 +268,16 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     if (event->isAutoRepeat())
         return event->ignore();
 
-    auto i = bindings.find(event->key());
+    auto i = lookup.find(event->key());
 
-    if (i != bindings.end())
+    if (i != lookup.end())
     {
         modifiers.erase(i.value());
         modifiers.last()->setChecked(true);
 
-        bindings.erase(i);
+        lookup.erase(i);
 
-        if (bindings.isEmpty())
+        if (lookup.isEmpty())
             actionGroup->setEnabled(true);
     }
 
