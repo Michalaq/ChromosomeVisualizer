@@ -320,7 +320,7 @@ MediaControl:hover {
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="spinBox">
+       <widget class="SpinBox" name="spinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
@@ -342,7 +342,7 @@ MediaControl:hover {
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QSpinBox" name="spinBox_2">
+         <widget class="SpinBox" name="spinBox_2">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
@@ -365,7 +365,7 @@ MediaControl:hover {
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBox_3">
+         <widget class="SpinBox" name="spinBox_3">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
@@ -790,6 +790,11 @@ MediaControl:hover {
    <slots>
     <signal>delta(int,int)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

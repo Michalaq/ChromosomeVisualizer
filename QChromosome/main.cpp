@@ -12,17 +12,6 @@ int main(int argc, char *argv[])
     format.setProfile(QSurfaceFormat::CompatibilityProfile);
     QSurfaceFormat::setDefaultFormat(format);
 
-    QObject::connect(&a, &QApplication::focusChanged, [](QObject* old, QObject* now)
-    {
-        for (auto object : { old, now })
-            if (auto spinBox = qobject_cast<QSpinBox*>(object))
-            {
-                spinBox->style()->unpolish(spinBox);
-                spinBox->style()->polish(spinBox);
-                spinBox->update();
-            }
-    });
-
     MainWindow w;
     w.showMaximized();
 

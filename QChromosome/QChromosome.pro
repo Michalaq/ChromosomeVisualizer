@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
     mousecontrol.cpp \
-    dockwidget.cpp
+    dockwidget.cpp \
+    spinbox.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
     mousecontrol.h \
-    dockwidget.h
+    dockwidget.h \
+    spinbox.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui
