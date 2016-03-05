@@ -45,15 +45,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-#include <QMouseEvent>
 #include "draggable.h"
 
-static const QHash<QEvent::Type, QString> enterEvents = { { QEvent::HoverEnter, "hover" }, { QEvent::MouseButtonPress, "pressed" } };
-static const QHash<QEvent::Type, QString> leaveEvents = { { QEvent::HoverLeave, "hover" }, { QEvent::MouseButtonRelease, "pressed" } };
+typedef QList<QPair<QByteArray, QVariant> > QPropertyStyleSheet;
 
-typedef QList<QPair<QString, QVariant> > QPropertyStyle;
-
-Q_DECLARE_METATYPE(QPropertyStyle)
+static QHash<QPair<QObject*, QEvent::Type>, QPair<QPropertyStyleSheet, QPropertyStyleSheet*> > qproperty_enter;
+static QHash<QPair<QObject*, QEvent::Type>, QPropertyStyleSheet> qproperty_leave;
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -66,40 +63,27 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             return true;
     }
 
-    auto pseudostate = enterEvents.find(event->type());
+    auto enterEvent = qproperty_enter.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
 
-    if (pseudostate != enterEvents.end())
+    if (enterEvent != qproperty_enter.end())
     {
-        const QVariant& variant = watched->property(("_qproperty_" + pseudostate.value() + "_style").toUtf8().constData());
+        auto *backup = enterEvent.value().second;
 
-        if (variant.isValid())
+        for (const auto& i : enterEvent.value().first)
         {
-            QPropertyStyle backup;
-
-            for (auto& i : variant.value<QPropertyStyle>())
-            {
-                backup.push_back({i.first, watched->property(i.first.toUtf8().constData())});
-
-                watched->setProperty(i.first.toUtf8().constData(), i.second);
-            }
-
-            watched->setProperty(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData(), QVariant::fromValue<QPropertyStyle>(backup));
+            backup->push_back({ i.first, watched->property(i.first) });
+            watched->setProperty(i.first, i.second);
         }
     }
 
-    pseudostate = leaveEvents.find(event->type());
+    auto leaveEvent = qproperty_leave.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
 
-    if (pseudostate != leaveEvents.end())
+    if (leaveEvent != qproperty_leave.end())
     {
-        const QVariant& variant = watched->property(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData());
+        for (const auto& i : leaveEvent.value())
+            watched->setProperty(i.first, i.second);
 
-        if (variant.isValid())
-        {
-            for (auto& i : variant.value<QPropertyStyle>())
-                watched->setProperty(i.first.toUtf8().constData(), i.second);
-
-            watched->setProperty(("_qproperty_" + pseudostate.value() + "_backup").toUtf8().constData(), QVariant());
-        }
+        leaveEvent.value().clear();
     }
 
     return QMainWindow::eventFilter(watched, event);
@@ -284,44 +268,52 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     QMainWindow::keyReleaseEvent(event);
 }
 
+static const QHash<QString, QPair<QEvent::Type, QEvent::Type> > pseudostate2event = { { "hover", { QEvent::HoverEnter, QEvent::HoverLeave } }, { "pressed", { QEvent::MouseButtonPress, QEvent::MouseButtonRelease } } };
+
 void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache)
 {
-    static const QRegularExpression styleRegExp("(?<class>\\w*)\\s*:(?<pseudostate>\\w+)\\s*{(?<stylesheet>[^{}]*)}");
-    QRegularExpressionMatchIterator i = styleRegExp.globalMatch(widget->styleSheet());
+    static const QRegularExpression selector("(?<class>\\w*)\\s*:(?<pseudostate>\\w+)\\s*{(?<stylesheet>[^{}]*)}");
+
+    auto i = selector.globalMatch(widget->styleSheet());
 
     while (i.hasNext())
     {
-        QRegularExpressionMatch style = i.next();
+        auto selector = i.next();
 
-        auto& stylesheet = cache[style.captured("class")][style.captured("pseudostate")];
+        auto& styleSheet = cache[selector.captured("class")][selector.captured("pseudostate")];
 
-        static const QRegularExpression propertyRegExp("qproperty-(?<name>\\w+)\\s*:\\s*(?<value>\\S+)\\s*;");
-        QRegularExpressionMatchIterator j = propertyRegExp.globalMatch(style.captured("stylesheet"));
+        static const QRegularExpression property("qproperty-(?<name>\\w+)\\s*:\\s*(?<value>\\S+)\\s*;");
 
-        while (j.hasNext())
+        auto i = property.globalMatch(selector.captured("stylesheet"));
+
+        while (i.hasNext())
         {
-            QRegularExpressionMatch property = j.next();
+            auto property = i.next();
 
-            stylesheet[property.captured("name")] = property.captured("value");
+            styleSheet[property.captured("name")] = property.captured("value");
         }
     }
 
     QHash<QString, QHash<QString, QVariant> > styleSheet = cache[widget->metaObject()->className()];
 
     for (auto i = cache[""].cbegin(); i != cache[""].cend(); i++)
+    {
         for (auto j = i.value().cbegin(); j != i.value().cend(); j++)
-            styleSheet[i.key()][j.key()] = j.value();
+        {
+            styleSheet[i.key()].insert(j.key(), j.value());
+        }
+    }
 
     cache.remove("");
 
     for (auto i = styleSheet.cbegin(); i != styleSheet.cend(); i++)
     {
-        QPropertyStyle style;
+        auto& pseudostate = qproperty_enter[QPair<QObject*, QEvent::Type>(widget, pseudostate2event[i.key()].first)];
 
         for (auto j = i.value().cbegin(); j != i.value().cend(); j++)
-            style.push_back({j.key(), j.value()});
+            pseudostate.first.push_back({ j.key().toUtf8(), j.value() });
 
-        widget->setProperty(("_qproperty_" + i.key() + "_style").toUtf8().constData(), QVariant::fromValue(style));
+        pseudostate.second = &qproperty_leave[QPair<QObject*, QEvent::Type>(widget, pseudostate2event[i.key()].second)];
     }
 
     for (auto child : widget->children())
