@@ -294,7 +294,7 @@ void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, 
         }
     }
 
-    QHash<QString, QHash<QString, QVariant> > styleSheet = cache[widget->metaObject()->className()];
+    auto styleSheet = cache[widget->metaObject()->className()];
 
     for (auto i = cache[""].cbegin(); i != cache[""].cend(); i++)
     {
