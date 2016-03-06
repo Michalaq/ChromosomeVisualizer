@@ -189,7 +189,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     if (event->isAutoRepeat())
         return event->ignore();
 
-    auto i = bindings.find(event->key());
+    auto i = bindings.find(static_cast<Qt::Key>(event->key()));
 
     if (i != bindings.end())
     {
@@ -206,7 +206,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     if (event->isAutoRepeat())
         return event->ignore();
 
-    auto i = lookup.find(event->key());
+    auto i = lookup.find(static_cast<Qt::Key>(event->key()));
 
     if (i != lookup.end())
     {

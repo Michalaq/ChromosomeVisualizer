@@ -56,8 +56,8 @@ private:
     QActionGroup *actionGroup;
     QLinkedList<QAction*> modifiers;
 
-    QHash<int, QAction*> bindings;
-    QHash<int, QLinkedList<QAction*>::Iterator> lookup;
+    QHash<Qt::Key, QAction*> bindings;
+    QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
 };
 
 #endif // MAINWINDOW_H
