@@ -32,8 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    cacheProperties(this);
-
     //TODO do wywalenia po zaimplementowaniu widgeta
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
@@ -43,50 +41,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-#include "draggable.h"
-
-typedef QList<QPair<QByteArray, QVariant> > QPropertyStyleSheet;
-
-static QHash<QPair<QObject*, QEvent::Type>, QPair<QPropertyStyleSheet, QPropertyStyleSheet*> > qproperty_enter;
-static QHash<QPair<QObject*, QEvent::Type>, QPropertyStyleSheet> qproperty_leave;
-
-bool MainWindow::eventFilter(QObject *watched, QEvent *event)
-{
-    if (Draggable::pressedButton() != Qt::NoButton)
-    {
-        if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
-            return true;
-
-        if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
-            return true;
-    }
-
-    auto enterEvent = qproperty_enter.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
-
-    if (enterEvent != qproperty_enter.end())
-    {
-        auto *backup = enterEvent.value().second;
-
-        for (const auto& i : enterEvent.value().first)
-        {
-            backup->push_back({ i.first, watched->property(i.first) });
-            watched->setProperty(i.first, i.second);
-        }
-    }
-
-    auto leaveEvent = qproperty_leave.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
-
-    if (leaveEvent != qproperty_leave.end())
-    {
-        for (const auto& i : leaveEvent.value())
-            watched->setProperty(i.first, i.second);
-
-        leaveEvent.value().clear();
-    }
-
-    return QMainWindow::eventFilter(watched, event);
 }
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
@@ -266,57 +220,4 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     }
 
     QMainWindow::keyReleaseEvent(event);
-}
-
-static const QHash<QString, QPair<QEvent::Type, QEvent::Type> > pseudostate2event = { { "hover", { QEvent::HoverEnter, QEvent::HoverLeave } }, { "pressed", { QEvent::MouseButtonPress, QEvent::MouseButtonRelease } } };
-
-void MainWindow::cacheProperties(QWidget *widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache)
-{
-    static const QRegularExpression selector("(?<class>\\w*)\\s*:(?<pseudostate>\\w+)\\s*{(?<stylesheet>[^{}]*)}");
-
-    auto i = selector.globalMatch(widget->styleSheet());
-
-    while (i.hasNext())
-    {
-        auto selector = i.next();
-
-        auto& styleSheet = cache[selector.captured("class")][selector.captured("pseudostate")];
-
-        static const QRegularExpression property("qproperty-(?<name>\\w+)\\s*:\\s*(?<value>\\S+)\\s*;");
-
-        auto i = property.globalMatch(selector.captured("stylesheet"));
-
-        while (i.hasNext())
-        {
-            auto property = i.next();
-
-            styleSheet[property.captured("name")] = property.captured("value");
-        }
-    }
-
-    auto styleSheet = cache[widget->metaObject()->className()];
-
-    for (auto i = cache[""].cbegin(); i != cache[""].cend(); i++)
-    {
-        for (auto j = i.value().cbegin(); j != i.value().cend(); j++)
-        {
-            styleSheet[i.key()].insert(j.key(), j.value());
-        }
-    }
-
-    cache.remove("");
-
-    for (auto i = styleSheet.cbegin(); i != styleSheet.cend(); i++)
-    {
-        auto& pseudostate = qproperty_enter[QPair<QObject*, QEvent::Type>(widget, pseudostate2event[i.key()].first)];
-
-        for (auto j = i.value().cbegin(); j != i.value().cend(); j++)
-            pseudostate.first.push_back({ j.key().toUtf8(), j.value() });
-
-        pseudostate.second = &qproperty_leave[QPair<QObject*, QEvent::Type>(widget, pseudostate2event[i.key()].second)];
-    }
-
-    for (auto child : widget->children())
-        if (auto tmp = qobject_cast<QWidget*>(child))
-            cacheProperties(tmp, cache);
 }

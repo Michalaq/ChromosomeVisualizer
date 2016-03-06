@@ -18,8 +18,6 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool eventFilter(QObject *watched, QEvent *event);
-
 public slots:
     void openSimulation();
 
@@ -54,9 +52,6 @@ private:
     int lastFrame;
 
     QTimer timer;
-
-    /* cf. QTBUG-2982 */
-    void cacheProperties(QWidget* widget, QHash<QString, QHash<QString, QHash<QString, QVariant> > > cache = {});
 
     QActionGroup *actionGroup;
     QLinkedList<QAction*> modifiers;

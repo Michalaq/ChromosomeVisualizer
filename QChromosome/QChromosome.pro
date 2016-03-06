@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     mediacontrol.cpp \
     mousecontrol.cpp \
     dockwidget.cpp \
-    spinbox.cpp
+    spinbox.cpp \
+    filterobject.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h\
     mediacontrol.h \
     mousecontrol.h \
     dockwidget.h \
-    spinbox.h
+    spinbox.h \
+    filterobject.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui
