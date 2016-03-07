@@ -1,6 +1,11 @@
 #include <cassert>
 #include "LabelRenderer.hpp"
 
+static QVector4D colorToVector(QColor c)
+{
+    return { c.redF(), c.greenF(), c.blueF(), c.alphaF() };
+}
+
 LabelRenderer::LabelRenderer(QSizeF viewportSize)
     : viewportSize_(viewportSize)
 {
@@ -54,7 +59,7 @@ void LabelRenderer::begin()
     vao_.bind();
 }
 
-void LabelRenderer::renderAt(QPointF at, const QString & s)
+void LabelRenderer::renderAt(QPointF at, const QString & s, QColor textColor, QColor backgroundColor)
 {
     // Znajdź teksturę w pamięci podręcznej
     auto it = mapping_.find(s);
@@ -71,6 +76,8 @@ void LabelRenderer::renderAt(QPointF at, const QString & s)
     program_.setUniformValue("uvCenter", QVector2D(ndcPos.x(), -ndcPos.y()));
     program_.setUniformValue("uvExtents", ndcSize);
     program_.setUniformValue("sLabel", 0);
+    program_.setUniformValue("ucTextColor", colorToVector(textColor));
+    program_.setUniformValue("ucBackgroundColor", colorToVector(backgroundColor));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

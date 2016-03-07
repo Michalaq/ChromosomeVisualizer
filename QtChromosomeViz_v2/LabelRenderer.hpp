@@ -19,7 +19,7 @@ public:
     void setViewportSize(QSizeF size);
 
     void begin();
-    void renderAt(QPointF at, const QString & s);
+    void renderAt(QPointF at, const QString & s, QColor textColor, QColor backgroundColor);
     void end();
 
 private:

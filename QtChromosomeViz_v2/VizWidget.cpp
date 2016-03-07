@@ -43,6 +43,8 @@ VizWidget::VizWidget(QWidget *parent)
     , ballQualityParameters_(0, 0)
     , labelRenderer_(QSizeF(800, 600))
     , backgroundColor_(0, 0, 0)
+    , labelTextColor_(255, 255, 255)
+    , labelBackgroundColor_(0, 0, 0, 255)
 {
 
 }
@@ -368,7 +370,8 @@ void VizWidget::paintLabels(QPainter & painter)
                                   -transformedPosition.y() / transformedPosition.w());
             QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
                                    (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            labelRenderer_.renderAt(screenPosition, it.value());
+            labelRenderer_.renderAt(screenPosition, it.value(),
+                                    labelTextColor_, labelBackgroundColor_);
         }
     }
 
@@ -804,6 +807,26 @@ void VizWidget::setBackgroundColor(QColor color)
 QColor VizWidget::backgroundColor()
 {
     return backgroundColor_;
+}
+
+void VizWidget::setLabelTextColor(QColor color)
+{
+    labelTextColor_ = color;
+}
+
+QColor VizWidget::labelTextColor()
+{
+    return labelTextColor_;
+}
+
+void VizWidget::setLabelBackgroundColor(QColor color)
+{
+    labelBackgroundColor_ = color;
+}
+
+QColor VizWidget::labelBackgroundColor()
+{
+    return labelBackgroundColor_;
 }
 
 void VizWidget::generateSortedState()

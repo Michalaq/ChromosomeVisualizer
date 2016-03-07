@@ -107,6 +107,12 @@ public slots:
     void setBackgroundColor(QColor color);
     QColor backgroundColor();
 
+    void setLabelTextColor(QColor color);
+    QColor labelTextColor();
+
+    void setLabelBackgroundColor(QColor color);
+    QColor labelBackgroundColor();
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -187,6 +193,7 @@ private:
     LabelRenderer labelRenderer_;
 
     QColor backgroundColor_;
+    QColor labelTextColor_, labelBackgroundColor_;
 };
 
 #endif /* VIZWINDOW_HPP */
