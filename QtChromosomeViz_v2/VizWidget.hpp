@@ -121,7 +121,7 @@ signals:
     void selectionChangedObject(const AtomSelection & selection);
 
 protected:
-    void paintLabels(QPainter &painter);
+    void paintLabels();
 
     // Generates vertices for a solid of revolution based on the given outline.
     //   quads - line segments disjoint from the axis of rotation

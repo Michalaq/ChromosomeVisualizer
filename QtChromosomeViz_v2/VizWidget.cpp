@@ -335,7 +335,7 @@ void VizWidget::paintGL()
 
     painter.endNativePainting();
 
-    paintLabels(painter);
+    paintLabels();
 
     if (isSelecting_)
     {
@@ -356,13 +356,17 @@ void VizWidget::resizeGL(int w, int h)
     labelRenderer_.setViewportSize(QSizeF(w, h));
 }
 
-void VizWidget::paintLabels(QPainter & painter)
+void VizWidget::paintLabels()
 {
     labelRenderer_.begin();
 
-    for (auto it = atomLabels_.begin(); it != atomLabels_.end(); it++)
+    for (auto it = sortedState_.begin(); it != sortedState_.end(); ++it)
     {
-        auto position = frameState_[it.key()].position;
+        auto it2 = atomLabels_.find(it->atomID);
+        if (it2 == atomLabels_.end())
+            continue;
+
+        auto position = frameState_[it2.key()].position;
         auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
         if (transformedPosition.z() >= 0.f)
         {
@@ -370,7 +374,7 @@ void VizWidget::paintLabels(QPainter & painter)
                                   -transformedPosition.y() / transformedPosition.w());
             QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
                                    (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            labelRenderer_.renderAt(screenPosition, it.value(),
+            labelRenderer_.renderAt(screenPosition, it2.value(),
                                     labelTextColor_, labelBackgroundColor_);
         }
     }
