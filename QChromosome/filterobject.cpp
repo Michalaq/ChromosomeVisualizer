@@ -26,7 +26,7 @@ bool FilterObject::eventFilter(QObject *watched, QEvent *event)
             return true;
     }
 
-    auto enterEvent = qproperty_enter.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
+    const auto enterEvent = qproperty_enter.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
 
     if (enterEvent != qproperty_enter.end())
     {
@@ -34,12 +34,12 @@ bool FilterObject::eventFilter(QObject *watched, QEvent *event)
 
         for (const auto& i : enterEvent.value().first)
         {
-            backup->push_back({ i.first, watched->property(i.first) });
+            backup->push_back({i.first, watched->property(i.first)});
             watched->setProperty(i.first, i.second);
         }
     }
 
-    auto leaveEvent = qproperty_leave.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
+    const auto leaveEvent = qproperty_leave.find(QPair<QObject*, QEvent::Type>(watched, event->type()));
 
     if (leaveEvent != qproperty_leave.end())
     {
