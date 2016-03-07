@@ -1,19 +1,19 @@
 #include "filterobject.h"
 
-FilterObject::FilterObject(QWidget *parent) : QObject(parent)
+const QHash<QString, QPair<QEvent::Type, QEvent::Type> > FilterObject::pseudostate2event =
 {
-    cacheProperties(parent);
+    { "hover", { QEvent::HoverEnter, QEvent::HoverLeave } },
+    { "pressed", { QEvent::MouseButtonPress, QEvent::MouseButtonRelease } }
+};
+
+FilterObject::FilterObject(QObject *parent) : QObject(parent)
+{
+    if (auto tmp = qobject_cast<QWidget*>(parent))
+        cacheProperties(tmp);
 }
 
-typedef QList<QPair<QByteArray, QVariant> > QPropertyStyleSheet;
-
-#include <QEvent>
-
-static QHash<QPair<QObject*, QEvent::Type>, QPair<QPropertyStyleSheet, QPropertyStyleSheet*> > qproperty_enter;
-static QHash<QPair<QObject*, QEvent::Type>, QPropertyStyleSheet> qproperty_leave;
-
-#include <QMouseEvent>
 #include "draggable.h"
+#include <QMouseEvent>
 
 bool FilterObject::eventFilter(QObject *watched, QEvent *event)
 {
@@ -51,8 +51,6 @@ bool FilterObject::eventFilter(QObject *watched, QEvent *event)
 
     return QObject::eventFilter(watched, event);
 }
-
-static const QHash<QString, QPair<QEvent::Type, QEvent::Type> > pseudostate2event = { { "hover", { QEvent::HoverEnter, QEvent::HoverLeave } }, { "pressed", { QEvent::MouseButtonPress, QEvent::MouseButtonRelease } } };
 
 #include <QRegularExpression>
 
