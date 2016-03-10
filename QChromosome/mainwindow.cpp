@@ -76,14 +76,13 @@ void MainWindow::updateFrameCount(int n)
     lastFrame = n - 1;
 
     ui->horizontalSlider->setMaximum(lastFrame);
-    ui->spinBox->setMaximum(lastFrame);
+    ui->horizontalSlider_2->setMaximum(lastFrame);
+    ui->spinBox_3->setMaximum(lastFrame);
     ui->plot->setMaximum(lastFrame);
 }
 
 void MainWindow::setFrame(int n)
 {
-    Q_ASSERT(0 <= n && n <= lastFrame);
-
     currentFrame = n;
 
     ui->horizontalSlider->setValue(n);
