@@ -9,6 +9,9 @@ class RangeSlider : public QSlider
 public:
     explicit RangeSlider(QWidget *parent = 0);
 
+protected:
+    void paintEvent(QPaintEvent *event);
+
 signals:
 
 public slots:
