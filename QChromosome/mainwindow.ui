@@ -355,10 +355,7 @@ MediaControl:hover {
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="horizontalSlider_2">
-          <property name="maximum">
-           <number>0</number>
-          </property>
+         <widget class="RangeSlider" name="horizontalSlider_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -795,6 +792,11 @@ MediaControl:hover {
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RangeSlider</class>
+   <extends>QSlider</extends>
+   <header>rangeslider.h</header>
   </customwidget>
  </customwidgets>
  <resources>
