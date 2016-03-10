@@ -4,5 +4,7 @@
         <file>picking.frag</file>
         <file>fragment.frag</file>
         <file>cylinder.vert</file>
+        <file>label.vert</file>
+        <file>label.frag</file>
     </qresource>
 </RCC>

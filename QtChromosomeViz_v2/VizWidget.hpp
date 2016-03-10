@@ -8,6 +8,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 
 #include "bartekm_code/Simulation.h"
+#include "LabelRenderer.hpp"
 
 struct VizVertex
 {
@@ -76,6 +77,7 @@ public:
 
     virtual void initializeGL() override;
     virtual void paintGL() override;
+    virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
 
@@ -102,6 +104,15 @@ public slots:
 
     void setVisibleSelection(AtomSelection s);
 
+    void setBackgroundColor(QColor color);
+    QColor backgroundColor();
+
+    void setLabelTextColor(QColor color);
+    QColor labelTextColor();
+
+    void setLabelBackgroundColor(QColor color);
+    QColor labelBackgroundColor();
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -110,7 +121,7 @@ signals:
     void selectionChangedObject(const AtomSelection & selection);
 
 protected:
-    void paintLabels(QPainter &painter);
+    void paintLabels();
 
     // Generates vertices for a solid of revolution based on the given outline.
     //   quads - line segments disjoint from the axis of rotation
@@ -178,6 +189,11 @@ private:
     QPair<unsigned int, unsigned int> ballQualityParameters_;
 
     QMap<unsigned int, QString> atomLabels_;
+
+    LabelRenderer labelRenderer_;
+
+    QColor backgroundColor_;
+    QColor labelTextColor_, labelBackgroundColor_;
 };
 
 #endif /* VIZWINDOW_HPP */

@@ -5,7 +5,6 @@
 #include "VizWidget.hpp"
 
 static const float EPSILON = 1e-4;
-static const int PICKING_FRAMEBUFFER_DOWNSCALE = 1;
 static const int SELECTED_FLAG = 1 << 2;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
@@ -42,6 +41,10 @@ VizWidget::VizWidget(QWidget *parent)
     , isSelectingState_(false)
     , currentSelection_(this)
     , ballQualityParameters_(0, 0)
+    , labelRenderer_(QSizeF(800, 600))
+    , backgroundColor_(0, 0, 0)
+    , labelTextColor_(255, 255, 255)
+    , labelBackgroundColor_(0, 0, 0, 255)
 {
 
 }
@@ -54,6 +57,7 @@ VizWidget::~VizWidget()
 void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    labelRenderer_.initGL();
 
     glEnable(GL_DEPTH_TEST);
 
@@ -288,7 +292,10 @@ void VizWidget::paintGL()
 
     glEnable(GL_DEPTH_TEST);
 
-    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClearColor(backgroundColor_.redF(),
+                 backgroundColor_.greenF(),
+                 backgroundColor_.blueF(),
+                 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
@@ -328,7 +335,7 @@ void VizWidget::paintGL()
 
     painter.endNativePainting();
 
-    paintLabels(painter);
+    paintLabels();
 
     if (isSelecting_)
     {
@@ -344,17 +351,22 @@ void VizWidget::paintGL()
     painter.end();
 }
 
-void VizWidget::paintLabels(QPainter & painter)
+void VizWidget::resizeGL(int w, int h)
 {
-    const float A_LOT = 1024.f * 1024.f;
-    const QPointF BIG_PT(A_LOT, A_LOT);
+    labelRenderer_.setViewportSize(QSizeF(w, h));
+}
 
-    painter.setPen(Qt::white);
-    painter.setBrush(QBrush(Qt::white));
+void VizWidget::paintLabels()
+{
+    labelRenderer_.begin();
 
-    for (auto it = atomLabels_.begin(); it != atomLabels_.end(); it++)
+    for (auto it = sortedState_.begin(); it != sortedState_.end(); ++it)
     {
-        auto position = frameState_[it.key()].position;
+        auto it2 = atomLabels_.find(it->atomID);
+        if (it2 == atomLabels_.end())
+            continue;
+
+        auto position = frameState_[it2.key()].position;
         auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
         if (transformedPosition.z() >= 0.f)
         {
@@ -362,10 +374,12 @@ void VizWidget::paintLabels(QPainter & painter)
                                   -transformedPosition.y() / transformedPosition.w());
             QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
                                    (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            QRectF rect(screenPosition - BIG_PT, screenPosition + BIG_PT);
-            painter.drawText(rect, Qt::AlignCenter, it.value());
+            labelRenderer_.renderAt(screenPosition, it2.value(),
+                                    labelTextColor_, labelBackgroundColor_);
         }
     }
+
+    labelRenderer_.end();
 }
 
 void VizWidget::setModelView(QMatrix4x4 mat)
@@ -789,6 +803,36 @@ void VizWidget::setVisibleSelection(AtomSelection s)
     update();
 }
 
+void VizWidget::setBackgroundColor(QColor color)
+{
+    backgroundColor_ = color;
+}
+
+QColor VizWidget::backgroundColor()
+{
+    return backgroundColor_;
+}
+
+void VizWidget::setLabelTextColor(QColor color)
+{
+    labelTextColor_ = color;
+}
+
+QColor VizWidget::labelTextColor()
+{
+    return labelTextColor_;
+}
+
+void VizWidget::setLabelBackgroundColor(QColor color)
+{
+    labelBackgroundColor_ = color;
+}
+
+QColor VizWidget::labelBackgroundColor()
+{
+    return labelBackgroundColor_;
+}
+
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
@@ -814,8 +858,7 @@ QList<unsigned int> VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    QSize downSize(size().width() / PICKING_FRAMEBUFFER_DOWNSCALE + 1,
-                   size().height() / PICKING_FRAMEBUFFER_DOWNSCALE + 1);
+    QSize downSize(size().width(), size().height());
 
     // Check if the framebuffer is large enough to
     // have whole scene rendered to it
@@ -838,9 +881,7 @@ QList<unsigned int> VizWidget::pickSpheres()
 
     assert(pickingFramebuffer_->bind());
     // This is important!
-    glViewport(0, 0,
-               pickingFramebuffer_->size().width(),
-               pickingFramebuffer_->size().height());
+    glViewport(0, pickingFramebuffer_->size().height() - downSize.height(), downSize.width(), downSize.height());
 
     // Render the scene with a special shader
     glClearColor(1.f, 1.f, 1.f, 1.f);
@@ -876,13 +917,9 @@ QList<unsigned int> VizWidget::pickSpheres()
     QSet<unsigned int> ballIDs;
 
     const auto r = selectionRect();
-    const QRect rscaled(r.left() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.top() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.width() / PICKING_FRAMEBUFFER_DOWNSCALE,
-                        r.height() / PICKING_FRAMEBUFFER_DOWNSCALE);
-    for (int y = rscaled.top(); y <= rscaled.bottom(); y++)
+    for (int y = r.top(); y <= r.bottom(); y++)
     {
-        for (int x = rscaled.left(); x <= rscaled.right(); x++)
+        for (int x = r.left(); x <= r.right(); x++)
         {
             auto color = image.pixel(x, y);
             if (color != 0xFFFFFFFFU)
@@ -946,12 +983,20 @@ void AtomSelection::setLabel(const QString & label)
     if (label == "")
     {
         for (unsigned int i : selectedIndices_)
+        {
+            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_.remove(i);
+        }
     }
     else
     {
+        widget_->labelRenderer_.addRef(label, selectedIndices_.size());
+
         for (unsigned int i : selectedIndices_)
+        {
+            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_[i] = label;
+        }
     }
 
     widget_->update();
