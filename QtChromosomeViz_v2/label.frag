@@ -7,5 +7,5 @@ uniform vec4 ucBackgroundColor;
 out vec4 cColor;
 
 void main() {
-    cColor = mix(ucBackgroundColor, ucTextColor, texture2D(sLabel, vTexCoord).a);
+    cColor = mix(ucBackgroundColor, ucTextColor, texture2D(sLabel, vTexCoord).r);
 }
