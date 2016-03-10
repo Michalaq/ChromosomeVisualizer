@@ -68,7 +68,8 @@ void LabelRenderer::renderAt(QPointF at, const QString & s, QColor textColor, QC
     texturePtr->bind(0);
 
     // Przerób koordynaty na NDC
-    const QVector2D normalizedPos(round(at.x()) / viewportSize_.width(), (round(at.y()) + 0.5) / viewportSize_.height());
+    const double xFix = (texturePtr->width() % 2 == 0 ? 0.0 : 0.5);
+    const QVector2D normalizedPos((round(at.x()) + xFix) / viewportSize_.width(), (round(at.y()) + 0.5) / viewportSize_.height());
     const QVector2D ndcPos(2.f * normalizedPos - QVector2D(1.f, 1.f));
     const QVector2D textureSize(texturePtr->width(), texturePtr->height());
     const QVector2D ndcSize(textureSize.x() / viewportSize_.width(), -textureSize.y() / viewportSize_.height());
