@@ -312,7 +312,7 @@ MediaControl:hover {
       <item>
        <widget class="QSlider" name="horizontalSlider">
         <property name="maximum">
-         <number>10</number>
+         <number>0</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -357,7 +357,7 @@ MediaControl:hover {
         <item>
          <widget class="RangeSlider" name="horizontalSlider_2">
           <property name="maximum">
-           <number>10</number>
+           <number>0</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>

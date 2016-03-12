@@ -19,12 +19,18 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    QPair<int, int> range;
-    int *handle;
+    int lowerBound;
+    int upperBound;
+
+    enum { NoHandle, LowerBoundHandle, UpperBoundHandle } activeHandle;
 
 signals:
+    void lowerBoundChanged(int);
+    void upperBoundChanged(int);
 
 public slots:
+    void setLowerBound(int);
+    void setUpperBound(int);
 };
 
 #endif // RANGESLIDER_H
