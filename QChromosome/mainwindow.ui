@@ -800,6 +800,12 @@ MediaControl:hover {
    <class>RangeSlider</class>
    <extends>QSlider</extends>
    <header>rangeslider.h</header>
+   <slots>
+    <signal>lowerBoundChanged(int)</signal>
+    <signal>upperBoundChanged(int)</signal>
+    <slot>setLowerBound(int)</slot>
+    <slot>setUpperBound(int)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>
@@ -969,16 +975,16 @@ MediaControl:hover {
   <connection>
    <sender>spinBox</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
+   <receiver>horizontalSlider</receiver>
+   <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>542</x>
      <y>142</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>149</y>
+     <x>193</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -1139,6 +1145,70 @@ MediaControl:hover {
     <hint type="destinationlabel">
      <x>423</x>
      <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>lowerBoundChanged(int)</signal>
+   <receiver>spinBox_2</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>39</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>upperBoundChanged(int)</signal>
+   <receiver>spinBox_3</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>148</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_2</receiver>
+   <slot>setLowerBound(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>39</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>93</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSlider_2</receiver>
+   <slot>setUpperBound(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>148</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>93</x>
+     <y>350</y>
     </hint>
    </hints>
   </connection>

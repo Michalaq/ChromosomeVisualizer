@@ -36,6 +36,14 @@ MainWindow::MainWindow(QWidget *parent) :
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
     x->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox, &SpinBox::setMinimum);
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
+
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
 }
 
 MainWindow::~MainWindow()
@@ -59,12 +67,13 @@ void MainWindow::openSimulation()
         ui->plot->setSimulation(simulation);
 
         ui->horizontalSlider->setMaximum(0);
-        ui->horizontalSlider->setValue(0);
+        ui->horizontalSlider_2->setMaximum(0);
 
         ui->spinBox->setMaximum(0);
-        ui->spinBox->setValue(0);
+        ui->spinBox_2->setMaximum(0);
+        ui->spinBox_3->setMaximum(0);
 
-        lastFrame = 0;
+        lastFrame = 0;//TODO być może do wywalenia
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
@@ -73,12 +82,8 @@ void MainWindow::openSimulation()
 
 void MainWindow::updateFrameCount(int n)
 {
-    lastFrame = n - 1;
-
-    ui->horizontalSlider->setMaximum(lastFrame);
-    ui->horizontalSlider_2->setMaximum(lastFrame);
-    ui->spinBox_3->setMaximum(lastFrame);
-    ui->plot->setMaximum(lastFrame);
+    ui->horizontalSlider_2->setMaximum(n - 1);
+    ui->spinBox_3->setMaximum(n - 1);
 }
 
 void MainWindow::setFrame(int n)

@@ -113,6 +113,8 @@ void RangeSlider::setLowerBound(int value)
     {
         lowerBound = value;
         update();
+
+        emit lowerBoundChanged(value);
     }
 }
 
@@ -122,5 +124,7 @@ void RangeSlider::setUpperBound(int value)
     {
         upperBound = value;
         update();
+
+        emit upperBoundChanged(value);
     }
 }
