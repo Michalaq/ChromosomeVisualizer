@@ -82,8 +82,12 @@ void MainWindow::openSimulation()
 
 void MainWindow::updateFrameCount(int n)
 {
-    ui->horizontalSlider_2->setMaximum(n - 1);
-    ui->spinBox_3->setMaximum(n - 1);
+    lastFrame = n - 1;
+
+    ui->horizontalSlider_2->setMaximum(lastFrame);
+    ui->spinBox_3->setMaximum(lastFrame);
+
+    ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
 void MainWindow::setFrame(int n)
@@ -162,12 +166,14 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    QList<unsigned int> all;
+    /*QList<unsigned int> all;
 
-    for (unsigned int i = 0; i < simulation->getFrame(currentFrame)->atoms.size(); i++)
+    size_t count = simulation->getFrame(currentFrame)->atoms.size();
+
+    for (unsigned int i = 0; i < count; i++)
         all.push_back(i);
 
-    //ui->scene->setVisibleSelection(all);
+    //ui->scene->setVisibleSelection(all);*/
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)
