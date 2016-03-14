@@ -46,7 +46,14 @@ VizWidget::VizWidget(QWidget *parent)
     , labelTextColor_(255, 255, 255)
     , labelBackgroundColor_(0, 0, 0, 255)
 {
+    selectionRectWidget_ = new SelectionRectWidget();
+    selectionRectWidget_->setVisible(false);
 
+    QVBoxLayout * layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->addWidget(selectionRectWidget_);
+
+    setLayout(layout);
 }
 
 VizWidget::~VizWidget()
@@ -272,14 +279,14 @@ void VizWidget::paintGL()
         needVBOUpdate_ = false;
     }
 
-    QPainter painter;
-    painter.begin(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    // QPainter painter;
+    // painter.begin(this);
+    // painter.setRenderHint(QPainter::Antialiasing);
 
     generateSortedState();
     updateWholeFrameData();
 
-    painter.beginNativePainting();
+    // painter.beginNativePainting();
 
     // Enable alpha blending
     glEnable(GL_BLEND);
@@ -333,22 +340,7 @@ void VizWidget::paintGL()
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 
-    painter.endNativePainting();
-
     paintLabels();
-
-    if (isSelecting_)
-    {
-        QBrush brush(Qt::gray, Qt::Dense4Pattern);
-
-        QRect r = selectionRect();
-        painter.fillRect(r, brush);
-        painter.setPen(Qt::white);
-        painter.setBrush(Qt::transparent);
-        painter.drawRect(r);
-    }
-
-    painter.end();
 }
 
 void VizWidget::resizeGL(int w, int h)
@@ -404,6 +396,7 @@ void VizWidget::setProjection(QMatrix4x4 mat)
 void VizWidget::setSelectingState(bool flag)
 {
     isSelectingState_ = flag;
+    selectionRectWidget_->setVisible(flag);
 
     if (flag)
         setCursor(Qt::CrossCursor);
@@ -666,8 +659,11 @@ void VizWidget::mousePressEvent(QMouseEvent * event)
         return event->ignore();
 
     isSelecting_ = true;
+    selectionRectWidget_->setVisible(true);
     selectionPoints_[0] = event->pos();
     selectionPoints_[1] = event->pos();
+
+    selectionRectWidget_->setRectangle(selectionRect());
 }
 
 void VizWidget::mouseMoveEvent(QMouseEvent * event)
@@ -681,6 +677,7 @@ void VizWidget::mouseMoveEvent(QMouseEvent * event)
         r += selectionRect();
         selectionPoints_[1] = event->pos();
         r += selectionRect();
+        selectionRectWidget_->setRectangle(selectionRect());
         update(r);
     }
 }
@@ -693,6 +690,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
     if (isSelecting_)
     {
         isSelecting_ = false;
+        selectionRectWidget_->setVisible(false);
 
         const bool ctrl = event->modifiers() & Qt::ControlModifier;
         const bool shift = event->modifiers() & Qt::ShiftModifier;

@@ -9,6 +9,7 @@
 
 #include "bartekm_code/Simulation.h"
 #include "LabelRenderer.hpp"
+#include "SelectionRectWidget.hpp"
 
 struct VizVertex
 {
@@ -191,6 +192,7 @@ private:
     QMap<unsigned int, QString> atomLabels_;
 
     LabelRenderer labelRenderer_;
+    SelectionRectWidget * selectionRectWidget_;
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;
