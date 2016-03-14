@@ -9,11 +9,11 @@ class SelectionRectWidget : public QWidget
 
 public:
     SelectionRectWidget(QWidget * parent = nullptr);
-    void setRectangle(const QRectF & r);
+    void setRectangle(const QRect & r);
     virtual void paintEvent(QPaintEvent * event) override;
 
 private:
-    QRectF rect_;
+    QRect rect_;
 };
 
 #endif // SELECTIONRECTWIDGET_HPP
