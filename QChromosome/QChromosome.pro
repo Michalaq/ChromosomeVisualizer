@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     spinbox.cpp \
     filterobject.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
-    rangeslider.cpp
+    rangeslider.cpp \
+    axis.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h\
     spinbox.h \
     filterobject.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
-    rangeslider.h
+    rangeslider.h \
+    axis.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui

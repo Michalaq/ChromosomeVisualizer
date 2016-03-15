@@ -20,7 +20,8 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      origin(0, 0, 0)
+      origin(0, 0, 0),
+      axis(new Axis(this))
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -31,6 +32,9 @@ Camera::Camera(QWidget *parent)
     updateModelView();
 
     updateAngles();
+
+    connect(this, &Camera::modelViewChanged, axis, &Axis::setModelView);
+    axis->resize(100, 100);
 }
 
 void Camera::resizeEvent(QResizeEvent *event)
@@ -38,6 +42,8 @@ void Camera::resizeEvent(QResizeEvent *event)
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
+    axis->raise();
+    axis->resize(size());
 }
 
 #include <QWheelEvent>
