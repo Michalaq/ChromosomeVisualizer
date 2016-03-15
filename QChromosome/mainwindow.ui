@@ -617,7 +617,7 @@ MediaControl:hover {
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
    <property name="windowTitle">
-    <string>QDockWidget 1</string>
+    <string>Objects</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -626,7 +626,7 @@ MediaControl:hover {
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>QDockWidget 2</string>
+    <string>Preferences</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -667,7 +667,7 @@ MediaControl:hover {
   </widget>
   <widget class="DockWidget" name="dockWidget_3">
    <property name="windowTitle">
-    <string>QPlotWidget 1</string>
+    <string>Chart for data analysis</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
