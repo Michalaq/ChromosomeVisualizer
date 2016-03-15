@@ -2,7 +2,6 @@
 #define CAMERA_H
 
 #include "draggable.h"
-#include "axis.h"
 
 #include <QVector3D>
 #include <QMatrix4x4>
@@ -74,8 +73,6 @@ private:
     static const qreal distanceFactor;
     static const qreal angleFactor;
     static const qreal wheelFactor;
-
-    Axis *axis;
 
 signals:
     void modelViewChanged(QMatrix4x4);

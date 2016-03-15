@@ -299,6 +299,9 @@ MediaControl:hover {
             <item row="0" column="0">
              <widget class="VizWidget" name="scene"/>
             </item>
+            <item row="0" column="0">
+             <widget class="Axis" name="widget" native="true"/>
+            </item>
            </layout>
           </widget>
          </item>
@@ -807,6 +810,15 @@ MediaControl:hover {
     <slot>setUpperBound(int)</slot>
    </slots>
   </customwidget>
+  <customwidget>
+   <class>Axis</class>
+   <extends>QWidget</extends>
+   <header>axis.h</header>
+   <container>1</container>
+   <slots>
+    <slot>setModelView(QMatrix4x4)</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
@@ -1209,6 +1221,22 @@ MediaControl:hover {
     <hint type="destinationlabel">
      <x>93</x>
      <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>camera</sender>
+   <signal>modelViewChanged(QMatrix4x4)</signal>
+   <receiver>widget</receiver>
+   <slot>setModelView(QMatrix4x4)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>224</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>154</y>
     </hint>
    </hints>
   </connection>
