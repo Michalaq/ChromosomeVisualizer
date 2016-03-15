@@ -2,7 +2,7 @@
 
 Axis::Axis(QWidget *parent) : QWidget(parent)
 {
-
+    setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 #include <QPainter>
