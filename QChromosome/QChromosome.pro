@@ -29,7 +29,7 @@ SOURCES += main.cpp\
     filterobject.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
-    axis.cpp
+    axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp
 
 HEADERS  += mainwindow.h\
@@ -49,7 +49,7 @@ HEADERS  += mainwindow.h\
     filterobject.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
-    axis.h
+    axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp
 
 FORMS    += mainwindow.ui \
