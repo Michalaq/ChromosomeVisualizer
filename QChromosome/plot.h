@@ -14,6 +14,7 @@ public:
     ~Plot();
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void setMinimum(int m);
     void setMaximum(int m);
     void setFrame(int n);
 
@@ -23,9 +24,10 @@ protected:
 private:
     std::shared_ptr<Simulation> simulation_;
 
-    QPainterPath data;
-    QRectF databr;
+    QPolygonF data;
+    qreal maxval;
 
+    int firstFrame;
     int currentFrame;
     int lastFrame;
 
