@@ -46,6 +46,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
+
+    connect(ui->actionMove, SIGNAL(toggled(bool)), this, SLOT(move(bool)));
+    connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
+    connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
+    move(true);
 }
 
 MainWindow::~MainWindow()
@@ -192,6 +197,30 @@ void MainWindow::setBaseAction(bool enabled)
 {
     if (enabled)
         modifiers.last() = qobject_cast<QAction*>(sender());
+}
+
+void MainWindow::move(bool checked)
+{
+    if (checked)
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(move(int,int)));
+    else
+        ui->camera->disconnect(ui->camera);
+}
+
+void MainWindow::rotate(bool checked)
+{
+    if (checked)
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(rotate(int,int)));
+    else
+        ui->camera->disconnect(ui->camera);
+}
+
+void MainWindow::scale(bool checked)
+{
+    if (checked)
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(scale(int,int)));
+    else
+        ui->camera->disconnect(ui->camera);
 }
 
 #include <QKeyEvent>

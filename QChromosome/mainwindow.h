@@ -39,6 +39,11 @@ public slots:
     /* actions */
     void setBaseAction(bool enabled);
 
+    /* camera */
+    void move(bool);
+    void rotate(bool);
+    void scale(bool);
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
