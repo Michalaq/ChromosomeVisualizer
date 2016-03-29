@@ -116,6 +116,12 @@ public slots:
 
     const QVector<VizBallInstance> & getBallInstances() const;
 
+    void setSpecularColor(QColor color);
+    QColor getSpecularColor() const;
+
+    void setSpecularExponent(float exponent);
+    float getSpecularExponent() const;
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -166,6 +172,9 @@ private:
     QMatrix4x4 modelViewProjection_;
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
+
+    QColor specularColor_;
+    float specularExponent_;
 
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;

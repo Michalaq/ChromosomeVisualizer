@@ -36,6 +36,8 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<NullSimulation>())
     , needVBOUpdate_(true)
+    , specularColor_(255, 255, 255)
+    , specularExponent_(20.0)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
@@ -316,6 +318,11 @@ void VizWidget::paintGL()
         cylinderProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        cylinderProgram_.setUniformValue("ucSpecularColor",
+                                         specularColor_.redF(),
+                                         specularColor_.greenF(),
+                                         specularColor_.blueF());
+        cylinderProgram_.setUniformValue("ufSpecularExponent", specularExponent_);
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
 
@@ -330,6 +337,11 @@ void VizWidget::paintGL()
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        cylinderProgram_.setUniformValue("ucSpecularColor",
+                                         specularColor_.redF(),
+                                         specularColor_.greenF(),
+                                         specularColor_.blueF());
+        sphereProgram_.setUniformValue("ufSpecularExponent", specularExponent_);
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
@@ -834,6 +846,26 @@ QColor VizWidget::labelBackgroundColor()
 const QVector<VizBallInstance> & VizWidget::getBallInstances() const
 {
     return frameState_;
+}
+
+void VizWidget::setSpecularColor(QColor color)
+{
+    specularColor_ = color;
+}
+
+QColor VizWidget::getSpecularColor() const
+{
+    return specularColor_;
+}
+
+void VizWidget::setSpecularExponent(float exponent)
+{
+    specularExponent_ = exponent;
+}
+
+float VizWidget::getSpecularExponent() const
+{
+    return specularExponent_;
 }
 
 void VizWidget::generateSortedState()
