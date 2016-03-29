@@ -831,6 +831,11 @@ QColor VizWidget::labelBackgroundColor()
     return labelBackgroundColor_;
 }
 
+const QVector<VizBallInstance> & VizWidget::getBallInstances() const
+{
+    return frameState_;
+}
+
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
