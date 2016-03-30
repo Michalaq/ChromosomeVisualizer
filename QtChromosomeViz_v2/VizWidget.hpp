@@ -120,6 +120,11 @@ public slots:
     void setLabelBackgroundColor(QColor color);
     QColor labelBackgroundColor();
 
+    void setFogDensity(float intensity);
+    void setFogContribution(float contribution);
+    float fogDensity() const;
+    float fogContribution() const;
+
     const QVector<VizBallInstance> & getBallInstances() const;
 
 signals:
@@ -172,6 +177,9 @@ private:
     QMatrix4x4 modelViewProjection_;
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
+
+    float fogDensity_;
+    float fogContribution_;
 
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;

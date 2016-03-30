@@ -10,8 +10,10 @@ layout(location = 6) in vec2 fInstanceSpecularExponent;
 layout(location = 7) in vec3 fInstanceSize;
 
 uniform mat4 mvp;
+uniform mat4 mv;
 uniform mat3 mvNormal;
 out vec4 vPosition;
+out vec4 vViewPosition;
 out vec3 vNormal;
 flat out uint iInstanceID;
 flat out uint iFlags;
@@ -37,9 +39,11 @@ void main() {
     float size = mix(fInstanceSize.x, fInstanceSize.y, blendFactor) * 0.5;
     vec3 pos3 = vVertexPosition * -vec3(size, size, fInstanceSize.z);
     pos3 = rotate_vector(vInstanceRotation.wxyz, pos3);
-    vec4 pos = mvp * vec4(pos3 + vInstancePosition.xyz, 1);
+    vec4 objectSpacePos = vec4(pos3 + vInstancePosition.xyz, 1);
+    vec4 pos = mvp * objectSpacePos;
     gl_Position = pos;
     vPosition = pos;
+    vViewPosition = mv * objectSpacePos;
     vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));
     iInstanceID = 0u;
     iFlags = 0u;

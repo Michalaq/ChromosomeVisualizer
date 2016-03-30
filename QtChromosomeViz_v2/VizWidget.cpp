@@ -36,6 +36,8 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<NullSimulation>())
     , needVBOUpdate_(true)
+    , fogDensity_(0.1f)
+    , fogContribution_(0.8f)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
@@ -354,10 +356,17 @@ void VizWidget::paintGL()
         cylinderProgram_.bind();
 
         cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
+        cylinderProgram_.setUniformValue("mv", modelView_);
         cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
         cylinderProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        cylinderProgram_.setUniformValue("ufFogDensity", fogDensity_);
+        cylinderProgram_.setUniformValue("ufFogContribution", fogContribution_);
+        cylinderProgram_.setUniformValue("ucFogColor",
+                                         backgroundColor_.redF(),
+                                         backgroundColor_.greenF(),
+                                         backgroundColor_.blueF());
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
 
@@ -368,10 +377,17 @@ void VizWidget::paintGL()
         sphereProgram_.bind();
 
         sphereProgram_.setUniformValue("mvp", modelViewProjection_);
+        sphereProgram_.setUniformValue("mv", modelView_);
         sphereProgram_.setUniformValue("mvNormal", modelViewNormal_);
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        sphereProgram_.setUniformValue("ufFogDensity", fogDensity_);
+        sphereProgram_.setUniformValue("ufFogContribution", fogContribution_);
+        sphereProgram_.setUniformValue("ucFogColor",
+                                       backgroundColor_.redF(),
+                                       backgroundColor_.greenF(),
+                                       backgroundColor_.blueF());
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
@@ -878,6 +894,26 @@ void VizWidget::setLabelBackgroundColor(QColor color)
 QColor VizWidget::labelBackgroundColor()
 {
     return labelBackgroundColor_;
+}
+
+void VizWidget::setFogDensity(float intensity)
+{
+    fogDensity_ = intensity;
+}
+
+void VizWidget::setFogContribution(float contribution)
+{
+    fogContribution_ = contribution;
+}
+
+float VizWidget::fogDensity() const
+{
+    return fogDensity_;
+}
+
+float VizWidget::fogContribution() const
+{
+    return fogContribution_;
 }
 
 const QVector<VizBallInstance> & VizWidget::getBallInstances() const

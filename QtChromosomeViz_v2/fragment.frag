@@ -1,8 +1,12 @@
 #version 330 core
 
 uniform vec2 uvScreenSize;
+uniform float ufFogDensity;
+uniform float ufFogContribution;
+uniform vec3 ucFogColor;
 
 in vec4 vPosition;
+in vec4 vViewPosition;
 in vec3 vNormal;
 flat in uint iFlags;
 in vec4 cColor;
@@ -25,11 +29,18 @@ void main() {
     float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
     vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
 
+    // Fog
+    float sqDistance = dot(vViewPosition.rgb, vViewPosition.rgb);
+    float fogFactor = mix(1.0,
+                          clamp(1.0 / exp(ufFogDensity * 0.001 * sqDistance), 0.0, 1.0),
+                          ufFogContribution);
+
     // Calculate stripes for selected molecules
     vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
     float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;
-    ocColor = mix(cDiffuse + cSpecular, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
+    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }
