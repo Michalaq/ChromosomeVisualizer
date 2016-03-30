@@ -72,20 +72,32 @@ void Plot::paintEvent(QPaintEvent *event)
     // draw background
     painter.fillRect(15, 15, width() - 30, height() - 30, "#262626");
 
-    // set coordinate system
-    painter.setViewport(15 + 30, height() - 50 - 15, width() - 15 - 30 - 15 - 15, 15 + 40 + 50 + 15 - height());
+    // draw legend
+    painter.setRenderHint(QPainter::Antialiasing);
 
-    // draw axis
-    QPen pen1(QBrush("#808080"), 1.0, Qt::SolidLine);
+    QPen pen1(QBrush("#2a7fff"), 2., Qt::SolidLine);
     pen1.setCosmetic(true);
 
     painter.setPen(pen1);
 
+    painter.drawEllipse(width() / 2 - 30, height() - 45, 10, 10);
+
+    QPen pen2(QBrush("#808080"), 1.0, Qt::SolidLine);
+    pen2.setCosmetic(true);
+
+    painter.setPen(pen2);
+
+    painter.drawText(QRect(width() / 2 - 15, height() - 45, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
+
+    // set coordinate system
+    painter.setViewport(15 + 30, height() - 50 - 15, width() - 15 - 30 - 15 - 15, 15 + 40 + 50 + 15 - height());
+
+    // draw axis
     painter.drawLine(0, 0, width(), 0);
 
-    pen1.setStyle(Qt::DashLine);
+    pen2.setStyle(Qt::DashLine);
 
-    painter.setPen(pen1);
+    painter.setPen(pen2);
 
     for (int i = 1; i < 5; i++)
         painter.drawLine(0, height() * i / 4, width(), height() * i / 4);
@@ -94,7 +106,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setViewTransformEnabled(false);
 
-    int delta = int((maxval + 100) / 100) * 25;
+    int delta = int((maxval + 40) / 40) * 10;
 
     for (int i = 0; i < 5; i++)
         painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(30, 15), QSize(25, 30)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
@@ -102,7 +114,6 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setViewTransformEnabled(true);
 
     // plot data
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.setWindow(firstFrame, 0, lastFrame - firstFrame, 4 * delta);
 
     auto interval = data.mid(firstFrame, lastFrame - firstFrame + 1);
@@ -123,10 +134,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.restore();
 
-    QPen pen2(QBrush("#2a7fff"), 2., Qt::SolidLine);
-    pen2.setCosmetic(true);
-
-    painter.setPen(pen2);
+    painter.setPen(pen1);
 
     painter.drawPolyline(&data[firstFrame], lastFrame - firstFrame + 1);
 
