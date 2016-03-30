@@ -26,6 +26,8 @@ private:
     QPushButton * selectTypeButton_;
 
     QPushButton * setColorButton_;
+    QPushButton * setSpecularColorButton_;
+    QPushButton * setSpecularExponentButton_;
     QPushButton * setOpacityButton_;
     QPushButton * setSizeButton_;
     QPushButton * setLabelButton_;

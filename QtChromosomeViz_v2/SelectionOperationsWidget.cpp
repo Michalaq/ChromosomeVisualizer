@@ -26,6 +26,8 @@ void SelectionOperationsWidget::initializeControls()
 
     auto * label2 = new QLabel("Set:");
     setColorButton_ = new QPushButton("Color");
+    setSpecularColorButton_ = new QPushButton("Specular Color");
+    setSpecularExponentButton_ = new QPushButton("Shininess");
     setOpacityButton_ = new QPushButton("Opacity");
     setSizeButton_ = new QPushButton("Size");
     setLabelButton_ = new QPushButton("Label");
@@ -36,6 +38,8 @@ void SelectionOperationsWidget::initializeControls()
     mainLayout->addWidget(selectTypeButton_);
     mainLayout->addWidget(label2);
     mainLayout->addWidget(setColorButton_);
+    mainLayout->addWidget(setSpecularColorButton_);
+    mainLayout->addWidget(setSpecularExponentButton_);
     mainLayout->addWidget(setOpacityButton_);
     mainLayout->addWidget(setSizeButton_);
     mainLayout->addWidget(setLabelButton_);
@@ -63,6 +67,21 @@ void SelectionOperationsWidget::initializeSignals()
         QColor color = QColorDialog::getColor(Qt::white, this, "Pick color");
         if (color.isValid())
             vizWidget_->selectedSpheresObject().setColor(color);
+    });
+
+    connect(setSpecularColorButton_, &QPushButton::clicked, [this](bool) {
+        QColor color = QColorDialog::getColor(Qt::white, this, "Pick color");
+        if (color.isValid())
+            vizWidget_->selectedSpheresObject().setSpecularColor(color);
+    });
+
+    connect(setSpecularExponentButton_, &QPushButton::clicked, [this](bool) {
+        bool ok = false;
+        double shininess = QInputDialog::getDouble(this, "Input shininess",
+                                                   "Enter shininess (between 1.0 and 100.0):",
+                                                   10.0, 1.0, 100.0, 2, &ok);
+        if (ok)
+            vizWidget_->selectedSpheresObject().setSpecularExponent(shininess);
     });
 
     connect(setOpacityButton_, &QPushButton::clicked, [this](bool) {
