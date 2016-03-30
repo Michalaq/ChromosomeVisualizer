@@ -24,7 +24,7 @@ protected:
 private:
     std::shared_ptr<Simulation> simulation_;
 
-    QPolygonF data;
+    QVector<QPointF> data;
     qreal maxval;
 
     int firstFrame;

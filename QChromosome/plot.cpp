@@ -8,7 +8,7 @@ Plot::Plot(QWidget *parent) :
     currentFrame(0),
     lastFrame(0)
 {
-
+    setMinimumHeight(15 + 40 + 50 + 15);
 }
 
 Plot::~Plot()
@@ -69,23 +69,70 @@ void Plot::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    painter.setWindow(0, height(), width(), -height());
+    // draw background
+    painter.fillRect(15, 15, width() - 30, height() - 30, "#262626");
+
+    // set coordinate system
+    painter.setViewport(15 + 30, height() - 50 - 15, width() - 15 - 30 - 15 - 15, 15 + 40 + 50 + 15 - height());
+
+    // draw axis
+    QPen pen1(QBrush("#808080"), 1.0, Qt::SolidLine);
+    pen1.setCosmetic(true);
+
+    painter.setPen(pen1);
+
+    painter.drawLine(0, 0, width(), 0);
+
+    pen1.setStyle(Qt::DashLine);
+
+    painter.setPen(pen1);
+
+    for (int i = 1; i < 5; i++)
+        painter.drawLine(0, height() * i / 4, width(), height() * i / 4);
+
+    auto transform = painter.combinedTransform();
+
+    painter.setViewTransformEnabled(false);
+
+    int delta = int((maxval + 100) / 100) * 25;
+
+    for (int i = 0; i < 5; i++)
+        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(30, 15), QSize(25, 30)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
+
+    painter.setViewTransformEnabled(true);
+
+    // plot data
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.setWindow(firstFrame, 0, lastFrame - firstFrame, 4 * delta);
 
-    painter.translate(12, 12);
-    painter.scale((qreal) (width() - 24) / (lastFrame - firstFrame), (qreal) (height() - 24) / maxval);
-    painter.translate(-firstFrame, 0);
+    auto interval = data.mid(firstFrame, lastFrame - firstFrame + 1);
 
-    //painter.fillPath(path, QColor("#002255"));
+    interval.prepend(QPointF(firstFrame, 0));
+    interval.append(QPointF(lastFrame, 0));
 
-    QPen pen(QColor("#003380"), 2., Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    pen.setCosmetic(true);
+    painter.save();
 
-    painter.setPen(pen);
+    QLinearGradient gradient(0, 0, 0, 4 * delta);
+    gradient.setColorAt(0, Qt::transparent);
+    gradient.setColorAt(1, "#803771c8");
+
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(gradient);
+
+    painter.drawPolygon(interval);
+
+    painter.restore();
+
+    QPen pen2(QBrush("#2a7fff"), 2., Qt::SolidLine);
+    pen2.setCosmetic(true);
+
+    painter.setPen(pen2);
+
     painter.drawPolyline(&data[firstFrame], lastFrame - firstFrame + 1);
 
-    pen.setColor(Qt::white);
+    QPen pen3(Qt::white, 3.);
+    pen3.setCosmetic(true);
 
-    painter.setPen(pen);
-    painter.drawLine(currentFrame, 0, currentFrame, maxval);
+    painter.setPen(pen3);
+    painter.drawLine(currentFrame, 0, currentFrame, 4 * delta);
 }
