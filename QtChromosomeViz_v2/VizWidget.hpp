@@ -25,6 +25,8 @@ struct VizBallInstance
     unsigned int flags;
     unsigned int atomID;
     unsigned int color;
+    unsigned int specularColor;
+    float specularExponent;
     float size;
 };
 
@@ -33,6 +35,8 @@ struct VizLink
     QVector3D position;
     QQuaternion rotation;
     unsigned int color[2];
+    unsigned int specularColor[2];
+    float specularExponent[2];
     float size[3];
 
     void update(const QVector3D & p1, const QVector3D & p2);
@@ -49,6 +53,8 @@ public:
 
     void setColor(QColor color);
     void setAlpha(float alpha);
+    void setSpecularColor(QColor color);
+    void setSpecularExponent(float exponent);
     void setSize(float size);
     void setLabel(const QString & label);
 
@@ -116,12 +122,6 @@ public slots:
 
     const QVector<VizBallInstance> & getBallInstances() const;
 
-    void setSpecularColor(QColor color);
-    QColor getSpecularColor() const;
-
-    void setSpecularExponent(float exponent);
-    float getSpecularExponent() const;
-
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -172,9 +172,6 @@ private:
     QMatrix4x4 modelViewProjection_;
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
-
-    QColor specularColor_;
-    float specularExponent_;
 
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;

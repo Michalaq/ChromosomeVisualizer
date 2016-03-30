@@ -5,7 +5,9 @@ layout(location = 1) in vec3 vVertexNormal;
 layout(location = 2) in vec3 vInstancePosition;
 layout(location = 3) in vec4 vInstanceRotation;
 layout(location = 4) in uvec2 cInstanceColor;
-layout(location = 5) in vec3 fInstanceSize;
+layout(location = 5) in uvec2 cInstanceSpecularColor;
+layout(location = 6) in vec2 fInstanceSpecularExponent;
+layout(location = 7) in vec3 fInstanceSize;
 
 uniform mat4 mvp;
 uniform mat3 mvNormal;
@@ -13,7 +15,9 @@ out vec4 vPosition;
 out vec3 vNormal;
 flat out uint iInstanceID;
 flat out uint iFlags;
-out vec4 vColor;
+out vec4 cColor;
+out vec3 cSpecularColor;
+out float fSpecularExponent;
 
 vec4 colorFromARGB8(uint color) {
     vec4 ret;
@@ -39,7 +43,13 @@ void main() {
     vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));
     iInstanceID = 0u;
     iFlags = 0u;
-    vColor = mix(colorFromARGB8(cInstanceColor.x | 0xFF000000U),
+    cColor = mix(colorFromARGB8(cInstanceColor.x | 0xFF000000U),
                  colorFromARGB8(cInstanceColor.y | 0xFF000000U),
                  blendFactor);
+    cSpecularColor = mix(colorFromARGB8(cInstanceSpecularColor.x).rgb,
+                         colorFromARGB8(cInstanceSpecularColor.y).rgb,
+                         blendFactor);
+    fSpecularExponent = mix(fInstanceSpecularExponent.x,
+                            fInstanceSpecularExponent.y,
+                            blendFactor);
 }

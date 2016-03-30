@@ -36,8 +36,6 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<NullSimulation>())
     , needVBOUpdate_(true)
-    , specularColor_(255, 255, 255)
-    , specularExponent_(20.0)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
@@ -145,8 +143,27 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(6);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         6,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularColor)
+    );
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(
+        7,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularExponent)
+    );
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(
+        8,
         1,
         GL_FLOAT,
         GL_FALSE,
@@ -159,6 +176,8 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(8, 1);
 
     atomPositions_.release();
     vaoSpheres_.release();
@@ -234,8 +253,27 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         5,
+        2,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, specularColor)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, specularExponent)
+    );
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(
+        7,
         3,
         GL_FLOAT,
         GL_FALSE,
@@ -247,6 +285,8 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -318,11 +358,6 @@ void VizWidget::paintGL()
         cylinderProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
-        cylinderProgram_.setUniformValue("ucSpecularColor",
-                                         specularColor_.redF(),
-                                         specularColor_.greenF(),
-                                         specularColor_.blueF());
-        cylinderProgram_.setUniformValue("ufSpecularExponent", specularExponent_);
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
 
@@ -337,11 +372,6 @@ void VizWidget::paintGL()
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
-        cylinderProgram_.setUniformValue("ucSpecularColor",
-                                         specularColor_.redF(),
-                                         specularColor_.greenF(),
-                                         specularColor_.blueF());
-        sphereProgram_.setUniformValue("ufSpecularExponent", specularExponent_);
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
@@ -445,6 +475,8 @@ void VizWidget::setFirstFrame()
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
+    dummy.specularColor = 0xFFFFFFFF;
+    dummy.specularExponent = 10.f;
     dummy.size = 1.f;
     frameState_.fill(dummy, sphereCount_);
 
@@ -461,6 +493,7 @@ void VizWidget::setFirstFrame()
     auto selection = atomTypeSelection("BIN");
     selection.setColor(Qt::white);
     selection.setAlpha(0.5f);
+    selection.setSpecularColor(QRgb(0x000000));
 
     // Run this again to update link colours
     setFrame(0);
@@ -494,6 +527,10 @@ void VizWidget::setFrame(frameNumber_t frame)
         link.update(frameState_[i].position, frameState_[i + 1].position);
         link.color[0] = frameState_[i].color;
         link.color[1] = frameState_[i + 1].color;
+        link.specularColor[0] = frameState_[i].specularColor;
+        link.specularColor[1] = frameState_[i + 1].specularColor;
+        link.specularExponent[0] = frameState_[i].specularExponent;
+        link.specularExponent[1] = frameState_[i + 1].specularExponent;
         link.size[0] = frameState_[i].size;
         link.size[1] = frameState_[i + 1].size;
     }
@@ -848,26 +885,6 @@ const QVector<VizBallInstance> & VizWidget::getBallInstances() const
     return frameState_;
 }
 
-void VizWidget::setSpecularColor(QColor color)
-{
-    specularColor_ = color;
-}
-
-QColor VizWidget::getSpecularColor() const
-{
-    return specularColor_;
-}
-
-void VizWidget::setSpecularExponent(float exponent)
-{
-    specularExponent_ = exponent;
-}
-
-float VizWidget::getSpecularExponent() const
-{
-    return specularExponent_;
-}
-
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
@@ -999,6 +1016,25 @@ void AtomSelection::setAlpha(float alpha)
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0x00FFFFFF) | code;
     }
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
+void AtomSelection::setSpecularColor(QColor color)
+{
+    unsigned int code = color.rgb();
+    for (unsigned int i : selectedIndices_)
+        widget_->frameState_[i].specularColor = code;
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
+void AtomSelection::setSpecularExponent(float exponent)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->frameState_[i].specularExponent = exponent;
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
