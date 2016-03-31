@@ -1,5 +1,7 @@
 #include "plot.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
+#include <QHBoxLayout>
+#include "legend.h"
 
 Plot::Plot(QWidget *parent) :
     QWidget(parent),
@@ -8,7 +10,9 @@ Plot::Plot(QWidget *parent) :
     currentFrame(0),
     lastFrame(0)
 {
-    setMinimumHeight(15 + 40 + 50 + 15);
+    new QHBoxLayout(this);
+    layout()->setMargin(margin);
+    layout()->setAlignment(Qt::AlignBottom);
 }
 
 Plot::~Plot()
@@ -27,6 +31,18 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     lastFrame = 0;
 
     maxval = 0;
+
+    setMinimumHeight(2 * margin + padding_top + padding_bottom);
+
+    while (QLayoutItem* child = layout()->takeAt(0))
+    {
+        delete child->widget();
+        delete child;
+    }
+
+    layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
+    layout()->addWidget(new Legend("bonds", this));
+    layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
 
     update();
 }
@@ -76,24 +92,15 @@ void Plot::paintEvent(QPaintEvent *event)
     // draw legend
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QPen pen1(QBrush("#2a7fff"), 2., Qt::SolidLine);
+    QPen pen1(QBrush("#808080"), 1.0, Qt::SolidLine);
     pen1.setCosmetic(true);
 
     painter.setPen(pen1);
 
-    painter.drawEllipse(width() / 2 - 30, height() - 35, 10, 10);
-
-    QPen pen2(QBrush("#808080"), 1.0, Qt::SolidLine);
-    pen2.setCosmetic(true);
-
-    painter.setPen(pen2);
-
-    painter.drawText(QRect(width() / 2 - 15, height() - 35, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
-
-    int _padding_left = padding_left + painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
+    int label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
 
     // set coordinate system
-    painter.setViewport(margin + _padding_left, height() - padding_bottom - margin, width() - 2 * margin - _padding_left - padding_right, 2 * margin + padding_top + padding_bottom - height());
+    painter.setViewport(margin + padding_left + label, height() - padding_bottom - margin, width() - 2 * margin -padding_left - label - padding_right, 2 * margin + padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 
@@ -114,9 +121,9 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setViewTransformEnabled(true);
 
-    pen2.setStyle(Qt::DashLine);
+    pen1.setStyle(Qt::DashLine);
 
-    painter.setPen(pen2);
+    painter.setPen(pen1);
 
     for (int i = 1; i < 5; i++)
         painter.drawLine(0, height() * i / 4, width(), height() * i / 4);
@@ -147,7 +154,10 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawPolygon(interval);
 
-    painter.setPen(pen1);
+    QPen pen2(QBrush("#2a7fff"), 2., Qt::SolidLine);
+    pen2.setCosmetic(true);
+
+    painter.setPen(pen2);
 
     painter.drawPolyline(&data[firstFrame], lastFrame - firstFrame + 1);
 

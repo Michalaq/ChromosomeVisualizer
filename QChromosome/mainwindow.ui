@@ -672,7 +672,15 @@ MediaControl:hover {
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="Plot" name="plot"/>
+   <widget class="Plot" name="plot">
+    <property name="styleSheet">
+     <string notr="true">Legend {
+	color: #808080;
+	min-height: 25px;
+	padding-left: 25px;
+}</string>
+    </property>
+   </widget>
   </widget>
   <action name="actionOpen">
    <property name="text">
