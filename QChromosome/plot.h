@@ -33,7 +33,7 @@ private:
 
     int margin = 15;
 
-    int padding_left = 30;
+    int padding_left = 15;
     int padding_right = 15;
     int padding_top = 40;
     int padding_bottom = 50;

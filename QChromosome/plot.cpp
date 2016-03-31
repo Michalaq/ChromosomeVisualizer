@@ -90,8 +90,10 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawText(QRect(width() / 2 - 15, height() - 35, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
 
+    int _padding_left = padding_left + painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
+
     // set coordinate system
-    painter.setViewport(margin + padding_left, height() - padding_bottom - margin, width() - 2 * margin - padding_left - padding_right, 2 * margin + padding_top + padding_bottom - height());
+    painter.setViewport(margin + _padding_left, height() - padding_bottom - margin, width() - 2 * margin - _padding_left - padding_right, 2 * margin + padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 
@@ -124,7 +126,7 @@ void Plot::paintEvent(QPaintEvent *event)
     int delta = qCeil(maxval / 4);
 
     for (int i = 0; i < 5; i++)
-        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(30, 15), QSize(25, 30)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
+        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(_padding_left, 10), QSize(_padding_left - padding_left / 2, 20)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
 
     painter.setViewTransformEnabled(true);
 
