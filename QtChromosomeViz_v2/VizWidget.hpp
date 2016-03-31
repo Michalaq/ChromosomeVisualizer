@@ -114,6 +114,8 @@ public slots:
     void setLabelBackgroundColor(QColor color);
     QColor labelBackgroundColor();
 
+    const QVector<VizBallInstance> & getBallInstances() const;
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
