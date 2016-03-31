@@ -100,7 +100,7 @@ void Plot::paintEvent(QPaintEvent *event)
     // draw axis
     painter.drawLine(0, 0, width(), 0);
 
-    int gap = qCeil(25. * (lastFrame - firstFrame) / width());
+    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(lastFrame)) + 15) * (lastFrame - firstFrame) / width());
 
     painter.setViewTransformEnabled(false);
 
@@ -109,7 +109,7 @@ void Plot::paintEvent(QPaintEvent *event)
         auto tick = transform.map(QPoint(width() * i / (lastFrame - firstFrame), 0));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(-10, 5), QSize(20, 20)), Qt::AlignCenter, QString::number(firstFrame + i));
+        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(firstFrame + i));
     }
 
     painter.setViewTransformEnabled(true);
@@ -126,7 +126,7 @@ void Plot::paintEvent(QPaintEvent *event)
     int delta = qCeil(maxval / 4);
 
     for (int i = 0; i < 5; i++)
-        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(_padding_left, 10), QSize(_padding_left - padding_left / 2, 20)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
+        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(delta * i));
 
     painter.setViewTransformEnabled(true);
 
