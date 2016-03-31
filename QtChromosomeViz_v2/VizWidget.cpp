@@ -869,6 +869,7 @@ void VizWidget::setVisibleSelection(AtomSelection s)
 void VizWidget::setBackgroundColor(QColor color)
 {
     backgroundColor_ = color;
+    update();
 }
 
 QColor VizWidget::backgroundColor()
@@ -879,6 +880,7 @@ QColor VizWidget::backgroundColor()
 void VizWidget::setLabelTextColor(QColor color)
 {
     labelTextColor_ = color;
+    update();
 }
 
 QColor VizWidget::labelTextColor()
@@ -889,6 +891,7 @@ QColor VizWidget::labelTextColor()
 void VizWidget::setLabelBackgroundColor(QColor color)
 {
     labelBackgroundColor_ = color;
+    update();
 }
 
 QColor VizWidget::labelBackgroundColor()
@@ -899,11 +902,13 @@ QColor VizWidget::labelBackgroundColor()
 void VizWidget::setFogDensity(float intensity)
 {
     fogDensity_ = intensity;
+    update();
 }
 
 void VizWidget::setFogContribution(float contribution)
 {
     fogContribution_ = contribution;
+    update();
 }
 
 float VizWidget::fogDensity() const

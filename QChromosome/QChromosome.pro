@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
     axis.cpp \
-    ../QtChromosomeViz_v2/SelectionRectWidget.cpp
+    ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
+    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -50,7 +51,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
     axis.h \
-    ../QtChromosomeViz_v2/SelectionRectWidget.hpp
+    ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
+    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp
 
 FORMS    += mainwindow.ui \
     dockwidget.ui
