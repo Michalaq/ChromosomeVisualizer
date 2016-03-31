@@ -50,7 +50,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
     axis.h \
-    ../QtChromosomeViz_v2/SelectionRectWidget.hpp
+    ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
+    moviemaker.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui
