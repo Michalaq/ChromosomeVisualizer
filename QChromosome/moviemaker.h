@@ -11,22 +11,23 @@ class MovieMaker
 {
 public:
 
-    static void inline captureScene(const std::string& filename, QVector<VizBallInstance> & vizBalls, const int connectionCount, QVector3D & cameraLocation, QVector3D & CameraLookAt)
+    static void inline captureScene(const std::string& filename, const QVector<VizBallInstance> & vizBalls, const int connectionCount, const QVector3D & cameraLocation, const QVector3D & cameraLookAt)
     {
         prepareINIFile(1920, 1080, true);
-        std::ofstream outFile = createPOVFile(filename);
-        setCamera(outFile, cameraLocation.x, cameraLocation.y, cameraLocation.z, cameraLookAt.x, cameraLookAt.y, cameraLookAt.z, 1920, 1080);
-        for (unsigned int i = 0; i < vizBalls.length(); i++)
+        std::ofstream outFile;
+        createPOVFile(outFile, filename);
+        setCamera(outFile, cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), 1920, 1080);
+        for (int i = 0; i < vizBalls.length(); i++)
         {
-            addSphere(outFile, vizBalls[i].position.x, vizBalls[i].position.y, vizBalls[i].position.z, vizBalls[i].size,
+            addSphere(outFile, vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size,
                       ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
                       (vizBalls[i].color & 0xFF) / 255.f, 1.f - (vizBalls[i].color >> 24) / 255.f);
         }
 
-        for (unsigned int i = 0; i < connectionCount; i++)
+        for (int i = 0; i < connectionCount; i++)
         {
-            addCylinder(outFile, vizBalls[i].position.x, vizBalls[i].position.y, vizBalls[i].position.z,
-                        vizBalls[i+1].position.x, vizBalls[i+1].position.y, vizBalls[i+1].position.z, vizBalls[i].size / 3.f,
+            addCylinder(outFile, vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(),
+                        vizBalls[i+1].position.x(), vizBalls[i+1].position.y(), vizBalls[i+1].position.z(), vizBalls[i].size / 3.f,
                         ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
                         (vizBalls[i].color & 0xFF) / 255.f, ((vizBalls[i+1].color >> 16) & 0xFF) / 255.f,
                         ((vizBalls[i+1].color >> 8) & 0xFF) / 255.f, (vizBalls[i+1].color & 0xFF) / 255.f);
@@ -36,9 +37,8 @@ public:
 #ifdef _WIN32
         system(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe" povray.ini -D /RENDER )~" + filename + ".pov \/EXIT");
 #else
-        system("povray povray.ini " + filename + ".pov");
+        system(QString("povray povray.ini %1.pov").arg(QString::fromStdString(filename)).toUtf8().constData());
 #endif
-
     }
 
 private:
@@ -49,16 +49,14 @@ private:
         outFile << "Width=" << width << "\nHeight=" << height << "\nAntialias=" << (aa ? "On" : "Off") << std::endl;
     }
 
-    static std::ofstream inline createPOVFile(std::string filename)
+    static void inline createPOVFile(std::ofstream& outFile, std::string filename)
     {
-        std::ofstream outFile(filename + ".pov");
+        outFile.open(filename + ".pov");
 
         outFile << "#include \"colors.inc\"\n#include \"stones.inc\"" << std::endl;
-
-        return outFile;
     }
 
-    void inline setCamera(std::ofstream& outFile, float x, float y, float z, float lookx, float looky, float lookz, float reswidth, float resheight)
+    static void inline setCamera(std::ofstream& outFile, float x, float y, float z, float lookx, float looky, float lookz, float reswidth, float resheight)
     {
         outFile << "camera{right x*" << reswidth << "/" << resheight << "\nlocation<" << x << ", " << y << ", " << z << ">look_at<" << lookx << ", " << looky << ", " << lookz << ">}\n" <<
             "light_source {<" << x << ", " << y << ", " << z << "> color White}"<< std::endl;

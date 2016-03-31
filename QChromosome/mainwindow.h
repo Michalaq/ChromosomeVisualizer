@@ -44,6 +44,9 @@ public slots:
     void rotate(bool);
     void scale(bool);
 
+    /* povray */
+    void capture();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
