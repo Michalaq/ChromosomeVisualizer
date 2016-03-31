@@ -71,7 +71,7 @@ void Plot::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     // draw background
-    painter.fillRect(15, 15, width() - 30, height() - 30, "#262626");
+    painter.fillRect(margin, margin, width() - 2 * margin, height() - 2 * margin, "#262626");
 
     // draw legend
     painter.setRenderHint(QPainter::Antialiasing);
@@ -91,7 +91,7 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.drawText(QRect(width() / 2 - 15, height() - 35, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
 
     // set coordinate system
-    painter.setViewport(15 + 30, height() - 50 - 15, width() - 15 - 30 - 15 - 15, 15 + 40 + 50 + 15 - height());
+    painter.setViewport(margin + padding_left, height() - padding_bottom - margin, width() - 2 * margin - padding_left - padding_right, 2 * margin + padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 
