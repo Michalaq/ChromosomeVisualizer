@@ -59,6 +59,7 @@ void Plot::setFrame(int n)
 }
 
 #include <QPainter>
+#include <QtMath>
 
 void Plot::paintEvent(QPaintEvent *event)
 {
@@ -80,20 +81,36 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    painter.drawEllipse(width() / 2 - 30, height() - 45, 10, 10);
+    painter.drawEllipse(width() / 2 - 30, height() - 35, 10, 10);
 
     QPen pen2(QBrush("#808080"), 1.0, Qt::SolidLine);
     pen2.setCosmetic(true);
 
     painter.setPen(pen2);
 
-    painter.drawText(QRect(width() / 2 - 15, height() - 45, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
+    painter.drawText(QRect(width() / 2 - 15, height() - 35, 45, 10), Qt::AlignLeft | Qt::AlignVCenter, "bonds");
 
     // set coordinate system
     painter.setViewport(15 + 30, height() - 50 - 15, width() - 15 - 30 - 15 - 15, 15 + 40 + 50 + 15 - height());
 
+    auto transform = painter.combinedTransform();
+
     // draw axis
     painter.drawLine(0, 0, width(), 0);
+
+    int gap = qCeil(25. * (lastFrame - firstFrame) / width());
+
+    painter.setViewTransformEnabled(false);
+
+    for (int i = 0; i <= lastFrame - firstFrame; i += gap)
+    {
+        auto tick = transform.map(QPoint(width() * i / (lastFrame - firstFrame), 0));
+
+        painter.drawLine(tick, tick + QPoint(0, 5));
+        painter.drawText(QRect(tick + QPoint(-10, 5), QSize(20, 20)), Qt::AlignCenter, QString::number(firstFrame + i));
+    }
+
+    painter.setViewTransformEnabled(true);
 
     pen2.setStyle(Qt::DashLine);
 
@@ -102,11 +119,9 @@ void Plot::paintEvent(QPaintEvent *event)
     for (int i = 1; i < 5; i++)
         painter.drawLine(0, height() * i / 4, width(), height() * i / 4);
 
-    auto transform = painter.combinedTransform();
-
     painter.setViewTransformEnabled(false);
 
-    int delta = int((maxval + 40) / 40) * 10;
+    int delta = qCeil(maxval / 4);
 
     for (int i = 0; i < 5; i++)
         painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(30, 15), QSize(25, 30)), Qt::AlignRight | Qt::AlignVCenter, QString::number(delta * i));
@@ -121,8 +136,6 @@ void Plot::paintEvent(QPaintEvent *event)
     interval.prepend(QPointF(firstFrame, 0));
     interval.append(QPointF(lastFrame, 0));
 
-    painter.save();
-
     QLinearGradient gradient(0, 0, 0, 4 * delta);
     gradient.setColorAt(0, Qt::transparent);
     gradient.setColorAt(1, "#803771c8");
@@ -131,8 +144,6 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setBrush(gradient);
 
     painter.drawPolygon(interval);
-
-    painter.restore();
 
     painter.setPen(pen1);
 
