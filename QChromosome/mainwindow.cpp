@@ -227,7 +227,7 @@ void MainWindow::scale(bool checked)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene("foto", ui->scene->getBallInstances(), simulation->getConnectionCount(), ui->camera->eye, ui->camera->eye + ui->camera->z);
+    MovieMaker::captureScene("foto", ui->scene->getBallInstances(), simulation->getConnectionCount(), ui->camera->eye, ui->camera->eye - ui->camera->z);
 }
 
 #include <QKeyEvent>

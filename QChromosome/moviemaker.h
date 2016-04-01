@@ -34,10 +34,14 @@ public:
         }
 
 //TODO: ponizej do ogarniecia
-#ifdef _WIN32
-        system(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe" povray.ini -D /RENDER )~" + filename + ".pov \/EXIT");
+#ifdef __linux__
+        qDebug() << "linux povray photo";
+        system(QString("povray povray.ini Library_Path=/usr/local/share/povray-3.7/include/ %1.pov").arg(QString::fromStdString(filename)).toUtf8().constData());
+#elif _WIN32
+        qDebug() << "windows povray photo";
+        system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + QString::fromStdString(filename) + QString(".pov /EXIT")).toUtf8().constData());
 #else
-        system(QString("povray povray.ini %1.pov").arg(QString::fromStdString(filename)).toUtf8().constData());
+        qDebug() << "platform not supported";
 #endif
     }
 
