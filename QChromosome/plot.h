@@ -25,12 +25,13 @@ protected:
 private:
     std::shared_ptr<Simulation> simulation_;
 
-    QVector<QPointF> data;
+    QHash<QString, QVector<QPointF> > data;
     qreal maxval;
 
     int firstFrame;
     int currentFrame;
     int lastFrame;
+    int lastBuffered;
 
     int margin = 15;
 
@@ -39,7 +40,7 @@ private:
     int padding_top = 40;
     int padding_bottom = 50;
 
-    QList<Legend*> legend;
+    QHash<QString, Legend*> legend;
 
 signals:
 

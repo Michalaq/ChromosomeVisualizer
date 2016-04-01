@@ -8,7 +8,8 @@ Plot::Plot(QWidget *parent) :
     simulation_(std::make_shared<NullSimulation>()),
     firstFrame(0),
     currentFrame(0),
-    lastFrame(0)
+    lastFrame(0),
+    lastBuffered(-1)
 {
     new QHBoxLayout(this);
     layout()->setMargin(margin);
@@ -29,6 +30,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     firstFrame = 0;
     currentFrame = 0;
     lastFrame = 0;
+    lastBuffered = -1;
 
     maxval = 0;
 
@@ -39,13 +41,14 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     legend.clear();
 
-    for (auto fname : {"bonds"})
-        legend.append(new Legend(fname, "#0066ff", this));
-
-    for (auto entry : legend)
+    for (auto i : simulation_->getFrame(0)->functionValues)
     {
+        QString fname = QString::fromStdString(i.first);
+
+        auto entry = new Legend(fname, "#0066ff", this);
         connect(entry, SIGNAL(changed()), this, SLOT(update()));
         layout()->addWidget(entry);
+        legend[fname] = entry;
     }
 
     update();
@@ -59,13 +62,20 @@ void Plot::setMinimum(int m)
 
 void Plot::setMaximum(int m)
 {
-    for (int i = data.size(); i <= m; i++)
+    if (lastBuffered < m)
     {
-        qreal y = simulation_->getFrame(i)->functionValues["bonds"];
-        data << QPointF(i, y);
+        for (int i = lastBuffered + 1; i <= m; i++)
+        {
+            for (auto entry : simulation_->getFrame(i)->functionValues)
+            {
+                data[QString::fromStdString(entry.first)] << QPointF(i, entry.second);
 
-        if (maxval < y)
-            maxval = y;
+                if (maxval < entry.second)
+                    maxval = entry.second;
+            }
+        }
+
+        lastBuffered = m;
     }
 
     lastFrame = m;
@@ -144,26 +154,26 @@ void Plot::paintEvent(QPaintEvent *event)
     // plot data
     painter.setWindow(firstFrame, 0, lastFrame - firstFrame, 4 * delta);
 
-    auto interval = data.mid(firstFrame, lastFrame - firstFrame + 1);
+    auto interval = data["bonds"].mid(firstFrame, lastFrame - firstFrame + 1);
 
     interval.prepend(QPointF(firstFrame, 0));
     interval.append(QPointF(lastFrame, 0));
 
     QLinearGradient gradient(0, 0, 0, 4 * delta);
     gradient.setColorAt(0, Qt::transparent);
-    gradient.setColorAt(1, legend.first()->brush());
+    gradient.setColorAt(1, legend["bonds"]->brush());
 
     painter.setPen(Qt::NoPen);
     painter.setBrush(gradient);
 
     painter.drawPolygon(interval);
 
-    QPen pen2(legend.first()->pen(), 2.);
+    QPen pen2(legend["bonds"]->pen(), 2.);
     pen2.setCosmetic(true);
 
     painter.setPen(pen2);
 
-    painter.drawPolyline(&data[firstFrame], lastFrame - firstFrame + 1);
+    painter.drawPolyline(&data["bonds"][firstFrame], lastFrame - firstFrame + 1);
 
     QPen pen3(Qt::white, 3.);
     pen3.setCosmetic(true);
