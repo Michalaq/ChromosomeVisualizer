@@ -103,22 +103,21 @@ void Plot::paintEvent(QPaintEvent *event)
     // draw background
     painter.fillRect(margin, margin, width() - 2 * margin, height() - 2 * margin, "#262626");
 
-    // draw legend
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    QPen pen1(QBrush("#808080"), 1.0, Qt::SolidLine);
-    pen1.setCosmetic(true);
-
-    painter.setPen(pen1);
-
+    // set coordinate system
     int label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
 
-    // set coordinate system
     painter.setViewport(margin + padding_left + label, height() - padding_bottom - margin, width() - 2 * margin -padding_left - label - padding_right, 2 * margin + padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 
     // draw axis
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    QPen pen1(QBrush("#808080"), 1.);
+    pen1.setCosmetic(true);
+
+    painter.setPen(pen1);
+
     painter.drawLine(0, 0, width(), 0);
 
     int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(lastFrame)) + 15) * (lastFrame - firstFrame) / width());
@@ -154,26 +153,29 @@ void Plot::paintEvent(QPaintEvent *event)
     // plot data
     painter.setWindow(firstFrame, 0, lastFrame - firstFrame, 4 * delta);
 
-    auto interval = data["bonds"].mid(firstFrame, lastFrame - firstFrame + 1);
+    for (auto i = data.cbegin(); i != data.cend(); i++)
+    {
+        auto interval = i.value().mid(firstFrame, lastFrame - firstFrame + 1);
 
-    interval.prepend(QPointF(firstFrame, 0));
-    interval.append(QPointF(lastFrame, 0));
+        interval.prepend(QPointF(firstFrame, 0));
+        interval.append(QPointF(lastFrame, 0));
 
-    QLinearGradient gradient(0, 0, 0, 4 * delta);
-    gradient.setColorAt(0, Qt::transparent);
-    gradient.setColorAt(1, legend["bonds"]->brush());
+        QLinearGradient gradient(0, 0, 0, 4 * delta);
+        gradient.setColorAt(0, Qt::transparent);
+        gradient.setColorAt(1, legend[i.key()]->brush());
 
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(gradient);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(gradient);
 
-    painter.drawPolygon(interval);
+        painter.drawPolygon(interval);
 
-    QPen pen2(legend["bonds"]->pen(), 2.);
-    pen2.setCosmetic(true);
+        QPen pen2(legend[i.key()]->pen(), 2.);
+        pen2.setCosmetic(true);
 
-    painter.setPen(pen2);
+        painter.setPen(pen2);
 
-    painter.drawPolyline(&data["bonds"][firstFrame], lastFrame - firstFrame + 1);
+        painter.drawPolyline(&i.value()[firstFrame], lastFrame - firstFrame + 1);
+    }
 
     QPen pen3(Qt::white, 3.);
     pen3.setCosmetic(true);
