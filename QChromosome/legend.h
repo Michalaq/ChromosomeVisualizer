@@ -2,6 +2,7 @@
 #define LEGEND_H
 
 #include <QLabel>
+#include <QAction>
 
 class Legend : public QLabel
 {
@@ -23,7 +24,10 @@ protected:
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    QColor _color;
+    QColor color;
+
+    QAction undergraph;
+    QAction visible;
 };
 
 #endif // LEGEND_H

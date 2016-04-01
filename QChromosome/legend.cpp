@@ -2,21 +2,25 @@
 
 Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
     QLabel(text, parent),
-    _color(color)
+    color(color),
+    undergraph("undergraph", this),
+    visible("visible", this)
 {
+    undergraph.setCheckable(true);
+    undergraph.setChecked(true);
 
+    visible.setCheckable(true);
+    visible.setChecked(true);
 }
 
 QColor Legend::pen() const
 {
-    return _color;
+    return visible.isChecked() ? color : Qt::transparent;
 }
 
 QColor Legend::brush() const
 {
-    QColor c(_color);
-    c.setAlpha(0x80);
-    return c;
+    return undergraph.isChecked() && visible.isChecked() ? QColor(color.red(), color.green(), color.blue(), 0x80) : Qt::transparent;
 }
 
 #include <QPainter>
@@ -29,14 +33,15 @@ void Legend::paintEvent(QPaintEvent *event)
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setPen(QPen(_color, 2));
-    painter.setBrush(QBrush(_color));
+    painter.setPen(QPen(color, 2.));
+    painter.setBrush(undergraph.isChecked() ? QBrush(color) : Qt::NoBrush);
 
     painter.drawEllipse(8, 8, 9, 9);
 }
 
 #include <QMouseEvent>
 #include <QColorDialog>
+#include <QMenu>
 
 void Legend::mousePressEvent(QMouseEvent *event)
 {
@@ -44,13 +49,22 @@ void Legend::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
-        QColor tmp = QColorDialog::getColor(_color, this);
+        QColor tmp = QColorDialog::getColor(color, this);
 
         if (tmp.isValid())
         {
-            _color = tmp;
-            update();
+            color = tmp;
 
+            update();
+            emit changed();
+        }
+    }
+
+    if (event->button() == Qt::RightButton)
+    {
+        if (QMenu::exec({ &undergraph, &visible }, event->globalPos()))
+        {
+            update();
             emit changed();
         }
     }
