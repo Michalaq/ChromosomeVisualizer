@@ -1,8 +1,22 @@
 #include "legend.h"
 
-Legend::Legend(const QString & text, QWidget *parent) : QLabel(text, parent)
+Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
+    QLabel(text, parent),
+    _color(color)
 {
 
+}
+
+QColor Legend::pen() const
+{
+    return _color;
+}
+
+QColor Legend::brush() const
+{
+    QColor c(_color);
+    c.setAlpha(0x80);
+    return c;
 }
 
 #include <QPainter>
@@ -15,10 +29,29 @@ void Legend::paintEvent(QPaintEvent *event)
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    QPen pen(QBrush("#2a7fff"), 2., Qt::SolidLine);
-    pen.setCosmetic(true);
+    painter.setPen(QPen(_color, 2));
+    painter.setBrush(QBrush(_color));
 
-    painter.setPen(pen);
+    painter.drawEllipse(8, 8, 9, 9);
+}
 
-    painter.drawEllipse(5, 5, 15, 15);
+#include <QMouseEvent>
+#include <QColorDialog>
+
+void Legend::mousePressEvent(QMouseEvent *event)
+{
+    QLabel::mousePressEvent(event);
+
+    if (event->button() == Qt::LeftButton)
+    {
+        QColor tmp = QColorDialog::getColor(_color, this);
+
+        if (tmp.isValid())
+        {
+            _color = tmp;
+            update();
+
+            emit changed();
+        }
+    }
 }

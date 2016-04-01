@@ -5,6 +5,7 @@
 
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "legend.h"
 
 class Plot : public QWidget
 {
@@ -38,6 +39,7 @@ private:
     int padding_top = 40;
     int padding_bottom = 50;
 
+    QList<Legend*> legend;
 
 signals:
 

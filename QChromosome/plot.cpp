@@ -12,7 +12,7 @@ Plot::Plot(QWidget *parent) :
 {
     new QHBoxLayout(this);
     layout()->setMargin(margin);
-    layout()->setAlignment(Qt::AlignBottom);
+    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
 }
 
 Plot::~Plot()
@@ -34,15 +34,19 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     setMinimumHeight(2 * margin + padding_top + padding_bottom);
 
-    while (QLayoutItem* child = layout()->takeAt(0))
-    {
-        delete child->widget();
-        delete child;
-    }
+    for (auto entry : legend)
+        entry->deleteLater();
 
-    layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
-    layout()->addWidget(new Legend("bonds", this));
-    layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
+    legend.clear();
+
+    for (auto fname : {"bonds"})
+        legend.append(new Legend(fname, "#0066ff", this));
+
+    for (auto entry : legend)
+    {
+        connect(entry, SIGNAL(changed()), this, SLOT(update()));
+        layout()->addWidget(entry);
+    }
 
     update();
 }
@@ -147,14 +151,14 @@ void Plot::paintEvent(QPaintEvent *event)
 
     QLinearGradient gradient(0, 0, 0, 4 * delta);
     gradient.setColorAt(0, Qt::transparent);
-    gradient.setColorAt(1, "#803771c8");
+    gradient.setColorAt(1, legend.first()->brush());
 
     painter.setPen(Qt::NoPen);
     painter.setBrush(gradient);
 
     painter.drawPolygon(interval);
 
-    QPen pen2(QBrush("#2a7fff"), 2., Qt::SolidLine);
+    QPen pen2(legend.first()->pen(), 2.);
     pen2.setCosmetic(true);
 
     painter.setPen(pen2);
