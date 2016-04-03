@@ -3,6 +3,9 @@
 #include <QHBoxLayout>
 #include "legend.h"
 
+// MathWorks predefined colorOrder
+const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
+
 Plot::Plot(QWidget *parent) :
     QWidget(parent),
     simulation_(std::make_shared<NullSimulation>()),
@@ -41,14 +44,19 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     legend.clear();
 
+    auto color = colorOrder.constBegin();
+
     for (auto i : simulation_->getFrame(0)->functionValues)
     {
         QString fname = QString::fromStdString(i.first);
 
-        auto entry = new Legend(fname, "#0066ff", this);
+        auto entry = new Legend(fname, *color, this);
         connect(entry, SIGNAL(changed()), this, SLOT(update()));
         layout()->addWidget(entry);
         legend[fname] = entry;
+
+        if (++color == colorOrder.constEnd())
+            color = colorOrder.constBegin();
     }
 
     update();

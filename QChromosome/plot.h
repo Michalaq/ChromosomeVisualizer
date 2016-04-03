@@ -42,6 +42,8 @@ private:
 
     QHash<QString, Legend*> legend;
 
+    static const QList<QColor> colorOrder;
+
 signals:
 
 public slots:
