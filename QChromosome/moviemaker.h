@@ -16,18 +16,18 @@ public:
         prepareINIFile(1920, 1080, true);
         std::ofstream outFile;
         createPOVFile(outFile, filename);
-        setCamera(outFile, cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), 1920, 1080);
+        setCamera(outFile, -cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), -cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), 1920, 1080);
         for (int i = 0; i < vizBalls.length(); i++)
         {
-            addSphere(outFile, vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size,
+            addSphere(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size,
                       ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
                       (vizBalls[i].color & 0xFF) / 255.f, 1.f - (vizBalls[i].color >> 24) / 255.f);
         }
 
         for (int i = 0; i < connectionCount; i++)
         {
-            addCylinder(outFile, vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(),
-                        vizBalls[i+1].position.x(), vizBalls[i+1].position.y(), vizBalls[i+1].position.z(), vizBalls[i].size / 3.f,
+            addCylinder(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(),
+                        -vizBalls[i+1].position.x(), vizBalls[i+1].position.y(), vizBalls[i+1].position.z(), vizBalls[i].size / 3.f,
                         ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
                         (vizBalls[i].color & 0xFF) / 255.f, ((vizBalls[i+1].color >> 16) & 0xFF) / 255.f,
                         ((vizBalls[i+1].color >> 8) & 0xFF) / 255.f, (vizBalls[i+1].color & 0xFF) / 255.f);
