@@ -265,7 +265,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         lookup.erase(i);
 
         if (lookup.isEmpty())
+        {
             actionGroup->setEnabled(true);
+
+            if (Draggable::pressedButton() != Qt::NoButton)
+            {
+                QMouseEvent event(QEvent::MouseButtonRelease, pos(), Draggable::pressedButton(), 0, 0);
+                QApplication::sendEvent(ui->camera, &event);
+            }
+        }
     }
 
     QMainWindow::keyReleaseEvent(event);
