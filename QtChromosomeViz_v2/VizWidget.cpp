@@ -454,7 +454,6 @@ void VizWidget::setProjection(QMatrix4x4 mat)
 void VizWidget::setSelectingState(bool flag)
 {
     isSelectingState_ = flag;
-    selectionRectWidget_->setVisible(flag);
 
     if (flag)
         setCursor(Qt::CrossCursor);
@@ -749,13 +748,14 @@ void VizWidget::mouseMoveEvent(QMouseEvent * event)
 
 void VizWidget::mouseReleaseEvent(QMouseEvent * event)
 {
+    selectionRectWidget_->setVisible(false);
+
     if (!isSelectingState_)
         return event->ignore();
 
     if (isSelecting_)
     {
         isSelecting_ = false;
-        selectionRectWidget_->setVisible(false);
 
         const bool ctrl = event->modifiers() & Qt::ControlModifier;
         const bool shift = event->modifiers() & Qt::ShiftModifier;
@@ -794,6 +794,11 @@ void VizWidget::mouseReleaseEvent(QMouseEvent * event)
         emit selectionChanged(selectedSpheres(), oldAtoms);
         emit selectionChangedObject(selectedSpheresObject());
     }
+}
+
+bool VizWidget::isSelecting() const
+{
+    return isSelecting_;
 }
 
 QList<unsigned int> VizWidget::selectedSphereIndices() const

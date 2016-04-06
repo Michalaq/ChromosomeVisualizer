@@ -101,6 +101,7 @@ public slots:
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
 
+    bool isSelecting() const;
     QList<unsigned int> selectedSphereIndices() const;
     QList<Atom> selectedSpheres() const;
     AtomSelection selectedSpheresObject() const;
