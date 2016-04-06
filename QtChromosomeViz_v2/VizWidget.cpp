@@ -36,6 +36,8 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<NullSimulation>())
     , needVBOUpdate_(true)
+    , fogDensity_(0.1f)
+    , fogContribution_(0.8f)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
@@ -143,8 +145,27 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(6);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         6,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularColor)
+    );
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(
+        7,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularExponent)
+    );
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(
+        8,
         1,
         GL_FLOAT,
         GL_FALSE,
@@ -157,6 +178,8 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(8, 1);
 
     atomPositions_.release();
     vaoSpheres_.release();
@@ -232,8 +255,27 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         5,
+        2,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, specularColor)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, specularExponent)
+    );
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(
+        7,
         3,
         GL_FLOAT,
         GL_FALSE,
@@ -245,6 +287,8 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -312,10 +356,17 @@ void VizWidget::paintGL()
         cylinderProgram_.bind();
 
         cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
+        cylinderProgram_.setUniformValue("mv", modelView_);
         cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
         cylinderProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        cylinderProgram_.setUniformValue("ufFogDensity", fogDensity_);
+        cylinderProgram_.setUniformValue("ufFogContribution", fogContribution_);
+        cylinderProgram_.setUniformValue("ucFogColor",
+                                         backgroundColor_.redF(),
+                                         backgroundColor_.greenF(),
+                                         backgroundColor_.blueF());
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
 
@@ -326,10 +377,17 @@ void VizWidget::paintGL()
         sphereProgram_.bind();
 
         sphereProgram_.setUniformValue("mvp", modelViewProjection_);
+        sphereProgram_.setUniformValue("mv", modelView_);
         sphereProgram_.setUniformValue("mvNormal", modelViewNormal_);
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
+        sphereProgram_.setUniformValue("ufFogDensity", fogDensity_);
+        sphereProgram_.setUniformValue("ufFogContribution", fogContribution_);
+        sphereProgram_.setUniformValue("ucFogColor",
+                                       backgroundColor_.redF(),
+                                       backgroundColor_.greenF(),
+                                       backgroundColor_.blueF());
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
 
@@ -433,6 +491,8 @@ void VizWidget::setFirstFrame()
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
+    dummy.specularColor = 0xFFFFFFFF;
+    dummy.specularExponent = 10.f;
     dummy.size = 1.f;
     frameState_.fill(dummy, sphereCount_);
 
@@ -449,6 +509,7 @@ void VizWidget::setFirstFrame()
     auto selection = atomTypeSelection("BIN");
     selection.setColor(Qt::white);
     selection.setAlpha(0.5f);
+    selection.setSpecularColor(QRgb(0x000000));
 
     // Run this again to update link colours
     setFrame(0);
@@ -482,6 +543,10 @@ void VizWidget::setFrame(frameNumber_t frame)
         link.update(frameState_[i].position, frameState_[i + 1].position);
         link.color[0] = frameState_[i].color;
         link.color[1] = frameState_[i + 1].color;
+        link.specularColor[0] = frameState_[i].specularColor;
+        link.specularColor[1] = frameState_[i + 1].specularColor;
+        link.specularExponent[0] = frameState_[i].specularExponent;
+        link.specularExponent[1] = frameState_[i + 1].specularExponent;
         link.size[0] = frameState_[i].size;
         link.size[1] = frameState_[i + 1].size;
     }
@@ -804,6 +869,7 @@ void VizWidget::setVisibleSelection(AtomSelection s)
 void VizWidget::setBackgroundColor(QColor color)
 {
     backgroundColor_ = color;
+    update();
 }
 
 QColor VizWidget::backgroundColor()
@@ -814,6 +880,7 @@ QColor VizWidget::backgroundColor()
 void VizWidget::setLabelTextColor(QColor color)
 {
     labelTextColor_ = color;
+    update();
 }
 
 QColor VizWidget::labelTextColor()
@@ -824,11 +891,34 @@ QColor VizWidget::labelTextColor()
 void VizWidget::setLabelBackgroundColor(QColor color)
 {
     labelBackgroundColor_ = color;
+    update();
 }
 
 QColor VizWidget::labelBackgroundColor()
 {
     return labelBackgroundColor_;
+}
+
+void VizWidget::setFogDensity(float intensity)
+{
+    fogDensity_ = intensity;
+    update();
+}
+
+void VizWidget::setFogContribution(float contribution)
+{
+    fogContribution_ = contribution;
+    update();
+}
+
+float VizWidget::fogDensity() const
+{
+    return fogDensity_;
+}
+
+float VizWidget::fogContribution() const
+{
+    return fogContribution_;
 }
 
 const QVector<VizBallInstance> & VizWidget::getBallInstances() const
@@ -967,6 +1057,25 @@ void AtomSelection::setAlpha(float alpha)
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0x00FFFFFF) | code;
     }
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
+void AtomSelection::setSpecularColor(QColor color)
+{
+    unsigned int code = color.rgb();
+    for (unsigned int i : selectedIndices_)
+        widget_->frameState_[i].specularColor = code;
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
+void AtomSelection::setSpecularExponent(float exponent)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->frameState_[i].specularExponent = exponent;
 
     widget_->needVBOUpdate_ = true;
     widget_->update();

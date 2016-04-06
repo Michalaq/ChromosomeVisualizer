@@ -3,6 +3,7 @@
 
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
+#include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -36,6 +37,13 @@ MainWindow::MainWindow(QWidget *parent) :
     auto x = new SelectionOperationsWidget(ui->tab);
     x->setVizWidget(ui->scene);
     x->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+
+    auto y = new DisplayParametersWidget(ui->dockWidget);
+    y->setVizWidget(ui->scene);
+    y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
+    auto boxLayout = new QVBoxLayout();
+    boxLayout->addWidget(y);
+    ui->dockWidgetContents->setLayout(boxLayout);
 
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox, &SpinBox::setMinimum);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);

@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     rangeslider.cpp \
     axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
-    legend.cpp
+    legend.cpp \
+    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -52,7 +53,8 @@ HEADERS  += mainwindow.h\
     rangeslider.h \
     axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
-    legend.h
+    legend.h \
+    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp
 
 FORMS    += mainwindow.ui \
     dockwidget.ui
