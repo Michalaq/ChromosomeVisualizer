@@ -28,7 +28,7 @@ void ToolBar::addAction(QAction *action)
     connect(action, &QAction::toggled, widget, &MediaControl::setChecked);
     connect(widget, &MediaControl::toggled, action, &QAction::setChecked);
 
-    widget->setFixedSize(minimumSize());
+    widget->setFixedSize(50, 50);
 
     widgetAction->setDefaultWidget(widget);
 
