@@ -25,10 +25,12 @@ void ToolBar::addAction(QAction *action)
 
     widget->setText(action->text());
 
+    widget->setCursor(Qt::PointingHandCursor);
+
     connect(action, &QAction::toggled, widget, &MediaControl::setChecked);
     connect(widget, &MediaControl::toggled, action, &QAction::setChecked);
 
-    widget->setFixedSize(50, 50);
+    widget->setFixedSize(minimumSize());
 
     widgetAction->setDefaultWidget(widget);
 

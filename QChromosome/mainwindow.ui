@@ -724,6 +724,7 @@ MediaControl:checked {
    </attribute>
    <addaction name="actionQuick_Render"/>
    <addaction name="actionRenderer"/>
+   <addaction name="actionSettings"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -808,6 +809,15 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Renderer</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
    </property>
   </action>
  </widget>
