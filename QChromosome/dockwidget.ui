@@ -21,13 +21,11 @@ QLabel {
 }
 
 MediaControl {
-	background: none;
-	border: none;
-	qproperty-color: #cccccc;
+	background: #cccccc;
 }
 
 MediaControl:hover {
-	qproperty-color: #ffffff;
+	background: white;
 }
 </string>
   </property>

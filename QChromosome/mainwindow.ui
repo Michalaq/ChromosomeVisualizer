@@ -128,23 +128,23 @@ QSpinBox::down-arrow {
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
     <string notr="true">MouseControl {
-	background: none;
-	border: none;
-	qproperty-color: #cccccc;
+	background: #cccccc;
 }
 
 MouseControl:hover {
-	qproperty-color: #ffffff;
+	background: white;
 }
 
 MediaControl {
-	background: none;
-	border: none;
-	qproperty-color: #b3b3b3;
+	background: #b3b3b3;
 }
 
 MediaControl:hover {
-	qproperty-color: #ffffff;
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
 }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -451,7 +451,9 @@ MediaControl:hover {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #0066ff;</string>
+           <string notr="true">:!hover:!checked {
+	background: #0066ff;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -481,7 +483,9 @@ MediaControl:hover {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #0066ff;</string>
+           <string notr="true">:!hover:!checked {
+	background: #0066ff;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -563,7 +567,9 @@ MediaControl:hover {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #d40000;</string>
+           <string notr="true">:!hover:!checked {
+	background: #d40000;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">

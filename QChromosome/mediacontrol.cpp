@@ -1,10 +1,8 @@
 #include "mediacontrol.h"
 
-MediaControl::MediaControl(QWidget *parent) :
-    QPushButton(parent),
-    effect(new QGraphicsColorizeEffect(this))
+MediaControl::MediaControl(QWidget *parent) : QPushButton(parent)
 {
-    setGraphicsEffect(effect);
+
 }
 
 MediaControl::~MediaControl()
@@ -12,12 +10,23 @@ MediaControl::~MediaControl()
 
 }
 
-QColor MediaControl::color() const
-{
-    return effect->color();
-}
+#include <QStylePainter>
+#include <QStyleOptionButton>
 
-void MediaControl::setColor(const QColor &color)
+void MediaControl::paintEvent(QPaintEvent *event)
 {
-    effect->setColor(color);
+    QImage foreground(size(), QImage::Format_ARGB32_Premultiplied);
+
+    QStylePainter stylePainter(&foreground, this);
+
+    QStyleOptionButton option;
+    initStyleOption(&option);
+
+    stylePainter.drawPrimitive(QStyle::PE_Widget, option);
+    stylePainter.end();
+
+    foreground.setAlphaChannel(icon().pixmap(size(), QIcon::Normal, isChecked() ? QIcon::On : QIcon::Off).toImage().alphaChannel());
+
+    QPainter painter(this);
+    painter.drawImage(QRect(QPoint(),iconSize()), foreground);
 }
