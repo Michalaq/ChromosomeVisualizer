@@ -616,10 +616,17 @@ MediaControl:checked {
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">MediaControl {background: green;}
-MediaControl:hover {background: blue;}
-MediaControl:pressed {background: yellow;}
-MediaControl:checked {background: red;}</string>
+    <string notr="true">MediaControl {
+	background: #b2b2b2;
+}
+
+MediaControl:hover {
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
+}</string>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
