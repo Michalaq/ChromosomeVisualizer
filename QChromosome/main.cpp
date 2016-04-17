@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
-#include "filterobject.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,8 +14,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
 
-    FilterObject f(&w);
-    a.installEventFilter(&f);
+    a.installEventFilter(&w);
 
     w.showMaximized();
 

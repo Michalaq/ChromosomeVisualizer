@@ -66,6 +66,20 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (Draggable::pressedButton() != Qt::NoButton)
+    {
+        if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
+            return true;
+
+        if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
+            return true;
+    }
+
+    return QObject::eventFilter(watched, event);
+}
+
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
 
 void MainWindow::openSimulation()
