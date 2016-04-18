@@ -4,61 +4,81 @@ RangeSlider::RangeSlider(QWidget *parent) :
     QSlider(parent),
     lowerBound(0),
     upperBound(0),
-    activeHandle(NoHandle)
+    leftHandlePosition(10),
+    rightHandlePosition(30),
+    state(Normal)
 {
 
 }
 
 QSize RangeSlider::minimumSizeHint() const
 {
-    return QSize(20, 20);
+    return QSize(40, 20);
 }
 
 #include <QMouseEvent>
-#include <QStyle>
 
 void RangeSlider::mousePressEvent(QMouseEvent *event)
 {
     QAbstractSlider::mousePressEvent(event);
 
-    if (maximum() == minimum() || (event->buttons() ^ event->button()))
-        return event->ignore();
+    initialPosition = event->pos().x();
 
-    int value = QStyle::sliderValueFromPosition(minimum(), maximum(), event->pos().x() - 10, width() - 20);
+    if (qAbs(initialPosition - leftHandlePosition) < 10)
+    {
+        state = LeftHandleMoving;
+        return;
+    }
 
-    if (2 * value < lowerBound + upperBound)
+    if (qAbs(initialPosition - rightHandlePosition) < 10)
     {
-        activeHandle = LowerBoundHandle;
-        setLowerBound(value);
+        state = RightHandleMoving;
+        return;
     }
-    else
-    {
-        activeHandle = UpperBoundHandle;
-        setUpperBound(value);
-    }
+
+    state = IntervalMoving;
 }
 
 void RangeSlider::mouseMoveEvent(QMouseEvent *event)
 {
     QAbstractSlider::mouseMoveEvent(event);
 
-    if (!activeHandle)
-        return event->ignore();
+    int position = event->pos().x();
 
-    int value = QStyle::sliderValueFromPosition(minimum(), maximum(), event->pos().x() - 10, width() - 20);
+    switch (state)
+    {
+    case LeftHandleMoving:
+        setLowerBound(1. * (maximum() - minimum()) * (position - 10) / (width() - 40) + 0.5);
+        break;
 
-    if (activeHandle == LowerBoundHandle)
-        setLowerBound(value);
+    case RightHandleMoving:
+        setUpperBound(1. * (maximum() - minimum()) * (position - 30) / (width() - 40) + 0.5);
+        break;
 
-    if (activeHandle == UpperBoundHandle)
-        setUpperBound(value);
+    case IntervalMoving:
+        int value = 1. * (position - initialPosition) * (maximum() - minimum()) / (width() - 40) + (position > initialPosition ? 0.5 : -0.5);
+
+        if (lowerBound + value >= minimum() && upperBound + value <= maximum())
+        {
+            lowerBound += value;
+            upperBound += value;
+            update();
+
+            emit lowerBoundChanged(lowerBound);
+            emit upperBoundChanged(upperBound);
+        }
+
+        initialPosition += value * (width() - 40) / (maximum() - minimum());
+
+        break;
+    }
 }
 
 void RangeSlider::mouseReleaseEvent(QMouseEvent *event)
 {
     QAbstractSlider::mouseReleaseEvent(event);
 
-    activeHandle = NoHandle;
+    state = Normal;
     update();
 }
 
@@ -71,40 +91,31 @@ void RangeSlider::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.translate(0, height() / 2);
 
-    p.setPen(Qt::NoPen);
-    p.setBrush(QColor("#666666"));
+    p.fillRect(QRect(0, -10, width(), 20), "#262626");
 
-    p.drawRect(10, -1, width() - 20, 2);
+    if (minimum() == maximum())
+        return;
 
-    int lowerBoundPosition = QStyle::sliderPositionFromValue(minimum(), maximum(), lowerBound, width() - 20) + 10;
-    int upperBoundPosition = QStyle::sliderPositionFromValue(minimum(), maximum(), upperBound, width() - 20) + 10;
+    leftHandlePosition = lowerBound * (width() - 40) / (maximum() - minimum()) + 10;
+    rightHandlePosition = upperBound * (width() - 40) / (maximum() - minimum()) + 30;
 
-    int r;
+    p.fillRect(QRect(leftHandlePosition - 10, -10, rightHandlePosition - leftHandlePosition + 20, 20), "#0044aa");
 
-    if (lowerBound != upperBound)
-    {
-        p.setBrush(QColor("#0055d4"));
+    p.fillRect(QRect(leftHandlePosition - 5, -5, 10, 10), Qt::white);
+    p.fillRect(QRect(rightHandlePosition - 5, -5, 10, 10), Qt::white);
 
-        p.drawRect(lowerBoundPosition, -1, upperBoundPosition - lowerBoundPosition, 2);
+    p.setPen(Qt::white);
 
-        p.setRenderHint(QPainter::Antialiasing);
+    QString leftLabel = QString("%1F").arg(lowerBound);
+    QString rightLabel = QString("%1F").arg(upperBound);
 
-        r = activeHandle == LowerBoundHandle ? 9 : 6;
-        p.drawEllipse(QPoint(lowerBoundPosition, 0), r, r);
+    int linewidth = (upperBound - lowerBound) * (width() - 40) / (maximum() - minimum());
 
-        r = activeHandle == UpperBoundHandle ? 9 : 6;
-        p.drawEllipse(QPoint(upperBoundPosition, 0), r, r);
-    }
-    else
-    {
-        p.setPen(QPen(QColor("#666666"), 2));
-        p.setBrush(QColor("#1a1a1a"));
+    if ((linewidth -= p.fontMetrics().width(leftLabel)) > 0)
+        p.drawText(leftHandlePosition + 10, -10, width(), 20, Qt::AlignVCenter | Qt::AlignLeft, leftLabel);
 
-        p.setRenderHint(QPainter::Antialiasing);
-
-        r = activeHandle ? 9 : 6;
-        p.drawEllipse(QPoint(lowerBoundPosition, 0), r, r);
-    }
+    if ((linewidth -= p.fontMetrics().width(rightLabel)) > 0)
+        p.drawText(rightHandlePosition - 10 - width(), -10, width(), 20, Qt::AlignVCenter | Qt::AlignRight, rightLabel);
 }
 
 void RangeSlider::setLowerBound(int value)

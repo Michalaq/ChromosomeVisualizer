@@ -22,7 +22,12 @@ private:
     int lowerBound;
     int upperBound;
 
-    enum { NoHandle, LowerBoundHandle, UpperBoundHandle } activeHandle;
+    int initialPosition;
+
+    int leftHandlePosition;
+    int rightHandlePosition;
+
+    enum { Normal, LeftHandleMoving, RightHandleMoving, IntervalMoving } state;
 
 signals:
     void lowerBoundChanged(int);
