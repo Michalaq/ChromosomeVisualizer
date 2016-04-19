@@ -50,8 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
 
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setSoftMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setSoftMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
 
@@ -114,6 +114,8 @@ void MainWindow::updateFrameCount(int n)
     lastFrame = n - 1;
 
     ui->horizontalSlider_2->setMaximum(lastFrame);
+    ui->spinBox->setMaximum(lastFrame);
+    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
 
     ui->horizontalSlider_2->setUpperBound(lastFrame);
