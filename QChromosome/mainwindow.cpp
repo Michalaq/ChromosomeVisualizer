@@ -45,16 +45,17 @@ MainWindow::MainWindow(QWidget *parent) :
     boxLayout->addWidget(y);
     ui->dockWidgetContents->setLayout(boxLayout);
 
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
+    /* make timeline and plot react to change of time interval */
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
 
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setSoftMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setSoftMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
 
+    connect(ui->spinBox_2, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMinimum(int)));
+    connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMaximum(int)));
+
+    /* connect actions */
     connect(ui->actionMove, SIGNAL(toggled(bool)), this, SLOT(move(bool)));
     connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
     connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
@@ -111,14 +112,21 @@ void MainWindow::openSimulation()
 
 void MainWindow::updateFrameCount(int n)
 {
+    bool expandRange = ui->spinBox_3->value() == lastFrame;
+    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
+
     lastFrame = n - 1;
 
-    ui->horizontalSlider_2->setMaximum(lastFrame);
     ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
 
-    ui->horizontalSlider_2->setUpperBound(lastFrame);
+    if (expandRange)
+        ui->spinBox_3->setValue(lastFrame);
+
+    if (expandInterval)
+        ui->horizontalSlider_2->setUpperBound(lastFrame);
+
+    ui->spinBox_2->setFixedWidth(ui->spinBox->sizeHint().width());
 }
 
 void MainWindow::setFrame(int n)

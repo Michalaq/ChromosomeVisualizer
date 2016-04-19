@@ -16,11 +16,22 @@ QSize RangeSlider::minimumSizeHint() const
     return QSize(40, 20);
 }
 
+int RangeSlider::getLowerBound() const
+{
+    return lowerBound;
+}
+
+int RangeSlider::getUpperBound() const
+{
+    return upperBound;
+}
+
 #include <QMouseEvent>
 
 void RangeSlider::mousePressEvent(QMouseEvent *event)
 {
-    QAbstractSlider::mousePressEvent(event);
+    if (maximum() == minimum())
+        return event->ignore();
 
     initialPosition = event->pos().x();
 
@@ -37,11 +48,14 @@ void RangeSlider::mousePressEvent(QMouseEvent *event)
     }
 
     state = IntervalMoving;
+
+    QAbstractSlider::mousePressEvent(event);
 }
 
 void RangeSlider::mouseMoveEvent(QMouseEvent *event)
 {
-    QAbstractSlider::mouseMoveEvent(event);
+    if (maximum() == minimum())
+        return event->ignore();
 
     int position = event->pos().x();
 
@@ -72,14 +86,16 @@ void RangeSlider::mouseMoveEvent(QMouseEvent *event)
 
         break;
     }
+
+    QAbstractSlider::mouseMoveEvent(event);
 }
 
 void RangeSlider::mouseReleaseEvent(QMouseEvent *event)
 {
-    QAbstractSlider::mouseReleaseEvent(event);
-
     state = Normal;
     update();
+
+    QAbstractSlider::mouseReleaseEvent(event);
 }
 
 #include <QPainter>
@@ -93,16 +109,17 @@ void RangeSlider::paintEvent(QPaintEvent *event)
 
     p.fillRect(QRect(0, -10, width(), 20), "#262626");
 
-    if (minimum() == maximum())
-        return;
+    bool null = maximum() == minimum();
 
-    leftHandlePosition = lowerBound * (width() - 40) / (maximum() - minimum()) + 10;
-    rightHandlePosition = upperBound * (width() - 40) / (maximum() - minimum()) + 30;
+    leftHandlePosition = null ? 10 : lowerBound * (width() - 40) / (maximum() - minimum()) + 10;
+    rightHandlePosition = null ? 30 : upperBound * (width() - 40) / (maximum() - minimum()) + 30;
 
     p.fillRect(QRect(leftHandlePosition - 10, -10, rightHandlePosition - leftHandlePosition + 20, 20), "#0044aa");
 
     p.fillRect(QRect(leftHandlePosition - 5, -5, 10, 10), Qt::white);
     p.fillRect(QRect(rightHandlePosition - 5, -5, 10, 10), Qt::white);
+
+    if (null) return;
 
     p.setPen(Qt::white);
 
@@ -138,4 +155,14 @@ void RangeSlider::setUpperBound(int value)
 
         emit upperBoundChanged(value);
     }
+}
+
+void RangeSlider::setMinimum(int min)
+{
+    QSlider::setMinimum(min);
+}
+
+void RangeSlider::setMaximum(int max)
+{
+    QSlider::setMaximum(max);
 }

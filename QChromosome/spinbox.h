@@ -13,14 +13,10 @@ protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
-private:
-    int cachedMinimumWidth;
-
 signals:
 
 public slots:
-    void setMaximum(int max);
-    void setSoftMaximum(int max);
+
 };
 
 #endif // SPINBOX_H

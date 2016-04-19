@@ -1245,70 +1245,6 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>lowerBoundChanged(int)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>upperBoundChanged(int)</signal>
-   <receiver>spinBox_3</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>148</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_2</receiver>
-   <slot>setLowerBound(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>39</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_3</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_2</receiver>
-   <slot>setUpperBound(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>148</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>camera</sender>
    <signal>modelViewChanged(QMatrix4x4)</signal>
    <receiver>widget</receiver>
@@ -1321,6 +1257,38 @@ MediaControl:checked {
     <hint type="destinationlabel">
      <x>224</x>
      <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>scene</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>244</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>163</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>244</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>244</y>
     </hint>
    </hints>
   </connection>

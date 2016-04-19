@@ -11,6 +11,9 @@ public:
 
     QSize minimumSizeHint() const;
 
+    int getLowerBound() const;
+    int getUpperBound() const;
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -36,6 +39,9 @@ signals:
 public slots:
     void setLowerBound(int);
     void setUpperBound(int);
+
+    void setMinimum(int min);
+    void setMaximum(int max);
 };
 
 #endif // RANGESLIDER_H

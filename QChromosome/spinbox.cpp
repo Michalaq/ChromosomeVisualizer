@@ -2,7 +2,7 @@
 
 SpinBox::SpinBox(QWidget *parent) : QSpinBox(parent)
 {
-    cachedMinimumWidth = minimumSizeHint().width();
+
 }
 
 #include <QStyle>
@@ -25,15 +25,4 @@ void SpinBox::focusOutEvent(QFocusEvent *event)
     style()->polish(this);
 
     update();
-}
-
-void SpinBox::setMaximum(int max)
-{
-    setFixedWidth(cachedMinimumWidth + fontMetrics().width(QString::number(max)));
-    QSpinBox::setMaximum(max);
-}
-
-void SpinBox::setSoftMaximum(int max)
-{
-    QSpinBox::setMaximum(max);
 }
