@@ -339,6 +339,9 @@ MediaControl:checked {
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
+        <property name="accelerated">
+         <bool>true</bool>
+        </property>
         <property name="suffix">
          <string>F</string>
         </property>
@@ -360,6 +363,9 @@ MediaControl:checked {
          <widget class="SpinBox" name="spinBox_2">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
           </property>
           <property name="suffix">
            <string>F</string>
@@ -383,6 +389,9 @@ MediaControl:checked {
          <widget class="SpinBox" name="spinBox_3">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
           </property>
           <property name="suffix">
            <string>F</string>
@@ -858,6 +867,10 @@ MediaControl:checked {
    <extends>QWidget</extends>
    <header>plot.h</header>
    <container>1</container>
+   <slots>
+    <slot>setMinimum(int)</slot>
+    <slot>setMaximum(int)</slot>
+   </slots>
   </customwidget>
   <customwidget>
    <class>DockWidget</class>
