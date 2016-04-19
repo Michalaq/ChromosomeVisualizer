@@ -27,27 +27,33 @@ int RangeSlider::getUpperBound() const
 }
 
 #include <QMouseEvent>
+#include <QtMath>
 
 void RangeSlider::mousePressEvent(QMouseEvent *event)
 {
     if (maximum() == minimum())
         return event->ignore();
 
-    initialPosition = event->pos().x();
+    int pos = event->pos().x();
 
-    if (qAbs(initialPosition - leftHandlePosition) < 10)
+    if (qAbs(pos - leftHandlePosition) < 10)
     {
         state = LeftHandleMoving;
         return;
     }
 
-    if (qAbs(initialPosition - rightHandlePosition) < 10)
+    if (qAbs(pos - rightHandlePosition) < 10)
     {
         state = RightHandleMoving;
         return;
     }
 
     state = IntervalMoving;
+
+    int value = minimum() + qFloor(1. * (maximum() - minimum()) * (event->pos().x() - 20) / (width() - 40) + 0.5);
+
+    relativeLowerBound = lowerBound - value;
+    relativeUpperBound = upperBound - value;
 
     QAbstractSlider::mousePressEvent(event);
 }
@@ -57,33 +63,20 @@ void RangeSlider::mouseMoveEvent(QMouseEvent *event)
     if (maximum() == minimum())
         return event->ignore();
 
-    int position = event->pos().x();
+    int value = minimum() + qFloor(1. * (maximum() - minimum()) * (event->pos().x() - 20) / (width() - 40) + 0.5);
 
     switch (state)
     {
     case LeftHandleMoving:
-        setLowerBound(1. * (maximum() - minimum()) * (position - 10) / (width() - 40) + 0.5);
+        setLowerBound(value);
         break;
 
     case RightHandleMoving:
-        setUpperBound(1. * (maximum() - minimum()) * (position - 30) / (width() - 40) + 0.5);
+        setUpperBound(value);
         break;
 
     case IntervalMoving:
-        int value = 1. * (position - initialPosition) * (maximum() - minimum()) / (width() - 40) + (position > initialPosition ? 0.5 : -0.5);
-
-        if (lowerBound + value >= minimum() && upperBound + value <= maximum())
-        {
-            lowerBound += value;
-            upperBound += value;
-            update();
-
-            emit lowerBoundChanged(lowerBound);
-            emit upperBoundChanged(upperBound);
-        }
-
-        initialPosition += value * (width() - 40) / (maximum() - minimum());
-
+        setBounds(relativeLowerBound + value, relativeUpperBound + value);
         break;
     }
 
@@ -109,17 +102,16 @@ void RangeSlider::paintEvent(QPaintEvent *event)
 
     p.fillRect(QRect(0, -10, width(), 20), "#262626");
 
-    bool null = maximum() == minimum();
+    if (maximum() == minimum())
+        return;
 
-    leftHandlePosition = null ? 10 : lowerBound * (width() - 40) / (maximum() - minimum()) + 10;
-    rightHandlePosition = null ? 30 : upperBound * (width() - 40) / (maximum() - minimum()) + 30;
+    leftHandlePosition = 20 + (lowerBound - minimum()) * (width() - 40) / (maximum() - minimum()) - 10;
+    rightHandlePosition = 20 + (upperBound - minimum()) * (width() - 40) / (maximum() - minimum()) + 10;
 
     p.fillRect(QRect(leftHandlePosition - 10, -10, rightHandlePosition - leftHandlePosition + 20, 20), "#0044aa");
 
     p.fillRect(QRect(leftHandlePosition - 5, -5, 10, 10), Qt::white);
     p.fillRect(QRect(rightHandlePosition - 5, -5, 10, 10), Qt::white);
-
-    if (null) return;
 
     p.setPen(Qt::white);
 
@@ -135,34 +127,48 @@ void RangeSlider::paintEvent(QPaintEvent *event)
         p.drawText(rightHandlePosition - 10 - width(), -10, width(), 20, Qt::AlignVCenter | Qt::AlignRight, rightLabel);
 }
 
+void RangeSlider::setBounds(int min, int max)
+{
+    if (minimum() <= min && min <= max && max <= maximum())
+    {
+        if (lowerBound != min)
+            emit lowerBoundChanged(lowerBound = min);
+
+        if (upperBound != max)
+            emit upperBoundChanged(upperBound = max);
+
+        update();
+    }
+}
+
 void RangeSlider::setLowerBound(int value)
 {
-    if (minimum() <= value && value <= upperBound)
-    {
-        lowerBound = value;
-        update();
-
-        emit lowerBoundChanged(value);
-    }
+    setBounds(value, upperBound);
 }
 
 void RangeSlider::setUpperBound(int value)
 {
-    if (lowerBound <= value && value <= maximum())
-    {
-        upperBound = value;
-        update();
-
-        emit upperBoundChanged(value);
-    }
+    setBounds(lowerBound, value);
 }
 
 void RangeSlider::setMinimum(int min)
 {
+    if (upperBound < min)
+        setUpperBound(min);
+
+    if (lowerBound < min)
+        setLowerBound(min);
+
     QSlider::setMinimum(min);
 }
 
 void RangeSlider::setMaximum(int max)
 {
+    if (lowerBound > max)
+        setLowerBound(max);
+
+    if (upperBound > max)
+        setUpperBound(max);
+
     QSlider::setMaximum(max);
 }

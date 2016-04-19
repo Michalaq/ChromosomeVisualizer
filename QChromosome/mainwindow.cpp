@@ -118,6 +118,7 @@ void MainWindow::updateFrameCount(int n)
     lastFrame = n - 1;
 
     ui->spinBox->setMaximum(lastFrame);
+    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
 
     if (expandRange)
