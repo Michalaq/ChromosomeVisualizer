@@ -11,19 +11,66 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TabWidget</string>
+   <string>Render Settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QTabWidget {
+	background: #262626;
+}
+
+QTabBar {
+	background: #262626;
+}
+
+QTabBar::tab {
+	background: none;
+	border: none;
+	margin: 0px;
+	color: lightgray;
+	width: 170px;
+	height: 24px;
+}
+
+QTabBar::tab:hover {
+	background: #333333;
+}
+
+QTabBar::tab:selected {
+	background: #214478;
+	color: white;
+}
+
+QTabWidget::pane {
+	background: #1a1a1a;
+	border: none;
+}</string>
   </property>
   <property name="tabPosition">
    <enum>QTabWidget::West</enum>
   </property>
-  <widget class="QWidget" name="tab">
+  <widget class="QWidget" name="tabGeneral">
    <attribute name="title">
-    <string>Tab 1</string>
+    <string>General</string>
    </attribute>
   </widget>
-  <widget class="QWidget" name="tab">
+  <widget class="QWidget" name="tabOutput">
    <attribute name="title">
-    <string>Tab 2</string>
+    <string>Output</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="tabSave">
+   <attribute name="title">
+    <string>Save</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="tabAntialiasing">
+   <attribute name="title">
+    <string>Anti-Aliasing</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="tabOptions">
+   <attribute name="title">
+    <string>Options</string>
    </attribute>
   </widget>
  </widget>

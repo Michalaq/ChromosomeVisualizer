@@ -2,30 +2,24 @@
 #include "ui_tabwidget.h"
 
 #include <QProxyStyle>
+#include <QPainter>
 
 class MyProxyStyle : public QProxyStyle
 {
 public:
-    QSize sizeFromContents(ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
+    void drawItemText(QPainter *painter, const QRect &rect, int flags, const QPalette &pal, bool enabled, const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const
     {
-        QSize s(QProxyStyle::sizeFromContents(type, option, size, widget));
+        QRect _rect(QPoint(), rect.size().transposed());
 
-        return (type == QStyle::CT_TabBarTab) ? s.transposed() : s;
-    }
+        painter->save();
 
-    void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = Q_NULLPTR) const
-    {
-        if (element == QStyle::CE_TabBarTabLabel)
-        {
-            if (auto tmp = qstyleoption_cast<const QStyleOptionTab*>(option))
-            {
-                QStyleOptionTab option(*tmp);
-                option.shape = QTabBar::RoundedNorth;
-                QProxyStyle::drawControl(element, &option, painter, widget);
-            }
-        }
-        else
-            QProxyStyle::drawControl(element, option, painter, widget);
+        painter->translate(rect.center());
+        painter->rotate(90);
+        painter->translate(-_rect.center());
+
+        QProxyStyle::drawItemText(painter, _rect, flags, pal, enabled, text, textRole);
+
+        painter->restore();
     }
 };
 

@@ -28,9 +28,6 @@ private:
     int relativeLowerBound;
     int relativeUpperBound;
 
-    int leftHandlePosition;
-    int rightHandlePosition;
-
     enum { Normal, LeftHandleMoving, RightHandleMoving, IntervalMoving } state;
 
     void setBounds(int min, int max);
