@@ -1,5 +1,4 @@
 #include "plot.h"
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include <QHBoxLayout>
 #include "legend.h"
 
@@ -8,7 +7,7 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 
 Plot::Plot(QWidget *parent) :
     QWidget(parent),
-    simulation_(std::make_shared<NullSimulation>()),
+    simulation_(std::make_shared<Simulation>()),
     firstFrame(0),
     currentFrame(0),
     lastFrame(0),
@@ -46,7 +45,8 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     auto color = colorOrder.constBegin();
 
-    for (auto i : simulation_->getFrame(0)->functionValues)
+    auto funvals = simulation_->getFrame(0)->functionValues;
+    for (auto i : funvals)
     {
         QString fname = QString::fromStdString(i.first);
 
@@ -74,7 +74,8 @@ void Plot::setMaximum(int m)
     {
         for (int i = lastBuffered + 1; i <= m; i++)
         {
-            for (auto entry : simulation_->getFrame(i)->functionValues)
+            auto funvals = simulation_->getFrame(i)->functionValues;
+            for (auto entry : funvals)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(i, entry.second);
 

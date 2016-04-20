@@ -1,14 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(std::make_shared<NullSimulation>()),
+    simulation(),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this))
@@ -66,7 +67,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
+
 
 void MainWindow::openSimulation()
 {
@@ -76,8 +77,11 @@ void MainWindow::openSimulation()
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
-        simulation = std::make_shared<PDBSimulation>(path.toStdString());
+        auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        if (!simulation)
+            simulation = std::make_shared<Simulation>();
 
+        simulation->addSimulationLayer(simulationLayer);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
 
@@ -230,8 +234,6 @@ void MainWindow::scale(bool checked)
     else
         ui->camera->disconnect(ui->camera);
 }
-
-#include <QKeyEvent>
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {

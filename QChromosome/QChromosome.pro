@@ -15,12 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp\
 ../QtChromosomeViz_v2/VizWidget.cpp\
-../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     camera.cpp \
     plot.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
     mousecontrol.cpp \
@@ -32,17 +30,17 @@ SOURCES += main.cpp\
     axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp
+    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
-../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.h\
 ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     camera.h \
     plot.h \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
     mousecontrol.h \
@@ -54,7 +52,9 @@ HEADERS  += mainwindow.h\
     axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp
+    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h \
+    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui

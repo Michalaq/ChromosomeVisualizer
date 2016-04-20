@@ -1,9 +1,7 @@
 #include "Simulation.h"
 
-Simulation::Simulation(const std::string &name)
-    : name_(name)
-    , frameCount_(0)
-    , connectionCount_(-1)
+Simulation::Simulation()
+    : frameCount_(0)
 {}
 
 frameNumber_t Simulation::getFrameCount() const
@@ -11,17 +9,43 @@ frameNumber_t Simulation::getFrameCount() const
     return frameCount_;
 }
 
-void Simulation::setSimulationName(const std::string &name)
+std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 {
-    name_ = name;
+    Frame f = {
+        0,
+        0,
+        std::vector<Atom>(),
+        std::map<std::string, float>()
+    };
+    int count = 0;
+    for (const auto & l : layers_) {
+        std::shared_ptr<Frame> f2 = l->getFrame(position);
+        f.no = f2->no;
+        f.step = f2->step;
+        f.functionValues = f2->functionValues;
+
+        for (const auto & atom : f2->atoms) {
+            f.atoms.push_back(atom);
+            f.atoms.back().id += count;
+        }
+
+        count += f2->atoms.size();
+    }
+    return std::make_shared<Frame>(f);
 }
 
-const std::string & Simulation::getSimulationName() const
+void Simulation::addSimulationLayer(std::shared_ptr<SimulationLayer> sl)
 {
-    return name_;
+    layers_.push_back(sl);
+    connect(sl.get(), &SimulationLayer::frameCountChanged, [this] (int frameCount) {
+        if (frameCount_ < frameCount) {
+            frameCount_ = frameCount;
+            emit frameCountChanged(frameCount_);
+        }
+    });
 }
 
-const int Simulation::getConnectionCount() const
+std::shared_ptr<SimulationLayer> Simulation::getSimulationLayer(int i)
 {
-    return connectionCount_;
+    return layers_[i];
 }

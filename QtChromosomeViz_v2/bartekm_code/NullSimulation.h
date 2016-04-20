@@ -1,9 +1,9 @@
 #ifndef NULLSIMULATION_H
 #define NULLSIMULATION_H
 
-#include "Simulation.h"
+#include "SimulationLayer.h"
 
-class NullSimulation : public Simulation
+class NullSimulation : public SimulationLayer
 {
 public:
     NullSimulation();
