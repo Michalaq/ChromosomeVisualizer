@@ -78,6 +78,37 @@ void MainWindow::openSimulation()
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
         auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+
+        simulation = std::make_shared<Simulation>();
+
+        simulation->addSimulationLayer(simulationLayer);
+        ui->scene->setSimulation(simulation);
+        ui->plot->setSimulation(simulation);
+
+        ui->horizontalSlider->setMaximum(0);
+        ui->horizontalSlider_2->setMaximum(0);
+
+        ui->spinBox->setMaximum(0);
+        ui->spinBox_2->setMaximum(0);
+        ui->spinBox_3->setMaximum(0);
+
+        lastFrame = 0;//TODO być może do wywalenia
+
+        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+    }
+}
+
+void MainWindow::addLayer()
+{
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+
+    if (!path.isEmpty())
+    {
+        QObject::disconnect(this, SLOT(updateFrameCount(int)));
+
+        auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+
         if (!simulation)
             simulation = std::make_shared<Simulation>();
 
@@ -85,15 +116,6 @@ void MainWindow::openSimulation()
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);
-
-        /*ui->horizontalSlider->setMaximum(0);
-        ui->horizontalSlider_2->setMaximum(0);
-
-        ui->spinBox->setMaximum(0);
-        ui->spinBox_2->setMaximum(0);
-        ui->spinBox_3->setMaximum(0);
-
-        lastFrame = 0;//TODO być może do wywalenia*/
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
