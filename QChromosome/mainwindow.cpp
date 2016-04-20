@@ -84,15 +84,16 @@ void MainWindow::openSimulation()
         simulation->addSimulationLayer(simulationLayer);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
+        ui->plot->setMaximum(lastFrame);
 
-        ui->horizontalSlider->setMaximum(0);
+        /*ui->horizontalSlider->setMaximum(0);
         ui->horizontalSlider_2->setMaximum(0);
 
         ui->spinBox->setMaximum(0);
         ui->spinBox_2->setMaximum(0);
         ui->spinBox_3->setMaximum(0);
 
-        lastFrame = 0;//TODO być może do wywalenia
+        lastFrame = 0;//TODO być może do wywalenia*/
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
