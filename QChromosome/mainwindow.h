@@ -5,6 +5,7 @@
 #include <QTimer>
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
+#include "rendersettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -65,6 +66,8 @@ private:
 
     QHash<Qt::Key, QAction*> bindings;
     QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
+
+    RenderSettings *rs;
 };
 
 #endif // MAINWINDOW_H

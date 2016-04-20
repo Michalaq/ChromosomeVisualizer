@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
     ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
-    toolbar.cpp
+    toolbar.cpp \
+    rendersettings.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -54,7 +55,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
     ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
-    toolbar.h
+    toolbar.h \
+    rendersettings.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui

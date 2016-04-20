@@ -27,8 +27,15 @@ void ToolBar::addAction(QAction *action)
 
     widget->setCursor(Qt::PointingHandCursor);
 
-    connect(action, &QAction::toggled, widget, &MediaControl::setChecked);
-    connect(widget, &MediaControl::toggled, action, &QAction::setChecked);
+    if (action->isCheckable())
+    {
+        connect(action, &QAction::toggled, widget, &MediaControl::setChecked);
+        connect(widget, &MediaControl::toggled, action, &QAction::setChecked);
+    }
+    else
+    {
+        connect(widget, &MediaControl::clicked, action, &QAction::trigger);
+    }
 
     widget->setFixedSize(minimumSize());
 

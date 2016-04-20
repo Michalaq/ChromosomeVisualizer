@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     simulation(std::make_shared<NullSimulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
-    actionGroup(new QActionGroup(this))
+    actionGroup(new QActionGroup(this)),
+    rs(new RenderSettings())
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -62,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
     connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
     move(true);
+
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
 }
 
 MainWindow::~MainWindow()
