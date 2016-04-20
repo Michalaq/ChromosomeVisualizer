@@ -1,13 +1,22 @@
 #ifndef RENDERSETTINGS_H
 #define RENDERSETTINGS_H
 
-#include <QWidget>
+#include <QTabWidget>
 
-class RenderSettings : public QWidget
+namespace Ui
+{
+    class TabWidget;
+}
+
+class RenderSettings : public QTabWidget
 {
     Q_OBJECT
 public:
     explicit RenderSettings(QWidget *parent = 0);
+    ~RenderSettings();
+
+private:
+    Ui::TabWidget *ui;
 
 signals:
 

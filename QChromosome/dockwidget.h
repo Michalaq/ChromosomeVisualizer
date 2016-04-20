@@ -3,8 +3,9 @@
 
 #include <QDockWidget>
 
-namespace Ui {
-class DockWidget;
+namespace Ui
+{
+    class DockWidget;
 }
 
 class DockWidget : public QDockWidget

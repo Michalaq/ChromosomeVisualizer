@@ -7,8 +7,9 @@
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow

@@ -59,7 +59,8 @@ HEADERS  += mainwindow.h\
     rendersettings.h
 
 FORMS    += mainwindow.ui \
-    dockwidget.ui
+    dockwidget.ui \
+    tabwidget.ui
 
 CONFIG += c++11
 
