@@ -59,10 +59,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMaximum(int)));
 
     /* connect actions */
-    connect(ui->actionMove, SIGNAL(toggled(bool)), this, SLOT(move(bool)));
-    connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
-    connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
-    move(true);
+    mappedSlot[ui->actionMove] = SLOT(move(int,int));
+    mappedSlot[ui->actionRotate] = SLOT(rotate(int,int));
+    mappedSlot[ui->actionScale] = SLOT(scale(int,int));
+
+    ui->actionMove->toggle();
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
 }
@@ -234,29 +235,10 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 void MainWindow::setBaseAction(bool enabled)
 {
     if (enabled)
+    {
         modifiers.last() = qobject_cast<QAction*>(sender());
-}
-
-void MainWindow::move(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(move(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
-}
-
-void MainWindow::rotate(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(rotate(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
-}
-
-void MainWindow::scale(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(scale(int,int)));
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
+    }
     else
         ui->camera->disconnect(ui->camera);
 }

@@ -43,11 +43,6 @@ public slots:
     /* actions */
     void setBaseAction(bool enabled);
 
-    /* camera */
-    void move(bool);
-    void rotate(bool);
-    void scale(bool);
-
     /* povray */
     void capture();
 
@@ -70,6 +65,8 @@ private:
 
     QHash<Qt::Key, QAction*> bindings;
     QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
+
+    QHash<QObject*, const char*> mappedSlot;
 
     RenderSettings *rs;
 };
