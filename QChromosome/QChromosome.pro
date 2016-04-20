@@ -56,7 +56,8 @@ HEADERS  += mainwindow.h\
     legend.h \
     ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
     toolbar.h \
-    rendersettings.h
+    rendersettings.h \
+    moviemaker.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

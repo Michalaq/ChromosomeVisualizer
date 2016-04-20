@@ -646,6 +646,8 @@ MediaControl:checked {
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
+   <addaction name="separator"/>
+   <addaction name="actionFoto"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
@@ -1305,6 +1307,22 @@ MediaControl:checked {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionFoto</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>capture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -1318,5 +1336,6 @@ MediaControl:checked {
   <slot>handleSelection(AtomSelection)</slot>
   <slot>selectAll()</slot>
   <slot>setBaseAction(bool)</slot>
+  <slot>capture()</slot>
  </slots>
 </ui>

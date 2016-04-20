@@ -24,6 +24,12 @@ public:
     /* sets new origin */
     void setOrigin(const QVector3D& o);
 
+    /* eye position */
+    QVector3D eye;
+
+    /* direction vectors */
+    QVector3D x, y, z;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -35,12 +41,6 @@ public slots:
     void scale(int dx, int dy);
 
 private:
-    /* eye position */
-    QVector3D eye;
-
-    /* direction vectors */
-    QVector3D x, y, z;
-
     /* Euler angles */
     qreal h, p, b;
 
