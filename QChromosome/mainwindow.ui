@@ -646,8 +646,6 @@ MediaControl:checked {
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
-   <addaction name="separator"/>
-   <addaction name="actionFoto"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
@@ -1308,7 +1306,7 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionFoto</sender>
+   <sender>actionQuick_Render</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>capture()</slot>

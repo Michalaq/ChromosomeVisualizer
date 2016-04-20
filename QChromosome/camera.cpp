@@ -65,6 +65,16 @@ void Camera::setOrigin(const QVector3D &o)
     origin = o;
 }
 
+QVector3D Camera::cameraPosition() const
+{
+    return eye;
+}
+
+QVector3D Camera::cameraLookAt() const
+{
+    return eye - z;
+}
+
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
