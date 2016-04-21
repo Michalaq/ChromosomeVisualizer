@@ -5,18 +5,20 @@
 #include <fstream>
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
+#include "camera.h"
+#include "rendersettings.h"
 
 
 class MovieMaker
 {
 public:
 
-    static void inline captureScene(const std::string& filename, const QVector<VizBallInstance> & vizBalls, const int connectionCount, const QVector3D & cameraLocation, const QVector3D & cameraLookAt)
+    static void inline captureScene(const std::string& filename, const QVector<VizBallInstance> & vizBalls, const int connectionCount, const QVector3D & cameraLocation, const QVector3D & cameraLookAt, const RenderSettings & settings)
     {
-        prepareINIFile(1920, 1080, true);
+        prepareINIFile(settings.getOutputWidth(), settings.getOutputHeight(), true);
         std::ofstream outFile;
         createPOVFile(outFile, filename);
-        setCamera(outFile, -cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), -cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), 1920, 1080);
+        setCamera(outFile, -cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), -cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), settings.getOutputWidth(), settings.getOutputHeight());
         for (int i = 0; i < vizBalls.length(); i++)
         {
             addSphere(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size,

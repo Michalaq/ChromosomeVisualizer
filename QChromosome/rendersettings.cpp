@@ -35,3 +35,13 @@ RenderSettings::~RenderSettings()
 {
     delete ui;
 }
+
+double RenderSettings::getOutputWidth() const
+{
+    return ui->doubleSpinBox->value();
+}
+
+double RenderSettings::getOutputHeight() const
+{
+    return ui->doubleSpinBox_2->value();
+}

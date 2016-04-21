@@ -15,6 +15,10 @@ public:
     explicit RenderSettings(QWidget *parent = 0);
     ~RenderSettings();
 
+    /* Output */
+    double getOutputWidth() const;
+    double getOutputHeight() const;
+
 private:
     Ui::TabWidget *ui;
 
