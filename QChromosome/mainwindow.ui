@@ -673,6 +673,9 @@ MediaControl:checked {
 	width: 375px;
 }</string>
        </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
          <string>Atom</string>
@@ -680,17 +683,17 @@ MediaControl:checked {
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
-         <string>Typ</string>
+         <string>Type</string>
         </attribute>
        </widget>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
-         <string>Molekuła</string>
+         <string>Molecule</string>
         </attribute>
        </widget>
        <widget class="QWidget" name="tab_4">
         <attribute name="title">
-         <string>Grupa</string>
+         <string>Group</string>
         </attribute>
        </widget>
       </widget>

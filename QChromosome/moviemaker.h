@@ -19,20 +19,14 @@ public:
         std::ofstream outFile;
         createPOVFile(outFile, settings.getFile().toStdString());
         setCamera(outFile, -cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), -cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), settings.getOutputWidth(), settings.getOutputHeight());
+
         for (int i = 0; i < vizBalls.length(); i++)
-        {
-            addSphere(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size,
-                      ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
-                      (vizBalls[i].color & 0xFF) / 255.f, 1.f - (vizBalls[i].color >> 24) / 255.f);
-        }
+            addSphere(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(), vizBalls[i].size, vizBalls[i].color);
 
         for (int i = 0; i < connectionCount; i++)
         {
             addCylinder(outFile, -vizBalls[i].position.x(), vizBalls[i].position.y(), vizBalls[i].position.z(),
-                        -vizBalls[i+1].position.x(), vizBalls[i+1].position.y(), vizBalls[i+1].position.z(), vizBalls[i].size / 3.f,
-                        ((vizBalls[i].color >> 16) & 0xFF) / 255.f, ((vizBalls[i].color >> 8) & 0xFF) / 255.f,
-                        (vizBalls[i].color & 0xFF) / 255.f, ((vizBalls[i+1].color >> 16) & 0xFF) / 255.f,
-                        ((vizBalls[i+1].color >> 8) & 0xFF) / 255.f, (vizBalls[i+1].color & 0xFF) / 255.f);
+                        -vizBalls[i+1].position.x(), vizBalls[i+1].position.y(), vizBalls[i+1].position.z(), vizBalls[i].size / 3.f, vizBalls[i].color, vizBalls[i+1].color);
         }
 
 //TODO: ponizej do ogarniecia
@@ -68,16 +62,24 @@ private:
             "light_source {<" << x << ", " << y << ", " << z << "> color White}"<< std::endl;
     }
 
-    static void inline addSphere(std::ofstream& outFile, float x, float y, float z, float size, float r, float g, float b, float t)
+    static void inline addSphere(std::ofstream& outFile, float x, float y, float z, float size, QColor color)
     {
-        outFile << "sphere{<" << x << ", " << y << ", " << z << ">, " << size << " texture{pigment{rgbt<" << r << ", " << g << ", " << b << ", " << t << ">}}}" << std::endl;
+        qreal r, g, b, t;
+        color.getRgbF(&r, &g, &b, &t);
+
+        outFile << "sphere{<" << x << ", " << y << ", " << z << ">, " << size << " texture{pigment{rgbt<" << r << ", " << g << ", " << b << ", " << 1. - t << ">}}}" << std::endl;
     }
 
-    static void inline addCylinder(std::ofstream& outFile, float ax, float ay, float az, float bx, float by, float bz, float radius,
-        float ar, float ag, float ab, float br, float bg, float bb)
+    static void inline addCylinder(std::ofstream& outFile, float ax, float ay, float az, float bx, float by, float bz, float radius, QColor colora, QColor colorb)
     {
+        qreal ar, ag, ab, at;
+        colora.getRgbF(&ar, &ag, &ab, &at);
+
+        qreal br, bg, bb, bt;
+        colorb.getRgbF(&br, &bg, &bb, &bt);
+
         outFile << "cylinder{<" << ax << ", " << ay << ", " << az << ">, <" << bx << ", " << by << ", " << bz << ">," << radius <<
-            " texture{pigment{gradient<" << ax-bx << ", " << ay-by << ", " << az-bz << "> color_map{[0.0 color rgb<" << ar << ", " << ag << ", " << ab << ">][1.0 color rgb<"
+            " texture{pigment{gradient<" << ax - bx << ", " << ay - by << ", " << az - bz << "> color_map{[0.0 color rgb<" << ar << ", " << ag << ", " << ab << ">][1.0 color rgb<"
             << br << ", " << bg << ", " << bb << ">]}}}}" << std::endl;
     }
 };
