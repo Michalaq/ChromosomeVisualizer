@@ -4,10 +4,8 @@
 #include <cstdlib>
 #include <fstream>
 
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "camera.h"
 #include "rendersettings.h"
-
 
 class MovieMaker
 {
@@ -18,6 +16,7 @@ public:
         prepareINIFile(settings.outputSize(), true);
         std::ofstream outFile;
         createPOVFile(outFile, settings.saveFile().toStdString());
+
         setCamera(outFile, camera.position(), camera.lookAt(), settings.outputSize());
 
         for (int i = 0; i < vizBalls.length(); i++)
@@ -25,6 +24,8 @@ public:
 
         for (int i = 0; i < connectionCount; i++)
             addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, vizBalls[i].color, vizBalls[i + 1].color);
+
+        outFile.flush();
 
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
@@ -43,20 +44,19 @@ private:
     static void inline prepareINIFile(QSize size, bool aa)
     {
         std::ofstream outFile("povray.ini");
-        outFile << "Width=" << size.width() << "\nHeight=" << size.height() << "\nAntialias=" << (aa ? "On" : "Off") << std::endl;
+        outFile << "Width=" << size.width() << "\nHeight=" << size.height() << "\nAntialias=" << (aa ? "On" : "Off") << "\n";
     }
 
     static void inline createPOVFile(std::ofstream& outFile, std::string filename)
     {
         outFile.open(filename + ".pov");
-
-        outFile << "#include \"colors.inc\"\n#include \"stones.inc\"" << std::endl;
+        outFile << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
     }
 
     static void inline setCamera(std::ofstream& outFile, const QVector3D & position, const QVector3D & lookAt, QSize size)
     {
         outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << -position.x() << ", " << position.y() << ", " << position.z() << ">look_at<" << -lookAt.x() << ", " << lookAt.y() << ", " << lookAt.z() << ">}\n" <<
-            "light_source {<" << -position.x() << ", " << position.y() << ", " << position.z() << "> color White}"<< std::endl;
+            "light_source {<" << -position.x() << ", " << position.y() << ", " << position.z() << "> color White}\n";
     }
 
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)
@@ -64,7 +64,7 @@ private:
         qreal r, g, b, t;
         color.getRgbF(&r, &g, &b, &t);
 
-        outFile << "sphere{<" << -position.x() << ", " << position.y() << ", " << position.z() << ">, " << size << " texture{pigment{rgbt<" << r << ", " << g << ", " << b << ", " << 1. - t << ">}}}" << std::endl;
+        outFile << "sphere{<" << -position.x() << ", " << position.y() << ", " << position.z() << ">, " << size << " texture{pigment{rgbt<" << r << ", " << g << ", " << b << ", " << 1. - t << ">}}}\n";
     }
 
     static void inline addCylinder(std::ofstream& outFile, const QVector3D & posA, const QVector3D & posB, float radius, QColor colorA, QColor colorB)
@@ -77,9 +77,9 @@ private:
 
         QVector3D length = posA - posB;
 
-        outFile << "cylinder{<" << posA.x() << ", " << posA.y() << ", " << posA.z() << ">, <" << posB.x() << ", " << posB.y() << ", " << posB.z() << ">," << radius <<
-            " texture{pigment{gradient<" << length.x() << ", " << length.y() << ", " << length.z() << "> color_map{[0.0 color rgb<" << ar << ", " << ag << ", " << ab << ">][1.0 color rgb<"
-            << br << ", " << bg << ", " << bb << ">]}}}}" << std::endl;
+        outFile << "cylinder{<" << -posA.x() << ", " << posA.y() << ", " << posA.z() << ">, <" << -posB.x() << ", " << posB.y() << ", " << posB.z() << ">," << radius <<
+            " texture{pigment{gradient<" << -length.x() << ", " << length.y() << ", " << length.z() << "> color_map{[0.0 color rgb<" << ar << ", " << ag << ", " << ab << ">][1.0 color rgb<"
+            << br << ", " << bg << ", " << bb << ">]}}}}\n";
     }
 };
 
