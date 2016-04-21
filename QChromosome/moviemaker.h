@@ -7,6 +7,16 @@
 #include "camera.h"
 #include "rendersettings.h"
 
+std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
+{
+    return out << -vec.x() << ", " << vec.y() << ", " << vec.z();
+}
+
+std::ostream& operator<<(std::ostream& out, const QColor & col)
+{
+    return out << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF();
+}
+
 class MovieMaker
 {
 public:
@@ -55,31 +65,20 @@ private:
 
     static void inline setCamera(std::ofstream& outFile, const QVector3D & position, const QVector3D & lookAt, QSize size)
     {
-        outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << -position.x() << ", " << position.y() << ", " << position.z() << ">look_at<" << -lookAt.x() << ", " << lookAt.y() << ", " << lookAt.z() << ">}\n" <<
-            "light_source {<" << -position.x() << ", " << position.y() << ", " << position.z() << "> color White}\n";
+        outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << position << ">look_at<" << lookAt << ">}\n" <<
+            "light_source {<" << position << "> color White}\n";
     }
 
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)
     {
-        qreal r, g, b, t;
-        color.getRgbF(&r, &g, &b, &t);
-
-        outFile << "sphere{<" << -position.x() << ", " << position.y() << ", " << position.z() << ">, " << size << " texture{pigment{rgbt<" << r << ", " << g << ", " << b << ", " << 1. - t << ">}}}\n";
+        outFile << "sphere{<" << position << ">, " << size << " texture{pigment{rgbt<" << color << ">}}}\n";
     }
 
-    static void inline addCylinder(std::ofstream& outFile, const QVector3D & posA, const QVector3D & posB, float radius, QColor colorA, QColor colorB)
+    static void inline addCylinder(std::ofstream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, QColor colorA, QColor colorB)
     {
-        qreal ar, ag, ab, at;
-        colorA.getRgbF(&ar, &ag, &ab, &at);
-
-        qreal br, bg, bb, bt;
-        colorB.getRgbF(&br, &bg, &bb, &bt);
-
-        QVector3D length = posA - posB;
-
-        outFile << "cylinder{<" << -posA.x() << ", " << posA.y() << ", " << posA.z() << ">, <" << -posB.x() << ", " << posB.y() << ", " << posB.z() << ">," << radius <<
-            " texture{pigment{gradient<" << -length.x() << ", " << length.y() << ", " << length.z() << "> color_map{[0.0 color rgb<" << ar << ", " << ag << ", " << ab << ">][1.0 color rgb<"
-            << br << ", " << bg << ", " << bb << ">]}}}}\n";
+        outFile << "cylinder{<" << positionA << ">, <" << positionB << ">," << radius <<
+            " texture{pigment{gradient<" << positionA - positionB << "> color_map{[0.0 color rgb<" << colorA << ">][1.0 color rgb<"
+            << colorB << ">]}}}}\n";
     }
 };
 
