@@ -24,8 +24,8 @@ public:
     /* sets new origin */
     void setOrigin(const QVector3D& o);
 
-    QVector3D cameraPosition() const;
-    QVector3D cameraLookAt() const;
+    QVector3D position() const;
+    QVector3D lookAt() const;
 
 public slots:
     /* handles mouse move event */

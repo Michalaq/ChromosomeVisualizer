@@ -65,12 +65,12 @@ void Camera::setOrigin(const QVector3D &o)
     origin = o;
 }
 
-QVector3D Camera::cameraPosition() const
+QVector3D Camera::position() const
 {
     return eye;
 }
 
-QVector3D Camera::cameraLookAt() const
+QVector3D Camera::lookAt() const
 {
     return eye - z;
 }

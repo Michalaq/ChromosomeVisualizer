@@ -247,7 +247,7 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), ui->camera->cameraPosition(), ui->camera->cameraLookAt(), *rs);
+    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
 }
 
 #include <QKeyEvent>

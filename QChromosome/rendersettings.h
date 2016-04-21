@@ -16,11 +16,10 @@ public:
     ~RenderSettings();
 
     /* Output */
-    double getOutputWidth() const;
-    double getOutputHeight() const;
+    QSize outputSize() const; //in px
 
     /* Save */
-    QString getFile() const;
+    QString saveFile() const;
 
 private:
     Ui::TabWidget *ui;

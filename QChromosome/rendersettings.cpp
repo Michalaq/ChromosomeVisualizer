@@ -33,10 +33,10 @@ RenderSettings::RenderSettings(QWidget *parent) :
     tabBar()->setStyle(new MyProxyStyle);
 
     connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
+        QString path = QFileDialog::getSaveFileName(this, tr("File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
 
-        if (!fileName.isEmpty())
-            ui->lineEdit->setText(fileName);
+        if (!path.isEmpty())
+            ui->lineEdit->setText(path);
     });
 }
 
@@ -45,17 +45,12 @@ RenderSettings::~RenderSettings()
     delete ui;
 }
 
-double RenderSettings::getOutputWidth() const
+QSize RenderSettings::outputSize() const
 {
-    return ui->doubleSpinBox->value();
+    return QSize(ui->doubleSpinBox->value(), ui->doubleSpinBox_2->value());
 }
 
-double RenderSettings::getOutputHeight() const
-{
-    return ui->doubleSpinBox_2->value();
-}
-
-QString RenderSettings::getFile() const
+QString RenderSettings::saveFile() const
 {
     return ui->lineEdit->text();
 }
