@@ -13,11 +13,11 @@ class MovieMaker
 {
 public:
 
-    static void inline captureScene(const std::string& filename, const QVector<VizBallInstance> & vizBalls, const int connectionCount, const QVector3D & cameraLocation, const QVector3D & cameraLookAt, const RenderSettings & settings)
+    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const QVector3D & cameraLocation, const QVector3D & cameraLookAt, const RenderSettings & settings)
     {
         prepareINIFile(settings.getOutputWidth(), settings.getOutputHeight(), true);
         std::ofstream outFile;
-        createPOVFile(outFile, filename);
+        createPOVFile(outFile, settings.getFile().toStdString());
         setCamera(outFile, -cameraLocation.x(), cameraLocation.y(), cameraLocation.z(), -cameraLookAt.x(), cameraLookAt.y(), cameraLookAt.z(), settings.getOutputWidth(), settings.getOutputHeight());
         for (int i = 0; i < vizBalls.length(); i++)
         {
@@ -38,7 +38,7 @@ public:
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
         qDebug() << "linux povray photo";
-        system(QString("povray povray.ini Library_Path=/usr/local/share/povray-3.7/include/ %1.pov").arg(QString::fromStdString(filename)).toUtf8().constData());
+        system(QString("povray povray.ini Library_Path=/usr/local/share/povray-3.7/include/ %1.pov").arg(settings.getFile()).toUtf8().constData());
 #elif _WIN32
         qDebug() << "windows povray photo";
         system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + QString::fromStdString(filename) + QString(".pov /EXIT")).toUtf8().constData());

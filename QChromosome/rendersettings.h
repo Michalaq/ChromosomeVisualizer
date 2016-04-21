@@ -19,6 +19,9 @@ public:
     double getOutputWidth() const;
     double getOutputHeight() const;
 
+    /* Save */
+    QString getFile() const;
+
 private:
     Ui::TabWidget *ui;
 

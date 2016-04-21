@@ -23,12 +23,21 @@ public:
     }
 };
 
+#include <QFileDialog>
+
 RenderSettings::RenderSettings(QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TabWidget)
 {
     ui->setupUi(this);
     tabBar()->setStyle(new MyProxyStyle);
+
+    connect(ui->toolButton, &QToolButton::clicked, [this] {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
+
+        if (!fileName.isEmpty())
+            ui->lineEdit->setText(fileName);
+    });
 }
 
 RenderSettings::~RenderSettings()
@@ -44,4 +53,9 @@ double RenderSettings::getOutputWidth() const
 double RenderSettings::getOutputHeight() const
 {
     return ui->doubleSpinBox_2->value();
+}
+
+QString RenderSettings::getFile() const
+{
+    return ui->lineEdit->text();
 }
