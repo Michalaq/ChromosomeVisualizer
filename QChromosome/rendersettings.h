@@ -16,7 +16,7 @@ public:
     ~RenderSettings();
 
     /* Output */
-    QSize outputSize() const; //in px
+    QSize outputSize() const; //px
 
     /* Save */
     QString saveFile() const;
@@ -24,9 +24,17 @@ public:
 private:
     Ui::TabWidget *ui;
 
+    qreal aspectRatio;
+    QString currentUnit;
+    QString currentResolutionUnit;
+
+    /* metric unit conversion table */
+    QHash<QString, qreal> units;
+
 signals:
 
 public slots:
+
 };
 
 #endif // RENDERSETTINGS_H
