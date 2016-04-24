@@ -312,6 +312,9 @@ MediaControl:checked {
              <widget class="VizWidget" name="scene"/>
             </item>
             <item row="0" column="0">
+             <widget class="Blind" name="widget_2" native="true"/>
+            </item>
+            <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
             </item>
            </layout>
@@ -915,6 +918,12 @@ MediaControl:checked {
    <class>ToolBar</class>
    <extends>QToolBar</extends>
    <header>toolbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Blind</class>
+   <extends>QWidget</extends>
+   <header>blind.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

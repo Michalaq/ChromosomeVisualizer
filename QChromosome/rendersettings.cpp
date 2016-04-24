@@ -50,6 +50,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox->isChecked())
             ui->doubleSpinBox_2->setValue(value / aspectRatio);
+        else
+        {
+            aspectRatio = ui->doubleSpinBox->value() / ui->doubleSpinBox_2->value();
+            emit aspectRatioChanged(aspectRatio);
+        }
 
         const qreal multiplier = units["px"] / units[currentUnit];
 
@@ -62,6 +67,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
     connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox->isChecked())
             ui->doubleSpinBox->setValue(value * aspectRatio);
+        else
+        {
+            aspectRatio = ui->doubleSpinBox->value() / ui->doubleSpinBox_2->value();
+            emit aspectRatioChanged(aspectRatio);
+        }
 
         const qreal multiplier = units["px"] / units[currentUnit];
 
@@ -82,11 +92,6 @@ RenderSettings::RenderSettings(QWidget *parent) :
         QString height = QString::number(qFloor(ui->doubleSpinBox_2->value() * multiplier + .5));
 
         ui->label_7->setText(QString("%1 x %2 px").arg(width, height));
-    });
-
-    connect(ui->checkBox, &QCheckBox::clicked, [this](bool checked) {
-        if (checked)
-            aspectRatio = ui->doubleSpinBox->value() / ui->doubleSpinBox_2->value();
     });
 
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& text) {

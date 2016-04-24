@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMove->toggle();
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
+    connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 }
 
 MainWindow::~MainWindow()

@@ -32,6 +32,7 @@ private:
     QHash<QString, qreal> units;
 
 signals:
+    void aspectRatioChanged(qreal ar);
 
 public slots:
 

@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     legend.cpp \
     ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
     toolbar.cpp \
-    rendersettings.cpp
+    rendersettings.cpp \
+    blind.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -57,7 +58,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
     toolbar.h \
     rendersettings.h \
-    moviemaker.h
+    moviemaker.h \
+    blind.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
