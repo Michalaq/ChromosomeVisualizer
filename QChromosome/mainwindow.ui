@@ -1203,22 +1203,6 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionSelect</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setBaseAction(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionMove</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>

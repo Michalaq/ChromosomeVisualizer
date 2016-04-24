@@ -4,7 +4,7 @@ Blind::Blind(QWidget *parent) :
     QWidget(parent),
     aspectRatio(1)
 {
-
+    setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 #include <QPainter>
