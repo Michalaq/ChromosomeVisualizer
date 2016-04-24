@@ -138,3 +138,11 @@ QString RenderSettings::saveFile() const
 {
     return ui->lineEdit->text();
 }
+
+#include <QMetaMethod>
+
+void RenderSettings::connectNotify(const QMetaMethod &signal)
+{
+    if (signal == QMetaMethod::fromSignal(&RenderSettings::aspectRatioChanged))
+        emit aspectRatioChanged(aspectRatio);
+}

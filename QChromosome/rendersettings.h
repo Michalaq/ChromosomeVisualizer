@@ -21,6 +21,9 @@ public:
     /* Save */
     QString saveFile() const;
 
+protected:
+    void connectNotify(const QMetaMethod& signal);
+
 private:
     Ui::TabWidget *ui;
 

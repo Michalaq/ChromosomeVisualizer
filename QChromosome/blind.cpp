@@ -28,9 +28,6 @@ void Blind::paintEvent(QPaintEvent *event)
 
     p.fillRect(QRect(view.topRight(), rect().bottomRight()), "#1a1a1a");
     p.fillRect(QRect(view.bottomLeft(), rect().bottomRight()), "#1a1a1a");
-
-    //p.fillRect(QRect(0,0,300,height()), "#1a1a1a");
-    //p.fillRect(QRect(width()-300,0,300,height()), "#1a1a1a");
 }
 
 void Blind::setAspectRatio(qreal ar)
