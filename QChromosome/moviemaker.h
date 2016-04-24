@@ -30,10 +30,10 @@ public:
         setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), settings.outputSize());
 
         for (int i = 0; i < vizBalls.length(); i++)
-            addSphere(outFile, vizBalls[i].position, vizBalls[i].size, vizBalls[i].color);
+            addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
 
         for (int i = 0; i < connectionCount; i++)
-            addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, vizBalls[i].color, vizBalls[i + 1].color);
+            addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
 
         outFile.flush();
 
