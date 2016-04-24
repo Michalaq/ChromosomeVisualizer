@@ -27,7 +27,7 @@ public:
         std::ofstream outFile;
         createPOVFile(outFile, settings.saveFile().toStdString());
 
-        setCamera(outFile, camera.position(), camera.lookAt(), settings.outputSize());
+        setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), settings.outputSize());
 
         for (int i = 0; i < vizBalls.length(); i++)
             addSphere(outFile, vizBalls[i].position, vizBalls[i].size, vizBalls[i].color);
@@ -43,7 +43,7 @@ public:
         system(QString("povray povray.ini +L/usr/local/share/povray-3.7/include/ %1.pov").arg(settings.saveFile()).toUtf8().constData());
 #elif _WIN32
         qDebug() << "windows povray photo";
-        system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + QString::fromStdString(filename) + QString(".pov /EXIT")).toUtf8().constData());
+        system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
 #else
         qDebug() << "platform not supported";
 #endif
@@ -63,10 +63,10 @@ private:
         outFile << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
     }
 
-    static void inline setCamera(std::ofstream& outFile, const QVector3D & position, const QVector3D & lookAt, QSize size)
+    static void inline setCamera(std::ofstream& outFile, const QVector3D & position, const QVector3D & lookAt, const qreal & angle, QSize size)
     {
-        outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << position << ">look_at<" << lookAt << ">}\n" <<
-            "light_source {<" << position << "> color White}\n";
+        outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << position << ">look_at<" << lookAt << ">angle " << angle <<
+            "}\n" << "light_source {<" << position << "> color White}\n";
     }
 
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)

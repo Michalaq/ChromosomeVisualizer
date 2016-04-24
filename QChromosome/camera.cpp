@@ -75,6 +75,11 @@ QVector3D Camera::lookAt() const
     return eye - z;
 }
 
+qreal Camera::getHorizontalAngle() const
+{
+    return horizontalAngle;
+}
+
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;

@@ -26,6 +26,7 @@ public:
 
     QVector3D position() const;
     QVector3D lookAt() const;
+    qreal getHorizontalAngle() const;
 
 public slots:
     /* handles mouse move event */
