@@ -76,12 +76,25 @@ MainWindow::MainWindow(QWidget *parent) :
         QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui->lineEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
         if (!path.isEmpty())
+        {
             ui->lineEdit->setText(path);
+
+            QSettings settings;
+            settings.setValue("povraypath", path);
+        }
+    });
+
+    connect(ui->lineEdit, &QLineEdit::textChanged, [this](const QString& path) {
+        QSettings settings;
+        settings.setValue("povraypath", path);
     });
 
     connect(ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 
     new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_V), this, SLOT(showPreferences()));
+
+    QSettings settings;
+    ui->lineEdit->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
     // koniec
 }
 

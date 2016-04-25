@@ -7,6 +7,8 @@
 #include "camera.h"
 #include "rendersettings.h"
 
+#include <QSettings>
+
 std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 {
     return out << -vec.x() << ", " << vec.y() << ", " << vec.z();
@@ -21,13 +23,13 @@ class MovieMaker
 {
 public:
 
-    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & settings)
+    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & renderSettings)
     {
-        prepareINIFile(settings.outputSize(), true);
+        prepareINIFile(renderSettings.outputSize(), true);
         std::ofstream outFile;
-        createPOVFile(outFile, settings.saveFile().toStdString());
+        createPOVFile(outFile, renderSettings.saveFile().toStdString());
 
-        setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), settings.outputSize());
+        setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), renderSettings.outputSize());
 
         for (int i = 0; i < vizBalls.length(); i++)
             addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
@@ -37,9 +39,10 @@ public:
 
         outFile.flush();
 
+        QSettings settings;
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
-        system(QString("povray povray.ini +L/usr/local/share/povray-3.7/include/ %1.pov 2>/dev/null").arg(settings.saveFile()).toUtf8().constData());
+        system(QString("povray povray.ini +L%1/include/ %2.pov ").arg(settings.value("povraypath", "/usr/local/share/povray-3.7").toString(), renderSettings.saveFile()).toUtf8().constData());
 #elif _WIN32
         qDebug() << "windows povray photo";
         system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
