@@ -8,6 +8,7 @@
 #include "rendersettings.h"
 
 #include <QSettings>
+#include <QProcess>
 
 std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 {
@@ -42,7 +43,9 @@ public:
         QSettings settings;
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
-        system(QString("povray povray.ini +L%1/include/ %2.pov ").arg(settings.value("povraypath", "/usr/local/share/povray-3.7").toString(), renderSettings.saveFile()).toUtf8().constData());
+        QStringList argv;
+        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings.saveFile() + ".pov";
+        QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";
         system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
