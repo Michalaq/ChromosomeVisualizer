@@ -46,6 +46,9 @@ public slots:
     /* povray */
     void capture();
 
+    /* settings */
+    void showPreferences();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);

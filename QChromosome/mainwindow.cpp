@@ -5,6 +5,8 @@
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 
+#include <QFileDialog>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
     ui->dockWidgetContents->setLayout(boxLayout);
+    // koniec
 
     /* make timeline and plot react to change of time interval */
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
@@ -67,6 +70,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
     connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+
+    //TODO do wywalenia po zaimplementowaniu widgeta
+    connect(ui->toolButton, &QToolButton::clicked, [this] {
+        QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui->lineEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+        if (!path.isEmpty())
+            ui->lineEdit->setText(path);
+    });
+
+    connect(ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
+
+    new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_V), this, SLOT(showPreferences()));
+    // koniec
 }
 
 MainWindow::~MainWindow()
@@ -225,10 +241,13 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
-    ui->camera->setOrigin(selection.weightCenter());
+    ui->stackedWidget->setCurrentIndex(0);
 
     if (selection.atomCount())
+    {
+        ui->camera->setOrigin(selection.weightCenter());
         ui->tabWidget->show();
+    }
     else
         ui->tabWidget->hide();
 }
@@ -249,6 +268,11 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture()
 {
     MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
+}
+
+void MainWindow::showPreferences()
+{
+    ui->stackedWidget->setCurrentIndex(1);
 }
 
 #include <QKeyEvent>
