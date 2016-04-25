@@ -39,8 +39,7 @@ public:
 
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
-        qDebug() << "linux povray photo";
-        system(QString("povray povray.ini +L/usr/local/share/povray-3.7/include/ %1.pov").arg(settings.saveFile()).toUtf8().constData());
+        system(QString("povray povray.ini +L/usr/local/share/povray-3.7/include/ %1.pov 2>/dev/null").arg(settings.saveFile()).toUtf8().constData());
 #elif _WIN32
         qDebug() << "windows povray photo";
         system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
