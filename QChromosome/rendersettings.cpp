@@ -36,9 +36,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
     units = { {"px", 72}, {"cm", 2.54}, {"mm", 25.4}, {"in", 1}, {"pt", 72}, {"pc", 6} };
 
-    aspectRatio = 320. / 240.;
-    currentUnit = "px";
-    currentResolutionUnit = "in";
+    aspectRatio = ui->doubleSpinBox->value() / ui->doubleSpinBox_2->value();
+    currentUnit = ui->comboBox->currentText();
+    currentResolutionUnit = ui->comboBox_2->currentIndex() ? "in" : "cm";
+
+    updateOutputSize();
 
     connect(ui->toolButton, &QToolButton::clicked, [this] {
         QString path = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
@@ -56,12 +58,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
             emit aspectRatioChanged(aspectRatio);
         }
 
-        const qreal multiplier = units["px"] / units[currentUnit];
-
-        QString width = QString::number(qFloor(ui->doubleSpinBox->value() * multiplier + .5));
-        QString height = QString::number(qFloor(ui->doubleSpinBox_2->value() * multiplier + .5));
-
-        ui->label_7->setText(QString("%1 x %2 px").arg(width, height));
+        updateOutputSize();
     });
 
     connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
@@ -73,12 +70,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
             emit aspectRatioChanged(aspectRatio);
         }
 
-        const qreal multiplier = units["px"] / units[currentUnit];
-
-        QString width = QString::number(qFloor(ui->doubleSpinBox->value() * multiplier + .5));
-        QString height = QString::number(qFloor(ui->doubleSpinBox_2->value() * multiplier + .5));
-
-        ui->label_7->setText(QString("%1 x %2 px").arg(width, height));
+        updateOutputSize();
     });
 
     connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
@@ -86,12 +78,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
         units["px"] =  value;
 
-        const qreal multiplier = value / units[currentUnit];
-
-        QString width = QString::number(qFloor(ui->doubleSpinBox->value() * multiplier + .5));
-        QString height = QString::number(qFloor(ui->doubleSpinBox_2->value() * multiplier + .5));
-
-        ui->label_7->setText(QString("%1 x %2 px").arg(width, height));
+        updateOutputSize();
     });
 
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& text) {
@@ -110,12 +97,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
         ui->doubleSpinBox_3->setValue(value / units[currentResolutionUnit]);
 
-        const qreal multiplier = value / units[currentUnit];
-
-        QString width = QString::number(qFloor(ui->doubleSpinBox->value() * multiplier + .5));
-        QString height = QString::number(qFloor(ui->doubleSpinBox_2->value() * multiplier + .5));
-
-        ui->label_7->setText(QString("%1 x %2 px").arg(width, height));
+        updateOutputSize();
     });
 }
 
@@ -126,12 +108,7 @@ RenderSettings::~RenderSettings()
 
 QSize RenderSettings::outputSize() const
 {
-    const qreal multiplier = units["px"] / units[currentUnit];
-
-    int width = qFloor(ui->doubleSpinBox->value() * multiplier + .5);
-    int height = qFloor(ui->doubleSpinBox_2->value() * multiplier + .5);
-
-    return QSize(width, height);
+    return outSize;
 }
 
 QString RenderSettings::saveFile() const
@@ -145,4 +122,13 @@ void RenderSettings::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&RenderSettings::aspectRatioChanged))
         emit aspectRatioChanged(aspectRatio);
+}
+
+void RenderSettings::updateOutputSize()
+{
+    const qreal multiplier = units["px"] / units[currentUnit];
+
+    outSize = QSize(ui->doubleSpinBox->value() * multiplier + .5, ui->doubleSpinBox_2->value() * multiplier + .5);
+
+    ui->label_7->setText(QString("%1 x %2 px").arg(QString::number(outSize.width()), QString::number(outSize.height())));
 }

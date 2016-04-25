@@ -31,8 +31,12 @@ private:
     QString currentUnit;
     QString currentResolutionUnit;
 
+    QSize outSize;
+
     /* metric unit conversion table */
     QHash<QString, qreal> units;
+
+    void updateOutputSize();
 
 signals:
     void aspectRatioChanged(qreal ar);
