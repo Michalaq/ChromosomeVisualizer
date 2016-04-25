@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
     toolbar.cpp \
     rendersettings.cpp \
-    blind.cpp
+    blind.cpp \
+    projectsettings.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -59,11 +60,13 @@ HEADERS  += mainwindow.h\
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
-    blind.h
+    blind.h \
+    projectsettings.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
-    tabwidget.ui
+    projectsettings.ui \
+    rendersettings.ui
 
 CONFIG += c++11
 

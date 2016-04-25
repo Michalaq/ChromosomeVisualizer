@@ -1,11 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_projectsettings.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
-
-#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -71,31 +70,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
     connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
-    //TODO do wywalenia po zaimplementowaniu widgeta
-    connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui->lineEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-        if (!path.isEmpty())
-        {
-            ui->lineEdit->setText(path);
-
-            QSettings settings;
-            settings.setValue("povraypath", path);
-        }
+    connect(ui->actionProject_Settings, &QAction::triggered, [this] {
+        ui->stackedWidget->setCurrentIndex(1);
     });
 
-    connect(ui->lineEdit, &QLineEdit::textChanged, [this](const QString& path) {
-        QSettings settings;
-        settings.setValue("povraypath", path);
-    });
-
-    connect(ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
-
-    new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_V), this, SLOT(showPreferences()));
-
-    QSettings settings;
-    ui->lineEdit->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
-    // koniec
+    connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -281,11 +260,6 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture()
 {
     MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
-}
-
-void MainWindow::showPreferences()
-{
-    ui->stackedWidget->setCurrentIndex(1);
 }
 
 #include <QKeyEvent>

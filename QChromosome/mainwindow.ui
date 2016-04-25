@@ -629,7 +629,14 @@ MediaControl:checked {
     </property>
     <addaction name="actionSelect_All"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionProject_Settings"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuSelection"/>
   </widget>
   <widget class="ToolBar" name="mainToolBar">
@@ -722,72 +729,7 @@ MediaControl:checked {
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_2">
-        <property name="styleSheet">
-         <string notr="true">QLabel {color: lightgray;}</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="3" column="0" colspan="3">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="1" column="2">
-          <widget class="QToolButton" name="toolButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="minimumSize">
-            <size>
-             <width>150</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Show frame markers</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QCheckBox" name="checkBox">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="2">
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>POV-Ray installation path</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+       <widget class="ProjectSettings" name="page_2"/>
       </widget>
      </item>
     </layout>
@@ -921,6 +863,14 @@ MediaControl:checked {
     <string>Settings</string>
    </property>
   </action>
+  <action name="actionProject_Settings">
+   <property name="text">
+    <string>Project Settings</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1012,6 +962,12 @@ MediaControl:checked {
    <class>Blind</class>
    <extends>QWidget</extends>
    <header>blind.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ProjectSettings</class>
+   <extends>QWidget</extends>
+   <header>projectsettings.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

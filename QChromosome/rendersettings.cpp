@@ -1,5 +1,5 @@
 #include "rendersettings.h"
-#include "ui_tabwidget.h"
+#include "ui_rendersettings.h"
 
 #include <QProxyStyle>
 #include <QPainter>
@@ -41,7 +41,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
     currentResolutionUnit = "in";
 
     connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString path = QFileDialog::getSaveFileName(this, tr("File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
+        QString path = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
 
         if (!path.isEmpty())
             ui->lineEdit->setText(path);
