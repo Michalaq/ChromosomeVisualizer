@@ -328,7 +328,7 @@ MediaControl:checked {
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="Slider" name="horizontalSlider">
         <property name="maximum">
          <number>0</number>
         </property>
@@ -969,6 +969,11 @@ MediaControl:checked {
    <extends>QWidget</extends>
    <header>projectsettings.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>slider.h</header>
   </customwidget>
  </customwidgets>
  <resources>
