@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <cstdint>
 
 #ifdef DEBUG
     const bool dbg = true;

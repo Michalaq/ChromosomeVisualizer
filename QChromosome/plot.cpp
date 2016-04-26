@@ -103,7 +103,7 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_ || data.isEmpty())
+    if (!simulation_ || firstFrame == lastFrame)
         return;
 
     QPainter painter(this);

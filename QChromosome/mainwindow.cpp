@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_projectsettings.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
@@ -11,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     simulation(std::make_shared<NullSimulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
-    actionGroup(new QActionGroup(this))
+    actionGroup(new QActionGroup(this)),
+    rs(new RenderSettings())
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -44,26 +46,54 @@ MainWindow::MainWindow(QWidget *parent) :
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
     ui->dockWidgetContents->setLayout(boxLayout);
+    // koniec
 
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
+    /* make timeline and plot react to change of time interval */
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
 
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
 
-    connect(ui->actionMove, SIGNAL(toggled(bool)), this, SLOT(move(bool)));
-    connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
-    connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
-    move(true);
+    connect(ui->spinBox_2, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMinimum(int)));
+    connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMaximum(int)));
+
+    /* connect actions */
+    mappedSlot[ui->actionMove] = SLOT(move(int,int));
+    mappedSlot[ui->actionRotate] = SLOT(rotate(int,int));
+    mappedSlot[ui->actionScale] = SLOT(scale(int,int));
+
+    ui->actionMove->toggle();
+
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
+    connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+
+    connect(ui->actionProject_Settings, &QAction::triggered, [this] {
+        ui->stackedWidget->setCurrentIndex(1);
+    });
+
+    connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (Draggable::pressedButton() != Qt::NoButton)
+    {
+        if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
+            return true;
+
+        if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
+            return true;
+    }
+
+    return QObject::eventFilter(watched, event);
 }
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
@@ -97,12 +127,22 @@ void MainWindow::openSimulation()
 
 void MainWindow::updateFrameCount(int n)
 {
+    bool expandRange = ui->spinBox_3->value() == lastFrame;
+    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
+
     lastFrame = n - 1;
 
-    ui->horizontalSlider_2->setMaximum(lastFrame);
+    ui->spinBox->setMaximum(lastFrame);
+    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
 
-    ui->horizontalSlider_2->setUpperBound(lastFrame);
+    if (expandRange)
+        ui->spinBox_3->setValue(lastFrame);
+
+    if (expandInterval)
+        ui->horizontalSlider_2->setUpperBound(lastFrame);
+
+    ui->spinBox_2->setFixedWidth(ui->spinBox->sizeHint().width());
 }
 
 void MainWindow::setFrame(int n)
@@ -193,10 +233,13 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
-    ui->camera->setOrigin(selection.weightCenter());
+    ui->stackedWidget->setCurrentIndex(0);
 
     if (selection.atomCount())
+    {
+        ui->camera->setOrigin(selection.weightCenter());
         ui->tabWidget->show();
+    }
     else
         ui->tabWidget->hide();
 }
@@ -204,31 +247,19 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 void MainWindow::setBaseAction(bool enabled)
 {
     if (enabled)
+    {
         modifiers.last() = qobject_cast<QAction*>(sender());
-}
-
-void MainWindow::move(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(move(int,int)));
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
+    }
     else
         ui->camera->disconnect(ui->camera);
 }
 
-void MainWindow::rotate(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(rotate(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
-}
+#include "moviemaker.h"
 
-void MainWindow::scale(bool checked)
+void MainWindow::capture()
 {
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(scale(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
+    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
 }
 
 #include <QKeyEvent>
@@ -265,7 +296,15 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
         lookup.erase(i);
 
         if (lookup.isEmpty())
+        {
             actionGroup->setEnabled(true);
+
+            if (Draggable::pressedButton() != Qt::NoButton)
+            {
+                QMouseEvent event(QEvent::MouseButtonRelease, pos(), Draggable::pressedButton(), 0, 0);
+                QApplication::sendEvent(ui->camera, &event);
+            }
+        }
     }
 
     QMainWindow::keyReleaseEvent(event);

@@ -1,11 +1,13 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
-#include "filterobject.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QApplication::setOrganizationName("Organizacja");
+    QApplication::setApplicationName("Nazwa");
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
@@ -15,8 +17,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
 
-    FilterObject f(&w);
-    a.installEventFilter(&f);
+    a.installEventFilter(&w);
 
     w.showMaximized();
 

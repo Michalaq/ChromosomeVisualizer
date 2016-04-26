@@ -26,13 +26,16 @@ SOURCES += main.cpp\
     mousecontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
-    filterobject.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
     axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp
+    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
+    toolbar.cpp \
+    rendersettings.cpp \
+    blind.cpp \
+    projectsettings.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -48,16 +51,22 @@ HEADERS  += mainwindow.h\
     mousecontrol.h \
     dockwidget.h \
     spinbox.h \
-    filterobject.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
     axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp
+    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
+    toolbar.h \
+    rendersettings.h \
+    moviemaker.h \
+    blind.h \
+    projectsettings.h
 
 FORMS    += mainwindow.ui \
-    dockwidget.ui
+    dockwidget.ui \
+    projectsettings.ui \
+    rendersettings.ui
 
 CONFIG += c++11
 

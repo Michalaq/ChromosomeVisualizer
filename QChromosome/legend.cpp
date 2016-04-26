@@ -3,8 +3,8 @@
 Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
     QLabel(text, parent),
     color(color),
-    undergraph("undergraph", this),
-    visible("visible", this)
+    undergraph("Show undergraph", this),
+    visible("Visible", this)
 {
     undergraph.setCheckable(true);
     undergraph.setChecked(true);

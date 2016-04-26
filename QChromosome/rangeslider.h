@@ -11,6 +11,9 @@ public:
 
     QSize minimumSizeHint() const;
 
+    int getLowerBound() const;
+    int getUpperBound() const;
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -22,7 +25,12 @@ private:
     int lowerBound;
     int upperBound;
 
-    enum { NoHandle, LowerBoundHandle, UpperBoundHandle } activeHandle;
+    int relativeLowerBound;
+    int relativeUpperBound;
+
+    enum { Normal, LeftHandleMoving, RightHandleMoving, IntervalMoving } state;
+
+    void setBounds(int min, int max);
 
 signals:
     void lowerBoundChanged(int);
@@ -31,6 +39,9 @@ signals:
 public slots:
     void setLowerBound(int);
     void setUpperBound(int);
+
+    void setMinimum(int min);
+    void setMaximum(int max);
 };
 
 #endif // RANGESLIDER_H

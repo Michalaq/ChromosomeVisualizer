@@ -1,10 +1,8 @@
 #include "mousecontrol.h"
 
-MouseControl::MouseControl(QWidget *parent) :
-    Draggable(parent),
-    effect(new QGraphicsColorizeEffect(this))
+MouseControl::MouseControl(QWidget *parent) : Draggable(parent)
 {
-    setGraphicsEffect(effect);
+
 }
 
 MouseControl::~MouseControl()
@@ -12,12 +10,26 @@ MouseControl::~MouseControl()
 
 }
 
-QColor MouseControl::color() const
-{
-    return effect->color();
-}
+#include <QStylePainter>
+#include <QStyleOptionButton>
 
-void MouseControl::setColor(const QColor &color)
+void MouseControl::paintEvent(QPaintEvent *event)
 {
-    effect->setColor(color);
+    QImage foreground(iconSize(), QImage::Format_ARGB32_Premultiplied);
+
+    QStylePainter stylePainter(&foreground, this);
+
+    QStyleOptionButton option;
+    initStyleOption(&option);
+
+    stylePainter.drawPrimitive(QStyle::PE_Widget, option);
+    stylePainter.end();
+
+    foreground.setAlphaChannel(icon().pixmap(iconSize(), QIcon::Normal, isChecked() ? QIcon::On : QIcon::Off).toImage().alphaChannel());
+
+    QRect foregroundRect = foreground.rect();
+    foregroundRect.moveCenter(rect().center());
+
+    QPainter painter(this);
+    painter.drawImage(foregroundRect, foreground);
 }
