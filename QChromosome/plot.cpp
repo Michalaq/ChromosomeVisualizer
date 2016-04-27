@@ -103,13 +103,10 @@ void Plot::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    // draw background
-    //painter.fillRect(rect(), "#262626");
-
     // set coordinate system
     label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
 
-    painter.setViewport(padding_left + label, height() - padding_bottom, width() -padding_left - label - padding_right, padding_top + padding_bottom - height());
+    painter.setViewport(padding_left + label, height() - padding_bottom, width() - padding_left - label - padding_right, padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 
@@ -180,7 +177,7 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawPolyline(&i.value()[softMinimum], softMaximum - softMinimum + 1);
     }
 
-    QPen pen3(Qt::white, 3.);
+    QPen pen3(Qt::white, 2.);
     pen3.setCosmetic(true);
 
     painter.setPen(pen3);
