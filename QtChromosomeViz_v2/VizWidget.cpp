@@ -899,6 +899,11 @@ QColor VizWidget::labelBackgroundColor()
     return labelBackgroundColor_;
 }
 
+const QMap<unsigned int, QString> & VizWidget::getLabels() const
+{
+    return atomLabels_;
+}
+
 void VizWidget::setFogDensity(float intensity)
 {
     fogDensity_ = intensity;

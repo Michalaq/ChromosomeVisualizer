@@ -14,26 +14,32 @@ std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 
 std::ostream& operator<<(std::ostream& out, const QColor & col)
 {
-    return out << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF();
+    return out << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << (1. - col.alphaF() * col.alphaF());
 }
 
 class MovieMaker
 {
 public:
 
-    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & settings)
+    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & settings,
+                                    const QColor backgroundColor, const float fogDensity, const float fogContribution, const QMap<unsigned int, QString> & labels)
     {
         prepareINIFile(settings.outputSize(), true);
         std::ofstream outFile;
         createPOVFile(outFile, settings.saveFile().toStdString());
 
-        setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), settings.outputSize());
+        setCamera(outFile, camera.position(), camera.lookAt(), camera.angles().width(), settings.outputSize());
+        setBackgroundColor(outFile, backgroundColor);
+        //setFog(outFile, backgroundColor, distance); //TODO: dobre rownanie dla ostatniego argumentu
 
         for (int i = 0; i < vizBalls.length(); i++)
             addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
 
         for (int i = 0; i < connectionCount; i++)
             addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
+
+        for (unsigned int i : labels.keys())
+            addLabel(outFile, "");
 
         outFile.flush();
 
@@ -69,6 +75,16 @@ private:
             "}\n" << "light_source {<" << position << "> color White}\n";
     }
 
+    static void inline setBackgroundColor(std::ofstream& outFile, const QColor & color)
+    {
+        outFile << "background{color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">}\n";
+    }
+
+    static void inline setFog(std::ofstream& outFile, const QColor & color, const float distance)
+    {
+        outFile << "fog{color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << "> distance " << distance << " }\n";
+    }
+
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)
     {
         outFile << "sphere{<" << position << ">, " << size << " texture{pigment{rgbt<" << color << ">}}}\n";
@@ -79,6 +95,11 @@ private:
         outFile << "cylinder{<" << positionA << ">, <" << positionB << ">," << radius <<
             " texture{pigment{gradient<" << positionA - positionB << "> color_map{[0.0 color rgb<" << colorA << ">][1.0 color rgb<"
             << colorB << ">]}}}}\n";
+    }
+
+    static void inline addLabel(std::ofstream& outFile, const QString & label)
+    {
+
     }
 };
 

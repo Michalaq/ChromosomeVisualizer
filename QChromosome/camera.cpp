@@ -75,9 +75,9 @@ QVector3D Camera::lookAt() const
     return eye - z;
 }
 
-qreal Camera::getHorizontalAngle() const
+QSizeF Camera::angles() const
 {
-    return horizontalAngle;
+    return QSizeF(horizontalAngle, verticalAngle);
 }
 
 void Camera::move(int dx, int dy)
