@@ -9,9 +9,7 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 Plot::Plot(QWidget *parent) :
     QSlider(parent),
     simulation_(std::make_shared<NullSimulation>()),
-    firstFrame(0),
     currentFrame(0),
-    lastFrame(0),
     lastBuffered(-1)
 {
     new QHBoxLayout(this);
@@ -29,9 +27,8 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     data.clear();
 
-    firstFrame = 0;
+    setRange(0, 0);
     currentFrame = 0;
-    lastFrame = 0;
     lastBuffered = -1;
 
     maxval = 0;
@@ -61,12 +58,6 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     update();
 }
 
-void Plot::setMinimum(int m)
-{
-    firstFrame = m;
-    update();
-}
-
 void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
@@ -85,7 +76,7 @@ void Plot::setMaximum(int m)
         lastBuffered = m;
     }
 
-    lastFrame = m;
+    QSlider::setMaximum(m);
     update();
 }
 
@@ -102,13 +93,13 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_ || firstFrame == lastFrame)
+    if (!simulation_ || minimum() == maximum())
         return;
 
     QPainter painter(this);
 
     // draw background
-    painter.fillRect(0, 0, width(), height(), "#262626");
+    painter.fillRect(rect(), "#262626");
 
     // set coordinate system
     int label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
@@ -127,16 +118,16 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(0, 0, width(), 0);
 
-    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(lastFrame)) + 15) * (lastFrame - firstFrame) / width());
+    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(maximum())) + 15) * (maximum() - minimum()) / width());
 
     painter.setViewTransformEnabled(false);
 
-    for (int i = 0; i <= lastFrame - firstFrame; i += gap)
+    for (int i = 0; i <= maximum() - minimum(); i += gap)
     {
-        auto tick = transform.map(QPoint(width() * i / (lastFrame - firstFrame), 0));
+        auto tick = transform.map(QPoint(width() * i / (maximum() - minimum()), 0));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(firstFrame + i));
+        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(minimum() + i));
     }
 
     painter.setViewTransformEnabled(true);
@@ -158,14 +149,14 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setViewTransformEnabled(true);
 
     // plot data
-    painter.setWindow(firstFrame, 0, lastFrame - firstFrame, 4 * delta);
+    painter.setWindow(minimum(), 0, maximum() - minimum(), 4 * delta);
 
     for (auto i = data.cbegin(); i != data.cend(); i++)
     {
-        auto interval = i.value().mid(firstFrame, lastFrame - firstFrame + 1);
+        auto interval = i.value().mid(minimum(), maximum() - minimum() + 1);
 
-        interval.prepend(QPointF(firstFrame, 0));
-        interval.append(QPointF(lastFrame, 0));
+        interval.prepend(QPointF(minimum(), 0));
+        interval.append(QPointF(maximum(), 0));
 
         QLinearGradient gradient(0, 0, 0, 4 * delta);
         gradient.setColorAt(0, Qt::transparent);
@@ -181,7 +172,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
         painter.setPen(pen2);
 
-        painter.drawPolyline(&i.value()[firstFrame], lastFrame - firstFrame + 1);
+        painter.drawPolyline(&i.value()[minimum()], maximum() - minimum() + 1);
     }
 
     QPen pen3(Qt::white, 3.);

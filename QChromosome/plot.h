@@ -15,7 +15,6 @@ public:
     ~Plot();
 
     void setSimulation(std::shared_ptr<Simulation> dp);
-    void setMinimum(int m);
     void setMaximum(int m);
     void setFrame(int n);
 
@@ -28,9 +27,7 @@ private:
     QHash<QString, QVector<QPointF> > data;
     qreal maxval;
 
-    int firstFrame;
     int currentFrame;
-    int lastFrame;
     int lastBuffered;
 
     int padding_left = 15;
