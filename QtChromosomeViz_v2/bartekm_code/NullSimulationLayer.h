@@ -3,10 +3,11 @@
 
 #include "SimulationLayer.h"
 
-class NullSimulation : public SimulationLayer
+class NullSimulationLayer : public SimulationLayer
 {
 public:
-    NullSimulation();
+    NullSimulationLayer();
+    virtual ~NullSimulationLayer() override;
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
 };
 

@@ -4,6 +4,7 @@
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -71,13 +72,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::openSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.bin)");
 
     if (!path.isEmpty())
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
-        auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        auto simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
         simulation = std::make_shared<Simulation>();
 
