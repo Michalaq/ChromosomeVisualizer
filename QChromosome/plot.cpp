@@ -9,7 +9,6 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 Plot::Plot(QWidget *parent) :
     QSlider(parent),
     simulation_(std::make_shared<NullSimulation>()),
-    currentFrame(0),
     lastBuffered(-1)
 {
     new QHBoxLayout(this);
@@ -28,7 +27,6 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     data.clear();
 
     setRange(0, 0);
-    currentFrame = 0;
     lastBuffered = -1;
 
     maxval = 0;
@@ -80,10 +78,17 @@ void Plot::setMaximum(int m)
     update();
 }
 
-void Plot::setFrame(int n)
+#include <QMouseEvent>
+#include <QStyle>
+
+void Plot::mousePressEvent(QMouseEvent *event)
 {
-    currentFrame = n;
-    update();
+    setValue(style()->sliderValueFromPosition(minimum(), maximum(), event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+}
+
+void Plot::mouseMoveEvent(QMouseEvent *event)
+{
+    setValue(style()->sliderValueFromPosition(minimum(), maximum(), event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 #include <QPainter>
@@ -102,7 +107,7 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.fillRect(rect(), "#262626");
 
     // set coordinate system
-    int label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
+    label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
 
     painter.setViewport(padding_left + label, height() - padding_bottom, width() -padding_left - label - padding_right, padding_top + padding_bottom - height());
 
@@ -179,5 +184,5 @@ void Plot::paintEvent(QPaintEvent *event)
     pen3.setCosmetic(true);
 
     painter.setPen(pen3);
-    painter.drawLine(currentFrame, 0, currentFrame, 4 * delta);
+    painter.drawLine(value(), 0, value(), 4 * delta);
 }

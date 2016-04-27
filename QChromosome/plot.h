@@ -16,9 +16,11 @@ public:
 
     void setSimulation(std::shared_ptr<Simulation> dp);
     void setMaximum(int m);
-    void setFrame(int n);
 
 protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
     void paintEvent(QPaintEvent *event);
 
 private:
@@ -27,9 +29,9 @@ private:
     QHash<QString, QVector<QPointF> > data;
     qreal maxval;
 
-    int currentFrame;
     int lastBuffered;
 
+    int label;
     int padding_left = 15;
     int padding_right = 15;
     int padding_top = 40;

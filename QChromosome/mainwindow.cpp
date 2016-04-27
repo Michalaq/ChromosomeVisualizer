@@ -153,7 +153,7 @@ void MainWindow::setFrame(int n)
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
-    ui->plot->setFrame(n);
+    ui->plot->setValue(n);
 }
 
 void MainWindow::start()

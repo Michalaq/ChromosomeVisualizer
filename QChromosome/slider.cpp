@@ -41,6 +41,11 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
 
 void Slider::paintEvent(QPaintEvent *event)
 {
+    QWidget::paintEvent(event);
+
+    if (minimum() == maximum())
+        return;
+
     QPainter p(this);
     p.setPen(QPen(Qt::white, 2));
 

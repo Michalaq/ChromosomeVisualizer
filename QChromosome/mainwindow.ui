@@ -1154,22 +1154,6 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>542</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>193</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>horizontalSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1332,7 +1316,7 @@ MediaControl:checked {
   <connection>
    <sender>spinBox</sender>
    <signal>valueChanged(int)</signal>
-   <receiver>scene</receiver>
+   <receiver>MainWindow</receiver>
    <slot>setFrame(int)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -1340,24 +1324,8 @@ MediaControl:checked {
      <y>244</y>
     </hint>
     <hint type="destinationlabel">
-     <x>224</x>
-     <y>163</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>193</x>
-     <y>244</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>411</x>
-     <y>244</y>
+     <x>423</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -1370,6 +1338,22 @@ MediaControl:checked {
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plot</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>436</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>
