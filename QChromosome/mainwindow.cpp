@@ -29,6 +29,11 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
 
+    for (auto action : actionGroup->actions())
+        connect(action, &QAction::toggled, ui->statusBar, [action, this] (bool checked) {
+            ui->camera->setStatusTip(checked ? action->property("cameraStatusTip").toString() : "");
+        });
+
     bindings.insert(Qt::Key_Q, ui->actionMove);
     bindings.insert(Qt::Key_W, ui->actionRotate);
     bindings.insert(Qt::Key_E, ui->actionScale);
@@ -93,6 +98,25 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
         if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
             return true;
+    }
+
+    static QObject* tmp = Q_NULLPTR;
+
+    if (event->type() == QEvent::HoverEnter)
+    {
+        auto tip = watched->property("statusTip");
+
+        if (tip.isValid())
+        {
+            ui->statusBar->showMessage(tip.toString());
+            tmp = watched;
+        }
+    }
+
+    if (watched == tmp && event->type() == QEvent::HoverLeave)
+    {
+        ui->statusBar->clearMessage();
+        tmp = Q_NULLPTR;
     }
 
     return QObject::eventFilter(watched, event);

@@ -21,6 +21,7 @@
 
 QStatusBar {
 	background: #672178;
+	color: white;
 }
 
 QToolBar {
@@ -428,6 +429,9 @@ MediaControl:checked {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Go to start of animation</string>
+          </property>
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/start</normaloff>:/media/start</iconset>
@@ -451,6 +455,9 @@ MediaControl:checked {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Go to previous frame</string>
+          </property>
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
@@ -473,6 +480,9 @@ MediaControl:checked {
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip">
+           <string>Play backwards</string>
           </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
@@ -505,6 +515,9 @@ MediaControl:checked {
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip">
+           <string>Play forwards</string>
           </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
@@ -544,6 +557,9 @@ MediaControl:checked {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Go to next frame</string>
+          </property>
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/next</normaloff>:/media/next</iconset>
@@ -566,6 +582,9 @@ MediaControl:checked {
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip">
+           <string>Go to end of animation</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -809,6 +828,12 @@ MediaControl:checked {
    <property name="text">
     <string>Select</string>
    </property>
+   <property name="statusTip">
+    <string>Rectangle selection</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Rectangle selection: Click and drag to rectangle-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
+   </property>
   </action>
   <action name="actionMove">
    <property name="checkable">
@@ -820,6 +845,12 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Move</string>
+   </property>
+   <property name="statusTip">
+    <string>Move tool [Shortcut Q]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Move: Click and drag to move the camera.</string>
    </property>
   </action>
   <action name="actionRotate">
@@ -833,6 +864,12 @@ MediaControl:checked {
    <property name="text">
     <string>Rotate</string>
    </property>
+   <property name="statusTip">
+    <string>Rotate tool [Shortcut W]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Rotate: Click and drag to rotate the camera.</string>
+   </property>
   </action>
   <action name="actionScale">
    <property name="checkable">
@@ -844,6 +881,12 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Scale</string>
+   </property>
+   <property name="statusTip">
+    <string>Scale tool [Shortcut E]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Scale: Click and drag to move the camera.</string>
    </property>
   </action>
   <action name="actionSelect_All">
@@ -862,6 +905,12 @@ MediaControl:checked {
    <property name="text">
     <string>Quick Render</string>
    </property>
+   <property name="statusTip">
+    <string>Quick render [Shortcur Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
   </action>
   <action name="actionRenderer">
    <property name="icon">
@@ -879,6 +928,12 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Settings</string>
+   </property>
+   <property name="statusTip">
+    <string>Render settings [Shortcut Ctrl+B]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionProject_Settings">
@@ -987,6 +1042,11 @@ MediaControl:checked {
    <class>Plot</class>
    <extends>QSlider</extends>
    <header>plot.h</header>
+   <container>1</container>
+   <slots>
+    <slot>setMinimum(int)</slot>
+    <slot>setMaximum(int)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>
