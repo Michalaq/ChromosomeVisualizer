@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
+
+    connect(rs, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 }
 
 MainWindow::~MainWindow()
