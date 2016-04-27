@@ -7,7 +7,7 @@
 const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
 
 Plot::Plot(QWidget *parent) :
-    QWidget(parent),
+    QSlider(parent),
     simulation_(std::make_shared<NullSimulation>()),
     firstFrame(0),
     currentFrame(0),
@@ -15,7 +15,6 @@ Plot::Plot(QWidget *parent) :
     lastBuffered(-1)
 {
     new QHBoxLayout(this);
-    layout()->setMargin(margin);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
 }
 
@@ -37,7 +36,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     maxval = 0;
 
-    setMinimumHeight(2 * margin + padding_top + padding_bottom);
+    setMinimumHeight(padding_top + padding_bottom);
 
     for (auto entry : legend)
         entry->deleteLater();
@@ -109,12 +108,12 @@ void Plot::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     // draw background
-    painter.fillRect(margin, margin, width() - 2 * margin, height() - 2 * margin, "#262626");
+    painter.fillRect(0, 0, width(), height(), "#262626");
 
     // set coordinate system
     int label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
 
-    painter.setViewport(margin + padding_left + label, height() - padding_bottom - margin, width() - 2 * margin -padding_left - label - padding_right, 2 * margin + padding_top + padding_bottom - height());
+    painter.setViewport(padding_left + label, height() - padding_bottom, width() -padding_left - label - padding_right, padding_top + padding_bottom - height());
 
     auto transform = painter.combinedTransform();
 

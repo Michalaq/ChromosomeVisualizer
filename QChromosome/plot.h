@@ -1,13 +1,13 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include <QWidget>
+#include <QSlider>
 
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "legend.h"
 
-class Plot : public QWidget
+class Plot : public QSlider
 {
     Q_OBJECT
 public:
@@ -32,8 +32,6 @@ private:
     int currentFrame;
     int lastFrame;
     int lastBuffered;
-
-    int margin = 15;
 
     int padding_left = 15;
     int padding_right = 15;
