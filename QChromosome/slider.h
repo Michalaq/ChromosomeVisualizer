@@ -1,20 +1,13 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include <QSlider>
+#include "softslider.h"
 
-class Slider : public QSlider
+class Slider : public SoftSlider
 {
     Q_OBJECT
 public:
     explicit Slider(QWidget *parent = 0);
-
-    void setMinimum(int min);
-    void setMaximum(int max);
-
-private:
-    int softMinimum;
-    int softMaximum;
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -25,8 +18,6 @@ protected:
 signals:
 
 public slots:
-    void setSoftMinimum(int min);
-    void setSoftMaximum(int max);
 };
 
 #endif // SLIDER_H

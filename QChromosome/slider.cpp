@@ -1,27 +1,8 @@
 #include "slider.h"
 
-Slider::Slider(QWidget *parent) :
-    QSlider(parent),
-    softMinimum(0),
-    softMaximum(0)
+Slider::Slider(QWidget *parent) : SoftSlider(parent)
 {
 
-}
-
-void Slider::setMinimum(int min)
-{
-    QSlider::setMinimum(min);
-
-    softMinimum = std::max(softMinimum, minimum());
-    softMaximum = std::max(softMaximum, minimum());
-}
-
-void Slider::setMaximum(int max)
-{
-    QSlider::setMaximum(max);
-
-    softMinimum = std::min(softMinimum, maximum());
-    softMaximum = std::min(softMaximum, maximum());
 }
 
 #include <QMouseEvent>
@@ -61,16 +42,4 @@ void Slider::paintEvent(QPaintEvent *event)
     auto x = style()->sliderPositionFromValue(softMinimum, softMaximum, value(), width());
     p.fillRect(QRect(x-10,0, 20, height()), Qt::red);
     }
-}
-
-void Slider::setSoftMinimum(int min)
-{
-    softMinimum = std::max(min, minimum());
-    update();
-}
-
-void Slider::setSoftMaximum(int max)
-{
-    softMaximum = std::min(max, maximum());
-    update();
 }

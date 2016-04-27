@@ -7,7 +7,7 @@
 const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
 
 Plot::Plot(QWidget *parent) :
-    QSlider(parent),
+    SoftSlider(parent),
     simulation_(std::make_shared<NullSimulation>()),
     lastBuffered(-1)
 {
@@ -74,7 +74,7 @@ void Plot::setMaximum(int m)
         lastBuffered = m;
     }
 
-    QSlider::setMaximum(m);
+    SoftSlider::setMaximum(m);
     update();
 }
 
@@ -83,12 +83,12 @@ void Plot::setMaximum(int m)
 
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(minimum(), maximum(), event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(minimum(), maximum(), event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 #include <QPainter>
@@ -98,13 +98,13 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_ || minimum() == maximum())
+    if (!simulation_ || softMinimum == softMaximum)
         return;
 
     QPainter painter(this);
 
     // draw background
-    painter.fillRect(rect(), "#262626");
+    //painter.fillRect(rect(), "#262626");
 
     // set coordinate system
     label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
@@ -123,16 +123,16 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(0, 0, width(), 0);
 
-    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(maximum())) + 15) * (maximum() - minimum()) / width());
+    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(softMaximum)) + 15) * (softMaximum - softMinimum) / width());
 
     painter.setViewTransformEnabled(false);
 
-    for (int i = 0; i <= maximum() - minimum(); i += gap)
+    for (int i = 0; i <= softMaximum - softMinimum; i += gap)
     {
-        auto tick = transform.map(QPoint(width() * i / (maximum() - minimum()), 0));
+        auto tick = transform.map(QPoint(width() * i / (softMaximum - softMinimum), 0));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(minimum() + i));
+        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));
     }
 
     painter.setViewTransformEnabled(true);
@@ -154,14 +154,14 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setViewTransformEnabled(true);
 
     // plot data
-    painter.setWindow(minimum(), 0, maximum() - minimum(), 4 * delta);
+    painter.setWindow(softMinimum, 0, softMaximum - softMinimum, 4 * delta);
 
     for (auto i = data.cbegin(); i != data.cend(); i++)
     {
-        auto interval = i.value().mid(minimum(), maximum() - minimum() + 1);
+        auto interval = i.value().mid(softMinimum, softMaximum - softMinimum + 1);
 
-        interval.prepend(QPointF(minimum(), 0));
-        interval.append(QPointF(maximum(), 0));
+        interval.prepend(QPointF(softMinimum, 0));
+        interval.append(QPointF(softMaximum, 0));
 
         QLinearGradient gradient(0, 0, 0, 4 * delta);
         gradient.setColorAt(0, Qt::transparent);
@@ -177,7 +177,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
         painter.setPen(pen2);
 
-        painter.drawPolyline(&i.value()[minimum()], maximum() - minimum() + 1);
+        painter.drawPolyline(&i.value()[softMinimum], softMaximum - softMinimum + 1);
     }
 
     QPen pen3(Qt::white, 3.);

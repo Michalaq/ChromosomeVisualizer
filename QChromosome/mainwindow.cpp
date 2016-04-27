@@ -51,11 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     /* make timeline and plot react to change of time interval */
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &Slider::setSoftMinimum);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setSoftMinimum);
 
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &Slider::setSoftMaximum);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setSoftMaximum);
 
     connect(ui->spinBox_2, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMinimum(int)));
     connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMaximum(int)));
@@ -136,6 +136,7 @@ void MainWindow::updateFrameCount(int n)
     ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
     ui->horizontalSlider->setMaximum(lastFrame);
+    ui->plot->setMaximum(lastFrame);
 
     if (expandRange)
         ui->spinBox_3->setValue(lastFrame);

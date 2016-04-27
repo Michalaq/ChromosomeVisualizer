@@ -1,13 +1,13 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include <QSlider>
+#include "softslider.h"
 
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "legend.h"
 
-class Plot : public QSlider
+class Plot : public SoftSlider
 {
     Q_OBJECT
 public:
@@ -15,7 +15,8 @@ public:
     ~Plot();
 
     void setSimulation(std::shared_ptr<Simulation> dp);
-    void setMaximum(int m);
+
+    void setMaximum(int max);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
