@@ -21,7 +21,7 @@ void SelectionOperationsWidget::setVizWidget(VizWidget *vizWidget)
 void SelectionOperationsWidget::initializeControls()
 {
     auto * label1 = new QLabel("Select:");
-    selectAllButton_ = new QPushButton("All");
+    /*selectAllButton_ = new QPushButton("All");*/
     selectTypeButton_ = new QPushButton("Type");
 
     auto * label2 = new QLabel("Set:");
@@ -34,7 +34,7 @@ void SelectionOperationsWidget::initializeControls()
 
     auto * mainLayout = new QVBoxLayout();
     mainLayout->addWidget(label1);
-    mainLayout->addWidget(selectAllButton_);
+    /*mainLayout->addWidget(selectAllButton_);*/
     mainLayout->addWidget(selectTypeButton_);
     mainLayout->addWidget(label2);
     mainLayout->addWidget(setColorButton_);
@@ -48,9 +48,9 @@ void SelectionOperationsWidget::initializeControls()
 
 void SelectionOperationsWidget::initializeSignals()
 {
-    connect(selectAllButton_, &QPushButton::clicked, [this](bool) {
+    /*connect(selectAllButton_, &QPushButton::clicked, [this](bool) {
         vizWidget_->setVisibleSelection(vizWidget_->allSelection());
-    });
+    });*/
 
     connect(selectTypeButton_, &QPushButton::clicked, [this](bool) {
         bool ok = false;

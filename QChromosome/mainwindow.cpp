@@ -30,8 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup->addAction(ui->actionScale);
 
     for (auto action : actionGroup->actions())
-        connect(action, &QAction::toggled, ui->statusBar, [action, this] (bool checked) {
+        connect(action, &QAction::toggled, [action, this] (bool checked) {
             ui->camera->setStatusTip(checked ? action->property("cameraStatusTip").toString() : "");
+
+            if (!ui->statusBar->currentMessage().isEmpty())
+                ui->statusBar->showMessage(action->property("cameraStatusTip").toString());
         });
 
     bindings.insert(Qt::Key_Q, ui->actionMove);
@@ -249,14 +252,7 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    /*QList<unsigned int> all;
-
-    size_t count = simulation->getFrame(currentFrame)->atoms.size();
-
-    for (unsigned int i = 0; i < count; i++)
-        all.push_back(i);
-
-    //ui->scene->setVisibleSelection(all);*/
+    ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)
