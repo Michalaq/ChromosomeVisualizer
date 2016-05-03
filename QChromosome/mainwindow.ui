@@ -906,7 +906,7 @@ MediaControl:checked {
     <string>Quick Render</string>
    </property>
    <property name="statusTip">
-    <string>Quick render [Shortcur Ctrl+R]</string>
+    <string>Quick render [Shortcut Ctrl+R]</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -1421,6 +1421,38 @@ MediaControl:checked {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>lowerBoundChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSoftMinimum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>upperBoundChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSoftMaximum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -1435,5 +1467,7 @@ MediaControl:checked {
   <slot>selectAll()</slot>
   <slot>setBaseAction(bool)</slot>
   <slot>capture()</slot>
+  <slot>setSoftMinimum(int)</slot>
+  <slot>setSoftMaximum(int)</slot>
  </slots>
 </ui>

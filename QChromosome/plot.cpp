@@ -120,13 +120,37 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(0, 0, width(), 0);
 
-    int gap = qCeil(qreal(painter.fontMetrics().width(QString::number(softMaximum)) + 15) * (softMaximum - softMinimum) / width());
+    qreal jmp = qreal(painter.fontMetrics().width(QString::number(softMaximum)) + 20) * (softMaximum - softMinimum) / width();
+
+    int b = 1;
+
+    while (10 * b <= jmp)
+        b *= 10;
+
+    int q = qCeil(jmp / b);
+
+    int gap;
+
+    if (q > 5)
+        gap = 10 * b;
+    else
+    {
+        if (q > 2)
+            gap = 5 * b;
+        else
+        {
+            if (q > 1)
+                gap = 2 * b;
+            else
+                gap = 1 * b;
+        }
+    }
 
     painter.setViewTransformEnabled(false);
 
-    for (int i = 0; i <= softMaximum - softMinimum; i += gap)
+    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
     {
-        auto tick = transform.map(QPoint(width() * i / (softMaximum - softMinimum), 0));
+        auto tick = transform.map(QPoint(style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width()), 0));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
         painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));

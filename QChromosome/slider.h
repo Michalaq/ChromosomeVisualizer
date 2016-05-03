@@ -9,6 +9,8 @@ class Slider : public SoftSlider
 public:
     explicit Slider(QWidget *parent = 0);
 
+    QSize minimumSizeHint() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

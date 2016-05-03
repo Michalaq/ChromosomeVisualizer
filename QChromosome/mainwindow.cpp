@@ -13,7 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
-    rs(new RenderSettings())
+    rs(new RenderSettings()),
+    softMinimum(0),
+    softMaximum(0)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -55,13 +57,6 @@ MainWindow::MainWindow(QWidget *parent) :
     boxLayout->addWidget(y);
     ui->dockWidgetContents->setLayout(boxLayout);
     // koniec
-
-    /* make timeline and plot react to change of time interval */
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &Slider::setSoftMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setSoftMinimum);
-
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &Slider::setSoftMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setSoftMaximum);
 
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
@@ -186,6 +181,26 @@ void MainWindow::setFrame(int n)
     ui->plot->setValue(n);
 }
 
+void MainWindow::setSoftMinimum(int min)
+{
+    ui->horizontalSlider->setSoftMinimum(min);
+    ui->plot->setSoftMinimum(min);
+
+    ui->spinBox_3->setMinimum(min);
+
+    softMinimum = min;
+}
+
+void MainWindow::setSoftMaximum(int max)
+{
+    ui->horizontalSlider->setSoftMaximum(max);
+    ui->plot->setSoftMaximum(max);
+
+    ui->spinBox_2->setMaximum(max);
+
+    softMaximum = max;
+}
+
 void MainWindow::start()
 {
     setFrame(0);
@@ -193,7 +208,7 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    if (currentFrame != 0)
+    if (currentFrame > 0)
         setFrame(--currentFrame);
     else
         if (ui->reverse->isChecked())
@@ -237,7 +252,7 @@ void MainWindow::play(bool checked)
 void MainWindow::next()
 {
     simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-    if (currentFrame != lastFrame)
+    if (currentFrame < lastFrame)
         setFrame(++currentFrame);
     else
         if (ui->play->isChecked())
