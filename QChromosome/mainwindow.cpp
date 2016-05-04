@@ -298,7 +298,8 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
+    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs, ui->scene->backgroundColor(),
+                             ui->scene->fogDensity(), ui->scene->fogContribution(), ui->scene->getLabels());
 }
 
 #include <QKeyEvent>

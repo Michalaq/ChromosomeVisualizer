@@ -120,6 +120,8 @@ public slots:
     void setLabelBackgroundColor(QColor color);
     QColor labelBackgroundColor();
 
+    const QMap<unsigned int, QString> & getLabels() const;
+
     void setFogDensity(float intensity);
     void setFogContribution(float contribution);
     float fogDensity() const;

@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <QVector3D>
+
 #include "camera.h"
 #include "rendersettings.h"
 
@@ -24,19 +26,30 @@ class MovieMaker
 {
 public:
 
-    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & renderSettings)
+    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & renderSettings,
+                                    const QColor backgroundColor, const float fogDensity, const float fogContribution, const QMap<unsigned int, QString> & labels)
     {
         prepareINIFile(renderSettings.outputSize(), true);
         std::ofstream outFile;
         createPOVFile(outFile, renderSettings.saveFile().toStdString());
 
         setCamera(outFile, camera, renderSettings.outputSize());
+        setBackgroundColor(outFile, backgroundColor);
+        //setFog(outFile, backgroundColor, distance); //TODO: dobre rownanie dla ostatniego argumentu
 
         for (int i = 0; i < vizBalls.length(); i++)
             addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
 
-        for (int i = 0; i < connectionCount; i++)
-            addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
+        for (int i = 0; i < vizBalls.length() - 1; i++)
+        {
+            if (((vizBalls[i].color >> 24) == 0xFF) && ((vizBalls[i+1].color >> 24) == 0xFF))
+                addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 2, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
+            else
+                break;
+        }
+
+        for (auto & key : labels.keys())
+            addLabel(outFile, "");
 
         outFile.flush();
 
@@ -83,6 +96,16 @@ private:
                 << "\n";
     }
 
+    static void inline setBackgroundColor(std::ofstream& outFile, const QColor & color)
+    {
+        outFile << "background{color " << color << "}\n";
+    }
+
+    static void inline setFog(std::ofstream& outFile, const QColor & color, const float distance)
+    {
+        outFile << "fog{color " << color << " distance " << distance << " }\n";
+    }
+
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)
     {
         outFile << "sphere{" << position << ", " << size << " texture{pigment{" << color << "}}}\n";
@@ -90,9 +113,17 @@ private:
 
     static void inline addCylinder(std::ofstream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, QColor colorA, QColor colorB)
     {
-        outFile << "cylinder{" << positionA << ", " << positionB << "," << radius <<
-            " texture{pigment{gradient<" << positionA - positionB << "> color_map{[0.0 color " << colorA << "][1.0 color "
-            << colorB << "]}}}}\n";
+        QVector3D direction = positionB - positionA;
+        qreal dist = qFabs(QVector3D::dotProduct(positionA, direction)) / direction.length(); //distance of positionA from plane defined by normal vector 'direction' and point (0,0,0)
+        outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius <<
+            " texture{pigment{gradient" << direction << " color_map{[0.0 color " << colorA << "][1.0 color " <<
+            colorB << "]} phase " << (dist - static_cast<int>(dist / direction.length()) * direction.length()) / direction.length() <<
+            " scale " << direction.length() << "}}}\n";
+    }
+
+    static void inline addLabel(std::ofstream& outFile, const QString & label)
+    {
+
     }
 };
 
