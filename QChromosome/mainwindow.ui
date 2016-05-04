@@ -430,7 +430,7 @@ MediaControl:checked {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
-           <string>Go to start of animation</string>
+           <string>Go to start of animation [Shortcut F6]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -517,7 +517,7 @@ MediaControl:checked {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
-           <string>Play forwards</string>
+           <string>Play forwards [Shortcut F7]</string>
           </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
@@ -584,7 +584,7 @@ MediaControl:checked {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
-           <string>Go to end of animation</string>
+           <string>Go to end of animation [Shortcut F8]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -654,9 +654,20 @@ MediaControl:checked {
     </property>
     <addaction name="actionProject_Settings"/>
    </widget>
+   <widget class="QMenu" name="menuAnimation">
+    <property name="title">
+     <string>Animation</string>
+    </property>
+    <addaction name="actionPlay_forwards"/>
+    <addaction name="actionPlay_backwards"/>
+    <addaction name="separator"/>
+    <addaction name="actionGo_to_start"/>
+    <addaction name="actionGo_to_end"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuSelection"/>
+   <addaction name="menuAnimation"/>
   </widget>
   <widget class="ToolBar" name="mainToolBar">
    <property name="minimumSize">
@@ -942,6 +953,59 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionPlay_forwards">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/play</normaloff>
+     <normalon>:/media/pause</normalon>:/media/play</iconset>
+   </property>
+   <property name="text">
+    <string>Play forwards</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+  </action>
+  <action name="actionPlay_backwards">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/reverse</normaloff>
+     <normalon>:/media/pause</normalon>:/media/reverse</iconset>
+   </property>
+   <property name="text">
+    <string>Play backwards</string>
+   </property>
+  </action>
+  <action name="actionGo_to_start">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/start</normaloff>:/media/start</iconset>
+   </property>
+   <property name="text">
+    <string>Go to start</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionGo_to_end">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/end</normaloff>:/media/end</iconset>
+   </property>
+   <property name="text">
+    <string>Go to end</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
    </property>
   </action>
  </widget>
@@ -1446,6 +1510,70 @@ MediaControl:checked {
     <hint type="sourcelabel">
      <x>93</x>
      <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_forwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>play(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_backwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reverse(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_start</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>start()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_end</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>end()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>

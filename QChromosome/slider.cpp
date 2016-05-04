@@ -96,6 +96,7 @@ void Slider::paintEvent(QPaintEvent *event)
 
         p.setPen("#0072bd");
 
+        p.fillRect(QRect(tick, -12, p.fontMetrics().width(QString::number(value())) + 10, 12), "#262626");
         p.drawText(QRect(tick + 10, -12, 0, 12), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
 
         p.setPen(Qt::NoPen);

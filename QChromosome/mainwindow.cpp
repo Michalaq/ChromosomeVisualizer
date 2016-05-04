@@ -186,8 +186,6 @@ void MainWindow::setSoftMinimum(int min)
     ui->horizontalSlider->setSoftMinimum(min);
     ui->plot->setSoftMinimum(min);
 
-    ui->spinBox_3->setMinimum(min);
-
     softMinimum = min;
 }
 
@@ -195,8 +193,6 @@ void MainWindow::setSoftMaximum(int max)
 {
     ui->horizontalSlider->setSoftMaximum(max);
     ui->plot->setSoftMaximum(max);
-
-    ui->spinBox_2->setMaximum(max);
 
     softMaximum = max;
 }
@@ -217,6 +213,9 @@ void MainWindow::previous()
 
 void MainWindow::reverse(bool checked)
 {
+    ui->actionPlay_backwards->setChecked(checked);
+    ui->reverse->setChecked(checked);
+
     if (checked)
     {
         if (ui->play->isChecked())
@@ -234,6 +233,9 @@ void MainWindow::reverse(bool checked)
 
 void MainWindow::play(bool checked)
 {
+    ui->actionPlay_forwards->setChecked(checked);
+    ui->play->setChecked(checked);
+
     if (checked)
     {
         if (ui->reverse->isChecked())
