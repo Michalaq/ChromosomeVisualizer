@@ -872,7 +872,7 @@ void VizWidget::setBackgroundColor(QColor color)
     update();
 }
 
-QColor VizWidget::backgroundColor()
+QColor VizWidget::backgroundColor() const
 {
     return backgroundColor_;
 }
@@ -883,7 +883,7 @@ void VizWidget::setLabelTextColor(QColor color)
     update();
 }
 
-QColor VizWidget::labelTextColor()
+QColor VizWidget::labelTextColor() const
 {
     return labelTextColor_;
 }
@@ -894,7 +894,7 @@ void VizWidget::setLabelBackgroundColor(QColor color)
     update();
 }
 
-QColor VizWidget::labelBackgroundColor()
+QColor VizWidget::labelBackgroundColor() const
 {
     return labelBackgroundColor_;
 }

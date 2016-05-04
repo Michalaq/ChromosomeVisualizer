@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
-    rs(new RenderSettings()),
+    renderSettings(new RenderSettings()),
     softMinimum(0),
     softMaximum(0)
 {
@@ -70,8 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
-    connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
+    connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
         ui->stackedWidget->setCurrentIndex(1);
@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 
-    connect(rs, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 }
 
 MainWindow::~MainWindow()
@@ -298,8 +298,7 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs, ui->scene->backgroundColor(),
-                             ui->scene->fogDensity(), ui->scene->fogContribution(), ui->scene->getLabels());
+    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
 }
 
 #include <QKeyEvent>

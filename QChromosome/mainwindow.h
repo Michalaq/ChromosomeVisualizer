@@ -71,7 +71,7 @@ private:
 
     QHash<QObject*, const char*> mappedSlot;
 
-    RenderSettings *rs;
+    RenderSettings *renderSettings;
 
     int softMinimum;
     int softMaximum;

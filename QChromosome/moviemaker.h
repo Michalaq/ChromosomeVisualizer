@@ -6,6 +6,7 @@
 
 #include <QVector3D>
 
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "camera.h"
 #include "rendersettings.h"
 
@@ -19,26 +20,27 @@ std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 
 std::ostream& operator<<(std::ostream& out, const QColor & col)
 {
-    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() << ">";
+    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
 class MovieMaker
 {
 public:
 
-    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & renderSettings,
-                                    const QColor backgroundColor, const float fogDensity, const float fogContribution, const QMap<unsigned int, QString> & labels)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings)
     {
-        prepareINIFile(renderSettings.outputSize(), true);
+        prepareINIFile(renderSettings->outputSize(), true);
         std::ofstream outFile;
-        createPOVFile(outFile, renderSettings.saveFile().toStdString());
+        createPOVFile(outFile, renderSettings->saveFile().toStdString());
 
-        setCamera(outFile, camera, renderSettings.outputSize());
-        setBackgroundColor(outFile, backgroundColor);
+        setCamera(outFile, camera, renderSettings->outputSize());
+        setBackgroundColor(outFile, scene->backgroundColor());
         //setFog(outFile, backgroundColor, distance); //TODO: dobre rownanie dla ostatniego argumentu
 
-        for (int i = 0; i < vizBalls.length(); i++)
-            addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
+        auto& vizBalls = scene->getBallInstances();
+
+        for (auto b : vizBalls)
+            addSphere(outFile, b.position, b.size, QColor::fromRgba(b.color));
 
         for (int i = 0; i < vizBalls.length() - 1; i++)
         {
@@ -48,7 +50,7 @@ public:
                 break;
         }
 
-        for (auto & key : labels.keys())
+        for (auto & key : scene->getLabels().keys())
             addLabel(outFile, "");
 
         outFile.flush();
@@ -57,7 +59,7 @@ public:
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings.saveFile() + ".pov";
+        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + ".pov";
         QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";
@@ -82,17 +84,17 @@ private:
                 << "\n";
     }
 
-    static void inline setCamera(std::ofstream& outFile, const Camera& camera, QSize size)
+    static void inline setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
     {
         outFile << "camera{\n"
                 << "right x*" << size.width() << "/" << size.height() << "\n"
-                << "location " << camera.position() << "\n"
-                << "look_at " << camera.lookAt() << "\n"
-                << "angle " << camera.angle() << "\n"
+                << "location " << camera->position() << "\n"
+                << "look_at " << camera->lookAt() << "\n"
+                << "angle " << camera->angle() << "\n"
                 << "}\n"
                 << "\n";
 
-        outFile << "light_source {" << camera.position() << " " << "color " << QColor(Qt::white) << "}\n"
+        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
                 << "\n";
     }
 

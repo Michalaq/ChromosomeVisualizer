@@ -112,13 +112,13 @@ public slots:
     void setVisibleSelection(AtomSelection s);
 
     void setBackgroundColor(QColor color);
-    QColor backgroundColor();
+    QColor backgroundColor() const;
 
     void setLabelTextColor(QColor color);
-    QColor labelTextColor();
+    QColor labelTextColor() const;
 
     void setLabelBackgroundColor(QColor color);
-    QColor labelBackgroundColor();
+    QColor labelBackgroundColor() const;
 
     const QMap<unsigned int, QString> & getLabels() const;
 
