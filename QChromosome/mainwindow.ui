@@ -658,6 +658,16 @@ MediaControl:checked {
     <property name="title">
      <string>Animation</string>
     </property>
+    <widget class="QMenu" name="menuPlay_mode">
+     <property name="title">
+      <string>Play mode</string>
+     </property>
+     <addaction name="actionPreview_range"/>
+     <addaction name="separator"/>
+     <addaction name="actionSimple"/>
+     <addaction name="actionCycle"/>
+    </widget>
+    <addaction name="menuPlay_mode"/>
     <addaction name="actionPlay_forwards"/>
     <addaction name="actionPlay_backwards"/>
     <addaction name="separator"/>
@@ -1033,6 +1043,36 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>F</string>
+   </property>
+  </action>
+  <action name="actionPreview_range">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preview range</string>
+   </property>
+  </action>
+  <action name="actionSimple">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Simple</string>
+   </property>
+  </action>
+  <action name="actionCycle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cycle</string>
    </property>
   </action>
  </widget>

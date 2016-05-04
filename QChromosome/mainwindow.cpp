@@ -80,6 +80,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
+
+    auto *ag = new QActionGroup(this);
+    ag->addAction(ui->actionSimple);
+    ag->addAction(ui->actionCycle);
 }
 
 MainWindow::~MainWindow()
@@ -204,11 +208,18 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    if (currentFrame > 0)
+    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
         setFrame(--currentFrame);
     else
+    {
         if (ui->reverse->isChecked())
-            ui->reverse->click();
+        {
+            if (ui->actionSimple->isChecked())
+                ui->reverse->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
+        }
+    }
 }
 
 void MainWindow::reverse(bool checked)
@@ -220,6 +231,9 @@ void MainWindow::reverse(bool checked)
     {
         if (ui->play->isChecked())
             ui->play->click();
+
+        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame > softMaximum))
+            setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
@@ -241,6 +255,9 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
+        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame > softMaximum))
+            setFrame(softMinimum);
+
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
     }
@@ -254,11 +271,19 @@ void MainWindow::play(bool checked)
 void MainWindow::next()
 {
     simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-    if (currentFrame < lastFrame)
+
+    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
         setFrame(++currentFrame);
     else
+    {
         if (ui->play->isChecked())
-            ui->play->click();
+        {
+            if (ui->actionSimple->isChecked())
+                ui->play->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
+        }
+    }
 }
 
 void MainWindow::end()
