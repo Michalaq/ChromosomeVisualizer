@@ -456,7 +456,7 @@ MediaControl:checked {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
-           <string>Go to previous frame</string>
+           <string>Go to previous frame [Shortcut F]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -558,7 +558,7 @@ MediaControl:checked {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
-           <string>Go to next frame</string>
+           <string>Go to next frame [Shortcut G]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -663,6 +663,9 @@ MediaControl:checked {
     <addaction name="separator"/>
     <addaction name="actionGo_to_start"/>
     <addaction name="actionGo_to_end"/>
+    <addaction name="separator"/>
+    <addaction name="actionGo_to_next_frame"/>
+    <addaction name="actionGo_to_previous_frame"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -1006,6 +1009,30 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>F8</string>
+   </property>
+  </action>
+  <action name="actionGo_to_next_frame">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/next</normaloff>:/media/next</iconset>
+   </property>
+   <property name="text">
+    <string>Go to next frame</string>
+   </property>
+   <property name="shortcut">
+    <string>G</string>
+   </property>
+  </action>
+  <action name="actionGo_to_previous_frame">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
+   </property>
+   <property name="text">
+    <string>Go to previous frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
    </property>
   </action>
  </widget>
@@ -1570,6 +1597,38 @@ MediaControl:checked {
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>end()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_next_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_previous_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
