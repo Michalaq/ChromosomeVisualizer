@@ -43,6 +43,9 @@ private:
     int connectionCount_;
     std::vector<bio::motions::format::proto::Keyframe> keyframes_;
     mmap_reader rd_;
+    frameNumber_t deltasPerKeyframe_;
+    std::vector<mmap_reader::keyframe_data> keyframesData_;
+    //mmap_reader::delta_iterator lastDelta_;
 
     static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();
