@@ -208,17 +208,22 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-        setFrame(--currentFrame);
-    else
+    if (ui->reverse->isChecked())
     {
-        if (ui->reverse->isChecked())
+        if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+            setFrame(--currentFrame);
+        else
         {
             if (ui->actionSimple->isChecked())
                 ui->reverse->click();
             else
                 setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
         }
+    }
+    else
+    {
+        if (currentFrame > 0)
+            setFrame(--currentFrame);
     }
 }
 
@@ -232,7 +237,7 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame > softMaximum))
+        if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
             setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
@@ -255,7 +260,7 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame > softMaximum))
+        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
             setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
@@ -272,17 +277,22 @@ void MainWindow::next()
 {
     simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 
-    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-        setFrame(++currentFrame);
-    else
+    if (ui->play->isChecked())
     {
-        if (ui->play->isChecked())
+        if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+            setFrame(++currentFrame);
+        else
         {
             if (ui->actionSimple->isChecked())
                 ui->play->click();
             else
                 setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
         }
+    }
+    else
+    {
+        if (currentFrame < lastFrame)
+            setFrame(++currentFrame);
     }
 }
 
