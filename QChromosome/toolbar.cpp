@@ -27,6 +27,10 @@ void ToolBar::addAction(QAction *action)
 
     widget->setCursor(Qt::PointingHandCursor);
 
+    connect(action, &QAction::changed, widget, [widget, action] {
+        widget->setStatusTip(action->statusTip());
+    });
+
     if (action->isCheckable())
     {
         connect(action, &QAction::toggled, widget, &MediaControl::setChecked);

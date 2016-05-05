@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     toolbar.cpp \
     rendersettings.cpp \
     blind.cpp \
-    projectsettings.cpp
+    projectsettings.cpp \
+    slider.cpp \
+    softslider.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -61,7 +63,9 @@ HEADERS  += mainwindow.h\
     rendersettings.h \
     moviemaker.h \
     blind.h \
-    projectsettings.h
+    projectsettings.h \
+    slider.h \
+    softslider.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

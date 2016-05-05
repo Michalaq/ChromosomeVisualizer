@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <QVector3D>
+
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "camera.h"
 #include "rendersettings.h"
 
@@ -12,31 +15,43 @@
 
 std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 {
-    return out << -vec.x() << ", " << vec.y() << ", " << vec.z();
+    return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
 std::ostream& operator<<(std::ostream& out, const QColor & col)
 {
-    return out << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF();
+    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
 class MovieMaker
 {
 public:
 
-    static void inline captureScene(const QVector<VizBallInstance> & vizBalls, const int connectionCount, const Camera & camera, const RenderSettings & renderSettings)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings)
     {
-        prepareINIFile(renderSettings.outputSize(), true);
+        prepareINIFile(renderSettings->outputSize(), true);
         std::ofstream outFile;
-        createPOVFile(outFile, renderSettings.saveFile().toStdString());
+        createPOVFile(outFile, renderSettings->saveFile().toStdString());
 
-        setCamera(outFile, camera.position(), camera.lookAt(), camera.getHorizontalAngle(), renderSettings.outputSize());
+        setCamera(outFile, camera, renderSettings->outputSize());
+        setBackgroundColor(outFile, scene->backgroundColor());
+        //setFog(outFile, backgroundColor, distance); //TODO: dobre rownanie dla ostatniego argumentu
 
-        for (int i = 0; i < vizBalls.length(); i++)
-            addSphere(outFile, vizBalls[i].position, vizBalls[i].size, QColor::fromRgba(vizBalls[i].color));
+        auto& vizBalls = scene->getBallInstances();
 
-        for (int i = 0; i < connectionCount; i++)
-            addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 3, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
+        for (auto b : vizBalls)
+            addSphere(outFile, b.position, b.size, QColor::fromRgba(b.color));
+
+        for (int i = 0; i < vizBalls.length() - 1; i++)
+        {
+            if (((vizBalls[i].color >> 24) == 0xFF) && ((vizBalls[i+1].color >> 24) == 0xFF))
+                addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 2, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
+            else
+                break;
+        }
+
+        for (auto & key : scene->getLabels().keys())
+            addLabel(outFile, "");
 
         outFile.flush();
 
@@ -44,7 +59,7 @@ public:
 //TODO: ponizej do ogarniecia
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings.saveFile() + ".pov";
+        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + ".pov";
         QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";
@@ -65,25 +80,52 @@ private:
     static void inline createPOVFile(std::ofstream& outFile, std::string filename)
     {
         outFile.open(filename + ".pov");
-        outFile << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
+        outFile << "#include \"colors.inc\"\n#include \"stones.inc\"\n"
+                << "\n";
     }
 
-    static void inline setCamera(std::ofstream& outFile, const QVector3D & position, const QVector3D & lookAt, const qreal & angle, QSize size)
+    static void inline setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
     {
-        outFile << "camera{right x*" << size.width() << "/" << size.height() << "\nlocation<" << position << ">look_at<" << lookAt << ">angle " << angle <<
-            "}\n" << "light_source {<" << position << "> color White}\n";
+        outFile << "camera{\n"
+                << "right x*" << size.width() << "/" << size.height() << "\n"
+                << "location " << camera->position() << "\n"
+                << "look_at " << camera->lookAt() << "\n"
+                << "angle " << camera->angle() << "\n"
+                << "}\n"
+                << "\n";
+
+        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
+                << "\n";
+    }
+
+    static void inline setBackgroundColor(std::ofstream& outFile, const QColor & color)
+    {
+        outFile << "background{color " << color << "}\n";
+    }
+
+    static void inline setFog(std::ofstream& outFile, const QColor & color, const float distance)
+    {
+        outFile << "fog{color " << color << " distance " << distance << " }\n";
     }
 
     static void inline addSphere(std::ofstream& outFile, const QVector3D & position, float size, QColor color)
     {
-        outFile << "sphere{<" << position << ">, " << size << " texture{pigment{rgbt<" << color << ">}}}\n";
+        outFile << "sphere{" << position << ", " << size << " texture{pigment{" << color << "}}}\n";
     }
 
     static void inline addCylinder(std::ofstream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, QColor colorA, QColor colorB)
     {
-        outFile << "cylinder{<" << positionA << ">, <" << positionB << ">," << radius <<
-            " texture{pigment{gradient<" << positionA - positionB << "> color_map{[0.0 color rgb<" << colorA << ">][1.0 color rgb<"
-            << colorB << ">]}}}}\n";
+        QVector3D direction = positionB - positionA;
+        qreal dist = qFabs(QVector3D::dotProduct(positionA, direction)) / direction.length(); //distance of positionA from plane defined by normal vector 'direction' and point (0,0,0)
+        outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius <<
+            " texture{pigment{gradient" << direction << " color_map{[0.0 color " << colorA << "][1.0 color " <<
+            colorB << "]} phase " << (dist - static_cast<int>(dist / direction.length()) * direction.length()) / direction.length() <<
+            " scale " << direction.length() << "}}}\n";
+    }
+
+    static void inline addLabel(std::ofstream& outFile, const QString & label)
+    {
+
     }
 };
 

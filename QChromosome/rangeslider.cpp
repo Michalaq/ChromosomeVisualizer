@@ -34,16 +34,16 @@ void RangeSlider::mousePressEvent(QMouseEvent *event)
 
     int value = style()->sliderValueFromPosition(minimum(), maximum(), event->pos().x() - 20, width() - 40);
 
-    if (value == lowerBound)
+    if (value <= lowerBound)
     {
         state = LeftHandleMoving;
-        return;
+        return setLowerBound(value);
     }
 
-    if (value == upperBound)
+    if (value >= upperBound)
     {
         state = RightHandleMoving;
-        return;
+        return setUpperBound(value);
     }
 
     state = IntervalMoving;
@@ -114,7 +114,7 @@ void RangeSlider::paintEvent(QPaintEvent *event)
     QString leftLabel = QString("%1F").arg(lowerBound);
     QString rightLabel = QString("%1F").arg(upperBound);
 
-    int linewidth = style()->sliderPositionFromValue(minimum(), maximum(), upperBound - lowerBound, width() - 40);
+    int linewidth = style()->sliderPositionFromValue(0, maximum() - minimum(), upperBound - lowerBound, width() - 40);
 
     if ((linewidth -= p.fontMetrics().width(leftLabel)) > 0)
         p.drawText(leftHandle + 10, -10, width(), 20, Qt::AlignVCenter | Qt::AlignLeft, leftLabel);

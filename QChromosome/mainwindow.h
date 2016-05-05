@@ -28,6 +28,9 @@ public slots:
     void setFrame(int n);
     void updateFrameCount(int n);
 
+    void setSoftMinimum(int min);
+    void setSoftMaximum(int max);
+
     /* animation */
     void start();
     void previous();
@@ -68,7 +71,10 @@ private:
 
     QHash<QObject*, const char*> mappedSlot;
 
-    RenderSettings *rs;
+    RenderSettings *renderSettings;
+
+    int softMinimum;
+    int softMaximum;
 };
 
 #endif // MAINWINDOW_H

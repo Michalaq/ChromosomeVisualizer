@@ -13,7 +13,9 @@ MainWindow::MainWindow(QWidget *parent) :
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
-    rs(new RenderSettings())
+    renderSettings(new RenderSettings()),
+    softMinimum(0),
+    softMaximum(0)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -28,6 +30,14 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup->addAction(ui->actionMove);
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
+
+    for (auto action : actionGroup->actions())
+        connect(action, &QAction::toggled, [action, this] (bool checked) {
+            ui->camera->setStatusTip(checked ? action->property("cameraStatusTip").toString() : "");
+
+            if (!ui->statusBar->currentMessage().isEmpty())
+                ui->statusBar->showMessage(action->property("cameraStatusTip").toString());
+        });
 
     bindings.insert(Qt::Key_Q, ui->actionMove);
     bindings.insert(Qt::Key_W, ui->actionRotate);
@@ -48,17 +58,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->dockWidgetContents->setLayout(boxLayout);
     // koniec
 
-    /* make timeline and plot react to change of time interval */
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
-
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
-
-    connect(ui->spinBox_2, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMinimum(int)));
-    connect(ui->spinBox_3, SIGNAL(valueChanged(int)), ui->horizontalSlider_2, SLOT(setMaximum(int)));
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMaximum);
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_2, &SpinBox::setMaximum);
 
     /* connect actions */
     mappedSlot[ui->actionMove] = SLOT(move(int,int));
@@ -67,14 +70,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), rs, SLOT(show()));
-    connect(rs, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
+    connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
         ui->stackedWidget->setCurrentIndex(1);
     });
 
     connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
+
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
+
+    auto *ag = new QActionGroup(this);
+    ag->addAction(ui->actionSimple);
+    ag->addAction(ui->actionCycle);
 }
 
 MainWindow::~MainWindow()
@@ -91,6 +100,25 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
         if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
             return true;
+    }
+
+    static QObject* tmp = Q_NULLPTR;
+
+    if (event->type() == QEvent::HoverEnter)
+    {
+        auto tip = watched->property("statusTip");
+
+        if (tip.isValid())
+        {
+            ui->statusBar->showMessage(tip.toString());
+            tmp = watched;
+        }
+    }
+
+    if (watched == tmp && event->type() == QEvent::HoverLeave)
+    {
+        ui->statusBar->clearMessage();
+        tmp = Q_NULLPTR;
     }
 
     return QObject::eventFilter(watched, event);
@@ -135,6 +163,8 @@ void MainWindow::updateFrameCount(int n)
     ui->spinBox->setMaximum(lastFrame);
     ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
+    ui->horizontalSlider->setMaximum(lastFrame);
+    ui->plot->setMaximum(lastFrame);
 
     if (expandRange)
         ui->spinBox_3->setValue(lastFrame);
@@ -152,7 +182,23 @@ void MainWindow::setFrame(int n)
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
-    ui->plot->setFrame(n);
+    ui->plot->setValue(n);
+}
+
+void MainWindow::setSoftMinimum(int min)
+{
+    ui->horizontalSlider->setSoftMinimum(min);
+    ui->plot->setSoftMinimum(min);
+
+    softMinimum = min;
+}
+
+void MainWindow::setSoftMaximum(int max)
+{
+    ui->horizontalSlider->setSoftMaximum(max);
+    ui->plot->setSoftMaximum(max);
+
+    softMaximum = max;
 }
 
 void MainWindow::start()
@@ -162,19 +208,37 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    if (currentFrame != 0)
-        setFrame(--currentFrame);
+    if (ui->reverse->isChecked())
+    {
+        if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+            setFrame(--currentFrame);
+        else
+        {
+            if (ui->actionSimple->isChecked())
+                ui->reverse->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
+        }
+    }
     else
-        if (ui->reverse->isChecked())
-            ui->reverse->click();
+    {
+        if (currentFrame > 0)
+            setFrame(--currentFrame);
+    }
 }
 
 void MainWindow::reverse(bool checked)
 {
+    ui->actionPlay_backwards->setChecked(checked);
+    ui->reverse->setChecked(checked);
+
     if (checked)
     {
         if (ui->play->isChecked())
             ui->play->click();
+
+        if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
+            setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
@@ -188,10 +252,16 @@ void MainWindow::reverse(bool checked)
 
 void MainWindow::play(bool checked)
 {
+    ui->actionPlay_forwards->setChecked(checked);
+    ui->play->setChecked(checked);
+
     if (checked)
     {
         if (ui->reverse->isChecked())
             ui->reverse->click();
+
+        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
+            setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
@@ -206,11 +276,24 @@ void MainWindow::play(bool checked)
 void MainWindow::next()
 {
     simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-    if (currentFrame != lastFrame)
-        setFrame(++currentFrame);
+
+    if (ui->play->isChecked())
+    {
+        if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+            setFrame(++currentFrame);
+        else
+        {
+            if (ui->actionSimple->isChecked())
+                ui->play->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
+        }
+    }
     else
-        if (ui->play->isChecked())
-            ui->play->click();
+    {
+        if (currentFrame < lastFrame)
+            setFrame(++currentFrame);
+    }
 }
 
 void MainWindow::end()
@@ -221,14 +304,7 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    /*QList<unsigned int> all;
-
-    size_t count = simulation->getFrame(currentFrame)->atoms.size();
-
-    for (unsigned int i = 0; i < count; i++)
-        all.push_back(i);
-
-    //ui->scene->setVisibleSelection(all);*/
+    ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)
@@ -259,7 +335,7 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene->getBallInstances(), simulation->getConnectionCount(), *ui->camera, *rs);
+    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
 }
 
 #include <QKeyEvent>
