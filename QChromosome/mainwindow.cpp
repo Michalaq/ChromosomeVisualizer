@@ -6,6 +6,7 @@
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 
+SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu własnego widgeta
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -46,15 +47,17 @@ MainWindow::MainWindow(QWidget *parent) :
     modifiers.push_back(ui->actionMove);
 
     //TODO do wywalenia po zaimplementowaniu widgeta
-    auto x = new SelectionOperationsWidget(ui->tab);
-    x->setVizWidget(ui->scene);
-    x->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+    z = new SelectionOperationsWidget(ui->tab);
+    z->setVizWidget(ui->scene);
+    z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+    z->hide();
 
     auto y = new DisplayParametersWidget(ui->dockWidget);
     y->setVizWidget(ui->scene);
     y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
+    boxLayout->addWidget(z);
     ui->dockWidgetContents->setLayout(boxLayout);
     // koniec
 
@@ -317,9 +320,13 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     {
         ui->camera->setOrigin(selection.weightCenter());
         ui->tabWidget->show();
+        z->show();//TODO hack, usunąć
     }
     else
+    {
         ui->tabWidget->hide();
+        z->hide();//TODO hack, usunąć
+    }
 }
 
 void MainWindow::setBaseAction(bool enabled)

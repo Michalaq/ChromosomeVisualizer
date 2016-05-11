@@ -47,8 +47,9 @@ QDockWidget {
 }
 
 QTabWidget::pane {
-	background: #262626;
-	border: 1px solid #4d4d4d;
+	background: url(&quot;:/bar&quot;) repeat-x;
+	border-top: 1px solid #4d4d4d;
+	padding-top: 5px;
 }
 
 QTabWidget::tab-bar {
@@ -748,27 +749,14 @@ MediaControl:checked {
 	width: 375px;
 }</string>
            </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
            <widget class="QWidget" name="tab">
             <attribute name="title">
-             <string>Atom</string>
+             <string>Basic</string>
             </attribute>
            </widget>
            <widget class="QWidget" name="tab_2">
             <attribute name="title">
-             <string>Type</string>
-            </attribute>
-           </widget>
-           <widget class="QWidget" name="tab_3">
-            <attribute name="title">
-             <string>Molecule</string>
-            </attribute>
-           </widget>
-           <widget class="QWidget" name="tab_4">
-            <attribute name="title">
-             <string>Group</string>
+             <string>Object</string>
             </attribute>
            </widget>
           </widget>
