@@ -84,6 +84,10 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
+
+    connect(ui->page_2->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        timer.setInterval(1000 / value);
+    });
 }
 
 MainWindow::~MainWindow()
