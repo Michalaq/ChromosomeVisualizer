@@ -44,31 +44,7 @@ void Slider::paintEvent(QPaintEvent *event)
 
     p.setPen(Qt::white);
 
-    qreal jmp = qreal(p.fontMetrics().width(QString::number(softMaximum)) + 20) * (softMaximum - softMinimum) / width();
-
-    int b = 1;
-
-    while (10 * b <= jmp)
-        b *= 10;
-
-    int q = qCeil(jmp / b);
-
-    int gap;
-
-    if (q > 5)
-        gap = 10 * b;
-    else
-    {
-        if (q > 2)
-            gap = 5 * b;
-        else
-        {
-            if (q > 1)
-                gap = 2 * b;
-            else
-                gap = 1 * b;
-        }
-    }
+    int gap = tickSpan(p.fontMetrics().width(QString::number(softMaximum)) + 20);
 
     for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
     {

@@ -35,3 +35,33 @@ void SoftSlider::setSoftMaximum(int max)
     softMaximum = std::min(max, maximum());
     update();
 }
+
+#include <QStyle>
+#include <QtMath>
+
+int SoftSlider::tickSpan(qreal sep) const
+{
+    qreal jmp = sep * (softMaximum - softMinimum) / width();
+
+    int b = 1;
+
+    while (10 * b <= jmp)
+        b *= 10;
+
+    int q = qCeil(jmp / b);
+
+    if (q > 5)
+        return 10 * b;
+    else
+    {
+        if (q > 2)
+            return 5 * b;
+        else
+        {
+            if (q > 1)
+                return 2 * b;
+            else
+                return 1 * b;
+        }
+    }
+}

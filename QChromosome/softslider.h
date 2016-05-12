@@ -12,6 +12,10 @@ public:
     void setMinimum(int min);
     void setMaximum(int max);
 
+    int tickSpan(qreal minsep) const;
+
+    static qreal tickSpan(qreal min, qreal max, int space, qreal minsep);
+
 protected:
     int softMinimum;
     int softMaximum;

@@ -120,31 +120,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(0, 0, width(), 0);
 
-    qreal jmp = qreal(painter.fontMetrics().width(QString::number(softMaximum)) + 20) * (softMaximum - softMinimum) / width();
-
-    int b = 1;
-
-    while (10 * b <= jmp)
-        b *= 10;
-
-    int q = qCeil(jmp / b);
-
-    int gap;
-
-    if (q > 5)
-        gap = 10 * b;
-    else
-    {
-        if (q > 2)
-            gap = 5 * b;
-        else
-        {
-            if (q > 1)
-                gap = 2 * b;
-            else
-                gap = 1 * b;
-        }
-    }
+    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20);
 
     painter.setViewTransformEnabled(false);
 
