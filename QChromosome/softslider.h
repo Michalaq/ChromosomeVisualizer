@@ -14,7 +14,7 @@ public:
 
     int tickSpan(qreal minsep) const;
 
-    static qreal tickSpan(qreal min, qreal max, int space, qreal minsep);
+    static qreal tickSpan(qreal min, qreal max, qreal space, qreal minsep);
 
 protected:
     int softMinimum;

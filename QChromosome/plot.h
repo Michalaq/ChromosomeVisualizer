@@ -35,7 +35,7 @@ private:
     int label;
     int padding_left = 15;
     int padding_right = 15;
-    int padding_top = 25;
+    int padding_top = 20;
     int padding_bottom = 60;
 
     QHash<QString, Legend*> legend;

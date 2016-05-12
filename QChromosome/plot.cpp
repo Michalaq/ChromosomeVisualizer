@@ -29,7 +29,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = 0;
+    maxval = -INFINITY;
 
     setMinimumHeight(padding_top + padding_bottom);
 
@@ -104,9 +104,17 @@ void Plot::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     // set coordinate system
-    label = painter.fontMetrics().width(QString::number(qCeil(maxval / 4) * 4));
+    QSize s;
+    s.setHeight(height() - padding_top - padding_bottom);
 
-    painter.setViewport(padding_left + label, height() - padding_bottom, width() - padding_left - label - padding_right, padding_top + padding_bottom - height());
+    qreal delta = tickSpan(0, maxval, s.height(), 24);
+
+    label = painter.fontMetrics().width(QString::number(delta != INFINITY ? qFloor(maxval / delta) * delta : 0));
+
+    s.setWidth(width() - padding_left - label - padding_right);
+
+    painter.setViewport(padding_left + label, height() - padding_bottom, s.width(), -s.height());
+    painter.setWindow(softMinimum, 0, softMaximum - softMinimum, maxval);
 
     auto transform = painter.combinedTransform();
 
@@ -118,7 +126,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    painter.drawLine(0, 0, width(), 0);
+    painter.drawLine(softMinimum, 0, softMaximum, 0);
 
     int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20);
 
@@ -126,7 +134,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
     {
-        auto tick = transform.map(QPoint(style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width()), 0));
+        auto tick = transform.map(QPoint(i, 0));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
         painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));
@@ -136,23 +144,21 @@ void Plot::paintEvent(QPaintEvent *event)
 
     pen1.setStyle(Qt::DashLine);
 
-    painter.setPen(pen1);
-
-    for (int i = 1; i < 5; i++)
-        painter.drawLine(0, height() * i / 4, width(), height() * i / 4);
-
     painter.setViewTransformEnabled(false);
 
-    int delta = qCeil(maxval / 4);
-
-    for (int i = 0; i < 5; i++)
-        painter.drawText(QRect(transform.map(QPoint(0, height() * i / 4)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(delta * i));
+    for (qreal i = 0; i <= maxval; i += delta)
+        painter.drawText(QRect(transform.map(QPoint(0, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
-    // plot data
-    painter.setWindow(softMinimum, 0, softMaximum - softMinimum, 4 * delta);
+    pen1.setColor("#333333");
 
+    painter.setPen(pen1);
+
+    for (qreal i = delta; i <= maxval; i += delta)
+        painter.drawLine(softMinimum, i, softMaximum, i);
+
+    // plot data
     for (auto i = data.cbegin(); i != data.cend(); i++)
     {
         auto interval = i.value().mid(softMinimum, softMaximum - softMinimum + 1);
@@ -160,7 +166,7 @@ void Plot::paintEvent(QPaintEvent *event)
         interval.prepend(QPointF(softMinimum, 0));
         interval.append(QPointF(softMaximum, 0));
 
-        QLinearGradient gradient(0, 0, 0, 4 * delta);
+        QLinearGradient gradient(0, 0, 0, maxval);
         gradient.setColorAt(0, Qt::transparent);
         gradient.setColorAt(1, legend[i.key()]->brush());
 
@@ -178,8 +184,16 @@ void Plot::paintEvent(QPaintEvent *event)
     }
 
     QPen pen3(Qt::white, 2.);
+    pen3.setJoinStyle(Qt::MiterJoin);
     pen3.setCosmetic(true);
 
     painter.setPen(pen3);
-    painter.drawLine(value(), 0, value(), 4 * delta);
+    painter.drawLine(value(), 0, value(), maxval);
+
+    painter.setViewTransformEnabled(false);
+
+    auto crs = transform.map(QPoint(value(), maxval));
+
+    painter.setBrush(QBrush(Qt::white));
+    painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
 }
