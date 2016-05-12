@@ -91,6 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_2->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
         timer.setInterval(1000 / value);
     });
+
+    timer.setInterval(1000 / ui->page_2->ui->spinBox->value());
 }
 
 MainWindow::~MainWindow()
