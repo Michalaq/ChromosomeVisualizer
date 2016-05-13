@@ -45,7 +45,12 @@ private:
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
     std::vector<mmap_reader::keyframe_data> keyframesData_;
-    //mmap_reader::delta_iterator lastDelta_;
+    std::vector<std::vector<int>> binder_types_real_;
+    std::vector<std::vector<int>> chain_binder_types_renumbered_;
+    std::vector<Atom> binders_;
+    std::vector<std::vector<Atom>> chains_;
+    std::vector<int> binder_types_;
+    std::vector<std::string> str_types_;
 
     static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();

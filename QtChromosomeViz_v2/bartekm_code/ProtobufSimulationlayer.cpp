@@ -9,13 +9,76 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , deltasPerKeyframe_(0)
     , SimulationLayer(name)
 {
-    //std::cout << "header: " << rd_.get_proto_header() << std::endl;
+    bio::motions::format::proto::Header header;
+    header.ParseFromString(rd_.get_proto_header());
+    std::cout << header.simulation_name() << std::endl;
+    std::cout << header.simulation_description() << std::endl;
     for (const auto& keyframe : rd_) {
         keyframes_.resize(keyframes_.size() + 1);
         keyframesData_.push_back(keyframe);
 
         if (!keyframes_.back().ParseFromString(keyframe.get())) {
-              std::cout << "Failed to parse address book." << std::endl;
+              std::cout << "Failed to parse keyframe." << std::endl;
+        }
+    }
+    str_types_ = { "BIN", "LAM", "BOU", "UNB" };
+    std::set<std::vector<int>> binder_types;
+    std::vector<std::vector<int>> binder_types_vec;
+    for (const auto& binder : keyframes_[0].binders()) {
+        binder_types_.push_back(binder.binder_type());
+        binder_types.insert({binder.binder_type()});
+    }
+    for (const auto& chain : header.chains()) { // each chain
+        for (const auto& bead : chain.beads()) { // has atoms
+            std::vector<int> atom_types;
+            if (bead.energy_vector_size() == 0) {
+                std::cout << "Bead without bindings." << std::endl;
+            } else if (bead.energy_vector_size() > 1) {
+                std::cout << "Bead with several bindings." << std::endl;
+            }
+            for (const auto& binding : bead.energy_vector()) { // of several types
+                    auto type = binding.binder_type();
+                    atom_types.push_back(type);
+            }
+            std::sort(atom_types.begin(), atom_types.end());
+            binder_types.insert(atom_types);
+            binder_types_vec.push_back(atom_types);
+        }
+    }
+    binder_types_real_ = std::vector<std::vector<int>>(binder_types.begin(), binder_types.end()); // mapping index(our type) -> real type
+    int chain_no = 0, atom_no = 0, curr_chain_size = header.chains(chain_no).beads_size();
+    chain_binder_types_renumbered_.resize(chain_binder_types_renumbered_.size() + 1);
+    for (int i = 0; i < binder_types_vec.size(); i++) {
+        if (atom_no >= curr_chain_size) {
+            atom_no -= curr_chain_size;
+            chain_no++;
+            curr_chain_size = header.chains(chain_no).beads_size();
+            chain_binder_types_renumbered_.resize(chain_binder_types_renumbered_.size() + 1);
+        }
+        for (int j = 0; j < binder_types_real_.size(); j++) {
+            if (binder_types_vec[i] == binder_types_real_[j]) {
+                chain_binder_types_renumbered_[chain_no].push_back(j);
+                atom_no++;
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < binder_types_.size(); i++) {
+        for (int j = 0; j < binder_types_real_.size(); j++) {
+            if (binder_types_real_[j] == std::vector<int>{ binder_types_[i] }) {
+                binder_types_[i] = j;
+                break;
+            }
+        }
+    }
+    for (const auto& realtyp : chain_binder_types_renumbered_) {
+        std::cout << "lol";
+        for (const auto& dupa : realtyp)
+            std::cout << dupa << std::endl;
+    }
+    for (const auto& typek : binder_types_) {
+        if (typek == 1) {
+         std::cout << typek << ", ";
         }
     }
     for (const auto& delta : keyframesData_[0])
@@ -45,7 +108,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     auto delta_no = position % deltasPerKeyframe_;
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
-    static const char * types[] = { "LAM", "BIN" }; // hehehehe
 
     int aid = 1;
     for (int i = 0; i < kf.binders_size(); i++) {
@@ -53,19 +115,21 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         auto point = binder.position();
         Atom a;
         a.id = aid++;
-        strcpy(a.type, types[1]);
+        strcpy(a.type, str_types_[binder_types_[i]].c_str());
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
         atoms.insert(a);
     }
+
     for (int i = 0; i < kf.chains_size(); i++) {
         auto chain = kf.chains(i);
+        int old = aid;
         for (int j = 0; j < chain.bead_positions_size(); j++) {
             auto point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
-            strcpy(a.type, types[0]);
+            strcpy(a.type, str_types_[chain_binder_types_renumbered_[i][j]].c_str());
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();
