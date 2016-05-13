@@ -165,110 +165,6 @@ MediaControl:checked {
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="MouseControl" name="move">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MouseControl" name="rotate">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MouseControl" name="scale">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/scale</normaloff>:/mouse/scale</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
        <widget class="QWidget" name="canvas" native="true">
         <property name="styleSheet">
          <string notr="true">background: #4d4d4d;</string>
@@ -1106,14 +1002,6 @@ MediaControl:checked {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>MouseControl</class>
-   <extends>QPushButton</extends>
-   <header>mousecontrol.h</header>
-   <slots>
-    <signal>delta(int,int)</signal>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
@@ -1380,54 +1268,6 @@ MediaControl:checked {
     <hint type="destinationlabel">
      <x>423</x>
      <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>move</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>move(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotate</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>rotate(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>402</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scale</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>scale(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
     </hint>
    </hints>
   </connection>

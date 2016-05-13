@@ -23,7 +23,6 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
-    mousecontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
@@ -50,7 +49,6 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
-    mousecontrol.h \
     dockwidget.h \
     spinbox.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
