@@ -23,11 +23,11 @@ void Blind::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.setOpacity(0.75);
 
-    p.fillRect(QRect(rect().topLeft(), view.bottomLeft()), "#1a1a1a");
-    p.fillRect(QRect(rect().topLeft(), view.topRight()), "#1a1a1a");
+    p.fillRect(QRect(rect().topLeft(), view.bottomLeft() - QPoint(1, 0)), "#1a1a1a");
+    p.fillRect(QRect(rect().topLeft(), view.topRight() - QPoint(0, 1)), "#1a1a1a");
 
-    p.fillRect(QRect(view.topRight(), rect().bottomRight()), "#1a1a1a");
-    p.fillRect(QRect(view.bottomLeft(), rect().bottomRight()), "#1a1a1a");
+    p.fillRect(QRect(view.topRight() + QPoint(1, 0), rect().bottomRight()), "#1a1a1a");
+    p.fillRect(QRect(view.bottomLeft() + QPoint(0, 1), rect().bottomRight()), "#1a1a1a");
 }
 
 void Blind::setAspectRatio(qreal ar)

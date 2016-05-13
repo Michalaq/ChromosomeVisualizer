@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="bar">misc/tab_bar.svg</file>
+    </qresource>
+</RCC>

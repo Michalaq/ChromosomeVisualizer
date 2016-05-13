@@ -76,6 +76,7 @@ CONFIG += c++11
 
 RESOURCES += \
     icons.qrc \
-    ../QtChromosomeViz_v2/shaders.qrc
+    ../QtChromosomeViz_v2/shaders.qrc \
+    misc.qrc
 
 OTHER_FILES +=
