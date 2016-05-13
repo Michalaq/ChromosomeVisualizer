@@ -76,29 +76,46 @@ std::shared_ptr<Frame> PDBSimulationLayer::readCurrentFrame()
 	getline(file_, line); // TITLE
 	std::map<std::string, float> functionValues = getFunctionValues(line);
 	std::vector<Atom> atoms;
-	getline(file_, line);
-    bool connectionStarted = false;
+    getline(file_, line);
     int currentConnectionCount = 0;
+    int leftbound = -1, rightbound = -1, tmpl, tmpr;
+    std::vector<std::pair<int,int>> connectionRanges;
     while (line.find("END") == std::string::npos) {
 		if (line.substr(0, 4) == "ATOM")
 			atoms.push_back(getAtomFromString(line));
-        else if (connectionCount_< 0) {
-            if (!connectionStarted && line.substr(0, 6) == "CONNECT")
-                connectionStarted = true;
-            if (connectionStarted)
-                currentConnectionCount++;
-        }
+        else
+            if (line.substr(0, 6) == "CONECT") {
+                sscanf(line.c_str(), "CONECT %d %d", &tmpl, &tmpr);
+                if (leftbound == -1) {
+                    leftbound = tmpl;
+                    rightbound = tmpr;
+                } else if (rightbound == tmpl) {
+                    rightbound++;
+                } else if (rightbound < tmpl) {
+                    connectionRanges.push_back({leftbound, rightbound});
+                    leftbound = tmpl;
+                    rightbound = tmpr;
+                }
+            }
         if(!getline(file_, line))
             break;
     }
+    if (rightbound > -1 && (connectionRanges.size() == 0 || rightbound != connectionRanges.back().second)) { // somethings missing
+        connectionRanges.push_back({leftbound, rightbound});
+    }
     if (connectionCount_ < 0)
-        connectionCount_ = currentConnectionCount;
+        connectionCount_ = connectionRanges.size();
 	Frame d = {
 		no,
 		step,
 		std::move(atoms),
-		std::move(functionValues)
+        std::move(functionValues),
+        std::move(connectionRanges)
 	};
+
+    for (const auto& p : d.connectedRanges) {
+        std::cout << p.first << ", " << p.second << std::endl;
+    }
 
 	if (cachedFrame_.unique())
 		*cachedFrame_ = std::move(d);

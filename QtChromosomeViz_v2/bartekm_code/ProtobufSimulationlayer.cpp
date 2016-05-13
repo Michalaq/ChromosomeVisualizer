@@ -108,6 +108,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     auto delta_no = position % deltasPerKeyframe_;
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
+    std::vector<std::pair<int, int>> connectedRanges;
 
     int aid = 1;
     for (int i = 0; i < kf.binders_size(); i++) {
@@ -125,6 +126,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     for (int i = 0; i < kf.chains_size(); i++) {
         auto chain = kf.chains(i);
         int old = aid;
+        connectedRanges.push_back({ aid, aid + chain.bead_positions_size() - 1 });
         for (int j = 0; j < chain.bead_positions_size(); j++) {
             auto point = chain.bead_positions(j);
             Atom a;
@@ -162,9 +164,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         }
         i++;
     }
-//    if (j != delta_no) {
-//        std::cout << "COS ZLEGO SIE STALO." << std::endl;
-//    }
 
     std::vector<Atom> bidy(atoms.begin(), atoms.end());
     std::sort(bidy.begin(), bidy.end(), [](const auto& a, const auto& b) { return a.id < b.id; });
@@ -173,8 +172,14 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         position,
         position,
         std::move(bidy),
-        std::map<std::string, float>()
+        std::map<std::string, float>(),
+        std::move(connectedRanges)
     };
+
+    for (const auto& p : f.connectedRanges) {
+        std::cout << p.first << ", " << p.second << std::endl;
+    }
+
     if (position >= frameCount_) { // hihihi
         frameCount_ = position + 1;
         emit frameCountChanged(frameCount_);
