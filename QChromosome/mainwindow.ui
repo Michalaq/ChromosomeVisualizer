@@ -584,7 +584,12 @@ MediaControl:checked {
      </property>
      <addaction name="actionError_console"/>
     </widget>
-    <addaction name="actionRecently_closed_docks"/>
+    <widget class="QMenu" name="menuRecently_closed_docks">
+     <property name="title">
+      <string>Recently closed docks</string>
+     </property>
+    </widget>
+    <addaction name="menuRecently_closed_docks"/>
     <addaction name="menuDockable_dialogs"/>
    </widget>
    <addaction name="menuFile"/>
@@ -973,11 +978,6 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Cycle</string>
-   </property>
-  </action>
-  <action name="actionRecently_closed_docks">
-   <property name="text">
-    <string>Recently closed docks</string>
    </property>
   </action>
   <action name="actionError_console">
