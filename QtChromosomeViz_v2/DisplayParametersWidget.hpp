@@ -24,6 +24,7 @@ private:
     QDoubleSpinBox * fogContributionSlider_;
     QPushButton * labelBackgroundColorButton_;
     QPushButton * labelTextColorButton_;
+    QPushButton * selectTypeButton_;
 };
 
 #endif // DISPLAYPARAMETERSWIDGET_HPP
