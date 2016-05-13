@@ -29,9 +29,10 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = -INFINITY;
+    maxval = -qInf();
+    minval = +qInf();
 
-    setMinimumHeight(padding_top + padding_bottom);
+    setMinimumHeight(padding_top + 48 + padding_bottom);
 
     for (auto entry : legend)
         entry->deleteLater();
@@ -68,6 +69,9 @@ void Plot::setMaximum(int m)
 
                 if (maxval < entry.second)
                     maxval = entry.second;
+
+                if (minval > entry.second)
+                    minval = entry.second;
             }
         }
 
@@ -107,14 +111,17 @@ void Plot::paintEvent(QPaintEvent *event)
     QSize s;
     s.setHeight(height() - padding_top - padding_bottom);
 
-    qreal delta = tickSpan(0, maxval, s.height(), 24);
+    double delta = tickSpan(minval, maxval, s.height(), 24);
 
-    label = painter.fontMetrics().width(QString::number(delta != INFINITY ? qFloor(maxval / delta) * delta : 0));
+    double ut = qFloor(maxval / delta) * delta;
+    double lt = qCeil(minval / delta) * delta;
+
+    label = painter.fontMetrics().width(QString::number(delta != qInf() ? ut : 0));
 
     s.setWidth(width() - padding_left - label - padding_right);
 
     painter.setViewport(padding_left + label, height() - padding_bottom, s.width(), -s.height());
-    painter.setWindow(softMinimum, 0, softMaximum - softMinimum, maxval);
+    painter.setWindow(softMinimum, minval, softMaximum - softMinimum, maxval - minval);
 
     auto transform = painter.combinedTransform();
 
@@ -126,7 +133,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    painter.drawLine(softMinimum, 0, softMaximum, 0);
+    painter.drawLine(softMinimum, minval, softMaximum, minval);
 
     int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20);
 
@@ -134,7 +141,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
     {
-        auto tick = transform.map(QPoint(i, 0));
+        auto tick = transform.map(QPoint(i, minval));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
         painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));
@@ -146,7 +153,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setViewTransformEnabled(false);
 
-    for (qreal i = 0; i <= maxval; i += delta)
+    for (qreal i = lt; i <= ut; i += delta)
         painter.drawText(QRect(transform.map(QPoint(0, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
@@ -155,7 +162,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    for (qreal i = delta; i <= maxval; i += delta)
+    for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
         painter.drawLine(softMinimum, i, softMaximum, i);
 
     // plot data
@@ -166,7 +173,7 @@ void Plot::paintEvent(QPaintEvent *event)
         interval.prepend(QPointF(softMinimum, 0));
         interval.append(QPointF(softMaximum, 0));
 
-        QLinearGradient gradient(0, 0, 0, maxval);
+        QLinearGradient gradient(0, minval, 0, maxval);
         gradient.setColorAt(0, Qt::transparent);
         gradient.setColorAt(1, legend[i.key()]->brush());
 
@@ -188,7 +195,7 @@ void Plot::paintEvent(QPaintEvent *event)
     pen3.setCosmetic(true);
 
     painter.setPen(pen3);
-    painter.drawLine(value(), 0, value(), maxval);
+    painter.drawLine(value(), minval, value(), maxval);
 
     painter.setViewTransformEnabled(false);
 
