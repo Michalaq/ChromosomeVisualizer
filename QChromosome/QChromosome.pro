@@ -15,12 +15,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp\
 ../QtChromosomeViz_v2/VizWidget.cpp\
-../QtChromosomeViz_v2/bartekm_code/PDBSimulation.cpp\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     camera.cpp \
     plot.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.cpp \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
     mousecontrol.cpp \
@@ -37,17 +35,20 @@ SOURCES += main.cpp\
     blind.cpp \
     projectsettings.cpp \
     slider.cpp \
-    softslider.cpp
+    softslider.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.cc \
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
-../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h\
 ../QtChromosomeViz_v2/bartekm_code/Simulation.h\
 ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     camera.h \
     plot.h \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulation.h \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
     mousecontrol.h \
@@ -65,14 +66,34 @@ HEADERS  += mainwindow.h\
     blind.h \
     projectsettings.h \
     slider.h \
-    softslider.h
+    softslider.h \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h \
+    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h \
+    ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/header/generic_header.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/header/magic_value.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/header/placeholder.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/header/with_offset.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/cache.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/common.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/config.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/file_backend.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/header.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/mmap_backend.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/mmap_guard.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/posix_file_backend.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/posix_file_handler.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/stream.h \
+    ../QtChromosomeViz_v2/bartekm_code/include/utils.h \
+    ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.h \
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
     projectsettings.ui \
     rendersettings.ui
 
-CONFIG += c++11
+CONFIG += c++14
 
 RESOURCES += \
     icons.qrc \
@@ -80,3 +101,5 @@ RESOURCES += \
     misc.qrc
 
 OTHER_FILES +=
+
+unix|win32: LIBS += -lprotobuf

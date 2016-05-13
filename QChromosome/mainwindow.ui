@@ -642,6 +642,7 @@ MediaControl:checked {
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionAdd_Layer"/>
    </widget>
    <widget class="QMenu" name="menuSelection">
     <property name="title">
@@ -830,6 +831,11 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAdd_Layer">
+   <property name="text">
+    <string>Add Layer</string>
    </property>
   </action>
   <action name="actionSelect">
@@ -1671,6 +1677,22 @@ MediaControl:checked {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAdd_Layer</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>addLayer()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openSimulation()</slot>
@@ -1687,5 +1709,6 @@ MediaControl:checked {
   <slot>capture()</slot>
   <slot>setSoftMinimum(int)</slot>
   <slot>setSoftMaximum(int)</slot>
+  <slot>addLayer()</slot>
  </slots>
 </ui>

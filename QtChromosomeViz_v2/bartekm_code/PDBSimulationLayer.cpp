@@ -1,20 +1,20 @@
 #include <sstream>
 #include <cassert>
-#include "PDBSimulation.h"
+#include "PDBSimulationLayer.h"
 
-PDBSimulation::PDBSimulation(const std::string &name, const std::string &fileName)
+PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
     , file_(fileName)
-    , Simulation(name)
+    , SimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
 }
 
-PDBSimulation::PDBSimulation(const std::string & fileName)
-    : PDBSimulation(fileName, fileName)
+PDBSimulationLayer::PDBSimulationLayer(const std::string & fileName)
+    : PDBSimulationLayer(fileName, fileName)
 {}
 
-std::shared_ptr<Frame> PDBSimulation::getFrame(frameNumber_t position)
+std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t position)
 {
 	auto it = cachedFramePositions_.upper_bound(position);
 
@@ -66,7 +66,7 @@ static std::map<std::string, float> getFunctionValues(const std::string & line)
 	return functionValues;
 }
 
-std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
+std::shared_ptr<Frame> PDBSimulationLayer::readCurrentFrame()
 {
 	std::string line;
 	getline(file_, line); // HEADER
@@ -108,7 +108,7 @@ std::shared_ptr<Frame> PDBSimulation::readCurrentFrame()
 	return cachedFrame_;
 }
 
-Atom PDBSimulation::getAtomFromString(const std::string & str)
+Atom PDBSimulationLayer::getAtomFromString(const std::string & str)
 {
 	Atom a;
     int x, y, z;

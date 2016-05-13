@@ -2,15 +2,17 @@
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
 
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
+#include <QKeyEvent>
 
 SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu własnego widgeta
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(std::make_shared<NullSimulation>()),
+    simulation(),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
@@ -133,18 +135,20 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
 
 void MainWindow::openSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.bin)");
 
     if (!path.isEmpty())
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
-        simulation = std::make_shared<PDBSimulation>(path.toStdString());
+        auto simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
+        simulation = std::make_shared<Simulation>();
+
+        simulation->addSimulationLayer(simulationLayer);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
 
@@ -156,6 +160,29 @@ void MainWindow::openSimulation()
         ui->spinBox_3->setMaximum(0);
 
         lastFrame = 0;//TODO być może do wywalenia
+
+        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+    }
+}
+
+void MainWindow::addLayer()
+{
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+
+    if (!path.isEmpty())
+    {
+        QObject::disconnect(this, SLOT(updateFrameCount(int)));
+
+        auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+
+        if (!simulation)
+            simulation = std::make_shared<Simulation>();
+
+        simulation->addSimulationLayer(simulationLayer);
+        ui->scene->setSimulation(simulation);
+        ui->plot->setSimulation(simulation);
+        ui->plot->setMaximum(lastFrame);
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
@@ -348,8 +375,6 @@ void MainWindow::capture()
 {
     MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
 }
-
-#include <QKeyEvent>
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {

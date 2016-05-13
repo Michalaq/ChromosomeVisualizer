@@ -1,12 +1,13 @@
 #ifndef NULLSIMULATION_H
 #define NULLSIMULATION_H
 
-#include "Simulation.h"
+#include "SimulationLayer.h"
 
-class NullSimulation : public Simulation
+class NullSimulationLayer : public SimulationLayer
 {
 public:
-    NullSimulation();
+    NullSimulationLayer();
+    virtual ~NullSimulationLayer() override;
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
 };
 

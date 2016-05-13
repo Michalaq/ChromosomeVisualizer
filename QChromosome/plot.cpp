@@ -1,6 +1,6 @@
 #include "plot.h"
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include <QHBoxLayout>
+#include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
 
 // MathWorks predefined colorOrder
@@ -8,9 +8,12 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
-    simulation_(std::make_shared<NullSimulation>()),
+    simulation_(std::make_shared<Simulation>()),
     lastBuffered(-1)
 {
+    auto simulationLayer = std::make_shared<NullSimulationLayer>();
+
+    simulation_->addSimulationLayer(simulationLayer);
     new QHBoxLayout(this);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
 }
@@ -29,7 +32,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = -INFINITY;
+    maxval = -2000000000;
 
     setMinimumHeight(padding_top + padding_bottom);
 
@@ -40,7 +43,8 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     auto color = colorOrder.constBegin();
 
-    for (auto i : simulation_->getFrame(0)->functionValues)
+    auto funvals = simulation_->getFrame(0)->functionValues;
+    for (auto i : funvals)
     {
         QString fname = QString::fromStdString(i.first);
 
@@ -62,7 +66,8 @@ void Plot::setMaximum(int m)
     {
         for (int i = lastBuffered + 1; i <= m; i++)
         {
-            for (auto entry : simulation_->getFrame(i)->functionValues)
+            auto funvals = simulation_->getFrame(i)->functionValues;
+            for (auto entry : funvals)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(i, entry.second);
 

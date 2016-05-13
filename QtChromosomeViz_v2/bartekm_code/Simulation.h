@@ -5,21 +5,22 @@
 #include <memory>
 #include <cstdint>
 #include <QObject>
+#include "SimulationLayer.h"
 
 class Simulation : public QObject {
     Q_OBJECT
 protected:
-    std::string name_;
+    std::vector<std::shared_ptr<SimulationLayer>> layers_;
     frameNumber_t frameCount_;
-    int connectionCount_;
 public:
-    Simulation(const std::string & name);
+    Simulation();
     virtual ~Simulation() {};
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
-    const int getConnectionCount() const;
-	virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) = 0;
+    void addSimulationLayer(std::shared_ptr<SimulationLayer> sl);
+    std::shared_ptr<SimulationLayer> getSimulationLayer(int i);
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t position);
 signals:
     void frameCountChanged(int frameCount);
 };

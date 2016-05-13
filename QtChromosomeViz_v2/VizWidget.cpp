@@ -1,7 +1,6 @@
 #include <cassert>
 #include <cstddef>
-#include "bartekm_code/PDBSimulation.h"
-#include "bartekm_code/NullSimulation.h"
+#include "bartekm_code/PDBSimulationLayer.h"
 #include "VizWidget.hpp"
 
 static const float EPSILON = 1e-4;
@@ -34,7 +33,7 @@ void VizLink::update(const QVector3D & p1, const QVector3D & p2)
 
 VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    , simulation_(std::make_shared<NullSimulation>())
+    , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
     , fogDensity_(0.1f)
     , fogContribution_(0.8f)

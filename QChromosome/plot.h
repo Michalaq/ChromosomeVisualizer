@@ -5,6 +5,7 @@
 
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
 
 class Plot : public SoftSlider

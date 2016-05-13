@@ -24,6 +24,7 @@ public:
 
 public slots:
     void openSimulation();
+    void addLayer();
 
     void setFrame(int n);
     void updateFrameCount(int n);
