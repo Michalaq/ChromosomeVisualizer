@@ -65,7 +65,7 @@ int SoftSlider::tickSpan(qreal minsep) const
 qreal SoftSlider::tickSpan(qreal min, qreal max, qreal space, qreal minsep)
 {
     if (space == 0)
-        return INFINITY;
+        return qInf();
 
     qreal jmp = minsep * (max - min) / space;
 

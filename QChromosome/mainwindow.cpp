@@ -93,6 +93,19 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     timer.setInterval(1000 / ui->page_2->ui->spinBox->value());
+
+    auto s = new QAction(this), t = new QAction(this);
+    s->setSeparator(true);
+    t->setSeparator(true);
+
+    ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
+                                                ui->mainToolBar->toggleViewAction(),
+                                                ui->toolBar->toggleViewAction(),
+                                                t,
+                                                ui->dockWidget->toggleViewAction(),
+                                                ui->dockWidget_3->toggleViewAction(),
+                                                s
+                                            });
 }
 
 MainWindow::~MainWindow()
