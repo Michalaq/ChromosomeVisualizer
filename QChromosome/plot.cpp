@@ -112,6 +112,7 @@ void Plot::paintEvent(QPaintEvent *event)
     s.setHeight(height() - padding_top - padding_bottom);
 
     double delta = tickSpan(minval, maxval, s.height(), 24);
+    /* TODO do pewnej wysokości nie powinno się rozrzedzać podziałki, tylko ją zwyczajnie skalować */
 
     double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
@@ -161,6 +162,9 @@ void Plot::paintEvent(QPaintEvent *event)
     pen1.setColor("#333333");
 
     painter.setPen(pen1);
+
+    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
+        painter.drawLine(QPoint(i, minval), QPoint(i, maxval));
 
     for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
         painter.drawLine(softMinimum, i, softMaximum, i);

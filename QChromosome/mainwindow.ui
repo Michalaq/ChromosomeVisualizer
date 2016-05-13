@@ -740,7 +740,7 @@ MediaControl:checked {
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
    <property name="styleSheet">
-    <string notr="true">color: white;</string>
+    <string notr="true">#dockWidget_4{color: white;}</string>
    </property>
    <property name="windowTitle">
     <string>Temporary dump for options</string>
