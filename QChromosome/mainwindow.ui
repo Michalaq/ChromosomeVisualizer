@@ -738,6 +738,18 @@ MediaControl:checked {
    <addaction name="actionQuick_Render"/>
    <addaction name="actionSettings"/>
   </widget>
+  <widget class="QDockWidget" name="dockWidget_4">
+   <property name="styleSheet">
+    <string notr="true">color: white;</string>
+   </property>
+   <property name="windowTitle">
+    <string>Temporary dump for options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4"/>
+  </widget>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>

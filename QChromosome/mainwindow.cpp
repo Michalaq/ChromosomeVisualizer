@@ -52,13 +52,13 @@ MainWindow::MainWindow(QWidget *parent) :
     z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
     z->hide();
 
-    auto y = new DisplayParametersWidget(ui->dockWidget);
+    auto y = new DisplayParametersWidget(ui->dockWidgetContents_4);
     y->setVizWidget(ui->scene);
     y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
     boxLayout->addWidget(z);
-    ui->dockWidgetContents->setLayout(boxLayout);
+    ui->dockWidgetContents_4->setLayout(boxLayout);
     // koniec
 
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
@@ -103,6 +103,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                 ui->toolBar->toggleViewAction(),
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
+                                                ui->dockWidget_2->toggleViewAction(),
                                                 ui->dockWidget_3->toggleViewAction(),
                                                 s
                                             });
@@ -112,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuRecently_closed_docks->insertActions(0, {
                                                      DockWidget::noneClosedAction(),
                                                      ui->dockWidget->recentlyClosedAction(),
+                                                     ui->dockWidget_2->recentlyClosedAction(),
                                                      ui->dockWidget_3->recentlyClosedAction()
                                                  });
 }
