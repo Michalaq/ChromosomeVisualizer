@@ -35,7 +35,7 @@ public:
 
         setCamera(outFile, camera, renderSettings->outputSize());
         setBackgroundColor(outFile, scene->backgroundColor());
-        //setFog(outFile, backgroundColor, distance); //TODO: dobre rownanie dla ostatniego argumentu
+        setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
         auto& vizBalls = scene->getBallInstances();
 
