@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     blind.cpp \
     projectsettings.cpp \
     slider.cpp \
-    softslider.cpp
+    softslider.cpp \
+    treeitem.cpp \
+    treemodel.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -63,7 +65,9 @@ HEADERS  += mainwindow.h\
     blind.h \
     projectsettings.h \
     slider.h \
-    softslider.h
+    softslider.h \
+    treeitem.h \
+    treemodel.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

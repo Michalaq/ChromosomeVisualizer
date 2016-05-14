@@ -2,12 +2,18 @@
 #include <cassert>
 #include "PDBSimulation.h"
 
+#include <QFile> // TODO tego nie będzie
 PDBSimulation::PDBSimulation(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
     , file_(fileName)
     , Simulation(name)
 {
     cachedFramePositions_[0] = 0;
+
+    QFile file("../default.txt");
+    file.open(QIODevice::ReadOnly);
+    model = new TreeModel(file.readAll(), this);
+    file.close();
 }
 
 PDBSimulation::PDBSimulation(const std::string & fileName)

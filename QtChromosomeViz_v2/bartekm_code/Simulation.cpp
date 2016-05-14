@@ -25,3 +25,8 @@ const int Simulation::getConnectionCount() const
 {
     return connectionCount_;
 }
+
+TreeModel* Simulation::getModel()
+{
+    return model;
+}

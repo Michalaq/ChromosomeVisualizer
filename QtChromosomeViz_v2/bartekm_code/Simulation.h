@@ -5,6 +5,7 @@
 #include <memory>
 #include <cstdint>
 #include <QObject>
+#include "treemodel.h"
 
 class Simulation : public QObject {
     Q_OBJECT
@@ -12,14 +13,16 @@ protected:
     std::string name_;
     frameNumber_t frameCount_;
     int connectionCount_;
+    TreeModel *model;
 public:
     Simulation(const std::string & name);
-    virtual ~Simulation() {};
+    virtual ~Simulation() {}
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
     const int getConnectionCount() const;
 	virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) = 0;
+    TreeModel* getModel();
 signals:
     void frameCountChanged(int frameCount);
 };

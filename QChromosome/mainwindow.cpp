@@ -182,6 +182,8 @@ void MainWindow::openSimulation()
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+
+        ui->treeView->setModel(simulation->getModel());
     }
 }
 
