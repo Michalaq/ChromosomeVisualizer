@@ -630,7 +630,11 @@ MediaControl:checked {
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_6">
      <item row="0" column="0">
-      <widget class="QTreeView" name="treeView"/>
+      <widget class="QTreeView" name="treeView">
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -746,7 +750,8 @@ MediaControl:checked {
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
    <property name="styleSheet">
-    <string notr="true">#dockWidget_4{color: white;}</string>
+    <string notr="true">#dockWidget_4{color: white;}
+#dockWidget_4::title {background: #262626;}</string>
    </property>
    <property name="windowTitle">
     <string>Temporary dump for options</string>
@@ -754,7 +759,30 @@ MediaControl:checked {
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4"/>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QGridLayout" name="gridLayout_7">
+     <item row="0" column="0">
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>377</width>
+          <height>76</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">#scrollAreaWidgetContents{background: #1a1a1a;}</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionOpen">
    <property name="text">

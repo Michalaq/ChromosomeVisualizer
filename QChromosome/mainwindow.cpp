@@ -47,18 +47,18 @@ MainWindow::MainWindow(QWidget *parent) :
     modifiers.push_back(ui->actionMove);
 
     //TODO do wywalenia po zaimplementowaniu widgeta
-    z = new SelectionOperationsWidget(ui->tab);
+    z = new SelectionOperationsWidget(ui->scrollAreaWidgetContents);
     z->setVizWidget(ui->scene);
     z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
     z->hide();
 
-    auto y = new DisplayParametersWidget(ui->dockWidgetContents_4);
+    auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
     y->setVizWidget(ui->scene);
     y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
     boxLayout->addWidget(z);
-    ui->dockWidgetContents_4->setLayout(boxLayout);
+    ui->scrollAreaWidgetContents->setLayout(boxLayout);
     // koniec
 
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);

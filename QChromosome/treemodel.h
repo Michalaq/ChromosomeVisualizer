@@ -45,6 +45,8 @@
 #include <QModelIndex>
 #include <QVariant>
 
+#include "../QtChromosomeViz_v2/bartekm_code/common.h"
+
 class TreeItem;
 
 class TreeModel : public QAbstractItemModel
@@ -52,7 +54,7 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit TreeModel(const QString &data, QObject *parent = 0);
+    explicit TreeModel(const std::vector<Atom> &data, QObject *parent = 0);
     ~TreeModel();
 
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
@@ -66,7 +68,7 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
 private:
-    void setupModelData(const QStringList &lines, TreeItem *parent);
+    void setupModelData(const std::vector<Atom> &data, TreeItem *parent);
 
     TreeItem *rootItem;
 };

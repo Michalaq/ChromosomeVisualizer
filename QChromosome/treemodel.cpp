@@ -43,13 +43,11 @@
 
 #include <QStringList>
 
-TreeModel::TreeModel(const QString &data, QObject *parent)
+TreeModel::TreeModel(const std::vector<Atom> &data, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    QList<QVariant> rootData;
-    rootData << "Title" << "Summary";
-    rootItem = new TreeItem(rootData);
-    setupModelData(data.split(QString("\n")), rootItem);
+    rootItem = new TreeItem({});
+    setupModelData(data, rootItem);
 }
 
 TreeModel::~TreeModel()
@@ -59,10 +57,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    if (parent.isValid())
-        return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
-    else
-        return rootItem->columnCount();
+    return 1;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -143,51 +138,26 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void TreeModel::setupModelData(const QStringList &lines, TreeItem *parent)
+void TreeModel::setupModelData(const std::vector<Atom> &data, TreeItem *parent)
 {
-    QList<TreeItem*> parents;
-    QList<int> indentations;
-    parents << parent;
-    indentations << 0;
+    TreeItem* root = new TreeItem({"(tu nazwa warstwy)"}, parent);
 
-    int number = 0;
+    QHash<QString, TreeItem*> types;
 
-    while (number < lines.count()) {
-        int position = 0;
-        while (position < lines[number].length()) {
-            if (lines[number].at(position) != ' ')
-                break;
-            position++;
+    for (auto atom : data)
+    {
+        QString t(atom.type);
+
+        if (types.contains(t))
+            types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id)}, types[t]));
+        else
+        {
+            types[t] = new TreeItem({t}, root);
         }
-
-        QString lineData = lines[number].mid(position).trimmed();
-
-        if (!lineData.isEmpty()) {
-            // Read the column data from the rest of the line.
-            QStringList columnStrings = lineData.split("\t", QString::SkipEmptyParts);
-            QList<QVariant> columnData;
-            for (int column = 0; column < columnStrings.count(); ++column)
-                columnData << columnStrings[column];
-
-            if (position > indentations.last()) {
-                // The last child of the current parent is now the new parent
-                // unless the current parent has no children.
-
-                if (parents.last()->childCount() > 0) {
-                    parents << parents.last()->child(parents.last()->childCount()-1);
-                    indentations << position;
-                }
-            } else {
-                while (position < indentations.last() && parents.count() > 0) {
-                    parents.pop_back();
-                    indentations.pop_back();
-                }
-            }
-
-            // Append a new item to the current parent's list of children.
-            parents.last()->appendChild(new TreeItem(columnData, parents.last()));
-        }
-
-        ++number;
     }
+
+    for (auto t : types)
+        root->appendChild(t);
+
+    parent->appendChild(root);
 }

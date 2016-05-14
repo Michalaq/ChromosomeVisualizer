@@ -2,7 +2,6 @@
 #include <cassert>
 #include "PDBSimulation.h"
 
-#include <QFile> // TODO tego nie będzie
 PDBSimulation::PDBSimulation(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
     , file_(fileName)
@@ -10,10 +9,7 @@ PDBSimulation::PDBSimulation(const std::string &name, const std::string &fileNam
 {
     cachedFramePositions_[0] = 0;
 
-    QFile file("../default.txt");
-    file.open(QIODevice::ReadOnly);
-    model = new TreeModel(file.readAll(), this);
-    file.close();
+    model = new TreeModel(getFrame(0)->atoms, this);
 }
 
 PDBSimulation::PDBSimulation(const std::string & fileName)

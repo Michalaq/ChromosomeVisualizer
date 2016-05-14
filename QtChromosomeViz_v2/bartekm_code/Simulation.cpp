@@ -4,6 +4,7 @@ Simulation::Simulation(const std::string &name)
     : name_(name)
     , frameCount_(0)
     , connectionCount_(-1)
+    , model(nullptr)
 {}
 
 frameNumber_t Simulation::getFrameCount() const

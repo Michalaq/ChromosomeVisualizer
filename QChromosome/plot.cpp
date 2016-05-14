@@ -34,8 +34,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     setMinimumHeight(padding_top + 48 + padding_bottom);
 
-    for (auto entry : legend)
-        entry->deleteLater();
+    qDeleteAll(legend);
 
     legend.clear();
 
