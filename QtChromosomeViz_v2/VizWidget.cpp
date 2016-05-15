@@ -480,7 +480,7 @@ void VizWidget::setFirstFrame()
     // Calculate connection count
     connectionCount_ = 0;
     for (const auto & conn : frame->connectedRanges)
-        connectionCount_ += conn.second - conn.first + 1;
+        connectionCount_ += conn.second - conn.first;
 
     atomPositions_.bind();
     atomPositions_.allocate(sphereCount_ * sizeof(VizBallInstance));
@@ -531,11 +531,14 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
+    int linkNumber = 0;
     for (const auto & conn : diff->connectedRanges)
     {
-        for (int i = conn.first; i < conn.second; i++)
+        for (int id = conn.first; id < conn.second; id++)
         {
-            auto & link = linksState_[i];
+            // linkState_ has atom IDs, which are numbered from 1, not 0
+            const int i = id - 1;
+            auto & link = linksState_[linkNumber++];
 
             /*if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
                 (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
