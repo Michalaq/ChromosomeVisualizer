@@ -20,6 +20,7 @@ public:
     const std::string & getSimulationLayerName() const;
     const int getConnectionCount() const;
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) = 0;
+    virtual bool reachedEndOfFile() const = 0;
 signals:
     void frameCountChanged(int frameCount);
 };

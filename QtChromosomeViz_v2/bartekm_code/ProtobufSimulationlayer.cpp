@@ -5,6 +5,7 @@ using namespace protostream;
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
+    , reachedEndOfFile_(false)
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
     , SimulationLayer(name)
@@ -106,8 +107,10 @@ struct lex_comp
 
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 {
-    if (position > rd_.frame_count() - 1)
+    if (position >= rd_.frame_count() - 1) {
         position = rd_.frame_count() - 1;
+        reachedEndOfFile_ = true;
+    }
 
     auto kf_no = position / (deltasPerKeyframe_ + 1);
     auto delta_no = position % (deltasPerKeyframe_ + 1);
@@ -191,4 +194,9 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     }
 
     return std::make_shared<Frame>(f);
+}
+
+bool ProtobufSimulationLayer::reachedEndOfFile() const
+{
+    return reachedEndOfFile_;
 }

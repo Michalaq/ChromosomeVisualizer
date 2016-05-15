@@ -41,6 +41,7 @@ class ProtobufSimulationLayer : public SimulationLayer {
 private:
     std::string fileName_;
     int connectionCount_;
+    bool reachedEndOfFile_;
     std::vector<bio::motions::format::proto::Keyframe> keyframes_;
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
@@ -59,6 +60,7 @@ public:
     ProtobufSimulationLayer(const std::string & fileName);
     ~ProtobufSimulationLayer() noexcept {};
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
+    virtual bool reachedEndOfFile() const override;
 };
 
 #endif // PROTOBUFSIMULATIONLAYER_H

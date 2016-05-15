@@ -18,7 +18,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         std::map<std::string, float>()
     };
     int count = 0;
-    for (const auto & l : layers_) {
+    for (const auto & l : layerConcatenations_) {
         std::shared_ptr<Frame> f2 = l->getFrame(position);
         f.no = f2->no;
         f.step = f2->step;
@@ -41,10 +41,11 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
     return std::make_shared<Frame>(f);
 }
 
-void Simulation::addSimulationLayer(std::shared_ptr<SimulationLayer> sl)
+void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
-    layers_.push_back(sl);
-    connect(sl.get(), &SimulationLayer::frameCountChanged, [this] (int frameCount) {
+    layerConcatenations_.emplace_back(std::move(slc));
+    connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
+            [this] (int frameCount) {
         if (frameCount_ < frameCount) {
             frameCount_ = frameCount;
             emit frameCountChanged(frameCount_);
@@ -52,7 +53,7 @@ void Simulation::addSimulationLayer(std::shared_ptr<SimulationLayer> sl)
     });
 }
 
-std::shared_ptr<SimulationLayer> Simulation::getSimulationLayer(int i)
+std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)
 {
-    return layers_[i];
+    return layerConcatenations_[i];
 }

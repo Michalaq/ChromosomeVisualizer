@@ -17,7 +17,7 @@ private:
 	std::map<frameNumber_t, uint64_t> cachedFramePositions_;
 	std::shared_ptr<Frame> cachedFrame_;
     int connectionCount_;
-    size_t frameBound_; // 0 if unknown
+    bool reachedEndOfFile_;
 
 	static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();
@@ -25,6 +25,7 @@ public:
     PDBSimulationLayer(const std::string & name, const std::string & fileName);
     PDBSimulationLayer(const std::string & fileName);
 	virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
+    virtual bool reachedEndOfFile() const override;
 };
 
 

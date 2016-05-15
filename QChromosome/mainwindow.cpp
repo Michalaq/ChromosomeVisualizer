@@ -145,10 +145,12 @@ void MainWindow::openSimulation()
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
         auto simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
         simulation = std::make_shared<Simulation>();
 
-        simulation->addSimulationLayer(simulationLayer);
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
 
@@ -175,11 +177,13 @@ void MainWindow::addLayer()
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
         auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
         if (!simulation)
             simulation = std::make_shared<Simulation>();
 
-        simulation->addSimulationLayer(simulationLayer);
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);

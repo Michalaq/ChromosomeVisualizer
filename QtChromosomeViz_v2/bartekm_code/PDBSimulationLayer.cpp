@@ -5,7 +5,7 @@
 PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
     , file_(fileName)
-    , frameBound_(0)
+    , reachedEndOfFile_(false)
     , SimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
@@ -18,8 +18,8 @@ PDBSimulationLayer::PDBSimulationLayer(const std::string & fileName)
 std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t position)
 {
     // assert(frameBound_ == 0 || position < frameBound_);
-    if (frameBound_ != 0 && position > frameBound_ - 1)
-        position = frameBound_ - 1;
+    if (reachedEndOfFile() && position > frameCount_ - 1)
+        position = frameCount_ - 1;
 
 	auto it = cachedFramePositions_.upper_bound(position);
 
@@ -47,16 +47,21 @@ std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t position)
         prev = ret;
 	}
 
-    if (frameBound_ == 0 && position >= frameCount_) {
+    if (!reachedEndOfFile_ && position >= frameCount_) {
         // Check if the next frame is reachable
         if (readCurrentFrame() == nullptr)
-            frameBound_ = position + 1;
+            reachedEndOfFile_ = true;
 
         frameCount_ = position + 1;
         emit frameCountChanged(frameCount_);
     }
 
 	return ret;
+}
+
+bool PDBSimulationLayer::reachedEndOfFile() const
+{
+    return reachedEndOfFile_;
 }
 
 static std::pair<int, int> getStepInfo(const std::string & line)
