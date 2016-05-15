@@ -47,8 +47,8 @@ void main() {
     vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));
     iInstanceID = 0u;
     iFlags = 0u;
-    cColor = mix(colorFromARGB8(cInstanceColor.x | 0xFF000000U),
-                 colorFromARGB8(cInstanceColor.y | 0xFF000000U),
+    cColor = mix(colorFromARGB8(cInstanceColor.x),
+                 colorFromARGB8(cInstanceColor.y),
                  blendFactor);
     cSpecularColor = mix(colorFromARGB8(cInstanceSpecularColor.x).rgb,
                          colorFromARGB8(cInstanceSpecularColor.y).rgb,
