@@ -367,7 +367,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, connectionCount_);
 
         cylinderProgram_.release();
         vaoCylinders_.release();
@@ -487,7 +487,7 @@ void VizWidget::setFirstFrame()
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.allocate((sphereCount_ - 1) * sizeof(VizLink));
+    cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
     cylinderPositions_.release();
 
     selectedBitmap_.fill(false, sphereCount_);
