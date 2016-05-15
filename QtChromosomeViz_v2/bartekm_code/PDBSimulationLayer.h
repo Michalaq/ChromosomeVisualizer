@@ -17,6 +17,7 @@ private:
 	std::map<frameNumber_t, uint64_t> cachedFramePositions_;
 	std::shared_ptr<Frame> cachedFrame_;
     int connectionCount_;
+    size_t frameBound_; // 0 if unknown
 
 	static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();

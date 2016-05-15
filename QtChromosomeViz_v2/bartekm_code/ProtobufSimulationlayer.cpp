@@ -81,6 +81,8 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
          std::cout << typek << ", ";
         }
     }
+
+    // TODO: Change to rd_.frames_per_keyframe() when libprotostream version is updated
     for (const auto& delta : keyframesData_[0])
         deltasPerKeyframe_++;
     deltasPerKeyframe_ = deltasPerKeyframe_ == 0 ? 1 : deltasPerKeyframe_;
@@ -104,8 +106,11 @@ struct lex_comp
 
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 {
-    auto kf_no = position / deltasPerKeyframe_;
-    auto delta_no = position % deltasPerKeyframe_;
+    if (position > rd_.frame_count() - 1)
+        position = rd_.frame_count() - 1;
+
+    auto kf_no = position / (deltasPerKeyframe_ + 1);
+    auto delta_no = position % (deltasPerKeyframe_ + 1);
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;

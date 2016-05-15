@@ -12,7 +12,7 @@ SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(),
+    simulation(std::make_shared<Simulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
