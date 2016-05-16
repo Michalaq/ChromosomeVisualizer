@@ -108,6 +108,7 @@ public slots:
     AtomSelection allSelection();
     AtomSelection atomTypeSelection(const char * s);
     AtomSelection atomTypeSelection(const std::string & s);
+    AtomSelection customSelection(const QList<unsigned int> & indices);
 
     void setVisibleSelection(AtomSelection s);
 

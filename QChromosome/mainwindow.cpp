@@ -184,6 +184,7 @@ void MainWindow::openSimulation()
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
 
         ui->treeView->setModel(simulation->getModel());
+        ui->treeView->hideColumn(1);
     }
 }
 
@@ -351,9 +352,27 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     }
     else
     {
+        ui->camera->setOrigin({0, 0, 0});
         ui->tabWidget->hide();
         z->hide();//TODO hack, usunąć
     }
+}
+
+void MainWindow::handleModelSelection()
+{
+    auto rows = ui->treeView->selectionModel()->selectedRows(1);
+
+    if (rows.isEmpty()) return;
+
+    QList<unsigned int> id;
+
+    for (auto r : rows)
+        if (r.data().isValid())
+            id.append(r.data().toUInt() - 1);
+
+    auto selection = ui->scene->customSelection(id);
+
+    ui->scene->setVisibleSelection(selection);
 }
 
 void MainWindow::setBaseAction(bool enabled)

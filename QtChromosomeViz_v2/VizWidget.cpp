@@ -844,6 +844,11 @@ AtomSelection VizWidget::atomTypeSelection(const std::string & s)
     return atomTypeSelection(s.c_str());
 }
 
+AtomSelection VizWidget::customSelection(const QList<unsigned int> &indices)
+{
+    return AtomSelection(indices, this);
+}
+
 void VizWidget::setVisibleSelection(AtomSelection s)
 {
     for (const auto & id : currentSelection_.selectedIndices())

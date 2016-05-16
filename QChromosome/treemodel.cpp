@@ -57,7 +57,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 1;
+    return 2;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -142,14 +142,14 @@ void TreeModel::setupModelData(const std::vector<Atom> &data, TreeItem *parent)
 {
     TreeItem* root = new TreeItem({"(tu nazwa warstwy)"}, parent);
 
-    QHash<QString, TreeItem*> types;
+    QMap<QString, TreeItem*> types;
 
     for (auto atom : data)
     {
         QString t(atom.type);
 
         if (types.contains(t))
-            types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id)}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id}, types[t]));
         else
         {
             types[t] = new TreeItem({t}, root);
