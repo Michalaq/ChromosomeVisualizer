@@ -148,12 +148,10 @@ void TreeModel::setupModelData(const std::vector<Atom> &data, TreeItem *parent)
     {
         QString t(atom.type);
 
-        if (types.contains(t))
-            types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id}, types[t]));
-        else
-        {
+        if (!types.contains(t))
             types[t] = new TreeItem({t}, root);
-        }
+
+        types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id}, types[t]));
     }
 
     for (auto t : types)
