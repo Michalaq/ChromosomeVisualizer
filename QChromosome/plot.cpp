@@ -1,4 +1,5 @@
 #include "plot.h"
+#include <limits>
 #include <QHBoxLayout>
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
@@ -32,7 +33,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = -2000000000;
+    maxval = std::numeric_limits<qreal>::min();
 
     setMinimumHeight(padding_top + padding_bottom);
 
