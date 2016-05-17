@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>848</width>
-    <height>477</height>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1576,22 +1576,6 @@ MediaControl:checked {
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>treeView</sender>
-   <signal>pressed(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>handleModelSelection()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>649</x>
-     <y>149</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>

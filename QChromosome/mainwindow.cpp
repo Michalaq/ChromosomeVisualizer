@@ -185,6 +185,8 @@ void MainWindow::openSimulation()
 
         ui->treeView->setModel(simulation->getModel());
         ui->treeView->hideColumn(1);
+
+        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
     }
 }
 
@@ -358,17 +360,23 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     }
 }
 
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
+{
+    auto v = root.sibling(root.row(), 1).data();
+
+    if (v.canConvert<uint>())
+        id.append(v.toUInt() - 1);
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
+}
+
 void MainWindow::handleModelSelection()
 {
-    auto rows = ui->treeView->selectionModel()->selectedRows(1);
-
-    if (rows.isEmpty()) return;
-
     QList<unsigned int> id;
 
-    for (auto r : rows)
-        if (r.data().isValid())
-            id.append(r.data().toUInt() - 1);
+    for (auto r : ui->treeView->selectionModel()->selectedRows())
+        dumpModel(ui->treeView->model(), r, id);
 
     auto selection = ui->scene->customSelection(id);
 

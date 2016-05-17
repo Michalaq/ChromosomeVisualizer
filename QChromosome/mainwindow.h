@@ -41,7 +41,7 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomSelection & selection);
+    void handleSelection(const AtomSelection &selection);
     void handleModelSelection();
 
     /* actions */
