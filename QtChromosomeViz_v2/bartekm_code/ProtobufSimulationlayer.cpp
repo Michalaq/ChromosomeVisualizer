@@ -102,6 +102,31 @@ struct lex_comp
 
 };
 
+std::pair<std::string, float> parseCallback(bio::motions::format::proto::Callback cb)
+{
+    float value;
+    std::string name = cb.has_name() ? cb.name() : "unknown_name";
+    switch (cb.callback_type()) {
+    case bio::motions::format::proto::Callback_Type_DOUBLE : value = cb.double_value(); break;
+    case bio::motions::format::proto::Callback_Type_INT : value = cb.int_value(); break;
+    case bio::motions::format::proto::Callback_Type_DOUBLE_LIST :
+        value = 0;
+        for (const auto& v : cb.double_list_value()) {
+            value += v;
+        }
+        value /= cb.double_list_value_size();
+        break;
+    case bio::motions::format::proto::Callback_Type_INT_LIST :
+        value = 0;
+        for (const auto& v : cb.int_list_value()) {
+            value += v;
+        }
+        value /= cb.int_list_value_size();
+        break;
+    }
+    return {name, value};
+}
+
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 {
     auto kf_no = position / deltasPerKeyframe_;
@@ -109,6 +134,11 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
+    std::map<std::string, float> functionValues;
+    for (const auto& cb : kf.callbacks()) {
+        auto p = parseCallback(cb);
+        functionValues[p.first] = p.second;
+    }
 
     int aid = 1;
     for (int i = 0; i < kf.binders_size(); i++) {
@@ -146,6 +176,10 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
             break;
         bio::motions::format::proto::Delta delta;
         delta.ParseFromString(delta_it.get());
+        for (const auto& cb : delta.callbacks()) {
+            auto p = parseCallback(cb);
+            functionValues[p.first] = p.second;
+        }
         auto p = delta.from();
         auto q = delta.disp();
         Atom a;
@@ -172,7 +206,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         position,
         position,
         std::move(bidy),
-        std::map<std::string, float>(),
+        std::move(functionValues),
         std::move(connectedRanges)
     };
 
