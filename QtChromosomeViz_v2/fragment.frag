@@ -30,9 +30,9 @@ void main() {
     vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
 
     // Fog
-    float sqDistance = dot(vViewPosition.rgb, vViewPosition.rgb);
+    float linearDistance = length(vViewPosition.rgb);
     float fogFactor = mix(1.0,
-                          clamp(1.0 / exp(ufFogDensity * 0.001 * sqDistance), 0.0, 1.0),
+                          clamp(exp(-ufFogDensity * linearDistance), 0.0, 1.0),
                           ufFogContribution);
 
     // Calculate stripes for selected molecules

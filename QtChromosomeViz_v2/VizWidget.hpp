@@ -188,6 +188,7 @@ private:
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
     unsigned int sphereCount_;
+    unsigned int connectionCount_;
 
     std::shared_ptr<Simulation> simulation_;
     frameNumber_t frameNumber_;

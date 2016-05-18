@@ -12,7 +12,7 @@ SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(),
+    simulation(std::make_shared<Simulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
@@ -161,17 +161,23 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::openSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.bin)");
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
 
     if (!path.isEmpty())
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
-
-        auto simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        std::shared_ptr<SimulationLayer> simulationLayer;
+        if (path.contains("pdb")) {
+            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        } else {
+            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        }
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
         simulation = std::make_shared<Simulation>();
 
-        simulation->addSimulationLayer(simulationLayer);
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
 
@@ -196,18 +202,25 @@ void MainWindow::openSimulation()
 
 void MainWindow::addLayer()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
 
     if (!path.isEmpty())
     {
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
 
-        auto simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        std::shared_ptr<SimulationLayer> simulationLayer;
+        if (path.contains("pdb")) {
+            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        } else {
+            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        }
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
         if (!simulation)
             simulation = std::make_shared<Simulation>();
 
-        simulation->addSimulationLayer(simulationLayer);
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);

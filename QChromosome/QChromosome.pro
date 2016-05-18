@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.cc \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp \
     treeitem.cpp \
-    treemodel.cpp
+    treemodel.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -88,7 +89,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.h \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h \
     treeitem.h \
-    treemodel.h
+    treemodel.h \
+    ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

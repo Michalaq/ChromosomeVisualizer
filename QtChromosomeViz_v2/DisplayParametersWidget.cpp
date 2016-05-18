@@ -1,6 +1,8 @@
 #include "DisplayParametersWidget.hpp"
 #include "VizWidget.hpp"
 
+static const float DISPLAYED_TO_INTERNAL_FOG_DENSITY = 0.001f;
+
 DisplayParametersWidget::DisplayParametersWidget(QWidget *parent)
     : QWidget(parent)
     , vizWidget_(nullptr)
@@ -12,7 +14,7 @@ DisplayParametersWidget::DisplayParametersWidget(QWidget *parent)
 void DisplayParametersWidget::setVizWidget(VizWidget * widget)
 {
     vizWidget_ = widget;
-    fogDensitySlider_->setValue(vizWidget_->fogDensity());
+    fogDensitySlider_->setValue(vizWidget_->fogDensity() / DISPLAYED_TO_INTERNAL_FOG_DENSITY);
     fogContributionSlider_->setValue(vizWidget_->fogContribution());
 }
 
@@ -23,9 +25,10 @@ void DisplayParametersWidget::initializeControls()
     fogDensitySlider_ = new QDoubleSpinBox();
     fogDensitySlider_->setRange(0.1, 100.0);
     fogDensitySlider_->setSingleStep(0.1);
+    fogDensitySlider_->setDecimals(1);
     fogContributionSlider_ = new QDoubleSpinBox();
     fogContributionSlider_->setRange(0.0, 1.0);
-    fogContributionSlider_->setSingleStep(0.1);
+    fogContributionSlider_->setSingleStep(0.01);
     labelBackgroundColorButton_ = new QPushButton("Label background color");
     labelTextColorButton_ = new QPushButton("Label text color");
 
@@ -61,7 +64,7 @@ void DisplayParametersWidget::initializeSignals()
     connect(fogDensitySlider_,
             static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
             [this](double value) {
-        vizWidget_->setFogDensity((float)value);
+        vizWidget_->setFogDensity((float)value * DISPLAYED_TO_INTERNAL_FOG_DENSITY);
     });
 
     connect(fogContributionSlider_,

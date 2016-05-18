@@ -5,6 +5,7 @@
 PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
     , file_(fileName)
+    , reachedEndOfFile_(false)
     , SimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
@@ -16,6 +17,10 @@ PDBSimulationLayer::PDBSimulationLayer(const std::string & fileName)
 
 std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t position)
 {
+    // assert(frameBound_ == 0 || position < frameBound_);
+    if (reachedEndOfFile() && position > frameCount_ - 1)
+        position = frameCount_ - 1;
+
 	auto it = cachedFramePositions_.upper_bound(position);
 
     // Find cached frame before position
@@ -27,20 +32,36 @@ std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t position)
 
 	file_.seekg(it->second, file_.beg);
 
-	std::shared_ptr<Frame> ret;
+    std::shared_ptr<Frame> ret, prev;
+    prev = cachedFrame_ ? cachedFrame_ : std::make_shared<Frame>();
 	while (cachedPosition <= position) {
 		ret = readCurrentFrame();
-		cachedPosition++;
+        if (!ret) {
+            // Most probably there was a read error
+            // because the end of file has been checked before
+            return prev;
+        }
 
+        cachedPosition++;
 		cachedFramePositions_[cachedPosition] = file_.tellg();
+        prev = ret;
 	}
 
-    if (position >= frameCount_) {
+    if (!reachedEndOfFile_ && position >= frameCount_) {
+        // Check if the next frame is reachable
+        if (readCurrentFrame() == nullptr)
+            reachedEndOfFile_ = true;
+
         frameCount_ = position + 1;
         emit frameCountChanged(frameCount_);
     }
 
 	return ret;
+}
+
+bool PDBSimulationLayer::reachedEndOfFile() const
+{
+    return reachedEndOfFile_;
 }
 
 static std::pair<int, int> getStepInfo(const std::string & line)
@@ -105,6 +126,12 @@ std::shared_ptr<Frame> PDBSimulationLayer::readCurrentFrame()
     }
     if (connectionCount_ < 0)
         connectionCount_ = connectionRanges.size();
+
+    if (file_.fail()) {
+        file_.clear(); // Clear the eofbit so seekg may work
+        return nullptr;
+    }
+
 	Frame d = {
 		no,
 		step,

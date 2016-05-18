@@ -35,7 +35,7 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
-    , fogDensity_(0.1f)
+    , fogDensity_(0.01f)
     , fogContribution_(0.8f)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
@@ -367,7 +367,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, sphereCount_ - 1);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, connectionCount_);
 
         cylinderProgram_.release();
         vaoCylinders_.release();
@@ -477,12 +477,17 @@ void VizWidget::setFirstFrame()
 
     sphereCount_ = frame->atoms.size();
 
+    // Calculate connection count
+    connectionCount_ = 0;
+    for (const auto & conn : frame->connectedRanges)
+        connectionCount_ += conn.second - conn.first;
+
     atomPositions_.bind();
     atomPositions_.allocate(sphereCount_ * sizeof(VizBallInstance));
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.allocate((sphereCount_ - 1) * sizeof(VizLink));
+    cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
     cylinderPositions_.release();
 
     selectedBitmap_.fill(false, sphereCount_);
@@ -495,7 +500,7 @@ void VizWidget::setFirstFrame()
     frameState_.fill(dummy, sphereCount_);
 
     VizLink dummy2;
-    linksState_.fill(dummy2, sphereCount_ - 1);
+    linksState_.fill(dummy2, connectionCount_);
 
     setFrame(0);
 
@@ -526,27 +531,33 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
-    for (int i = 0; i < linksState_.size(); i++)
+    int linkNumber = 0;
+    for (const auto & conn : diff->connectedRanges)
     {
-        auto & link = linksState_[i];
-
-        if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
-            (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
+        for (int id = conn.first; id < conn.second; id++)
         {
-            link.size[0] = 0.f;
-            link.size[1] = 0.f;
-            continue;
-        }
+            // linkState_ has atom IDs, which are numbered from 1, not 0
+            const int i = id - 1;
+            auto & link = linksState_[linkNumber++];
 
-        link.update(frameState_[i].position, frameState_[i + 1].position);
-        link.color[0] = frameState_[i].color;
-        link.color[1] = frameState_[i + 1].color;
-        link.specularColor[0] = frameState_[i].specularColor;
-        link.specularColor[1] = frameState_[i + 1].specularColor;
-        link.specularExponent[0] = frameState_[i].specularExponent;
-        link.specularExponent[1] = frameState_[i + 1].specularExponent;
-        link.size[0] = frameState_[i].size;
-        link.size[1] = frameState_[i + 1].size;
+            /*if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
+                (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
+            {
+                link.size[0] = 0.f;
+                link.size[1] = 0.f;
+                continue;
+            }*/
+
+            link.update(frameState_[i].position, frameState_[i + 1].position);
+            link.color[0] = frameState_[i].color;
+            link.color[1] = frameState_[i + 1].color;
+            link.specularColor[0] = frameState_[i].specularColor;
+            link.specularColor[1] = frameState_[i + 1].specularColor;
+            link.specularExponent[0] = frameState_[i].specularExponent;
+            link.specularExponent[1] = frameState_[i + 1].specularExponent;
+            link.size[0] = frameState_[i].size;
+            link.size[1] = frameState_[i + 1].size;
+        }
     }
 
     needVBOUpdate_ = true;

@@ -21,3 +21,8 @@ std::shared_ptr<Frame> NullSimulationLayer::getFrame(frameNumber_t position)
     };
     return std::make_shared<Frame>(f);
 }
+
+bool NullSimulationLayer::reachedEndOfFile() const
+{
+    return true;
+}

@@ -5,6 +5,7 @@ using namespace protostream;
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const std::string &fileName)
     : fileName_(fileName)
+    , reachedEndOfFile_(false)
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
     , SimulationLayer(name)
@@ -82,6 +83,8 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //         std::cout << typek << ", ";
 //        }
 //    }
+
+    // TODO: Change to rd_.frames_per_keyframe() when libprotostream version is updated
     for (const auto& delta : keyframesData_[0])
         deltasPerKeyframe_++;
     std::cout << deltasPerKeyframe_ << std::endl;
@@ -130,9 +133,14 @@ std::pair<std::string, float> parseCallback(bio::motions::format::proto::Callbac
 
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 {
-    auto kf_no = position / deltasPerKeyframe_;
-    auto delta_no = position % deltasPerKeyframe_;
-    auto& kf = keyframes_[kf_no];
+    if (position >= rd_.frame_count() - 1) {
+        position = rd_.frame_count() - 1;
+        reachedEndOfFile_ = true;
+    }
+
+    auto kf_no = position / (deltasPerKeyframe_ + 1);
+    auto delta_no = position % (deltasPerKeyframe_ + 1);
+    auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
     std::map<std::string, float> functionValues;
@@ -227,4 +235,9 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     }
 
     return std::make_shared<Frame>(f);
+}
+
+bool ProtobufSimulationLayer::reachedEndOfFile() const
+{
+    return reachedEndOfFile_;
 }

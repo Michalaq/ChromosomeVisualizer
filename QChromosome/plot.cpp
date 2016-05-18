@@ -12,9 +12,8 @@ Plot::Plot(QWidget *parent) :
     simulation_(std::make_shared<Simulation>()),
     lastBuffered(-1)
 {
-    auto simulationLayer = std::make_shared<NullSimulationLayer>();
+    simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
 
-    simulation_->addSimulationLayer(simulationLayer);
     new QHBoxLayout(this);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
 }

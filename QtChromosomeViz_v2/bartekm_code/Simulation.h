@@ -7,11 +7,12 @@
 #include <QObject>
 #include "SimulationLayer.h"
 #include "treemodel.h"
+#include "SimulationLayerConcatenation.h"
 
 class Simulation : public QObject {
     Q_OBJECT
 protected:
-    std::vector<std::shared_ptr<SimulationLayer>> layers_;
+    std::vector<std::shared_ptr<SimulationLayerConcatenation>> layerConcatenations_;
     frameNumber_t frameCount_;
     TreeModel *model;
 public:
@@ -20,8 +21,8 @@ public:
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
-    void addSimulationLayer(std::shared_ptr<SimulationLayer> sl);
-    std::shared_ptr<SimulationLayer> getSimulationLayer(int i);
+    void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc);
+    std::shared_ptr<SimulationLayerConcatenation> getSimulationLayerConcatenation(int i);
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position);
     TreeModel* getModel();
 signals:
