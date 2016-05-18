@@ -442,23 +442,30 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    //MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
-    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, QString::number(1).rightJustified(QString::number(3).length(), '0'));
+    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, "");
+
+    system(QString(QString("rm ") + renderSettings->saveFile() + ".pov").toUtf8().constData());
+    system("rm povray.ini");
 }
 
 void MainWindow::captureMovie()
 {
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
-    for (int i = 1; i <= frames; i++)
+    for (int i = 1; ; i++)
     {
         MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
-        ui->scene->advanceFrame();
+        if (i != frames)
+            ui->scene->advanceFrame();
+        else
+            break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, 1, 30);
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page_2->ui->spinBox->value(), ui->page_2->ui->spinBox->value());
 
-    //TODO: sprzatanie *.pov i *.png, overwrite dla ffmpeg
+    system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
+                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
+    system("rm povray.ini");
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
