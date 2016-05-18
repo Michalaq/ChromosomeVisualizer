@@ -84,7 +84,6 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //    }
     for (const auto& delta : keyframesData_[0])
         deltasPerKeyframe_++;
-    deltasPerKeyframe++;
     std::cout << deltasPerKeyframe_ << std::endl;
 }
 
