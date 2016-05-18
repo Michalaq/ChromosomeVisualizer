@@ -50,6 +50,7 @@ public slots:
 
     /* povray */
     void capture();
+    void captureMovie();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

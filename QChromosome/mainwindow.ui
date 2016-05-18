@@ -750,6 +750,7 @@ MediaControl:checked {
     <bool>false</bool>
    </attribute>
    <addaction name="actionQuick_Render"/>
+   <addaction name="actionQuick_RenderMovie"/>
    <addaction name="actionSettings"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
@@ -885,6 +886,21 @@ MediaControl:checked {
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
+   </property>
+   <property name="text">
+    <string>Quick Render</string>
+   </property>
+   <property name="statusTip">
+    <string>Quick render [Shortcut Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionQuick_RenderMovie">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
    </property>
    <property name="text">
     <string>Quick Render</string>
@@ -1446,6 +1462,22 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
+   <sender>actionQuick_RenderMovie</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>captureMovie()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>plot</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1619,6 +1651,7 @@ MediaControl:checked {
   <slot>selectAll()</slot>
   <slot>setBaseAction(bool)</slot>
   <slot>capture()</slot>
+  <slot>captureMovie()</slot>
   <slot>setSoftMinimum(int)</slot>
   <slot>setSoftMaximum(int)</slot>
   <slot>addLayer()</slot>
