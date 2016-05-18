@@ -18,6 +18,7 @@ void DisplayParametersWidget::setVizWidget(VizWidget * widget)
 
 void DisplayParametersWidget::initializeControls()
 {
+    auto * label2 = new QLabel("Customize display parameters:");
     backgroundColorButton_ = new QPushButton("Background color");
     fogDensitySlider_ = new QDoubleSpinBox();
     fogDensitySlider_->setRange(0.1, 100.0);
@@ -30,18 +31,20 @@ void DisplayParametersWidget::initializeControls()
 
     // auto layout = new QFormLayout();
     auto layout = new QGridLayout();
-    layout->addWidget(backgroundColorButton_, 0, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Fog density:"), 1, 0, 1, 1);
-    layout->addWidget(fogDensitySlider_, 1, 1, 1, 1);
+    layout->addWidget(label2, 0, 0, 1, 2);
+    layout->addWidget(backgroundColorButton_, 1, 0, 1, 2);
 
-    layout->addWidget(new QLabel("Fog contribution:"), 2, 0, 1, 1);
-    layout->addWidget(fogContributionSlider_, 2, 1, 1, 1);
+    layout->addWidget(new QLabel("Fog density:"), 2, 0, 1, 1);
+    layout->addWidget(fogDensitySlider_, 2, 1, 1, 1);
 
-    layout->addWidget(labelBackgroundColorButton_, 3, 0, 1, 2);
-    layout->addWidget(labelTextColorButton_, 4, 0, 1, 2);
+    layout->addWidget(new QLabel("Fog contribution:"), 3, 0, 1, 1);
+    layout->addWidget(fogContributionSlider_, 3, 1, 1, 1);
 
-    layout->setRowStretch(5, 1);
+    layout->addWidget(labelBackgroundColorButton_, 4, 0, 1, 2);
+    layout->addWidget(labelTextColorButton_, 5, 0, 1, 2);
+
+    layout->setRowStretch(6, 1);
 
     setLayout(layout);
 }

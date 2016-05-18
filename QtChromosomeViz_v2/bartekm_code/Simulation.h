@@ -6,12 +6,14 @@
 #include <cstdint>
 #include <QObject>
 #include "SimulationLayer.h"
+#include "treemodel.h"
 
 class Simulation : public QObject {
     Q_OBJECT
 protected:
     std::vector<std::shared_ptr<SimulationLayer>> layers_;
     frameNumber_t frameCount_;
+    TreeModel *model;
 public:
     Simulation();
     virtual ~Simulation() {};
@@ -21,6 +23,7 @@ public:
     void addSimulationLayer(std::shared_ptr<SimulationLayer> sl);
     std::shared_ptr<SimulationLayer> getSimulationLayer(int i);
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t position);
+    TreeModel* getModel();
 signals:
     void frameCountChanged(int frameCount);
 };

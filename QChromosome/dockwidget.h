@@ -15,6 +15,16 @@ public:
     explicit DockWidget(QWidget *parent = 0);
     ~DockWidget();
 
+    QAction* recentlyClosedAction();
+
+    static QAction* noneClosedAction();
+
+private:
+    QAction *recclo;
+
+    static QAction* none;
+    static int n;
+
 signals:
 
 public slots:

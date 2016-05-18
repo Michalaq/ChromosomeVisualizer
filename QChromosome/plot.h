@@ -29,7 +29,8 @@ private:
     std::shared_ptr<Simulation> simulation_;
 
     QHash<QString, QVector<QPointF> > data;
-    qreal maxval;
+    double maxval;
+    double minval;
 
     int lastBuffered;
 

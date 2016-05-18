@@ -21,7 +21,6 @@ SOURCES += main.cpp\
     plot.cpp \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
-    mousecontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
@@ -40,7 +39,9 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.cc \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp \
+    treeitem.cpp \
+    treemodel.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -51,7 +52,6 @@ HEADERS  += mainwindow.h\
     plot.h \
     ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
-    mousecontrol.h \
     dockwidget.h \
     spinbox.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
@@ -86,7 +86,9 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/include/stream.h \
     ../QtChromosomeViz_v2/bartekm_code/include/utils.h \
     ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.h \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h
+    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h \
+    treeitem.h \
+    treemodel.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

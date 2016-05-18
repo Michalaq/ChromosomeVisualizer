@@ -20,10 +20,6 @@ void SelectionOperationsWidget::setVizWidget(VizWidget *vizWidget)
 
 void SelectionOperationsWidget::initializeControls()
 {
-    auto * label1 = new QLabel("Select:");
-    /*selectAllButton_ = new QPushButton("All");*/
-    selectTypeButton_ = new QPushButton("Type");
-
     auto * label2 = new QLabel("Set:");
     setColorButton_ = new QPushButton("Color");
     setSpecularColorButton_ = new QPushButton("Specular Color");
@@ -33,9 +29,6 @@ void SelectionOperationsWidget::initializeControls()
     setLabelButton_ = new QPushButton("Label");
 
     auto * mainLayout = new QVBoxLayout();
-    mainLayout->addWidget(label1);
-    /*mainLayout->addWidget(selectAllButton_);*/
-    mainLayout->addWidget(selectTypeButton_);
     mainLayout->addWidget(label2);
     mainLayout->addWidget(setColorButton_);
     mainLayout->addWidget(setSpecularColorButton_);
@@ -48,21 +41,6 @@ void SelectionOperationsWidget::initializeControls()
 
 void SelectionOperationsWidget::initializeSignals()
 {
-    /*connect(selectAllButton_, &QPushButton::clicked, [this](bool) {
-        vizWidget_->setVisibleSelection(vizWidget_->allSelection());
-    });*/
-
-    connect(selectTypeButton_, &QPushButton::clicked, [this](bool) {
-        bool ok = false;
-        QString text = QInputDialog::getText(this, "Input type",
-                                             "Enter the type of the atom to select:",
-                                             QLineEdit::Normal,
-                                             QString(),
-                                             &ok);
-        if (ok)
-            vizWidget_->setVisibleSelection(vizWidget_->atomTypeSelection(text.toStdString()));
-    });
-
     connect(setColorButton_, &QPushButton::clicked, [this](bool) {
         QColor color = QColorDialog::getColor(Qt::white, this, "Pick color");
         if (color.isValid())

@@ -49,18 +49,18 @@ MainWindow::MainWindow(QWidget *parent) :
     modifiers.push_back(ui->actionMove);
 
     //TODO do wywalenia po zaimplementowaniu widgeta
-    z = new SelectionOperationsWidget(ui->tab);
+    z = new SelectionOperationsWidget(ui->scrollAreaWidgetContents);
     z->setVizWidget(ui->scene);
     z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
     z->hide();
 
-    auto y = new DisplayParametersWidget(ui->dockWidget);
+    auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
     y->setVizWidget(ui->scene);
     y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
     boxLayout->addWidget(z);
-    ui->dockWidgetContents->setLayout(boxLayout);
+    ui->scrollAreaWidgetContents->setLayout(boxLayout);
     // koniec
 
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
@@ -95,6 +95,29 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     timer.setInterval(1000 / ui->page_2->ui->spinBox->value());
+
+    auto s = new QAction(this), t = new QAction(this);
+    s->setSeparator(true);
+    t->setSeparator(true);
+
+    ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
+                                                ui->mainToolBar->toggleViewAction(),
+                                                ui->toolBar->toggleViewAction(),
+                                                t,
+                                                ui->dockWidget->toggleViewAction(),
+                                                ui->dockWidget_2->toggleViewAction(),
+                                                ui->dockWidget_3->toggleViewAction(),
+                                                s
+                                            });
+
+    DockWidget::noneClosedAction()->setDisabled(true);
+
+    ui->menuRecently_closed_docks->insertActions(0, {
+                                                     DockWidget::noneClosedAction(),
+                                                     ui->dockWidget->recentlyClosedAction(),
+                                                     ui->dockWidget_2->recentlyClosedAction(),
+                                                     ui->dockWidget_3->recentlyClosedAction()
+                                                 });
 }
 
 MainWindow::~MainWindow()
@@ -163,6 +186,11 @@ void MainWindow::openSimulation()
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+
+        ui->treeView->setModel(simulation->getModel());
+        ui->treeView->hideColumn(1);
+
+        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
     }
 }
 
@@ -186,6 +214,10 @@ void MainWindow::addLayer()
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+        ui->treeView->setModel(simulation->getModel());
+        ui->treeView->hideColumn(1);
+
+        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
     }
 }
 
@@ -353,9 +385,33 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     }
     else
     {
+        ui->camera->setOrigin({0, 0, 0});
         ui->tabWidget->hide();
         z->hide();//TODO hack, usunąć
     }
+}
+
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
+{
+    auto v = root.sibling(root.row(), 1).data();
+
+    if (v.canConvert<uint>())
+        id.append(v.toUInt() - 1);
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
+}
+
+void MainWindow::handleModelSelection()
+{
+    QList<unsigned int> id;
+
+    for (auto r : ui->treeView->selectionModel()->selectedRows())
+        dumpModel(ui->treeView->model(), r, id);
+
+    auto selection = ui->scene->customSelection(id);
+
+    ui->scene->setVisibleSelection(selection);
 }
 
 void MainWindow::setBaseAction(bool enabled)

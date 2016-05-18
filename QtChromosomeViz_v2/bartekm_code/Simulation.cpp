@@ -1,7 +1,9 @@
 #include "Simulation.h"
 
+
 Simulation::Simulation()
-    : frameCount_(0)
+    : frameCount_(0),
+      model(nullptr)
 {}
 
 frameNumber_t Simulation::getFrameCount() const
@@ -50,9 +52,15 @@ void Simulation::addSimulationLayer(std::shared_ptr<SimulationLayer> sl)
             emit frameCountChanged(frameCount_);
         }
     });
+    model = new TreeModel(getFrame(0)->atoms, this);
 }
 
 std::shared_ptr<SimulationLayer> Simulation::getSimulationLayer(int i)
 {
     return layers_[i];
+}
+
+TreeModel* Simulation::getModel()
+{
+    return model;
 }
