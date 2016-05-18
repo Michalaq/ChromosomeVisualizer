@@ -74,8 +74,9 @@ qreal SoftSlider::tickSpan(qreal min, qreal max, qreal space, qreal minsep)
     while (b * 10 <= jmp)
         b *= 10;
 
-    while (b / 10 >= jmp)
-        b /= 10;
+    if (jmp > 0)
+        while (b / 10 >= jmp)
+            b /= 10;
 
     int q = qCeil(jmp / b);
 
