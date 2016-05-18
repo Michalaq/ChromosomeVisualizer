@@ -27,11 +27,21 @@ class MovieMaker
 {
 public:
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings)
+    static void inline makeMovie(QString filename, int frames, float framerate, int fps)
+    {
+        QStringList argv;
+        argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
+             << "-r " + QString::number(fps) << "-pix_fmt yuv420p" << filename + ".mp4";
+        //QProcess::execute("ffmpeg", argv);
+        QProcess::execute(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(framerate) + " -i " + filename + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
+                          + " -r " + QString::number(fps) + " -pix_fmt yuv420p " + filename + ".mp4");
+    }
+
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString number)
     {
         prepareINIFile(renderSettings->outputSize(), true);
         std::ofstream outFile;
-        createPOVFile(outFile, renderSettings->saveFile().toStdString());
+        createPOVFile(outFile, (renderSettings->saveFile() + number).toStdString());
 
         setCamera(outFile, camera, renderSettings->outputSize());
         setBackgroundColor(outFile, scene->backgroundColor());
@@ -56,10 +66,10 @@ public:
         outFile.flush();
 
         QSettings settings;
-//TODO: ponizej do ogarniecia
+
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + ".pov";
+        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + number + ".pov";
         QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";
