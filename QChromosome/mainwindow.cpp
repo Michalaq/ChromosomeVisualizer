@@ -429,7 +429,18 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
+    //MovieMaker::captureScene(ui->scene, ui->camera, renderSettings);
+    ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
+    int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
+    for (int i = 1; i <= frames; i++)
+    {
+        MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
+        ui->scene->advanceFrame();
+    }
+
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, 1, 30);
+
+    //TODO: sprzatanie *.pov i *.png, overwrite dla ffmpeg
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
