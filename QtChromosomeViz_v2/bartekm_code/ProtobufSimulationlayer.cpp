@@ -21,6 +21,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
               std::cout << "Failed to parse keyframe." << std::endl;
         }
     }
+    std::cout << keyframes_.size() << std::endl;
     str_types_ = { "BIN", "LAM", "BOU", "UNB" };
     std::set<std::vector<int>> binder_types;
     std::vector<std::vector<int>> binder_types_vec;
@@ -71,19 +72,20 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
             }
         }
     }
-    for (const auto& realtyp : chain_binder_types_renumbered_) {
-        std::cout << "lol";
-        for (const auto& dupa : realtyp)
-            std::cout << dupa << std::endl;
-    }
-    for (const auto& typek : binder_types_) {
-        if (typek == 1) {
-         std::cout << typek << ", ";
-        }
-    }
+//    for (const auto& realtyp : chain_binder_types_renumbered_) {
+//        std::cout << "lol";
+//        for (const auto& dupa : realtyp)
+//            std::cout << dupa << std::endl;
+//    }
+//    for (const auto& typek : binder_types_) {
+//        if (typek == 1) {
+//         std::cout << typek << ", ";
+//        }
+//    }
     for (const auto& delta : keyframesData_[0])
         deltasPerKeyframe_++;
-    deltasPerKeyframe_ = deltasPerKeyframe_ == 0 ? 1 : deltasPerKeyframe_;
+    deltasPerKeyframe++;
+    std::cout << deltasPerKeyframe_ << std::endl;
 }
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string & fileName)
@@ -131,19 +133,24 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 {
     auto kf_no = position / deltasPerKeyframe_;
     auto delta_no = position % deltasPerKeyframe_;
-    auto kf = keyframes_[kf_no];
+    auto& kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
     std::map<std::string, float> functionValues;
-    for (const auto& cb : kf.callbacks()) {
+    /*for (const auto& cb : kf.callbacks()) {
+        std::cout << "callback!" << std::endl;
         auto p = parseCallback(cb);
         functionValues[p.first] = p.second;
-    }
+    }*/
 
     int aid = 1;
     for (int i = 0; i < kf.binders_size(); i++) {
-        auto binder = kf.binders(i);
-        auto point = binder.position();
+        auto& binder = kf.binders(i);
+        if (!binder.has_position()) {
+            std::cout << "Binder without position!" << std::endl;
+            break;
+        }
+        auto& point = binder.position();
         Atom a;
         a.id = aid++;
         strcpy(a.type, str_types_[binder_types_[i]].c_str());
@@ -154,11 +161,11 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     }
 
     for (int i = 0; i < kf.chains_size(); i++) {
-        auto chain = kf.chains(i);
+        auto& chain = kf.chains(i);
         int old = aid;
         connectedRanges.push_back({ aid, aid + chain.bead_positions_size() - 1 });
         for (int j = 0; j < chain.bead_positions_size(); j++) {
-            auto point = chain.bead_positions(j);
+            auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
             strcpy(a.type, str_types_[chain_binder_types_renumbered_[i][j]].c_str());
@@ -176,12 +183,13 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
             break;
         bio::motions::format::proto::Delta delta;
         delta.ParseFromString(delta_it.get());
-        for (const auto& cb : delta.callbacks()) {
-            auto p = parseCallback(cb);
-            functionValues[p.first] = p.second;
-        }
-        auto p = delta.from();
-        auto q = delta.disp();
+        if (i == delta_no - 1)
+            for (const auto& cb : delta.callbacks()) {
+                auto p = parseCallback(cb);
+                functionValues[p.first] = p.second;
+            }
+        auto& p = delta.from();
+        auto& q = delta.disp();
         Atom a;
         a.x = p.x();
         a.y = p.y();
@@ -210,9 +218,9 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         std::move(connectedRanges)
     };
 
-    for (const auto& p : f.connectedRanges) {
-        std::cout << p.first << ", " << p.second << std::endl;
-    }
+//    for (const auto& p : f.connectedRanges) {
+//        std::cout << p.first << ", " << p.second << std::endl;
+//    }
 
     if (position >= frameCount_) { // hihihi
         frameCount_ = position + 1;
