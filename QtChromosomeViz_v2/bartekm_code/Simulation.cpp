@@ -35,9 +35,9 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 
         count += f2->atoms.size();
     }
-    for (const auto& p : f.connectedRanges) {
-        std::cout << "AGGREGATED CONNECTION: " << p.first << ", " << p.second << std::endl;
-    }
+//    for (const auto& p : f.connectedRanges) {
+//        std::cout << "AGGREGATED CONNECTION: " << p.first << ", " << p.second << std::endl;
+//    }
     return std::make_shared<Frame>(f);
 }
 

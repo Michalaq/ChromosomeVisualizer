@@ -44,7 +44,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     auto color = colorOrder.constBegin();
 
-    auto funvals = simulation_->getFrame(0)->functionValues;
+    auto funvals = simulation_->getFrame(1)->functionValues;
     for (auto i : funvals)
     {
         QString fname = QString::fromStdString(i.first);
