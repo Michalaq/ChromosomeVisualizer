@@ -20,11 +20,15 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         std::map<std::string, float>()
     };
     int count = 0;
+    int i = 0;
     for (const auto & l : layerConcatenations_) {
         std::shared_ptr<Frame> f2 = l->getFrame(position);
         f.no = f2->no;
         f.step = f2->step;
-        f.functionValues = f2->functionValues;
+
+        for (const auto& p : f2->functionValues) {
+            f.functionValues[p.first + "_layer_" + std::to_string(i)] = p.second;
+        }
 
         for (const auto & atom : f2->atoms) {
             f.atoms.push_back(atom);
@@ -36,6 +40,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         }
 
         count += f2->atoms.size();
+        i++;
     }
 //    for (const auto& p : f.connectedRanges) {
 //        std::cout << "AGGREGATED CONNECTION: " << p.first << ", " << p.second << std::endl;
