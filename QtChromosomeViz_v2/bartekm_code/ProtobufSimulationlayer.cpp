@@ -1,4 +1,5 @@
 #include "ProtobufSimulationlayer.h"
+#include <set>
 
 using namespace protostream;
 
