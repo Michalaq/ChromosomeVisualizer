@@ -12,7 +12,7 @@ SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(std::make_shared<Simulation>()),
+    simulation(nullptr),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
@@ -158,46 +158,10 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-
 void MainWindow::openSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
-
-    if (!path.isEmpty())
-    {//TODO tu może być problem z synchronizacją i gubieniem sygnału
-        QObject::disconnect(this, SLOT(updateFrameCount(int)));
-        std::shared_ptr<SimulationLayer> simulationLayer;
-        if (path.contains("pdb")) {
-            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
-        } else {
-            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
-        }
-        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
-        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
-
-        simulation = std::make_shared<Simulation>();
-
-        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
-        ui->scene->setSimulation(simulation);
-        ui->plot->setSimulation(simulation);
-
-        ui->horizontalSlider->setMaximum(0);
-        ui->horizontalSlider_2->setMaximum(0);
-
-        ui->spinBox->setMaximum(0);
-        ui->spinBox_2->setMaximum(0);
-        ui->spinBox_3->setMaximum(0);
-
-        lastFrame = 0;//TODO być może do wywalenia
-
-        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
-
-        ui->treeView->setModel(simulation->getModel());
-        ui->treeView->hideColumn(1);
-
-        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
-    }
+    simulation = nullptr;
+    addLayer();
 }
 
 void MainWindow::addLayer()
@@ -206,10 +170,8 @@ void MainWindow::addLayer()
 
     if (!path.isEmpty())
     {
-        QObject::disconnect(this, SLOT(updateFrameCount(int)));
-
         std::shared_ptr<SimulationLayer> simulationLayer;
-        if (path.contains("pdb")) {
+        if (path.endsWith(".pdb")) {
             simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
         } else {
             simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
@@ -218,15 +180,16 @@ void MainWindow::addLayer()
         simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
         if (!simulation)
+        {
             simulation = std::make_shared<Simulation>();
+            connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+        }
 
         simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);
 
-        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
         ui->treeView->setModel(simulation->getModel());
         ui->treeView->hideColumn(1);
 
