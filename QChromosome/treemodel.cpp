@@ -138,9 +138,9 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void TreeModel::setupModelData(const std::vector<Atom> &data, unsigned int offset)
+void TreeModel::setupModelData(const std::vector<Atom> &data, unsigned int n, unsigned int offset)
 {
-    TreeItem* root = new TreeItem({"(tu nazwa warstwy)"}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n) : "")}, header);
 
     QMap<QString, TreeItem*> types;
 
@@ -151,7 +151,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &data, unsigned int offse
         if (!types.contains(t))
             types[t] = new TreeItem({t}, root);
 
-        types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id + offset}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom.id), atom.id + offset}, types[t]));
     }
 
     for (auto t : types)
