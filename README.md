@@ -1,13 +1,25 @@
-Wizualizacja ruchow chromatyny w jadrze komorkowym.
+Chromosome Visualizer
+=====================
 
-Instalacja:
-    1. Sciagamy Qt open source, np. stad: http://www.qt.io/download-open-source/
-    2. Instalujac Qt musimy wybrac folder instalacji - nazwijmy te sciezke qt-path
-    3. Pobieramy paczke z projektem
-    4. Edytujemy install.sh: QT_PATH=qt-path (sciezka do naszej instalacji qt), COMPILER=[nasz kompilator]
-       gdzie [nasz kompilator] to nazwa folderu w qt-path/5.5/ ktory najlepiej nam odpowiada (w przypadku linuxa powinien to byc gcc_64)
-    5. Uruchamiamy ./install.sh
-    6. W folderze build znajduje sie program wykonywalny QChromosome
+Requirements
+------------
 
-Resintalacja:
-    Po dokonaniu zmian w kodzie, ponownie uruchamiamy install.sh.
+Chromosome Visualizer is based on few components required for it to work correctly on Ubuntu 16.04:  
+1.  **Qt 5.5** -- the framework used to develop the application  
+2.  **build-essential libgl1-mesa-dev** -- these are required for OpenGL support  
+3.  **povray** -- required for picture capturing  
+4.  **ffmpeg** -- required for movie rendering  
+5.  **libprotobuf-dev protobuf-compiler** -- required for binary format support  
+6.  **gcc, version >= 5.0** -- required for C++14 support
+
+
+Installation
+------------
+
+To install Chromosome Visualizer:  
+1.  Install all dependencies listed in "requirements".  
+2.  Qt installation details:  
+      * set "QT_PATH" in install.sh to path to the Qt installation folder.  
+      * optionally, set "COMPILER" to the desired compiler used (it should be inside QT_PATH/5.5 folder)  
+3.  Run ./install.sh.  
+4.  The executable should appear in "build" directory.  

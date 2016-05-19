@@ -1,10 +1,5 @@
 #include "camera.h"
 
-namespace RenderSettings
-{
-    const qreal aspectRatio = 320. / 240.;
-}
-
 const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
 const qreal Camera::wheelFactor = 2.00;
@@ -65,6 +60,21 @@ void Camera::setOrigin(const QVector3D &o)
     origin = o;
 }
 
+QVector3D Camera::position() const
+{
+    return eye;
+}
+
+QVector3D Camera::lookAt() const
+{
+    return eye - z;
+}
+
+qreal Camera::angle() const
+{
+    return horizontalAngle;
+}
+
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
@@ -80,6 +90,12 @@ void Camera::rotate(int dx, int dy)
 void Camera::scale(int dx, int)
 {
     move(0., 0., distanceFactor * dx);
+}
+
+void Camera::setAspectRatio(qreal ar)
+{
+    aspectRatio = ar;
+    updateAngles();
 }
 
 void Camera::move(qreal dx, qreal dy, qreal dz)
@@ -149,19 +165,19 @@ QMatrix4x4& Camera::updateModelView()
 
 QMatrix4x4& Camera::updateProjection()
 {
-    const qreal aspectRatio = (qreal)width() / height();
+    const qreal aspectRatio_ = (qreal)width() / height();
 
     projection.setToIdentity();
 
-    if (aspectRatio < RenderSettings::aspectRatio)
+    if (aspectRatio_ < aspectRatio)
     {
         projection.rotate(-90, {0, 0, 1});
-        projection.perspective(horizontalAngle, 1. / aspectRatio, .1, 1000.);
+        projection.perspective(horizontalAngle, 1. / aspectRatio_, .1, 1000.);
         projection.rotate(+90, {0, 0, 1});
     }
     else
     {
-        projection.perspective(verticalAngle, aspectRatio, .1, 1000.);
+        projection.perspective(verticalAngle, aspectRatio_, .1, 1000.);
     }
 
     return projection;
@@ -169,6 +185,15 @@ QMatrix4x4& Camera::updateProjection()
 
 void Camera::updateAngles()
 {
-    horizontalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength));
-    verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / RenderSettings::aspectRatio / 2 / focalLength));
+    qreal d = qSqrt(1. + aspectRatio * aspectRatio);
+
+    qreal w = apertureWidth * aspectRatio / d;
+    qreal h = apertureWidth / d;
+
+    horizontalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(w / 2 / focalLength));
+    verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(h / 2 / focalLength));
+
+    emit projectionChanged(updateProjection());
+
 }
+// Field of View: (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength))

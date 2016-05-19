@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>848</width>
-    <height>477</height>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,11 +21,24 @@
 
 QStatusBar {
 	background: #672178;
+	color: white;
 }
 
 QToolBar {
 	background: #333333;
 	border: none;
+}
+
+QToolBar &gt; MediaControl {
+	background: #b2b2b2;
+}
+
+QToolBar &gt; MediaControl:hover {
+	background: white;
+}
+
+QToolBar &gt; MediaControl:checked {
+	background: white;
 }
 
 QDockWidget {
@@ -34,8 +47,9 @@ QDockWidget {
 }
 
 QTabWidget::pane {
-	background: #262626;
-	border: 1px solid #4d4d4d;
+	background: url(&quot;:/bar&quot;) repeat-x;
+	border-top: 1px solid #4d4d4d;
+	padding-top: 5px;
 }
 
 QTabWidget::tab-bar {
@@ -128,132 +142,28 @@ QSpinBox::down-arrow {
   <widget class="QWidget" name="centralWidget">
    <property name="styleSheet">
     <string notr="true">MouseControl {
-	background: none;
-	border: none;
-	qproperty-color: #cccccc;
+	background: #cccccc;
 }
 
 MouseControl:hover {
-	qproperty-color: #ffffff;
+	background: white;
 }
 
 MediaControl {
-	background: none;
-	border: none;
-	qproperty-color: #b3b3b3;
+	background: #b3b3b3;
 }
 
 MediaControl:hover {
-	qproperty-color: #ffffff;
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
 }</string>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="MouseControl" name="move">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MouseControl" name="rotate">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MouseControl" name="scale">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>ClosedHandCursor</cursorShape>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/mouse/scale</normaloff>:/mouse/scale</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item>
        <widget class="QWidget" name="canvas" native="true">
         <property name="styleSheet">
@@ -300,6 +210,9 @@ MediaControl:hover {
              <widget class="VizWidget" name="scene"/>
             </item>
             <item row="0" column="0">
+             <widget class="Blind" name="widget_2" native="true"/>
+            </item>
+            <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
             </item>
            </layout>
@@ -313,7 +226,7 @@ MediaControl:hover {
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="Slider" name="horizontalSlider">
         <property name="maximum">
          <number>0</number>
         </property>
@@ -326,6 +239,9 @@ MediaControl:hover {
        <widget class="SpinBox" name="spinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="accelerated">
+         <bool>true</bool>
         </property>
         <property name="suffix">
          <string>F</string>
@@ -349,6 +265,9 @@ MediaControl:hover {
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
           <property name="suffix">
            <string>F</string>
           </property>
@@ -371,6 +290,9 @@ MediaControl:hover {
          <widget class="SpinBox" name="spinBox_3">
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
           </property>
           <property name="suffix">
            <string>F</string>
@@ -404,6 +326,9 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Go to start of animation [Shortcut F6]</string>
+          </property>
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/start</normaloff>:/media/start</iconset>
@@ -426,6 +351,9 @@ MediaControl:hover {
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip">
+           <string>Go to previous frame [Shortcut F]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -450,8 +378,13 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Play backwards</string>
+          </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #0066ff;</string>
+           <string notr="true">:!hover:!checked {
+	background: #0066ff;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -480,8 +413,13 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Play forwards [Shortcut F7]</string>
+          </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #0066ff;</string>
+           <string notr="true">:!hover:!checked {
+	background: #0066ff;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -516,6 +454,9 @@ MediaControl:hover {
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="statusTip">
+           <string>Go to next frame [Shortcut G]</string>
+          </property>
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/next</normaloff>:/media/next</iconset>
@@ -538,6 +479,9 @@ MediaControl:hover {
           </property>
           <property name="cursor">
            <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip">
+           <string>Go to end of animation [Shortcut F8]</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -563,7 +507,9 @@ MediaControl:hover {
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
-           <string notr="true">qproperty-color: #d40000;</string>
+           <string notr="true">:!hover:!checked {
+	background: #d40000;
+}</string>
           </property>
           <property name="icon">
            <iconset resource="icons.qrc">
@@ -592,6 +538,7 @@ MediaControl:hover {
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionAdd_Layer"/>
    </widget>
    <widget class="QMenu" name="menuSelection">
     <property name="title">
@@ -599,10 +546,69 @@ MediaControl:hover {
     </property>
     <addaction name="actionSelect_All"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionProject_Settings"/>
+   </widget>
+   <widget class="QMenu" name="menuAnimation">
+    <property name="title">
+     <string>Animation</string>
+    </property>
+    <widget class="QMenu" name="menuPlay_mode">
+     <property name="title">
+      <string>Play mode</string>
+     </property>
+     <addaction name="actionPreview_range"/>
+     <addaction name="separator"/>
+     <addaction name="actionSimple"/>
+     <addaction name="actionCycle"/>
+    </widget>
+    <addaction name="menuPlay_mode"/>
+    <addaction name="actionPlay_forwards"/>
+    <addaction name="actionPlay_backwards"/>
+    <addaction name="separator"/>
+    <addaction name="actionGo_to_start"/>
+    <addaction name="actionGo_to_end"/>
+    <addaction name="separator"/>
+    <addaction name="actionGo_to_next_frame"/>
+    <addaction name="actionGo_to_previous_frame"/>
+   </widget>
+   <widget class="QMenu" name="menuWindows">
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <widget class="QMenu" name="menuDockable_dialogs">
+     <property name="title">
+      <string>Dockable dialogs</string>
+     </property>
+     <addaction name="actionError_console"/>
+    </widget>
+    <widget class="QMenu" name="menuRecently_closed_docks">
+     <property name="title">
+      <string>Recently closed docks</string>
+     </property>
+    </widget>
+    <addaction name="menuRecently_closed_docks"/>
+    <addaction name="menuDockable_dialogs"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuSelection"/>
+   <addaction name="menuAnimation"/>
+   <addaction name="menuWindows"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
+  <widget class="ToolBar" name="mainToolBar">
+   <property name="minimumSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Standard toolbar</string>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -622,44 +628,71 @@ MediaControl:hover {
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents"/>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_6">
+     <item row="0" column="0">
+      <widget class="QTreeView" name="treeView">
+       <property name="selectionMode">
+        <enum>QAbstractItemView::ExtendedSelection</enum>
+       </property>
+       <property name="headerHidden">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>Preferences</string>
+    <string>Attributes</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QGridLayout" name="gridLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item row="0" column="0">
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="styleSheet">
-        <string notr="true">#tabWidget {
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="styleSheet">
+            <string notr="true">#tabWidget {
 	width: 375px;
 }</string>
-       </property>
-       <widget class="QWidget" name="tab">
-        <attribute name="title">
-         <string>Atom</string>
-        </attribute>
+           </property>
+           <widget class="QWidget" name="tab">
+            <attribute name="title">
+             <string>Basic</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>Object</string>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
        </widget>
-       <widget class="QWidget" name="tab_2">
-        <attribute name="title">
-         <string>Typ</string>
-        </attribute>
-       </widget>
-       <widget class="QWidget" name="tab_3">
-        <attribute name="title">
-         <string>Molekuła</string>
-        </attribute>
-       </widget>
-       <widget class="QWidget" name="tab_4">
-        <attribute name="title">
-         <string>Grupa</string>
-        </attribute>
-       </widget>
+       <widget class="ProjectSettings" name="page_2"/>
       </widget>
      </item>
     </layout>
@@ -672,7 +705,89 @@ MediaControl:hover {
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="Plot" name="plot"/>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <property name="styleSheet">
+     <string notr="true">Legend {
+	color: #808080;
+	min-height: 25px;
+	padding-left: 25px;
+}</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0">
+      <widget class="Plot" name="plot">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>0</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="ToolBar" name="toolBar">
+   <property name="minimumSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Rendering toolbar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionQuick_Render"/>
+   <addaction name="actionQuick_RenderMovie"/>
+   <addaction name="actionSettings"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_4">
+   <property name="styleSheet">
+    <string notr="true">#dockWidget_4{color: white;}
+#dockWidget_4::title {background: #262626;}</string>
+   </property>
+   <property name="windowTitle">
+    <string>Atom display options</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QGridLayout" name="gridLayout_7">
+     <item row="0" column="0">
+      <widget class="QScrollArea" name="scrollArea">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>377</width>
+          <height>76</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">#scrollAreaWidgetContents{background: #1a1a1a;}</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -680,6 +795,11 @@ MediaControl:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAdd_Layer">
+   <property name="text">
+    <string>Add Layer</string>
    </property>
   </action>
   <action name="actionSelect">
@@ -693,12 +813,15 @@ MediaControl:hover {
    <property name="text">
     <string>Select</string>
    </property>
+   <property name="statusTip">
+    <string>Rectangle selection</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Rectangle selection: Click and drag to rectangle-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
+   </property>
   </action>
   <action name="actionMove">
    <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="icon">
@@ -707,6 +830,12 @@ MediaControl:hover {
    </property>
    <property name="text">
     <string>Move</string>
+   </property>
+   <property name="statusTip">
+    <string>Move tool [Shortcut Q]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Move: Click and drag to move the camera.</string>
    </property>
   </action>
   <action name="actionRotate">
@@ -720,6 +849,12 @@ MediaControl:hover {
    <property name="text">
     <string>Rotate</string>
    </property>
+   <property name="statusTip">
+    <string>Rotate tool [Shortcut W]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Rotate: Click and drag to rotate the camera.</string>
+   </property>
   </action>
   <action name="actionScale">
    <property name="checkable">
@@ -732,6 +867,12 @@ MediaControl:hover {
    <property name="text">
     <string>Scale</string>
    </property>
+   <property name="statusTip">
+    <string>Scale tool [Shortcut E]</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Scale: Click and drag to move the camera.</string>
+   </property>
   </action>
   <action name="actionSelect_All">
    <property name="text">
@@ -739,6 +880,180 @@ MediaControl:hover {
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionQuick_Render">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
+   </property>
+   <property name="text">
+    <string>Quick Render</string>
+   </property>
+   <property name="statusTip">
+    <string>Quick render [Shortcut Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionQuick_RenderMovie">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
+   </property>
+   <property name="text">
+    <string>Quick Render</string>
+   </property>
+   <property name="statusTip">
+    <string>Quick render [Shortcut Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionRenderer">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
+   </property>
+   <property name="text">
+    <string>Renderer</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
+   </property>
+   <property name="text">
+    <string>Settings</string>
+   </property>
+   <property name="statusTip">
+    <string>Render settings [Shortcut Ctrl+B]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionProject_Settings">
+   <property name="text">
+    <string>Project Settings</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionPlay_forwards">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/play</normaloff>
+     <normalon>:/media/pause</normalon>:/media/play</iconset>
+   </property>
+   <property name="text">
+    <string>Play forwards</string>
+   </property>
+   <property name="shortcut">
+    <string>F7</string>
+   </property>
+  </action>
+  <action name="actionPlay_backwards">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/reverse</normaloff>
+     <normalon>:/media/pause</normalon>:/media/reverse</iconset>
+   </property>
+   <property name="text">
+    <string>Play backwards</string>
+   </property>
+  </action>
+  <action name="actionGo_to_start">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/start</normaloff>:/media/start</iconset>
+   </property>
+   <property name="text">
+    <string>Go to start</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionGo_to_end">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/end</normaloff>:/media/end</iconset>
+   </property>
+   <property name="text">
+    <string>Go to end</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionGo_to_next_frame">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/next</normaloff>:/media/next</iconset>
+   </property>
+   <property name="text">
+    <string>Go to next frame</string>
+   </property>
+   <property name="shortcut">
+    <string>G</string>
+   </property>
+  </action>
+  <action name="actionGo_to_previous_frame">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
+   </property>
+   <property name="text">
+    <string>Go to previous frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
+  </action>
+  <action name="actionPreview_range">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preview range</string>
+   </property>
+  </action>
+  <action name="actionSimple">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Simple</string>
+   </property>
+  </action>
+  <action name="actionCycle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cycle</string>
+   </property>
+  </action>
+  <action name="actionError_console">
+   <property name="text">
+    <string>Error console</string>
    </property>
   </action>
  </widget>
@@ -775,24 +1090,10 @@ MediaControl:hover {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Plot</class>
-   <extends>QWidget</extends>
-   <header>plot.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DockWidget</class>
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>MouseControl</class>
-   <extends>QPushButton</extends>
-   <header>mousecontrol.h</header>
-   <slots>
-    <signal>delta(int,int)</signal>
-   </slots>
   </customwidget>
   <customwidget>
    <class>SpinBox</class>
@@ -817,6 +1118,38 @@ MediaControl:hover {
    <container>1</container>
    <slots>
     <slot>setModelView(QMatrix4x4)</slot>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>ToolBar</class>
+   <extends>QToolBar</extends>
+   <header>toolbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Blind</class>
+   <extends>QWidget</extends>
+   <header>blind.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ProjectSettings</class>
+   <extends>QWidget</extends>
+   <header>projectsettings.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>slider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Plot</class>
+   <extends>QSlider</extends>
+   <header>plot.h</header>
+   <container>1</container>
+   <slots>
+    <slot>setMinimum(int)</slot>
+    <slot>setMaximum(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -985,22 +1318,6 @@ MediaControl:hover {
    </hints>
   </connection>
   <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>542</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>193</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>horizontalSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1037,70 +1354,6 @@ MediaControl:hover {
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>move</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>move(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rotate</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>rotate(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>402</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scale</sender>
-   <signal>delta(int,int)</signal>
-   <receiver>camera</receiver>
-   <slot>scale(int,int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>428</x>
-     <y>98</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSelect</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setBaseAction(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1161,70 +1414,6 @@ MediaControl:hover {
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>lowerBoundChanged(int)</signal>
-   <receiver>spinBox_2</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>upperBoundChanged(int)</signal>
-   <receiver>spinBox_3</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>148</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_2</receiver>
-   <slot>setLowerBound(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>39</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox_3</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>horizontalSlider_2</receiver>
-   <slot>setUpperBound(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>148</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>93</x>
-     <y>350</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>camera</sender>
    <signal>modelViewChanged(QMatrix4x4)</signal>
    <receiver>widget</receiver>
@@ -1237,6 +1426,214 @@ MediaControl:hover {
     <hint type="destinationlabel">
      <x>224</x>
      <y>154</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>411</x>
+     <y>244</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuick_Render</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>capture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuick_RenderMovie</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>captureMovie()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>plot</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setFrame(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>436</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>lowerBoundChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSoftMinimum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>upperBoundChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSoftMaximum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>93</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_forwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>play(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_backwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reverse(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_start</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>start()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_end</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>end()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_next_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>next()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_previous_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>previous()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAdd_Layer</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>addLayer()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -1253,5 +1650,11 @@ MediaControl:hover {
   <slot>handleSelection(AtomSelection)</slot>
   <slot>selectAll()</slot>
   <slot>setBaseAction(bool)</slot>
+  <slot>capture()</slot>
+  <slot>captureMovie()</slot>
+  <slot>setSoftMinimum(int)</slot>
+  <slot>setSoftMaximum(int)</slot>
+  <slot>addLayer()</slot>
+  <slot>handleModelSelection()</slot>
  </slots>
 </ui>

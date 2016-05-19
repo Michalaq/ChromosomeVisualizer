@@ -22,10 +22,9 @@ private:
 
     VizWidget * vizWidget_;
 
-    QPushButton * selectAllButton_;
-    QPushButton * selectTypeButton_;
-
     QPushButton * setColorButton_;
+    QPushButton * setSpecularColorButton_;
+    QPushButton * setSpecularExponentButton_;
     QPushButton * setOpacityButton_;
     QPushButton * setSizeButton_;
     QPushButton * setLabelButton_;

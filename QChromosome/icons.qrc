@@ -26,4 +26,9 @@
         <file alias="up">icons/up_arrow.svg</file>
         <file alias="down">icons/down_arrow.svg</file>
     </qresource>
+    <qresource prefix="/render">
+        <file alias="renderer">icons/renderer_icon.svg</file>
+        <file alias="quick">icons/quick_render_icon.svg</file>
+        <file alias="gear">icons/gear_icon.svg</file>
+    </qresource>
 </RCC>

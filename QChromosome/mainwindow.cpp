@@ -1,16 +1,24 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_projectsettings.h"
 
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulation.h"
 #include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
+#include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
+#include <QKeyEvent>
 
+SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu własnego widgeta
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(std::make_shared<NullSimulation>()),
+    simulation(std::make_shared<Simulation>()),
     currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
-    actionGroup(new QActionGroup(this))
+    actionGroup(new QActionGroup(this)),
+    renderSettings(new RenderSettings()),
+    softMinimum(0),
+    softMaximum(0)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -26,6 +34,14 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
 
+    for (auto action : actionGroup->actions())
+        connect(action, &QAction::toggled, [action, this] (bool checked) {
+            ui->camera->setStatusTip(checked ? action->property("cameraStatusTip").toString() : "");
+
+            if (!ui->statusBar->currentMessage().isEmpty())
+                ui->statusBar->showMessage(action->property("cameraStatusTip").toString());
+        });
+
     bindings.insert(Qt::Key_Q, ui->actionMove);
     bindings.insert(Qt::Key_W, ui->actionRotate);
     bindings.insert(Qt::Key_E, ui->actionScale);
@@ -33,24 +49,75 @@ MainWindow::MainWindow(QWidget *parent) :
     modifiers.push_back(ui->actionMove);
 
     //TODO do wywalenia po zaimplementowaniu widgeta
-    auto x = new SelectionOperationsWidget(ui->tab);
-    x->setVizWidget(ui->scene);
-    x->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+    z = new SelectionOperationsWidget(ui->scrollAreaWidgetContents);
+    z->setVizWidget(ui->scene);
+    z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
+    z->hide();
 
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->spinBox_3, &SpinBox::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->horizontalSlider, &QSlider::setMinimum);
-    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, ui->plot, &Plot::setMinimum);
+    auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
+    y->setVizWidget(ui->scene);
+    y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
+    auto boxLayout = new QVBoxLayout();
+    boxLayout->addWidget(y);
+    boxLayout->addWidget(z);
+    ui->scrollAreaWidgetContents->setLayout(boxLayout);
+    // koniec
 
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->spinBox_2, &SpinBox::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->horizontalSlider, &QSlider::setMaximum);
-    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, ui->plot, &Plot::setMaximum);
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMaximum);
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_2, &SpinBox::setMaximum);
 
-    connect(ui->actionMove, SIGNAL(toggled(bool)), this, SLOT(move(bool)));
-    connect(ui->actionRotate, SIGNAL(toggled(bool)), this, SLOT(rotate(bool)));
-    connect(ui->actionScale, SIGNAL(toggled(bool)), this, SLOT(scale(bool)));
-    move(true);
+    /* connect actions */
+    mappedSlot[ui->actionMove] = SLOT(move(int,int));
+    mappedSlot[ui->actionRotate] = SLOT(rotate(int,int));
+    mappedSlot[ui->actionScale] = SLOT(scale(int,int));
+
+    ui->actionMove->toggle();
+
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
+    connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+
+    connect(ui->actionProject_Settings, &QAction::triggered, [this] {
+        ui->stackedWidget->setCurrentIndex(1);
+    });
+
+    connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
+
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
+
+    auto *ag = new QActionGroup(this);
+    ag->addAction(ui->actionSimple);
+    ag->addAction(ui->actionCycle);
+
+    connect(ui->page_2->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        timer.setInterval(1000 / value);
+    });
+
+    timer.setInterval(1000 / ui->page_2->ui->spinBox->value());
+
+    auto s = new QAction(this), t = new QAction(this);
+    s->setSeparator(true);
+    t->setSeparator(true);
+
+    ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
+                                                ui->mainToolBar->toggleViewAction(),
+                                                ui->toolBar->toggleViewAction(),
+                                                t,
+                                                ui->dockWidget->toggleViewAction(),
+                                                ui->dockWidget_2->toggleViewAction(),
+                                                ui->dockWidget_3->toggleViewAction(),
+                                                s
+                                            });
+
+    DockWidget::noneClosedAction()->setDisabled(true);
+
+    ui->menuRecently_closed_docks->insertActions(0, {
+                                                     DockWidget::noneClosedAction(),
+                                                     ui->dockWidget->recentlyClosedAction(),
+                                                     ui->dockWidget_2->recentlyClosedAction(),
+                                                     ui->dockWidget_3->recentlyClosedAction()
+                                                 });
 }
 
 MainWindow::~MainWindow()
@@ -58,18 +125,59 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulation.h"
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (Draggable::pressedButton() != Qt::NoButton)
+    {
+        if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
+            return true;
+
+        if (event->type() == QEvent::MouseButtonRelease && reinterpret_cast<QMouseEvent*>(event)->button() != Draggable::pressedButton())
+            return true;
+    }
+
+    static QObject* tmp = Q_NULLPTR;
+
+    if (event->type() == QEvent::HoverEnter)
+    {
+        auto tip = watched->property("statusTip");
+
+        if (tip.isValid())
+        {
+            ui->statusBar->showMessage(tip.toString());
+            tmp = watched;
+        }
+    }
+
+    if (watched == tmp && event->type() == QEvent::HoverLeave)
+    {
+        ui->statusBar->clearMessage();
+        tmp = Q_NULLPTR;
+    }
+
+    return QObject::eventFilter(watched, event);
+}
+
 
 void MainWindow::openSimulation()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "RCSB Protein Data Bank (*.pdb)");
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
 
     if (!path.isEmpty())
     {//TODO tu może być problem z synchronizacją i gubieniem sygnału
         QObject::disconnect(this, SLOT(updateFrameCount(int)));
+        std::shared_ptr<SimulationLayer> simulationLayer;
+        if (path.contains("pdb")) {
+            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        } else {
+            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        }
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
-        simulation = std::make_shared<PDBSimulation>(path.toStdString());
+        simulation = std::make_shared<Simulation>();
 
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
 
@@ -84,17 +192,66 @@ void MainWindow::openSimulation()
 
         connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
         simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+
+        ui->treeView->setModel(simulation->getModel());
+        ui->treeView->hideColumn(1);
+
+        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
+    }
+}
+
+void MainWindow::addLayer()
+{
+    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
+
+    if (!path.isEmpty())
+    {
+        QObject::disconnect(this, SLOT(updateFrameCount(int)));
+
+        std::shared_ptr<SimulationLayer> simulationLayer;
+        if (path.contains("pdb")) {
+            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        } else {
+            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+        }
+        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
+
+        if (!simulation)
+            simulation = std::make_shared<Simulation>();
+
+        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
+        ui->scene->setSimulation(simulation);
+        ui->plot->setSimulation(simulation);
+        ui->plot->setMaximum(lastFrame);
+
+        connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+        simulation->getFrame(10);//TODO paskudny hack, usunąć po dodaniu wątku
+        ui->treeView->setModel(simulation->getModel());
+        ui->treeView->hideColumn(1);
+
+        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
     }
 }
 
 void MainWindow::updateFrameCount(int n)
 {
+    bool expandRange = ui->spinBox_3->value() == lastFrame;
+    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
+
     lastFrame = n - 1;
 
-    ui->horizontalSlider_2->setMaximum(lastFrame);
+    ui->spinBox->setMaximum(lastFrame);
+    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
+    ui->horizontalSlider->setMaximum(lastFrame);
+    ui->plot->setMaximum(lastFrame);
 
-    ui->horizontalSlider_2->setUpperBound(lastFrame);
+    if (expandRange)
+        ui->spinBox_3->setValue(lastFrame);
+
+    if (expandInterval)
+        ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
 void MainWindow::setFrame(int n)
@@ -104,7 +261,23 @@ void MainWindow::setFrame(int n)
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
-    ui->plot->setFrame(n);
+    ui->plot->setValue(n);
+}
+
+void MainWindow::setSoftMinimum(int min)
+{
+    ui->horizontalSlider->setSoftMinimum(min);
+    ui->plot->setSoftMinimum(min);
+
+    softMinimum = min;
+}
+
+void MainWindow::setSoftMaximum(int max)
+{
+    ui->horizontalSlider->setSoftMaximum(max);
+    ui->plot->setSoftMaximum(max);
+
+    softMaximum = max;
 }
 
 void MainWindow::start()
@@ -114,19 +287,37 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    if (currentFrame != 0)
-        setFrame(--currentFrame);
+    if (ui->reverse->isChecked())
+    {
+        if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+            setFrame(--currentFrame);
+        else
+        {
+            if (ui->actionSimple->isChecked())
+                ui->reverse->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
+        }
+    }
     else
-        if (ui->reverse->isChecked())
-            ui->reverse->click();
+    {
+        if (currentFrame > 0)
+            setFrame(--currentFrame);
+    }
 }
 
 void MainWindow::reverse(bool checked)
 {
+    ui->actionPlay_backwards->setChecked(checked);
+    ui->reverse->setChecked(checked);
+
     if (checked)
     {
         if (ui->play->isChecked())
             ui->play->click();
+
+        if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
+            setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
         timer.start();
@@ -140,10 +331,16 @@ void MainWindow::reverse(bool checked)
 
 void MainWindow::play(bool checked)
 {
+    ui->actionPlay_forwards->setChecked(checked);
+    ui->play->setChecked(checked);
+
     if (checked)
     {
         if (ui->reverse->isChecked())
             ui->reverse->click();
+
+        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
+            setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
         timer.start();
@@ -158,11 +355,24 @@ void MainWindow::play(bool checked)
 void MainWindow::next()
 {
     simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-    if (currentFrame != lastFrame)
-        setFrame(++currentFrame);
+
+    if (ui->play->isChecked())
+    {
+        if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+            setFrame(++currentFrame);
+        else
+        {
+            if (ui->actionSimple->isChecked())
+                ui->play->click();
+            else
+                setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
+        }
+    }
     else
-        if (ui->play->isChecked())
-            ui->play->click();
+    {
+        if (currentFrame < lastFrame)
+            setFrame(++currentFrame);
+    }
 }
 
 void MainWindow::end()
@@ -173,57 +383,90 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    /*QList<unsigned int> all;
-
-    size_t count = simulation->getFrame(currentFrame)->atoms.size();
-
-    for (unsigned int i = 0; i < count; i++)
-        all.push_back(i);
-
-    //ui->scene->setVisibleSelection(all);*/
+    ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
-    ui->camera->setOrigin(selection.weightCenter());
+    ui->stackedWidget->setCurrentIndex(0);
 
     if (selection.atomCount())
+    {
+        ui->camera->setOrigin(selection.weightCenter());
         ui->tabWidget->show();
+        z->show();//TODO hack, usunąć
+    }
     else
+    {
+        ui->camera->setOrigin({0, 0, 0});
         ui->tabWidget->hide();
+        z->hide();//TODO hack, usunąć
+    }
+}
+
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
+{
+    auto v = root.sibling(root.row(), 1).data();
+
+    if (v.canConvert<uint>())
+        id.append(v.toUInt() - 1);
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
+}
+
+void MainWindow::handleModelSelection()
+{
+    QList<unsigned int> id;
+
+    for (auto r : ui->treeView->selectionModel()->selectedRows())
+        dumpModel(ui->treeView->model(), r, id);
+
+    auto selection = ui->scene->customSelection(id);
+
+    ui->scene->setVisibleSelection(selection);
 }
 
 void MainWindow::setBaseAction(bool enabled)
 {
     if (enabled)
+    {
         modifiers.last() = qobject_cast<QAction*>(sender());
-}
-
-void MainWindow::move(bool checked)
-{
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(move(int,int)));
+        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
+    }
     else
         ui->camera->disconnect(ui->camera);
 }
 
-void MainWindow::rotate(bool checked)
+#include "moviemaker.h"
+
+void MainWindow::capture()
 {
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(rotate(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
+    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, "");
+
+    system(QString(QString("rm ") + renderSettings->saveFile() + ".pov").toUtf8().constData());
+    system("rm povray.ini");
 }
 
-void MainWindow::scale(bool checked)
+void MainWindow::captureMovie()
 {
-    if (checked)
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, SLOT(scale(int,int)));
-    else
-        ui->camera->disconnect(ui->camera);
-}
+    ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
+    int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
+    for (int i = 1; ; i++)
+    {
+        MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
+        if (i != frames)
+            ui->scene->advanceFrame();
+        else
+            break;
+    }
 
-#include <QKeyEvent>
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page_2->ui->spinBox->value(), ui->page_2->ui->spinBox->value());
+
+    system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
+                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
+    system("rm povray.ini");
+}
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {

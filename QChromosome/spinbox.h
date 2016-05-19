@@ -16,6 +16,7 @@ protected:
 signals:
 
 public slots:
+
 };
 
 #endif // SPINBOX_H

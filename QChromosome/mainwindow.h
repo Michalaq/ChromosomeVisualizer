@@ -5,9 +5,11 @@
 #include <QTimer>
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
+#include "rendersettings.h"
 
-namespace Ui {
-class MainWindow;
+namespace Ui
+{
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -18,11 +20,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool eventFilter(QObject *watched, QEvent *event);
+
 public slots:
     void openSimulation();
+    void addLayer();
 
     void setFrame(int n);
     void updateFrameCount(int n);
+
+    void setSoftMinimum(int min);
+    void setSoftMaximum(int max);
 
     /* animation */
     void start();
@@ -34,15 +42,15 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomSelection & selection);
+    void handleSelection(const AtomSelection &selection);
+    void handleModelSelection();
 
     /* actions */
     void setBaseAction(bool enabled);
 
-    /* camera */
-    void move(bool);
-    void rotate(bool);
-    void scale(bool);
+    /* povray */
+    void capture();
+    void captureMovie();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -63,6 +71,13 @@ private:
 
     QHash<Qt::Key, QAction*> bindings;
     QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
+
+    QHash<QObject*, const char*> mappedSlot;
+
+    RenderSettings *renderSettings;
+
+    int softMinimum;
+    int softMaximum;
 };
 
 #endif // MAINWINDOW_H

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <cstdint>
 
 #ifdef DEBUG
     const bool dbg = true;
@@ -42,6 +43,7 @@ struct Frame {
     frameNumber_t no, step; // no - which frame is it in the visualisation, step - which frame is it in the simulation
     std::vector<Atom> atoms;
     std::map<std::string, float> functionValues;
+    std::vector<std::pair<int, int>> connectedRanges;
 //    Frame(std::vector<Atom> tmp_atoms) : atoms(tmp_atoms) {};
 };
 

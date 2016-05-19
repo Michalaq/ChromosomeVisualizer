@@ -24,6 +24,11 @@ public:
     /* sets new origin */
     void setOrigin(const QVector3D& o);
 
+    QVector3D position() const;
+    QVector3D lookAt() const;
+
+    qreal angle() const;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -33,6 +38,9 @@ public slots:
 
     /* handles mouse scale event */
     void scale(int dx, int dy);
+
+    /* updates aspect ratio */
+    void setAspectRatio(qreal ar);
 
 private:
     /* eye position */
@@ -73,6 +81,8 @@ private:
     static const qreal distanceFactor;
     static const qreal angleFactor;
     static const qreal wheelFactor;
+
+    qreal aspectRatio;
 
 signals:
     void modelViewChanged(QMatrix4x4);

@@ -3,8 +3,9 @@
 
 #include <QDockWidget>
 
-namespace Ui {
-class DockWidget;
+namespace Ui
+{
+    class DockWidget;
 }
 
 class DockWidget : public QDockWidget
@@ -13,6 +14,16 @@ class DockWidget : public QDockWidget
 public:
     explicit DockWidget(QWidget *parent = 0);
     ~DockWidget();
+
+    QAction* recentlyClosedAction();
+
+    static QAction* noneClosedAction();
+
+private:
+    QAction *recclo;
+
+    static QAction* none;
+    static int n;
 
 signals:
 
