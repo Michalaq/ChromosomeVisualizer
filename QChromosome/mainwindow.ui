@@ -537,8 +537,11 @@ MediaControl:checked {
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionAdd_Layer"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuSelection">
     <property name="title">
@@ -791,7 +794,7 @@ MediaControl:checked {
   </widget>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -799,7 +802,10 @@ MediaControl:checked {
   </action>
   <action name="actionAdd_Layer">
    <property name="text">
-    <string>Add Layer</string>
+    <string>Merge...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
    </property>
   </action>
   <action name="actionSelect">
@@ -1056,6 +1062,22 @@ MediaControl:checked {
     <string>Error console</string>
    </property>
   </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+F4</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1209,7 +1231,7 @@ MediaControl:checked {
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>openSimulation()</slot>
+   <slot>openProject()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -1637,9 +1659,41 @@ MediaControl:checked {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionNew</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newProject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>openSimulation()</slot>
+  <slot>openProject()</slot>
   <slot>start()</slot>
   <slot>previous()</slot>
   <slot>reverse(bool)</slot>
@@ -1656,5 +1710,6 @@ MediaControl:checked {
   <slot>setSoftMaximum(int)</slot>
   <slot>addLayer()</slot>
   <slot>handleModelSelection()</slot>
+  <slot>newProject()</slot>
  </slots>
 </ui>

@@ -12,13 +12,8 @@ SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    simulation(nullptr),
-    currentFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
-    lastFrame(0),//TODO być może wywalić, jak ukryje się suwaki, gdy jest plik jednoklatkowy
     actionGroup(new QActionGroup(this)),
-    renderSettings(new RenderSettings()),
-    softMinimum(0),
-    softMaximum(0)
+    renderSettings(new RenderSettings())
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -118,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                                      ui->dockWidget_2->recentlyClosedAction(),
                                                      ui->dockWidget_3->recentlyClosedAction()
                                                  });
+
+    newProject();
 }
 
 MainWindow::~MainWindow()
@@ -158,10 +155,32 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-void MainWindow::openSimulation()
+void MainWindow::newProject()
 {
-    simulation = nullptr;
-    addLayer();
+    simulation = std::make_shared<Simulation>();
+
+    ui->plot->setRange(0, 0);
+    ui->horizontalSlider->setRange(0, 0);
+    ui->horizontalSlider_2->setRange(0, 0);
+
+    currentFrame = 0;
+    lastFrame = 0;
+
+    softMinimum = 0;
+    softMaximum = 0;
+
+    ui->scene->setSimulation(simulation);
+    ui->plot->setSimulation(simulation);
+
+    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+
+    ui->treeView->setModel(simulation->getModel());
+    ui->treeView->hideColumn(1);
+}
+
+void MainWindow::openProject()
+{
+
 }
 
 void MainWindow::addLayer()
@@ -171,21 +190,17 @@ void MainWindow::addLayer()
     if (!path.isEmpty())
     {
         std::shared_ptr<SimulationLayer> simulationLayer;
-        if (path.endsWith(".pdb")) {
+
+        if (path.endsWith(".pdb"))
             simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
-        } else {
+        else
             simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
-        }
+
         auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
         simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
 
-        if (!simulation)
-        {
-            simulation = std::make_shared<Simulation>();
-            connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-        }
-
         simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
+
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);
@@ -193,7 +208,7 @@ void MainWindow::addLayer()
         ui->treeView->setModel(simulation->getModel());
         ui->treeView->hideColumn(1);
 
-        connect(ui->treeView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(handleModelSelection()));
+        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
 }
 

@@ -23,7 +23,8 @@ public:
     bool eventFilter(QObject *watched, QEvent *event);
 
 public slots:
-    void openSimulation();
+    void newProject();
+    void openProject();
     void addLayer();
 
     void setFrame(int n);
