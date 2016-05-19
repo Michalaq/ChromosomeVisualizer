@@ -24,6 +24,14 @@ void SoftSlider::setMaximum(int max)
     softMaximum = std::min(softMaximum, maximum());
 }
 
+void SoftSlider::setRange(int min, int max)
+{
+    QSlider::setRange(min, max);
+
+    setMinimum(minimum());
+    setMaximum(maximum());
+}
+
 void SoftSlider::setSoftMinimum(int min)
 {
     softMinimum = std::max(min, minimum());

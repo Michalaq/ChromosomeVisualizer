@@ -11,6 +11,7 @@ public:
 
     void setMinimum(int min);
     void setMaximum(int max);
+    void setRange(int min, int max);
 
     int tickSpan(qreal minsep) const;
 

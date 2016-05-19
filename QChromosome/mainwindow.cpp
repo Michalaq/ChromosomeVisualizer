@@ -171,6 +171,7 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
+    ui->plot->setMaximum(lastFrame);//TODO poprawić
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
@@ -203,7 +204,7 @@ void MainWindow::addLayer()
 
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
-        ui->plot->setMaximum(lastFrame);
+        ui->plot->setMaximum(lastFrame);//TODO poprawić
 
         ui->treeView->setModel(simulation->getModel());
         ui->treeView->hideColumn(1);
