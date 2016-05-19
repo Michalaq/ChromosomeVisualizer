@@ -54,7 +54,7 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit TreeModel(const std::vector<Atom> &data, QObject *parent = 0);
+    explicit TreeModel(QObject *parent = 0);
     ~TreeModel();
 
     QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
@@ -67,10 +67,10 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-private:
-    void setupModelData(const std::vector<Atom> &data, TreeItem *parent);
+    void setupModelData(const std::vector<Atom> &data, unsigned int offset);
 
-    TreeItem *rootItem;
+private:
+    TreeItem *header;
 };
 
 #endif // TREEMODEL_H

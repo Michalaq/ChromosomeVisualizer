@@ -3,7 +3,7 @@
 
 Simulation::Simulation()
     : frameCount_(0),
-      model(nullptr)
+      model(new TreeModel(this))
 {}
 
 frameNumber_t Simulation::getFrameCount() const
@@ -50,6 +50,8 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
+    model->setupModelData(slc->getFrame(0)->atoms, getFrame(0)->atoms.size());
+
     layerConcatenations_.emplace_back(std::move(slc));
     connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
             [this] (int frameCount) {
@@ -58,7 +60,6 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
             emit frameCountChanged(frameCount_);
         }
     });
-    model = new TreeModel(getFrame(0)->atoms, this);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)

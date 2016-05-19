@@ -197,17 +197,11 @@ void MainWindow::addLayer()
         else
             simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
-        auto simulationLayerConcatenation = std::make_shared<SimulationLayerConcatenation>();
-        simulationLayerConcatenation->appendSimulationLayer(simulationLayer);
-
-        simulation->addSimulationLayerConcatenation(simulationLayerConcatenation);
+        simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
         ui->plot->setMaximum(lastFrame);//TODO poprawić
-
-        ui->treeView->setModel(simulation->getModel());
-        ui->treeView->hideColumn(1);
 
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }

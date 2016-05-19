@@ -43,16 +43,16 @@
 
 #include <QStringList>
 
-TreeModel::TreeModel(const std::vector<Atom> &data, QObject *parent)
-    : QAbstractItemModel(parent)
+TreeModel::TreeModel(QObject *parent)
+    : QAbstractItemModel(parent),
+      header(new TreeItem({"name"}))
 {
-    rootItem = new TreeItem({});
-    setupModelData(data, rootItem);
+
 }
 
 TreeModel::~TreeModel()
 {
-    delete rootItem;
+    delete header;
 }
 
 int TreeModel::columnCount(const QModelIndex &parent) const
@@ -85,7 +85,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return rootItem->data(section);
+        return header->data(section);
 
     return QVariant();
 }
@@ -99,7 +99,7 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
     TreeItem *parentItem;
 
     if (!parent.isValid())
-        parentItem = rootItem;
+        parentItem = header;
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
@@ -118,7 +118,7 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parentItem();
 
-    if (parentItem == rootItem)
+    if (parentItem == header)
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
@@ -131,16 +131,16 @@ int TreeModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     if (!parent.isValid())
-        parentItem = rootItem;
+        parentItem = header;
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
     return parentItem->childCount();
 }
 
-void TreeModel::setupModelData(const std::vector<Atom> &data, TreeItem *parent)
+void TreeModel::setupModelData(const std::vector<Atom> &data, unsigned int offset)
 {
-    TreeItem* root = new TreeItem({"(tu nazwa warstwy)"}, parent);
+    TreeItem* root = new TreeItem({"(tu nazwa warstwy)"}, header);
 
     QMap<QString, TreeItem*> types;
 
@@ -151,11 +151,13 @@ void TreeModel::setupModelData(const std::vector<Atom> &data, TreeItem *parent)
         if (!types.contains(t))
             types[t] = new TreeItem({t}, root);
 
-        types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("atom_%1").arg(atom.id), atom.id + offset}, types[t]));
     }
 
     for (auto t : types)
         root->appendChild(t);
 
-    parent->appendChild(root);
+    beginInsertRows(QModelIndex(), rowCount(), rowCount() + 1);
+    header->appendChild(root);
+    endInsertRows();
 }
