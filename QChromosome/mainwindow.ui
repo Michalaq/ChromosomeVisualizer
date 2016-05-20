@@ -131,6 +131,94 @@ QAbstractSpinBox::up-arrow {
 
 QAbstractSpinBox::down-arrow {
 	image: url(:/arrows/down);
+}
+
+QScrollArea {
+	border: none;
+}
+
+QScrollArea::corner {
+	background: #1a1a1a;
+}
+
+QScrollArea &gt; QWidget &gt; QWidget {
+	background: #1a1a1a;
+}
+
+QScrollBar:vertical {
+	background: #262626;
+	border: none;
+	width: 12px;
+	margin-top: 12px;
+	margin-bottom: 12px;
+}
+
+QScrollBar::handle:vertical {
+	background: #666666;
+	width: 12px;
+	min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical {
+	image: url(:/arrows/up);
+}
+
+QScrollBar::down-arrow:vertical {
+	image: url(:/arrows/down);
+}
+
+QScrollBar:horizontal {
+	background: #262626;
+	border: none;
+	height: 12px;
+	margin-left: 12px;
+	margin-right: 12px;
+}
+
+QScrollBar::handle:horizontal {
+	background: #666666;
+	height: 12px;
+	min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: right;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: left;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal {
+	image: url(:/arrows/left);
+}
+
+QScrollBar::right-arrow:horizontal {
+	image: url(:/arrows/right);
 }</string>
   </property>
   <property name="dockNestingEnabled">
@@ -754,8 +842,8 @@ MediaControl:checked {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>254</width>
-          <height>76</height>
+          <width>256</width>
+          <height>56</height>
          </rect>
         </property>
         <property name="styleSheet">

@@ -25,6 +25,8 @@
     <qresource prefix="/arrows">
         <file alias="up">icons/up_arrow.svg</file>
         <file alias="down">icons/down_arrow.svg</file>
+        <file alias="right">icons/right_arrow.svg</file>
+        <file alias="left">icons/left_arrow.svg</file>
     </qresource>
     <qresource prefix="/render">
         <file alias="renderer">icons/renderer_icon.svg</file>
