@@ -159,6 +159,8 @@ void MainWindow::newProject()
 {
     simulation = std::make_shared<Simulation>();
 
+    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
     ui->horizontalSlider_2->setRange(0, 0);
@@ -171,9 +173,6 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
-    ui->plot->setMaximum(lastFrame);//TODO poprawić
-
-    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
@@ -201,7 +200,6 @@ void MainWindow::addLayer()
 
         ui->scene->setSimulation(simulation);
         ui->plot->setSimulation(simulation);
-        ui->plot->setMaximum(lastFrame);//TODO poprawić
 
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
