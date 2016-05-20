@@ -107,7 +107,7 @@ QToolBox::tab:selected {
 	font: bold;
 }
 
-QSpinBox {
+QAbstractSpinBox {
 	background: #1a1a1a;
 	border: 1px solid #4d4d4d;
 	color: #4d4d4d;
@@ -116,20 +116,20 @@ QSpinBox {
 	padding-right: 10px;
 }
 
-QSpinBox[focus=&quot;true&quot;] {
+QAbstractSpinBox[focus=&quot;true&quot;] {
 	border-color: #808080;
 	color: #808080;
 }
 
-QSpinBox::up-button, QSpinBox::down-button {
+QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {
 	border: none;
 }
 
-QSpinBox::up-arrow {
+QAbstractSpinBox::up-arrow {
 	image: url(:/arrows/up);
 }
 
-QSpinBox::down-arrow {
+QAbstractSpinBox::down-arrow {
 	image: url(:/arrows/down);
 }</string>
   </property>
