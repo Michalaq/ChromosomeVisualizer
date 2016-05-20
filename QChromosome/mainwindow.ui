@@ -669,33 +669,8 @@ MediaControl:checked {
      </property>
      <item row="0" column="0">
       <widget class="QStackedWidget" name="stackedWidget">
-       <property name="currentIndex">
-        <number>1</number>
-       </property>
-       <widget class="QWidget" name="page">
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="QTabWidget" name="tabWidget">
-           <property name="styleSheet">
-            <string notr="true">#tabWidget {
-	width: 375px;
-}</string>
-           </property>
-           <widget class="QWidget" name="tab">
-            <attribute name="title">
-             <string>Basic</string>
-            </attribute>
-           </widget>
-           <widget class="QWidget" name="tab_2">
-            <attribute name="title">
-             <string>Object</string>
-            </attribute>
-           </widget>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="ProjectSettings" name="page_2"/>
+       <widget class="ProjectSettings" name="page"/>
+       <widget class="Attributes" name="page_2"/>
       </widget>
      </item>
     </layout>
@@ -779,7 +754,7 @@ MediaControl:checked {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>377</width>
+          <width>254</width>
           <height>76</height>
          </rect>
         </property>
@@ -1173,6 +1148,12 @@ MediaControl:checked {
     <slot>setMinimum(int)</slot>
     <slot>setMaximum(int)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>Attributes</class>
+   <extends>QWidget</extends>
+   <header>attributes.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

@@ -22,8 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->tabWidget->hide();
-
     actionGroup->addAction(ui->actionSelect);
     actionGroup->addAction(ui->actionMove);
     actionGroup->addAction(ui->actionRotate);
@@ -74,10 +72,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(1);
+        ui->stackedWidget->setCurrentIndex(0);
     });
 
-    connect(ui->page_2->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
+    connect(ui->page->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
@@ -85,11 +83,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
 
-    connect(ui->page_2->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+    connect(ui->page->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
         timer.setInterval(1000 / value);
     });
 
-    timer.setInterval(1000 / ui->page_2->ui->spinBox->value());
+    timer.setInterval(1000 / ui->page->ui->spinBox->value());
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -359,20 +357,17 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
-    ui->stackedWidget->setCurrentIndex(0);
+    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
 
+    ui->page_2->handleSelection(selection);
+
+    ui->stackedWidget->setCurrentIndex(1);
+
+    //TODO hack, usunąć
     if (selection.atomCount())
-    {
-        ui->camera->setOrigin(selection.weightCenter());
-        ui->tabWidget->show();
-        z->show();//TODO hack, usunąć
-    }
+        z->show();
     else
-    {
-        ui->camera->setOrigin({0, 0, 0});
-        ui->tabWidget->hide();
-        z->hide();//TODO hack, usunąć
-    }
+        z->hide();
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
@@ -432,7 +427,7 @@ void MainWindow::captureMovie()
             break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page_2->ui->spinBox->value(), ui->page_2->ui->spinBox->value());
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value());
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
