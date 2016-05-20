@@ -140,10 +140,6 @@ std::shared_ptr<Frame> PDBSimulationLayer::readCurrentFrame()
         std::move(connectionRanges)
 	};
 
-    for (const auto& p : d.connectedRanges) {
-        std::cout << p.first << ", " << p.second << std::endl;
-    }
-
 	if (cachedFrame_.unique())
 		*cachedFrame_ = std::move(d);
 	else
