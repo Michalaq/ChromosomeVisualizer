@@ -33,4 +33,7 @@
         <file alias="quick">icons/quick_render_icon.svg</file>
         <file alias="gear">icons/gear_icon.svg</file>
     </qresource>
+    <qresource prefix="/objects">
+        <file alias="atom">icons/atom_icon.svg</file>
+    </qresource>
 </RCC>
