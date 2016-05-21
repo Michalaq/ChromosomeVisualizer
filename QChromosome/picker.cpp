@@ -5,6 +5,12 @@ Picker::Picker(QWidget *parent) : QWidget(parent)
 
 }
 
+void Picker::setInitialColor(const QColor &c)
+{
+    color = c;
+    update();
+}
+
 #include <QPainter>
 
 void Picker::paintEvent(QPaintEvent *event)
@@ -22,8 +28,10 @@ void Picker::mousePressEvent(QMouseEvent *event)
 
     QColor c = QColorDialog::getColor(color);
 
-    if (c.isValid())
+    if (c.isValid() && c != color)
     {
+        emit valueChanged(c);
+
         color = c;
         update();
     }

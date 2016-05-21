@@ -16,6 +16,8 @@ public:
     explicit Attributes(QWidget *parent = 0);
     ~Attributes();
 
+    void setVizWidget(VizWidget* vizWidget);
+
     void handleSelection(const AtomSelection& selection);
 
 signals:
@@ -24,6 +26,8 @@ public slots:
 
 private:
     Ui::Attributes *ui;
+
+    VizWidget* vizWidget_;
 };
 
 #endif // ATTRIBUTES_H
