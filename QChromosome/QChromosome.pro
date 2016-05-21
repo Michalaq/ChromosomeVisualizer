@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     treeitem.cpp \
     treemodel.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
-    attributes.cpp
+    attributes.cpp \
+    picker.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -92,7 +93,8 @@ HEADERS  += mainwindow.h\
     treeitem.h \
     treemodel.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
-    attributes.h
+    attributes.h \
+    picker.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
