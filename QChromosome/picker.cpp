@@ -11,8 +11,7 @@ void Picker::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    QPainter p(this);
-    p.fillRect(rect(), color);
+    QPainter(this).fillRect(rect(), color);
 }
 
 #include <QColorDialog>
