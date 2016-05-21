@@ -16,7 +16,7 @@ Attributes::~Attributes()
 void Attributes::handleSelection(const AtomSelection &selection)
 {
     if (!selection.atomCount())
-        return ui->tabWidget->hide();
+        return hide();
 
-    ui->tabWidget->show();
+    show();
 }
