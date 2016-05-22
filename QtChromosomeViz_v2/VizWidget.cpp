@@ -1139,6 +1139,90 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
+QVariant AtomSelection::getColor() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    unsigned int ans = widget_->frameState_[selectedIndices_.front()].color & 0x00FFFFFF;
+
+    for (auto i : selectedIndices_)
+        if ((widget_->frameState_[i].color & 0x00FFFFFF) != ans)
+            return QVariant();
+
+    return QColor(ans);
+}
+
+QVariant AtomSelection::getAlpha() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    unsigned int ans = widget_->frameState_[selectedIndices_.front()].color >> 24;
+
+    for (auto i : selectedIndices_)
+        if ((widget_->frameState_[i].color >> 24) != ans)
+            return QVariant();
+
+    return QColor(ans);
+}
+
+QVariant AtomSelection::getSpecularColor() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    unsigned int ans = widget_->frameState_[selectedIndices_.front()].specularColor;
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].specularColor != ans)
+            return QVariant();
+
+    return QColor(ans);
+}
+
+QVariant AtomSelection::getSpecularExponent() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    float ans = widget_->frameState_[selectedIndices_.front()].specularExponent;
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].specularExponent != ans)
+            return QVariant();
+
+    return ans;
+}
+
+QVariant AtomSelection::getSize() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    float ans = widget_->frameState_[selectedIndices_.front()].size;
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].size != ans)
+            return QVariant();
+
+    return ans;
+}
+
+QVariant AtomSelection::getLabel() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    QString ans = widget_->atomLabels_[selectedIndices_.front()];
+
+    for (auto i : selectedIndices_)
+        if (widget_->atomLabels_[i] != ans)
+            return QVariant();
+
+    return ans;
+}
+
 unsigned int AtomSelection::atomCount() const
 {
     return selectedIndices_.size();

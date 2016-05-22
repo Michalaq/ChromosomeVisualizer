@@ -58,6 +58,13 @@ public:
     void setSize(float size);
     void setLabel(const QString & label);
 
+    QVariant getColor() const;
+    QVariant getAlpha() const;
+    QVariant getSpecularColor() const;
+    QVariant getSpecularExponent() const;
+    QVariant getSize() const;
+    QVariant getLabel() const;
+
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
     const QList<unsigned int> & selectedIndices() const;

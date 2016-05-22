@@ -7,15 +7,23 @@ Attributes::Attributes(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // set name
+
     // set label
     connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
         vizWidget_->selectedSpheresObject().setLabel(ui->lineEdit_2->text());
     });
 
+    // set vie
+
+    // set vir
+
     // set radius
     connect(ui->doubleSpinBox, &QDoubleSpinBox::editingFinished, [this] {
         vizWidget_->selectedSpheresObject().setSize(ui->doubleSpinBox->value());
     });
+
+    // set segments
 
     // set color
     connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
@@ -74,13 +82,24 @@ void Attributes::handleSelection(const AtomSelection &selection)
 
     // set coordinates
 
+    // set radius
+    auto r = selection.getSize();
 
-    // set object properties
+    if (r.isValid())
+        ui->doubleSpinBox->setValue(r.toFloat());
+    else
+        ui->doubleSpinBox->setSpecialValueText("<< multiple values >>");
+
+    // set segments
 
     // set color
     //ui->widget->setInitialColor();
 
-    // set specular
+    // set transparency
+
+    // set specular width
+
+    // set specular color
     //ui->widget_2->setInitialColor();
 
     show();
