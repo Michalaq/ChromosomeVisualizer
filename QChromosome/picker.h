@@ -2,6 +2,7 @@
 #define PICKER_H
 
 #include <QWidget>
+#include <QVariant>
 
 class Picker : public QWidget
 {
@@ -9,14 +10,14 @@ class Picker : public QWidget
 public:
     explicit Picker(QWidget *parent = 0);
 
-    void setInitialColor(const QColor& c);
+    void setValue(const QVariant& c);
 
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    QColor color;
+    QVariant color;
 
 signals:
     void valueChanged(QColor);

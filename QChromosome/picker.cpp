@@ -5,7 +5,7 @@ Picker::Picker(QWidget *parent) : QWidget(parent)
 
 }
 
-void Picker::setInitialColor(const QColor &c)
+void Picker::setValue(const QVariant& c)
 {
     color = c;
     update();
@@ -17,7 +17,15 @@ void Picker::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    QPainter(this).fillRect(rect(), color);
+    QPainter p(this);
+
+    if (color.isValid())
+        p.fillRect(rect(), color.value<QColor>());
+    else
+    {
+        p.setPen(Qt::lightGray);
+        p.drawText(rect(), "<< multipe values >>", QTextOption(Qt::AlignVCenter));
+    }
 }
 
 #include <QColorDialog>
@@ -26,7 +34,7 @@ void Picker::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
 
-    QColor c = QColorDialog::getColor(color);
+    QColor c = QColorDialog::getColor(color.value<QColor>());
 
     if (c.isValid() && c != color)
     {

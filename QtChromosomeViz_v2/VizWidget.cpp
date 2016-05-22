@@ -1214,10 +1214,10 @@ QVariant AtomSelection::getLabel() const
     if (selectedIndices_.isEmpty())
         return QVariant();
 
-    QString ans = widget_->atomLabels_[selectedIndices_.front()];
+    QString ans = widget_->atomLabels_.value(selectedIndices_.front());
 
     for (auto i : selectedIndices_)
-        if (widget_->atomLabels_[i] != ans)
+        if (widget_->atomLabels_.value(i) != ans)
             return QVariant();
 
     return ans;

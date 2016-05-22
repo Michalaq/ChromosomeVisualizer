@@ -79,6 +79,9 @@ void Attributes::handleSelection(const AtomSelection &selection)
     // set name
 
     // set label
+    auto l = selection.getLabel();
+
+    ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set coordinates
 
@@ -93,14 +96,14 @@ void Attributes::handleSelection(const AtomSelection &selection)
     // set segments
 
     // set color
-    //ui->widget->setInitialColor();
+    ui->widget->setValue(selection.getColor());
 
     // set transparency
 
     // set specular width
 
     // set specular color
-    //ui->widget_2->setInitialColor();
+    ui->widget_2->setValue(selection.getSpecularColor());
 
     show();
 }
