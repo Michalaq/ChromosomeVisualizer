@@ -175,7 +175,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
     }
 
     // set specular width
-    auto w = selection.getAlpha();
+    auto w = selection.getSpecularExponent();
 
     if (w.isValid())
     {
