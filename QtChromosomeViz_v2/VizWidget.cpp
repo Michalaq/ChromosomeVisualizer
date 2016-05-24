@@ -1164,7 +1164,7 @@ QVariant AtomSelection::getAlpha() const
         if ((widget_->frameState_[i].color >> 24) != ans)
             return QVariant();
 
-    return QColor(ans);
+    return (100. * (255 - ans) / 255);
 }
 
 QVariant AtomSelection::getSpecularColor() const

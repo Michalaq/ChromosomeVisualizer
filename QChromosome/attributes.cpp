@@ -19,8 +19,13 @@ Attributes::Attributes(QWidget *parent) :
     // set vir
 
     // set radius
+    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
+        ui->doubleSpinBox->setSpecialValueText("");
+    });
+
     connect(ui->doubleSpinBox, &QDoubleSpinBox::editingFinished, [this] {
-        vizWidget_->selectedSpheresObject().setSize(ui->doubleSpinBox->value());
+        if (ui->doubleSpinBox->specialValueText().isEmpty())
+            vizWidget_->selectedSpheresObject().setSize(ui->doubleSpinBox->value());
     });
 
     // set segments
@@ -31,13 +36,23 @@ Attributes::Attributes(QWidget *parent) :
     });
 
     // set transparency
+    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
+        ui->doubleSpinBox_2->setSpecialValueText("");
+    });
+
     connect(ui->doubleSpinBox_2, &QDoubleSpinBox::editingFinished, [this] {
-        vizWidget_->selectedSpheresObject().setAlpha(1. - ui->doubleSpinBox_2->value() / 100);
+        if (ui->doubleSpinBox_2->specialValueText().isEmpty())
+            vizWidget_->selectedSpheresObject().setAlpha((100. - ui->doubleSpinBox_2->value()) / 100);
     });
 
     // set specular width
+    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
+        ui->doubleSpinBox_3->setSpecialValueText("");
+    });
+
     connect(ui->doubleSpinBox_3, &QDoubleSpinBox::editingFinished, [this] {
-        vizWidget_->selectedSpheresObject().setSpecularExponent(ui->doubleSpinBox_3->value());
+        if (ui->doubleSpinBox_3->specialValueText().isEmpty())
+            vizWidget_->selectedSpheresObject().setSpecularExponent(ui->doubleSpinBox_3->value());
     });
 
     // set specular color
@@ -89,9 +104,15 @@ void Attributes::handleSelection(const AtomSelection &selection)
     auto r = selection.getSize();
 
     if (r.isValid())
+    {
         ui->doubleSpinBox->setValue(r.toFloat());
+        ui->doubleSpinBox->setSpecialValueText("");
+    }
     else
+    {
+        ui->doubleSpinBox->setValue(ui->doubleSpinBox->minimum());
         ui->doubleSpinBox->setSpecialValueText("<< multiple values >>");
+    }
 
     // set segments
 
@@ -99,8 +120,32 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->widget->setValue(selection.getColor());
 
     // set transparency
+    auto a = selection.getAlpha();
+
+    if (a.isValid())
+    {
+        ui->doubleSpinBox_2->setValue(a.toFloat());
+        ui->doubleSpinBox_2->setSpecialValueText("");
+    }
+    else
+    {
+        ui->doubleSpinBox_2->setValue(ui->doubleSpinBox_2->minimum());
+        ui->doubleSpinBox_2->setSpecialValueText("<< multiple values >>");
+    }
 
     // set specular width
+    auto w = selection.getAlpha();
+
+    if (w.isValid())
+    {
+        ui->doubleSpinBox_3->setValue(w.toFloat());
+        ui->doubleSpinBox_3->setSpecialValueText("");
+    }
+    else
+    {
+        ui->doubleSpinBox_3->setValue(ui->doubleSpinBox_3->minimum());
+        ui->doubleSpinBox_3->setSpecialValueText("<< multiple values >>");
+    }
 
     // set specular color
     ui->widget_2->setValue(selection.getSpecularColor());

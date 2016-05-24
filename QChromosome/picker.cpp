@@ -23,8 +23,14 @@ void Picker::paintEvent(QPaintEvent *event)
         p.fillRect(rect(), color.value<QColor>());
     else
     {
-        p.setPen(Qt::lightGray);
-        p.drawText(rect(), "<< multipe values >>", QTextOption(Qt::AlignVCenter));
+        p.setPen("#4d4d4d");
+        p.drawRect(0, 0, width() - 1, height() - 1);
+
+        QTextOption opt;
+        opt.setAlignment(Qt::AlignVCenter);
+        opt.setWrapMode(QTextOption::NoWrap);
+
+        p.drawText(QRect(15, 0, width() - 30, height()), "<< multipe values >>", opt);
     }
 }
 
