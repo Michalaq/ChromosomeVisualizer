@@ -64,6 +64,7 @@ public:
     QVariant getSpecularExponent() const;
     QVariant getSize() const;
     QVariant getLabel() const;
+    QList<QVariant> getCoordinates() const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;

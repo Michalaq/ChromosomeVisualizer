@@ -11,7 +11,8 @@ Attributes::Attributes(QWidget *parent) :
 
     // set label
     connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
-        vizWidget_->selectedSpheresObject().setLabel(ui->lineEdit_2->text());
+        if (ui->lineEdit_2->isModified())
+            vizWidget_->selectedSpheresObject().setLabel(ui->lineEdit_2->text());
     });
 
     // set vie
@@ -99,6 +100,46 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set coordinates
+    auto c = selection.getCoordinates();
+
+    auto x = c.at(0);
+
+    if (x.isValid())
+    {
+        ui->spinBox->setValue(x.toFloat());
+        ui->spinBox->setSpecialValueText("");
+    }
+    else
+    {
+        ui->spinBox->setValue(ui->spinBox->minimum());
+        ui->spinBox->setSpecialValueText("<< multiple values >>");
+    }
+
+    auto y = c.at(1);
+
+    if (x.isValid())
+    {
+        ui->spinBox_2->setValue(y.toFloat());
+        ui->spinBox_2->setSpecialValueText("");
+    }
+    else
+    {
+        ui->spinBox_2->setValue(ui->spinBox_2->minimum());
+        ui->spinBox_2->setSpecialValueText("<< multiple values >>");
+    }
+
+    auto z = c.at(2);
+
+    if (x.isValid())
+    {
+        ui->spinBox_3->setValue(z.toFloat());
+        ui->spinBox_3->setSpecialValueText("");
+    }
+    else
+    {
+        ui->spinBox_3->setValue(ui->spinBox_3->minimum());
+        ui->spinBox_3->setSpecialValueText("<< multiple values >>");
+    }
 
     // set radius
     auto r = selection.getSize();

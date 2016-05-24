@@ -1223,6 +1223,44 @@ QVariant AtomSelection::getLabel() const
     return ans;
 }
 
+QList<QVariant> AtomSelection::getCoordinates() const
+{
+    QList<QVariant> ans;
+
+    double x = widget_->frameState_[selectedIndices_.front()].position.x();
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].position.x() != x)
+        {
+            x = qSNaN();
+            break;
+        }
+
+    double y = widget_->frameState_[selectedIndices_.front()].position.y();
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].position.y() != y)
+        {
+            y = qSNaN();
+            break;
+        }
+
+    double z = widget_->frameState_[selectedIndices_.front()].position.z();
+
+    for (auto i : selectedIndices_)
+        if (widget_->frameState_[i].position.z() != z)
+        {
+            z = qSNaN();
+            break;
+        }
+
+    ans.push_back(qIsNaN(x) ? QVariant() : x);
+    ans.push_back(qIsNaN(y) ? QVariant() : y);
+    ans.push_back(qIsNaN(z) ? QVariant() : z);
+
+    return ans;
+}
+
 unsigned int AtomSelection::atomCount() const
 {
     return selectedIndices_.size();
