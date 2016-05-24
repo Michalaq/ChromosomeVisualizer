@@ -19,7 +19,6 @@ SOURCES += main.cpp\
     draggable.cpp \
     camera.cpp \
     plot.cpp \
-    ../QtChromosomeViz_v2/SelectionOperationsWidget.cpp \
     mediacontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
@@ -53,7 +52,6 @@ HEADERS  += mainwindow.h\
     draggable.h \
     camera.h \
     plot.h \
-    ../QtChromosomeViz_v2/SelectionOperationsWidget.hpp \
     mediacontrol.h \
     dockwidget.h \
     spinbox.h \

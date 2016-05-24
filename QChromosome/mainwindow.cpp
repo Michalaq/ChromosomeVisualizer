@@ -2,13 +2,11 @@
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
 
-#include "../QtChromosomeViz_v2/SelectionOperationsWidget.hpp"//TODO do wywalenia po zaimplementowaniu widgeta
 #include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
 
-SelectionOperationsWidget *z;//TODO paskudny hack, usunąć po zaimplementowaniu własnego widgeta
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -42,17 +40,11 @@ MainWindow::MainWindow(QWidget *parent) :
     modifiers.push_back(ui->actionMove);
 
     //TODO do wywalenia po zaimplementowaniu widgeta
-    z = new SelectionOperationsWidget(ui->scrollAreaWidgetContents);
-    z->setVizWidget(ui->scene);
-    z->setStyleSheet("SelectionOperationsWidget>QLabel { color: #d9d9d9; }");
-    z->hide();
-
     auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
     y->setVizWidget(ui->scene);
     y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
     auto boxLayout = new QVBoxLayout();
     boxLayout->addWidget(y);
-    boxLayout->addWidget(z);
     ui->scrollAreaWidgetContents->setLayout(boxLayout);
     // koniec
 
@@ -364,12 +356,6 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     ui->page_2->handleSelection(selection);
 
     ui->stackedWidget->setCurrentIndex(1);
-
-    //TODO hack, usunąć
-    if (selection.atomCount())
-        z->show();
-    else
-        z->hide();
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
