@@ -416,7 +416,7 @@ void MainWindow::capture()
     MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, "");
 
     system(QString(QString("rm ") + renderSettings->saveFile() + ".pov").toUtf8().constData());
-    system("rm povray.ini");
+    //system("rm povray.ini");
 }
 
 void MainWindow::captureMovie()

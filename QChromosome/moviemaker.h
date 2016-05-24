@@ -39,7 +39,7 @@ public:
 
     static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString number)
     {
-        prepareINIFile(renderSettings->outputSize(), true);
+        prepareINIFile(renderSettings);
         std::ofstream outFile;
         createPOVFile(outFile, (renderSettings->saveFile() + number).toStdString());
 
@@ -81,10 +81,32 @@ public:
 
 private:
 
-    static void inline prepareINIFile(QSize size, bool aa)
+    static void inline prepareINIFile(const RenderSettings * renderSettings)
     {
         std::ofstream outFile("povray.ini");
-        outFile << "Width=" << size.width() << "\nHeight=" << size.height() << "\nAntialias=" << (aa ? "On" : "Off") << "\n";
+        QSize size = renderSettings->outputSize();
+        outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+                << "\nQuality=" << renderSettings->quality().toStdString();
+        if (renderSettings->antiAliasing())
+        {
+            outFile << "\nAntialias=on"
+                    << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+                    << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+                    << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+            if (renderSettings->aaJitter())
+            {
+                outFile << "\nJitter=on"
+                        << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+            }
+            else
+            {
+                outFile << "\nJitter=off";
+            }
+        }
+        else
+        {
+            outFile << "\nAntialias=off";
+        }
     }
 
     static void inline createPOVFile(std::ofstream& outFile, std::string filename)
