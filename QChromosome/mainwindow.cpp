@@ -177,24 +177,29 @@ void MainWindow::openProject()
 
 void MainWindow::addLayer()
 {
-    QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
+    try {
+        QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
 
-    if (!path.isEmpty())
-    {
-        std::shared_ptr<SimulationLayer> simulationLayer;
+        if (!path.isEmpty())
+        {
+            std::shared_ptr<SimulationLayer> simulationLayer;
 
-        if (path.endsWith(".pdb"))
-            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
-        else
-            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+            if (path.endsWith(".pdb"))
+                simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+            else
+                simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
-        simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+            simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
-        ui->scene->setSimulation(simulation);
-        ui->plot->setSimulation(simulation);
+            ui->scene->setSimulation(simulation);
+            ui->plot->setSimulation(simulation);
 
-        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+            connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+        }
+    } catch (std::exception& e) {
+        QMessageBox::critical(this, "Error occured.", e.what());
     }
+
 }
 
 void MainWindow::updateFrameCount(int n)
@@ -416,7 +421,7 @@ void MainWindow::captureMovie()
             break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page_2->ui->spinBox->value(), ui->page_2->ui->spinBox->value(), renderSettings->timestamp());
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), renderSettings->timestamp());
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
