@@ -21,6 +21,42 @@ public:
     /* Save */
     QString saveFile() const;
 
+    /* Quality */
+    QString quality() const;
+
+    /* Anti-Aliasing */
+    bool antiAliasing() const;
+
+    /* AA Sampling Method */
+    QString aaSamplingMethod() const;
+
+    /* AA Threshold */
+    QString aaThreshold() const;
+
+    /* AA Jitter */
+    bool aaJitter() const;
+
+    /* AA Jitter Amount */
+    QString aaJitterAmount() const;
+
+    /* AA Depth */
+    QString aaDepth() const;
+
+    /* Timestamp */
+    bool timestamp() const;
+
+    /* Ambient */
+    QString ambient() const;
+
+    /* Diffuse */
+    QString diffuse() const;
+
+    /* Phong */
+    QString phong() const;
+
+    /* Phong Size */
+    QString phongSize() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

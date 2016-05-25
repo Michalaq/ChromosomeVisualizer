@@ -396,9 +396,10 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, "");
+    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString(Qt::ISODate) : "";
+    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, suffix);
 
-    system(QString(QString("rm ") + renderSettings->saveFile() + ".pov").toUtf8().constData());
+    system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
     system("rm povray.ini");
 }
 
@@ -415,7 +416,7 @@ void MainWindow::captureMovie()
             break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value());
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page_2->ui->spinBox->value(), ui->page_2->ui->spinBox->value(), renderSettings->timestamp());
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());

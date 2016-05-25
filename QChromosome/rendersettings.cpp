@@ -116,6 +116,66 @@ QString RenderSettings::saveFile() const
     return ui->lineEdit->text();
 }
 
+QString RenderSettings::quality() const
+{
+    return ui->qualitySpinBox->text();
+}
+
+bool RenderSettings::antiAliasing() const
+{
+    return ui->aaCheckBox->isChecked();
+}
+
+QString RenderSettings::aaSamplingMethod() const
+{
+    return ui->aaSamplingSpinBox->text();
+}
+
+QString RenderSettings::aaThreshold() const
+{
+    return ui->aaThresholdDoubleSpinBox->text();
+}
+
+bool RenderSettings::aaJitter() const
+{
+    return ui->aaJitterCheckBox->isChecked();
+}
+
+QString RenderSettings::aaJitterAmount() const
+{
+    return ui->aaJitterAmountDoubleSpinBox->text();
+}
+
+QString RenderSettings::aaDepth() const
+{
+    return ui->aaDepthSpinBox->text();
+}
+
+bool RenderSettings::timestamp() const
+{
+    return ui->timestampCheckBox->isChecked();
+}
+
+QString RenderSettings::ambient() const
+{
+    return ui->ambientDoubleSpinBox->text();
+}
+
+QString RenderSettings::diffuse() const
+{
+    return ui->diffuseDoubleSpinBox->text();
+}
+
+QString RenderSettings::phong() const
+{
+    return ui->phongDoubleSpinBox->text();
+}
+
+QString RenderSettings::phongSize() const
+{
+    return ui->phongSizeSpinBox->text();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)

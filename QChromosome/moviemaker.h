@@ -27,21 +27,22 @@ class MovieMaker
 {
 public:
 
-    static void inline makeMovie(QString filename, int frames, float framerate, int fps)
+    static void inline makeMovie(QString filename, int frames, float framerate, int fps, bool timestamp)
     {
         QStringList argv;
         argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
              << "-r " + QString::number(fps) << "-pix_fmt yuv420p" << filename + ".mp4";
         //QProcess::execute("ffmpeg", argv);
         QProcess::execute(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(framerate) + " -i " + filename + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
-                          + " -r " + QString::number(fps) + " -pix_fmt yuv420p " + filename + ".mp4");
+                          + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + (timestamp ? QDateTime::currentDateTime().toString(Qt::ISODate) : "") + ".mp4");
     }
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString number)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString suffix)
     {
-        prepareINIFile(renderSettings->outputSize(), true);
+        prepareINIFile(renderSettings);
         std::ofstream outFile;
-        createPOVFile(outFile, (renderSettings->saveFile() + number).toStdString());
+        QString filename = renderSettings->saveFile() + suffix;
+        createPOVFile(outFile, filename.toStdString(), renderSettings);
 
         setCamera(outFile, camera, renderSettings->outputSize());
         setBackgroundColor(outFile, scene->backgroundColor());
@@ -69,7 +70,7 @@ public:
 
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + number + ".pov";
+        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
         QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";
@@ -81,17 +82,43 @@ public:
 
 private:
 
-    static void inline prepareINIFile(QSize size, bool aa)
+    static void inline prepareINIFile(const RenderSettings * renderSettings)
     {
         std::ofstream outFile("povray.ini");
-        outFile << "Width=" << size.width() << "\nHeight=" << size.height() << "\nAntialias=" << (aa ? "On" : "Off") << "\n";
+        QSize size = renderSettings->outputSize();
+        outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+                << "\nQuality=" << renderSettings->quality().toStdString();
+        if (renderSettings->antiAliasing())
+        {
+            outFile << "\nAntialias=on"
+                    << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+                    << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+                    << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+            if (renderSettings->aaJitter())
+            {
+                outFile << "\nJitter=on"
+                        << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+            }
+            else
+            {
+                outFile << "\nJitter=off";
+            }
+        }
+        else
+        {
+            outFile << "\nAntialias=off";
+        }
     }
 
-    static void inline createPOVFile(std::ofstream& outFile, std::string filename)
+    static void inline createPOVFile(std::ofstream& outFile, std::string filename, const RenderSettings * renderSettings)
     {
         outFile.open(filename + ".pov");
-        outFile << "#include \"colors.inc\"\n#include \"stones.inc\"\n"
-                << "\n";
+        outFile << "#default{finish{ambient " << renderSettings->ambient().toStdString()
+                << " diffuse " << renderSettings->diffuse().toStdString()
+                << " phong " << renderSettings->phong().toStdString()
+                << " phong_size " << renderSettings->phongSize().toStdString()
+                << "}}\n"
+                << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
     }
 
     static void inline setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
