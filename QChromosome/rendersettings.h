@@ -42,6 +42,21 @@ public:
     /* AA Depth */
     QString aaDepth() const;
 
+    /* Timestamp */
+    bool timestamp() const;
+
+    /* Ambient */
+    QString ambient() const;
+
+    /* Diffuse */
+    QString diffuse() const;
+
+    /* Phong */
+    QString phong() const;
+
+    /* Phong Size */
+    QString phongSize() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

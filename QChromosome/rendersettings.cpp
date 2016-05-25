@@ -151,6 +151,31 @@ QString RenderSettings::aaDepth() const
     return ui->aaDepthSpinBox->text();
 }
 
+bool RenderSettings::timestamp() const
+{
+    return ui->timestampCheckBox->isChecked();
+}
+
+QString RenderSettings::ambient() const
+{
+    return ui->ambientDoubleSpinBox->text();
+}
+
+QString RenderSettings::diffuse() const
+{
+    return ui->diffuseDoubleSpinBox->text();
+}
+
+QString RenderSettings::phong() const
+{
+    return ui->phongDoubleSpinBox->text();
+}
+
+QString RenderSettings::phongSize() const
+{
+    return ui->phongSizeSpinBox->text();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)
