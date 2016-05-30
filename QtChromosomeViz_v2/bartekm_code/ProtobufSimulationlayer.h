@@ -59,7 +59,10 @@ public:
     ProtobufSimulationLayer(const std::string & name, const std::string & fileName);
     ProtobufSimulationLayer(const std::string & fileName);
     ~ProtobufSimulationLayer() noexcept {};
-    virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrameById(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time) override;
+    virtual frameNumber_t getNextTime(frameNumber_t time) override;
+    virtual frameNumber_t getPreviousTime(frameNumber_t time) override;
     virtual bool reachedEndOfFile() const override;
 };
 

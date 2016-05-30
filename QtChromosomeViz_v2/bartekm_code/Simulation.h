@@ -23,7 +23,10 @@ public:
     const std::string & getSimulationName() const;
     void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc);
     std::shared_ptr<SimulationLayerConcatenation> getSimulationLayerConcatenation(int i);
-    virtual std::shared_ptr<Frame> getFrame(frameNumber_t position);
+    //virtual std::shared_ptr<Frame> getFrameByNumber(frameNumber_t position);
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time);
+    frameNumber_t getNextTime(frameNumber_t time);
+    frameNumber_t getPreviousTime(frameNumber_t time);
     TreeModel* getModel();
 signals:
     void frameCountChanged(int frameCount);

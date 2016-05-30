@@ -132,15 +132,21 @@ std::pair<std::string, float> parseCallback(bio::motions::format::proto::Callbac
     return {name, value};
 }
 
-std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t position)
 {
-    if (position >= rd_.frame_count() - 1) {
-        position = rd_.frame_count() - 1;
+    // There is 1-to-1 mapping between frame numbers and times
+    return getFrame(position);
+}
+
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t time)
+{
+    if (time >= rd_.frame_count() - 1) {
+        time = rd_.frame_count() - 1;
         reachedEndOfFile_ = true;
     }
 
-    auto kf_no = position / (deltasPerKeyframe_ + 1);
-    auto delta_no = position % (deltasPerKeyframe_ + 1);
+    auto kf_no = time / (deltasPerKeyframe_ + 1);
+    auto delta_no = time % (deltasPerKeyframe_ + 1);
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
@@ -219,8 +225,8 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     std::sort(bidy.begin(), bidy.end(), [](const auto& a, const auto& b) { return a.id < b.id; });
 
     Frame f = {
-        position,
-        position,
+        time,
+        time,
         std::move(bidy),
         std::move(functionValues),
         std::move(connectedRanges)
@@ -230,12 +236,26 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 //        std::cout << p.first << ", " << p.second << std::endl;
 //    }
 
-    if (position >= frameCount_) { // hihihi
-        frameCount_ = position + 1;
+    if (time >= frameCount_) { // hihihi
+        frameCount_ = time + 1;
         emit frameCountChanged(frameCount_);
     }
 
     return std::make_shared<Frame>(f);
+}
+
+frameNumber_t ProtobufSimulationLayer::getNextTime(frameNumber_t time)
+{
+    if (time >= rd_.frame_count())
+        return time;
+    return time + 1;
+}
+
+frameNumber_t ProtobufSimulationLayer::getPreviousTime(frameNumber_t time)
+{
+    if (time <= 0)
+        return time;
+    return time - 1;
 }
 
 bool ProtobufSimulationLayer::reachedEndOfFile() const

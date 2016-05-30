@@ -48,11 +48,33 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
     return std::make_shared<Frame>(f);
 }
 
+frameNumber_t Simulation::getNextTime(frameNumber_t time)
+{
+    frameNumber_t minimum = std::numeric_limits<frameNumber_t>::max();
+    for (auto & concatenation : layerConcatenations_) {
+        frameNumber_t localMinimum = concatenation->getNextTime(time);
+        if (localMinimum != time)
+            minimum = std::min(minimum, localMinimum);
+    }
+
+    return minimum;
+}
+
+frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
+{
+    frameNumber_t maximum = std::numeric_limits<frameNumber_t>::min();
+    for (auto & concatenation : layerConcatenations_) {
+        frameNumber_t localMaximum = concatenation->getPreviousTime(time);
+        if (localMaximum != time)
+            maximum = std::max(maximum, localMaximum);
+    }
+
+    return maximum;
+}
+
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
-    model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), getFrame(0)->atoms.size());
-
-    layerConcatenations_.emplace_back(std::move(slc));
+    layerConcatenations_.emplace_back(slc);
     connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
             [this] (int frameCount) {
         if (frameCount_ < frameCount) {
@@ -60,6 +82,8 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
             emit frameCountChanged(frameCount_);
         }
     });
+
+    model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), getFrame(0)->atoms.size());
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)

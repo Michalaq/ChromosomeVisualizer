@@ -18,7 +18,7 @@
     inline void print_dbg(const std::string & str) {};
 #endif
 
-using frameNumber_t = uint64_t;
+using frameNumber_t = int64_t;
 
 struct Atom {
     int id;
