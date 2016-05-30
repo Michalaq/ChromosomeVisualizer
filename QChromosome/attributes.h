@@ -28,6 +28,8 @@ private:
     Ui::Attributes *ui;
 
     VizWidget* vizWidget_;
+
+    QString title;
 };
 
 #endif // ATTRIBUTES_H

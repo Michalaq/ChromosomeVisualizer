@@ -78,7 +78,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
         return hide();
 
     // set title
-    QString title("Atom object ");
+    title = "Atom object ";
 
     if (selection.atomCount() > 1)
         title += "(" + QString::number(selection.atomCount()) + " elements) ";
@@ -86,11 +86,13 @@ void Attributes::handleSelection(const AtomSelection &selection)
     title += "[";
 
     for (auto i : selection.selectedIndices())
-        title += "";
+        title += "Atom." + QString::number(i + 1) + ", ";
+
+    title.chop(2);
 
     title += "]";
 
-    ui->label_14->setText(title);
+    ui->label_14->setText(ui->label_14->fontMetrics().elidedText(title, Qt::ElideRight, width() - 75));
 
     // set name
 
