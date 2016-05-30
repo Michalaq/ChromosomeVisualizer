@@ -47,6 +47,12 @@
 
 #include "../QtChromosomeViz_v2/bartekm_code/common.h"
 
+enum ObjectType
+{
+    AtomObject,
+    LayerObject
+};
+
 class TreeItem;
 
 class TreeModel : public QAbstractItemModel

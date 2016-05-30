@@ -168,6 +168,7 @@ void MainWindow::newProject()
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
+    ui->treeView->hideColumn(2);
 }
 
 void MainWindow::openProject()
@@ -365,7 +366,7 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
 {
-    auto v = root.sibling(root.row(), 1).data();
+    auto v = root.sibling(root.row(), 2).data();
 
     if (v.canConvert<uint>())
         id.append(v.toUInt() - 1);
