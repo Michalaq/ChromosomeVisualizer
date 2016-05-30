@@ -378,13 +378,28 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<u
 void MainWindow::handleModelSelection()
 {
     QList<unsigned int> id;
+    QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
+    {
+        auto v = r.sibling(r.row(), 1).data();
+
+        if (v.canConvert<int>())
+            type.insert(v.toInt());
+
         dumpModel(ui->treeView->model(), r, id);
+    }
 
     auto selection = ui->scene->customSelection(id);
 
-    ui->scene->setVisibleSelection(selection);
+    ui->scene->setVisibleSelection(selection, false);
+
+    if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
+    {
+        ;
+    }
+    else
+        handleSelection(selection);
 }
 
 void MainWindow::setBaseAction(bool enabled)
