@@ -42,6 +42,7 @@ private:
     std::string fileName_;
     int connectionCount_;
     bool reachedEndOfFile_;
+    frameNumber_t lastFrameNumber_;
     std::vector<bio::motions::format::proto::Keyframe> keyframes_;
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
@@ -53,13 +54,20 @@ private:
     std::vector<int> binder_types_;
     std::vector<std::string> str_types_;
 
+    std::shared_ptr<Frame> cachedFrame_;
+    frameNumber_t positionCachedFor_;
+
     static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();
+    frameNumber_t getPositionInfo(frameNumber_t time, int offset, frameNumber_t *outPosition = nullptr) const;
 public:
     ProtobufSimulationLayer(const std::string & name, const std::string & fileName);
     ProtobufSimulationLayer(const std::string & fileName);
     ~ProtobufSimulationLayer() noexcept {};
-    virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrameById(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time) override;
+    virtual frameNumber_t getNextTime(frameNumber_t time) override;
+    virtual frameNumber_t getPreviousTime(frameNumber_t time) override;
     virtual bool reachedEndOfFile() const override;
 };
 

@@ -1,5 +1,6 @@
 #include "ProtobufSimulationlayer.h"
 #include <set>
+#include <QDebug>
 
 using namespace protostream;
 
@@ -9,6 +10,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , reachedEndOfFile_(false)
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
+    , positionCachedFor_(-1)
     , SimulationLayer(name)
 {
     bio::motions::format::proto::Header header;
@@ -85,9 +87,28 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //        }
 //    }
 
-    // TODO: Change to rd_.frames_per_keyframe() when libprotostream version is updated
     deltasPerKeyframe_ = rd_.frames_per_keyframe();
     std::cout << deltasPerKeyframe_ << std::endl;
+
+    // Get last frame time
+    lastFrameNumber_ = rd_.frame_count() - 1;
+    auto it = keyframesData_.back().begin();
+    if (it == keyframesData_.back().end()) {
+        if (keyframes_.back().has_step_counter())
+            lastFrameNumber_ = keyframes_.back().step_counter();
+    } else {
+        auto it2 = ++keyframesData_.back().begin();
+        while (it2 != keyframesData_.back().end()) {
+            ++it;
+            ++it2;
+        }
+
+        bio::motions::format::proto::Delta delta;
+        delta.ParseFromString(it->get());
+
+        if (delta.has_step_counter())
+            lastFrameNumber_ = delta.step_counter();
+    }
 }
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string & fileName)
@@ -131,15 +152,34 @@ std::pair<std::string, float> parseCallback(bio::motions::format::proto::Callbac
     return {name, value};
 }
 
-std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t time)
 {
-    if (position >= rd_.frame_count() - 1) {
-        position = rd_.frame_count() - 1;
-        reachedEndOfFile_ = true;
+    frameNumber_t position;
+    frameNumber_t nextTime = getPositionInfo(time, 1, &position);
+
+    if (time >= frameCount_) { // hihihi
+        if (time >= lastFrameNumber_) {
+            time = lastFrameNumber_;
+            reachedEndOfFile_ = true;
+        }
+
+        if (time > lastFrameNumber_)
+            time = lastFrameNumber_;
+
+        frameCount_ = nextTime;
+        emit frameCountChanged(frameCount_);
     }
 
-    auto kf_no = position / deltasPerKeyframe_;
-    auto delta_no = position % deltasPerKeyframe_;
+    return getFrameById(position);
+}
+
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t position)
+{
+    if (position == positionCachedFor_)
+        return cachedFrame_;
+
+    auto kf_no = position / (deltasPerKeyframe_ + 1);
+    auto delta_no = position % (deltasPerKeyframe_ + 1);
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
@@ -239,12 +279,101 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 //        std::cout << p.first << ", " << p.second << std::endl;
 //    }
 
-    if (position >= frameCount_) { // hihihi
-        frameCount_ = position + 1;
-        emit frameCountChanged(frameCount_);
+    positionCachedFor_ = position;
+    cachedFrame_ = std::make_shared<Frame>(std::move(f));
+
+    // TODO: Emit frameCountChanged here
+
+    return cachedFrame_;
+}
+
+frameNumber_t ProtobufSimulationLayer::getPositionInfo(frameNumber_t time, int offset, frameNumber_t *outPosition) const
+{
+    // Find appropriate keyframe
+    auto compKeyframe = [](const bio::motions::format::proto::Keyframe & key, frameNumber_t time) {
+        return key.step_counter() > time;
+    };
+    auto it = std::lower_bound(keyframes_.rbegin(), keyframes_.rend(), time, compKeyframe);
+    if (it == keyframes_.rend())
+        it = keyframes_.rbegin();
+
+    // Look for the right delta
+    // qDebug() << keyframes_.size();
+    int keyframeID = std::distance(it, keyframes_.rend()) - 1;
+    int deltaID = 0;
+    auto data = keyframesData_.begin() + keyframeID;
+    frameNumber_t position = it->step_counter();
+    auto it2 = data->begin();
+    for (; it2 != data->end(); it2++) {
+        bio::motions::format::proto::Delta delta;
+        delta.ParseFromString(it2->get());
+        frameNumber_t newPosition = delta.step_counter();
+        if (newPosition > time)
+            break;
+        ++deltaID;
+        position = newPosition;
     }
 
-    return std::make_shared<Frame>(f);
+    assert(position <= time);
+
+    if (outPosition)
+        *outPosition = keyframeID * rd_.frames_per_keyframe() + deltaID;
+
+    // Move forwards, or backwards
+    if (offset > 0) {
+        if (it2 == data->end()) {
+            ++data;
+            if (data == keyframesData_.end())
+                return time;
+            --it;
+            position = it->step_counter();
+        } else {
+            bio::motions::format::proto::Delta delta;
+            delta.ParseFromString(it2->get());
+            position = delta.step_counter();
+        }
+    }
+
+    if (offset < 0 && position == time) {
+        if (it2 == data->begin()) {
+            if (data == keyframesData_.begin())
+                return time;
+            --data;
+            auto it3 = data->begin();
+            auto it4 = ++data->begin();
+            while (it4 != data->end()) {
+                ++it3;
+                ++it4;
+            }
+            bio::motions::format::proto::Delta delta;
+            delta.ParseFromString(it3->get());
+            position = delta.step_counter();
+        } else {
+            if (deltaID == 1) {
+                position = it->step_counter();
+            } else {
+                auto it3 = data->begin();
+                deltaID--;
+                while (--deltaID > 0)
+                    it3++;
+                bio::motions::format::proto::Delta delta;
+                delta.ParseFromString(it3->get());
+                position = delta.step_counter();
+            }
+        }
+    }
+
+    return position;
+}
+
+frameNumber_t ProtobufSimulationLayer::getNextTime(frameNumber_t time)
+{
+    return getPositionInfo(time, 1);
+}
+
+frameNumber_t ProtobufSimulationLayer::getPreviousTime(frameNumber_t time)
+{
+    return getPositionInfo(time, -1);
 }
 
 bool ProtobufSimulationLayer::reachedEndOfFile() const

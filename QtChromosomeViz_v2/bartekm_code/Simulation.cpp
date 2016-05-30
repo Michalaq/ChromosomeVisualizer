@@ -3,12 +3,13 @@
 
 Simulation::Simulation()
     : frameCount_(0),
+      nextUnreadFrame_(0),
       model(new TreeModel(this))
 {}
 
 frameNumber_t Simulation::getFrameCount() const
 {
-    return frameCount_;
+    return nextUnreadFrame_ + 1;
 }
 
 std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
@@ -45,22 +46,65 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 //    for (const auto& p : f.connectedRanges) {
 //        std::cout << "AGGREGATED CONNECTION: " << p.first << ", " << p.second << std::endl;
 //    }
+
+    frameNumber_t nextFrame = getNextTime(position);
+    if (nextUnreadFrame_ < nextFrame) {
+        nextUnreadFrame_ = nextFrame;
+        emit frameCountChanged(nextUnreadFrame_);
+    }
+
     return std::make_shared<Frame>(f);
+}
+
+frameNumber_t Simulation::getNextTime(frameNumber_t time)
+{
+    frameNumber_t minimum = std::numeric_limits<frameNumber_t>::max();
+    for (auto & concatenation : layerConcatenations_) {
+        frameNumber_t localMinimum = concatenation->getNextTime(time);
+        if (localMinimum != time)
+            minimum = std::min(minimum, localMinimum);
+    }
+
+    if (minimum == std::numeric_limits<frameNumber_t>::max())
+        return 0;
+
+    return minimum;
+}
+
+frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
+{
+    if (layerConcatenations_.empty())
+        return 0;
+    frameNumber_t maximum = std::numeric_limits<frameNumber_t>::min();
+    for (auto & concatenation : layerConcatenations_) {
+        frameNumber_t localMaximum = concatenation->getPreviousTime(time);
+        if (localMaximum != time)
+            maximum = std::max(maximum, localMaximum);
+    }
+
+    if (maximum == std::numeric_limits<frameNumber_t>::min())
+        return 0;
+
+    return maximum;
 }
 
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
-    model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), getFrame(0)->atoms.size());
-    int layerId = layerConcatenations_.size();
-    slc->setLayerId(layerId);
-    layerConcatenations_.emplace_back(std::move(slc));
+    const auto offset = getFrame(0)->atoms.size();
+    layerConcatenations_.emplace_back(slc);
+
     connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
             [this] (int frameCount) {
         if (frameCount_ < frameCount) {
             frameCount_ = frameCount;
-            emit frameCountChanged(frameCount_);
+            // emit frameCountChanged(frameCount_);
         }
     });
+
+    int layerId = layerConcatenations_.size() - 1;
+    slc->setLayerId(layerId);
+
+    model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), offset);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)

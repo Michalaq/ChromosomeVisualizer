@@ -92,7 +92,8 @@ HEADERS  += mainwindow.h\
     treemodel.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
     attributes.h \
-    picker.h
+    picker.h \
+    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
