@@ -759,6 +759,7 @@ MediaControl:checked {
       <widget class="QStackedWidget" name="stackedWidget">
        <widget class="ProjectSettings" name="page"/>
        <widget class="Attributes" name="page_2"/>
+       <widget class="LayerAttributes" name="page_3"/>
       </widget>
      </item>
     </layout>
@@ -1241,6 +1242,12 @@ MediaControl:checked {
    <class>Attributes</class>
    <extends>QWidget</extends>
    <header>attributes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LayerAttributes</class>
+   <extends>QWidget</extends>
+   <header>layerattributes.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -396,7 +396,7 @@ void MainWindow::handleModelSelection()
 
     if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
     {
-        ;
+        ui->stackedWidget->setCurrentIndex(2);
     }
     else
         handleSelection(selection);
