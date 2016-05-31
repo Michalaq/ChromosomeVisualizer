@@ -35,5 +35,6 @@
     </qresource>
     <qresource prefix="/objects">
         <file alias="atom">icons/atom_icon.svg</file>
+        <file alias="layer">icons/layers_icon.svg</file>
     </qresource>
 </RCC>
