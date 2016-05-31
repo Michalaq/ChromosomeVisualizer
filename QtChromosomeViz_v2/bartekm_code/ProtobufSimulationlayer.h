@@ -9,6 +9,7 @@
 #include "include/cache.h"
 #include "message_format/message.pb.h"
 #include <vector>
+#include <map>
 
 using namespace protostream;
 
@@ -46,15 +47,14 @@ private:
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
     std::vector<mmap_reader::keyframe_data> keyframesData_;
-    std::vector<std::vector<int>> binder_types_real_;
-    std::vector<std::vector<int>> chain_binder_types_renumbered_;
-    std::vector<Atom> binders_;
-    std::vector<std::vector<Atom>> chains_;
-    std::vector<int> binder_types_;
-    std::vector<std::string> str_types_;
+    std::vector<std::string> binderTypes;
+    std::vector<std::vector<std::string>> chainAtomTypes;
+    std::vector<std::string> binderColorMap;
+    std::map<std::vector<int>, std::string> evColorMap;
 
     static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();
+    void setColors(const std::string & fileName);
 public:
     ProtobufSimulationLayer(const std::string & name, const std::string & fileName);
     ProtobufSimulationLayer(const std::string & fileName);
