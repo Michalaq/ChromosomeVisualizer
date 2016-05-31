@@ -83,16 +83,14 @@ void Attributes::handleSelection(const AtomSelection &selection)
     if (selection.atomCount() > 1)
         title += "(" + QString::number(selection.atomCount()) + " elements) ";
 
-    title += "[";
+    list.clear();
 
     for (auto i : selection.selectedIndices())
-        title += "Atom." + QString::number(i + 1) + ", ";
+        list += "Atom." + QString::number(i + 1) + ", ";
 
-    title.chop(2);
+    list.chop(2);
 
-    title += "]";
-
-    ui->label_14->setText(ui->label_14->fontMetrics().elidedText(title, Qt::ElideRight, width() - 75));
+    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     // set name
 
@@ -194,4 +192,11 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->widget_2->setValue(selection.getSpecularColor());
 
     show();
+}
+
+void Attributes::resizeEvent(QResizeEvent *event)
+{
+    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+
+    QWidget::resizeEvent(event);
 }

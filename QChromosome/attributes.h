@@ -20,6 +20,9 @@ public:
 
     void handleSelection(const AtomSelection& selection);
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+
 signals:
 
 public slots:
@@ -29,7 +32,7 @@ private:
 
     VizWidget* vizWidget_;
 
-    QString title;
+    QString title, list;
 };
 
 #endif // ATTRIBUTES_H

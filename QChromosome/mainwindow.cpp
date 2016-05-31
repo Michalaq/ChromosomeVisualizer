@@ -357,11 +357,11 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
+    ui->stackedWidget->setCurrentIndex(1);
+
     ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
 
     ui->page_2->handleSelection(selection);
-
-    ui->stackedWidget->setCurrentIndex(1);
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
