@@ -117,7 +117,11 @@ private:
                 << " diffuse " << renderSettings->diffuse().toStdString()
                 << " phong " << renderSettings->phong().toStdString()
                 << " phong_size " << renderSettings->phongSize().toStdString()
-                << "}}\n"
+                << " metallic " << renderSettings->metallic().toStdString()
+                << " irid { " << renderSettings->iridescence().toStdString()
+                << " thickness " << renderSettings->iridescenceThickness().toStdString()
+                << " turbulence " << renderSettings->iridescenceTurbulence().toStdString()
+                << "}}}\n"
                 << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
     }
 

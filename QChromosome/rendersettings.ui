@@ -561,6 +561,33 @@ QScrollArea &gt; QWidget &gt; QWidget {
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_22">
+        <property name="text">
+         <string>Iridescence Thickness</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QDoubleSpinBox" name="iridThicknessDoubleSpinBox">
+        <property name="locale">
+         <locale language="C" country="AnyCountry"/>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Iridescence</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_17">
         <property name="text">
@@ -632,7 +659,7 @@ QScrollArea &gt; QWidget &gt; QWidget {
         </property>
        </widget>
       </item>
-      <item row="4" column="0" colspan="2">
+      <item row="8" column="0" colspan="2">
        <spacer name="verticalSpacer_4">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -649,6 +676,13 @@ QScrollArea &gt; QWidget &gt; QWidget {
        <widget class="QLabel" name="label_16">
         <property name="text">
          <string>Ambient</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>Metallic</string>
         </property>
        </widget>
       </item>
@@ -669,6 +703,46 @@ QScrollArea &gt; QWidget &gt; QWidget {
         </property>
         <property name="value">
          <number>40</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="metallicSpinBox">
+        <property name="maximum">
+         <number>1</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QDoubleSpinBox" name="iridDoubleSpinBox">
+        <property name="locale">
+         <locale language="C" country="AnyCountry"/>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.050000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_23">
+        <property name="text">
+         <string>Iridescence Turbulence</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="iridTurbulenceDoubleSpinBox">
+        <property name="locale">
+         <locale language="C" country="AnyCountry"/>
+        </property>
+        <property name="maximum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.050000000000000</double>
         </property>
        </widget>
       </item>
