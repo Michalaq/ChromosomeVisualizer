@@ -50,6 +50,7 @@ message Delta {
   //^displacement vector
 
   repeated Callback callbacks = 3;
+  optional int64 step_counter = 4;
 }
 
 message Keyframe {
@@ -64,4 +65,5 @@ message Keyframe {
   }
   repeated Chain chains = 4;
   repeated Callback callbacks = 5;
+  optional int64 step_counter = 6;
 }

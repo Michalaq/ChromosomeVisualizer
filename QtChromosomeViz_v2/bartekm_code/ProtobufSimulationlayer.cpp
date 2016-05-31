@@ -86,8 +86,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //    }
 
     // TODO: Change to rd_.frames_per_keyframe() when libprotostream version is updated
-    for (const auto& delta : keyframesData_[0])
-        deltasPerKeyframe_++;
+    deltasPerKeyframe_ = rd_.frames_per_keyframe();
     std::cout << deltasPerKeyframe_ << std::endl;
 }
 
@@ -139,12 +138,13 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         reachedEndOfFile_ = true;
     }
 
-    auto kf_no = position / (deltasPerKeyframe_ + 1);
-    auto delta_no = position % (deltasPerKeyframe_ + 1);
+    auto kf_no = position / deltasPerKeyframe_;
+    auto delta_no = position % deltasPerKeyframe_;
     auto kf = keyframes_[kf_no];
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
     std::map<std::string, float> functionValues;
+    frameNumber_t stepNo = kf.has_step_counter() ? kf.step_counter() : position;
     /*for (const auto& cb : kf.callbacks()) {
         std::cout << "callback!" << std::endl;
         auto p = parseCallback(cb);
@@ -195,11 +195,14 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
             break;
         bio::motions::format::proto::Delta delta;
         delta.ParseFromString(delta_it.get());
-        if (i == delta_no - 1)
+        if (i == delta_no - 1) { // the proper, last delta: parse callbacks, get stepno.
             for (const auto& cb : delta.callbacks()) {
                 auto p = parseCallback(cb);
                 functionValues[p.first] = p.second;
             }
+            if (delta.has_step_counter())
+                stepNo = delta.step_counter();
+        }
         auto& p = delta.from();
         auto& q = delta.disp();
         Atom a;
