@@ -64,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
+        ui->dockWidget_2->setWindowTitle("Project settings");
+        ui->dockWidget_2->show();
+
         ui->stackedWidget->setCurrentIndex(0);
     });
 
@@ -357,6 +360,9 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
+    ui->dockWidget_2->setWindowTitle("Attributes");
+    ui->dockWidget_2->show();
+
     ui->stackedWidget->setCurrentIndex(1);
 
     ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
@@ -396,6 +402,9 @@ void MainWindow::handleModelSelection()
 
     if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
     {
+        ui->dockWidget_2->setWindowTitle("Attributes");
+        ui->dockWidget_2->show();
+
         ui->stackedWidget->setCurrentIndex(2);
     }
     else

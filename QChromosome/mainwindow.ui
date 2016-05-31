@@ -736,7 +736,7 @@ MediaControl:checked {
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>Attributes</string>
+    <string>Project settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
