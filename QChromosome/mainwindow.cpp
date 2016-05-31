@@ -176,7 +176,7 @@ void MainWindow::newProject()
 
 void MainWindow::openProject()
 {
-
+    addLayer();//TODO tymczasowo
 }
 
 void MainWindow::addLayer()
@@ -203,7 +203,6 @@ void MainWindow::addLayer()
     } catch (std::exception& e) {
         QMessageBox::critical(this, "Error occured.", e.what());
     }
-
 }
 
 void MainWindow::updateFrameCount(int n)
