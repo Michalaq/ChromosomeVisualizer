@@ -102,9 +102,12 @@ std::shared_ptr<Frame> PDBSimulationLayer::readCurrentFrame()
     int leftbound = -1, rightbound = -1, tmpl, tmpr;
     std::vector<std::pair<int,int>> connectionRanges;
     while (line.find("END") == std::string::npos) {
-		if (line.substr(0, 4) == "ATOM")
-			atoms.push_back(getAtomFromString(line));
-        else
+        if (line.substr(0, 4) == "ATOM") {
+            auto a = getAtomFromString(line);
+            a.layerNo = layerId_;
+            a.inLayerId = a.id;
+            atoms.push_back(a);
+        } else
             if (line.substr(0, 6) == "CONECT") {
                 sscanf(line.c_str(), "CONECT %d %d", &tmpl, &tmpr);
                 if (leftbound == -1) {

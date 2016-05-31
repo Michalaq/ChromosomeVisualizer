@@ -25,3 +25,8 @@ const int SimulationLayer::getConnectionCount() const
 {
     return connectionCount_;
 }
+
+void SimulationLayer::setLayerId(int layerId)
+{
+    layerId_ = layerId;
+}

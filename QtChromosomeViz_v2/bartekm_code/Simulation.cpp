@@ -51,7 +51,8 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
     model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), getFrame(0)->atoms.size());
-
+    int layerId = layerConcatenations_.size();
+    slc->setLayerId(layerId);
     layerConcatenations_.emplace_back(std::move(slc));
     connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
             [this] (int frameCount) {
