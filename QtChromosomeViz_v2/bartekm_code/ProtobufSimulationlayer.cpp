@@ -229,7 +229,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 
     Frame f = {
         position,
-        position,
+        stepNo,
         std::move(bidy),
         std::move(functionValues),
         std::move(connectedRanges)
