@@ -109,6 +109,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_2->setVizWidget(ui->scene);
 
+    addAction(ui->actionViewport);
+
+    connect(ui->actionViewport, &QAction::triggered, [this] {
+        ui->dockWidget_2->setWindowTitle("Viewport");
+        ui->dockWidget_2->show();
+
+        ui->stackedWidget->setCurrentIndex(3);
+    });
+
     newProject();
 }
 

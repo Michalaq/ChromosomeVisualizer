@@ -760,6 +760,7 @@ MediaControl:checked {
        <widget class="ProjectSettings" name="page"/>
        <widget class="Attributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
+       <widget class="Viewport" name="page_4"/>
       </widget>
      </item>
     </layout>
@@ -1143,6 +1144,14 @@ MediaControl:checked {
     <string>Shift+R</string>
    </property>
   </action>
+  <action name="actionViewport">
+   <property name="text">
+    <string>Viewport</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+V</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1249,6 +1258,12 @@ MediaControl:checked {
    <class>LayerAttributes</class>
    <extends>QWidget</extends>
    <header>layerattributes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Viewport</class>
+   <extends>QWidget</extends>
+   <header>viewport.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
