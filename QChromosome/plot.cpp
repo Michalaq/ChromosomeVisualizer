@@ -64,12 +64,19 @@ void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
     {
-        for (int i = lastBuffered + 1; i <= m; i++)
+        int prevI;
+        do
         {
-            auto funvals = simulation_->getFrame(i)->functionValues;
+            prevI = lastBuffered;
+            lastBuffered = simulation_->getNextTime(lastBuffered);
+
+            if (prevI == lastBuffered)
+                break;
+
+            auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
             for (auto entry : funvals)
             {
-                data[QString::fromStdString(entry.first)] << QPointF(i, entry.second);
+                data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
                 if (maxval < entry.second)
                     maxval = entry.second;
@@ -77,9 +84,7 @@ void Plot::setMaximum(int m)
                 if (minval > entry.second)
                     minval = entry.second;
             }
-        }
-
-        lastBuffered = m;
+        } while (lastBuffered < m);
     }
 
     SoftSlider::setMaximum(m);
@@ -246,13 +251,18 @@ QPointF Plot::sampleAtX(qreal x, const QVector<QPointF> &plot, int *lowerIndex, 
 
     auto it = std::lower_bound(plot.begin(), plot.end(), x, compare);
 
-    if (it == plot.end()) {
+    if (it == plot.end())
+    {
         lower = upper = plot.size() - 1;
         ret = QPointF(x, plot.last().y());
-    } else if (it == plot.begin()) {
+    }
+    else if (it == plot.begin())
+    {
         lower = upper = 0;
         ret = QPointF(x, plot.first().y());
-    } else {
+    }
+    else
+    {
         upper = std::distance(plot.begin(), it);
         lower = upper - 1;
 

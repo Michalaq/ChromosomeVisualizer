@@ -175,8 +175,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t time)
 
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t position)
 {
-    qDebug() << "BOOP";
-
     if (position == positionCachedFor_)
         return cachedFrame_;
 

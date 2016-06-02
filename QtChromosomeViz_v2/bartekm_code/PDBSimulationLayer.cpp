@@ -254,7 +254,7 @@ frameNumber_t PDBSimulationLayer::getNextTime(frameNumber_t time)
     const auto end = numbersAndPositions_.end();
     auto it = std::lower_bound(numbersAndPositions_.begin(), end, time);
     auto oldit = it;
-    while (it != end && *it == *oldit)
+    while (it != end && *it == time)
         ++it;
     return (it == end) ? *oldit : *it;
 }
