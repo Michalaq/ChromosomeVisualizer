@@ -15,13 +15,19 @@ Viewport::Viewport(QWidget *parent) :
     ui->widget_4->setValue(QColor(Qt::white));
 
     // safe frames
+    connect(ui->checkBox, &QCheckBox::toggled, [this] (bool czy) {
+        blind_->setVisible(czy);
+    });
 
     // opacity
+    connect(ui->doubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        blind_->setOpacity(value / 100);
+    });
 
     // border color
-    /*connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
-        vizWidget_->selectedSpheresObject().setColor(color);
-    });*/
+    connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
+        blind_->setColor(color);
+    });
 
     // editor axis position
 
@@ -63,4 +69,9 @@ Viewport::~Viewport()
 void Viewport::setVizWidget(VizWidget *vizWidget)
 {
     vizWidget_ = vizWidget;
+}
+
+void Viewport::setBlind(Blind *blind)
+{
+    blind_ = blind;
 }

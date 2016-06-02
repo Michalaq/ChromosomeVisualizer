@@ -60,8 +60,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget->setCurrentIndex(0);
     });
 
-    connect(ui->page->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
-
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
     auto *ag = new QActionGroup(this);
@@ -109,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     ui->page_4->setVizWidget(ui->scene);
+    ui->page_4->setBlind(ui->widget_2);
 
     newProject();
 }

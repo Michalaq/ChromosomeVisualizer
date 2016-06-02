@@ -9,11 +9,17 @@ class Blind : public QWidget
 public:
     explicit Blind(QWidget *parent = 0);
 
+    void setOpacity(double o);
+    void setColor(QColor c);
+
 protected:
     void paintEvent(QPaintEvent *event);
 
 private:
     qreal aspectRatio;
+
+    double opacity;
+    QColor color;
 
 signals:
 
