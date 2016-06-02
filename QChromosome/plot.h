@@ -42,7 +42,15 @@ private:
 
     QHash<QString, Legend*> legend;
 
+    void addLegend(const QString &fname);
+
     static const QList<QColor> colorOrder;
+
+    // Samples a list of a monotonically-x-increasing points at given point.
+    // It also returns positions of endpoints of the segment from which
+    // the returned point was sampled
+    static QPointF sampleAtX(qreal x, const QVector<QPointF> &plot,
+                             int *lowerIndex = nullptr, int *upperIndex = nullptr);
 
 signals:
 

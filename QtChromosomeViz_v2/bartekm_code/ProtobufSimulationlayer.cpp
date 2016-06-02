@@ -175,6 +175,8 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t time)
 
 std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t position)
 {
+    qDebug() << "BOOP";
+
     if (position == positionCachedFor_)
         return cachedFrame_;
 
@@ -226,6 +228,15 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
             a.inLayerId = a.id;
             atoms.insert(a);
         }
+    }
+
+    if (delta_no == 0) {
+        for (const auto& cb : kf.callbacks()) {
+            auto p = parseCallback(cb);
+            functionValues[p.first] = p.second;
+        }
+        if (kf.has_step_counter())
+            stepNo = kf.step_counter();
     }
 
     int i = 0, j = 0;

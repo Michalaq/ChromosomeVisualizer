@@ -1,5 +1,7 @@
 #include "Simulation.h"
 
+#include <QDebug>
+
 
 Simulation::Simulation()
     : frameCount_(0),
@@ -20,6 +22,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         std::vector<Atom>(),
         std::map<std::string, float>()
     };
+    qDebug() << "GET";
     int count = 0;
     int i = 0;
     for (const auto & l : layerConcatenations_) {
@@ -29,6 +32,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 
         for (const auto& p : f2->functionValues) {
             f.functionValues[p.first + "_layer_" + std::to_string(i)] = p.second;
+            qDebug() << (p.first + "_layer_" + std::to_string(i)).c_str();
         }
 
         for (const auto & atom : f2->atoms) {
@@ -43,6 +47,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         count += f2->atoms.size();
         i++;
     }
+    qDebug() << "END";
 //    for (const auto& p : f.connectedRanges) {
 //        std::cout << "AGGREGATED CONNECTION: " << p.first << ", " << p.second << std::endl;
 //    }
