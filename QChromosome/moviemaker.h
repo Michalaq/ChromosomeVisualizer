@@ -44,7 +44,10 @@ public:
         QString filename = renderSettings->saveFile() + suffix;
         createPOVFile(outFile, filename.toStdString(), renderSettings);
 
-        setCamera(outFile, camera, renderSettings->outputSize());
+        if (renderSettings->cam360())
+            set360Camera(outFile, camera, renderSettings->outputSize());
+        else
+            setCamera(outFile, camera, renderSettings->outputSize());
         setBackgroundColor(outFile, scene->backgroundColor());
         setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
@@ -132,6 +135,19 @@ private:
                 << "location " << camera->position() << "\n"
                 << "look_at " << camera->lookAt() << "\n"
                 << "angle " << camera->angle() << "\n"
+                << "}\n"
+                << "\n";
+
+        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
+                << "\n";
+    }
+
+    static void inline set360Camera(std::ofstream& outFile, const Camera* camera, QSize size)
+    {
+        outFile << "camera{spherical \n"
+                << "right x*" << size.width() << "/" << size.height() << "\n"
+                << "location " << camera->position() << "\n"
+                << "look_at " << camera->lookAt() << "\n"
                 << "}\n"
                 << "\n";
 

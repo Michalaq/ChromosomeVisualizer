@@ -196,6 +196,11 @@ QString RenderSettings::iridescenceTurbulence() const
     return ui->iridTurbulenceDoubleSpinBox->text();
 }
 
+bool RenderSettings::cam360() const
+{
+    return ui->cam360CheckBox->isChecked();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)

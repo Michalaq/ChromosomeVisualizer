@@ -69,6 +69,9 @@ public:
     /* Iridescence Turbulence */
     QString iridescenceTurbulence() const;
 
+    /* 360 Degrees Camera  */
+    bool cam360() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
