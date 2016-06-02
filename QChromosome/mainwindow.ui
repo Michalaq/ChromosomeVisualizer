@@ -817,7 +817,8 @@ MediaControl:checked {
     <bool>false</bool>
    </attribute>
    <addaction name="actionQuick_Render"/>
-   <addaction name="actionQuick_RenderMovie"/>
+   <addaction name="actionSnapshot"/>
+   <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
@@ -866,7 +867,7 @@ MediaControl:checked {
   </action>
   <action name="actionAdd_Layer">
    <property name="text">
-    <string>Merge...</string>
+    <string>Import...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
@@ -965,30 +966,6 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionQuick_RenderMovie">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
-   </property>
-   <property name="text">
-    <string>Quick Render</string>
-   </property>
-   <property name="statusTip">
-    <string>Quick render [Shortcut Ctrl+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionRenderer">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
-   </property>
-   <property name="text">
-    <string>Renderer</string>
    </property>
   </action>
   <action name="actionSettings">
@@ -1140,6 +1117,24 @@ MediaControl:checked {
    </property>
    <property name="shortcut">
     <string>Alt+F4</string>
+   </property>
+  </action>
+  <action name="actionSnapshot">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/camera</normaloff>:/render/camera</iconset>
+   </property>
+   <property name="text">
+    <string>Snapshot</string>
+   </property>
+  </action>
+  <action name="actionFilm">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/camcorder</normaloff>:/render/camcorder</iconset>
+   </property>
+   <property name="text">
+    <string>Film</string>
    </property>
   </action>
  </widget>
@@ -1544,7 +1539,7 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionQuick_Render</sender>
+   <sender>actionSnapshot</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>capture()</slot>
@@ -1560,7 +1555,7 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionQuick_RenderMovie</sender>
+   <sender>actionFilm</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>captureMovie()</slot>
