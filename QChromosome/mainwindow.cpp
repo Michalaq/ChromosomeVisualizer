@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
 
-#include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
@@ -38,15 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
     bindings.insert(Qt::Key_E, ui->actionScale);
 
     modifiers.push_back(ui->actionMove);
-
-    //TODO do wywalenia po zaimplementowaniu widgeta
-    auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
-    y->setVizWidget(ui->scene);
-    y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
-    auto boxLayout = new QVBoxLayout();
-    boxLayout->addWidget(y);
-    ui->scrollAreaWidgetContents->setLayout(boxLayout);
-    // koniec
 
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);

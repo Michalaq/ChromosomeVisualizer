@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
     toolbar.cpp \
     rendersettings.cpp \
     blind.cpp \
@@ -62,7 +61,6 @@ HEADERS  += mainwindow.h\
     axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
