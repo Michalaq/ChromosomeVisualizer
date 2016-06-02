@@ -959,13 +959,7 @@ MediaControl:checked {
      <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
    </property>
    <property name="text">
-    <string>Quick Render</string>
-   </property>
-   <property name="statusTip">
-    <string>Quick render [Shortcut Ctrl+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Quick render</string>
    </property>
   </action>
   <action name="actionSettings">
@@ -974,7 +968,7 @@ MediaControl:checked {
      <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Render settings</string>
    </property>
    <property name="statusTip">
     <string>Render settings [Shortcut Ctrl+B]</string>
@@ -1125,7 +1119,13 @@ MediaControl:checked {
      <normaloff>:/render/camera</normaloff>:/render/camera</iconset>
    </property>
    <property name="text">
-    <string>Snapshot</string>
+    <string>Capture frame</string>
+   </property>
+   <property name="statusTip">
+    <string>Capture frame [Shortcut Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionFilm">
@@ -1134,7 +1134,13 @@ MediaControl:checked {
      <normaloff>:/render/camcorder</normaloff>:/render/camcorder</iconset>
    </property>
    <property name="text">
-    <string>Film</string>
+    <string>Capture movie</string>
+   </property>
+   <property name="statusTip">
+    <string>Capture movie [Shortcut Shift+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+R</string>
    </property>
   </action>
  </widget>
