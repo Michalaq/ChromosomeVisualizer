@@ -118,6 +118,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget->setCurrentIndex(3);
     });
 
+    ui->page_4->setVizWidget(ui->scene);
+
     newProject();
 }
 
