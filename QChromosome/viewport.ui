@@ -47,7 +47,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/objects/atom</normaloff>:/objects/atom</iconset>
+         <normaloff>:/dialogs/view</normaloff>:/dialogs/view</iconset>
        </property>
       </widget>
      </item>
@@ -88,7 +88,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-116</y>
+            <y>0</y>
             <width>362</width>
             <height>309</height>
            </rect>
@@ -325,8 +325,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-1</y>
-            <width>362</width>
+            <y>0</y>
+            <width>197</width>
             <height>194</height>
            </rect>
           </property>
@@ -484,8 +484,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>187</height>
+            <width>131</width>
+            <height>119</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">

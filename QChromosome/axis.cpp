@@ -43,15 +43,10 @@ void Axis::paintEvent(QPaintEvent *event)
     {
         p.setPen(QPen(a.color, 2, Qt::SolidLine, Qt::RoundCap));
         p.drawLine({0,0}, a.vector.toPointF() * 30);
-    }
 
-    if (textVisible)
-    {
-        for (auto a : axis)
+        if (textVisible)
         {
             r.moveCenter(a.vector.toPointF() * 40);
-
-            p.setPen(QPen(a.color, 2));
             p.drawText(r, Qt::AlignCenter, a.label);
         }
     }
