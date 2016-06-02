@@ -108,6 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_4->setVizWidget(ui->scene);
     ui->page_4->setBlind(ui->widget_2);
+    ui->page_4->setAxis(ui->widget);
 
     newProject();
 }

@@ -5,6 +5,7 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "blind.h"
+#include "axis.h"
 
 namespace Ui {
     class Viewport;
@@ -19,6 +20,7 @@ public:
 
     void setVizWidget(VizWidget* vizWidget);
     void setBlind(Blind *blind);
+    void setAxis(Axis *axis);
 
 signals:
 
@@ -29,6 +31,7 @@ private:
 
     VizWidget* vizWidget_;
     Blind *blind_;
+    Axis *axis_;
 };
 
 #endif // VIEWPORT_H

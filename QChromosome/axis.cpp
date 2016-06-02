@@ -1,6 +1,9 @@
 #include "axis.h"
 
-Axis::Axis(QWidget *parent) : QWidget(parent)
+Axis::Axis(QWidget *parent) :
+    QWidget(parent),
+    textVisible(true),
+    scale(1)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents);
 }
@@ -33,20 +36,41 @@ void Axis::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
 
-    p.translate(50, height() - 50);
+    p.translate(50 * scale, height() - 50 * scale);
+    p.scale(scale, scale);
 
     for (auto a : axis)
     {
-        p.setPen(QPen(a.color, 2));
+        p.setPen(QPen(a.color, 2, Qt::SolidLine, Qt::RoundCap));
         p.drawLine({0,0}, a.vector.toPointF() * 30);
+    }
 
-        r.moveCenter(a.vector.toPointF() * 40);
-        p.drawText(r, Qt::AlignCenter, a.label);
+    if (textVisible)
+    {
+        for (auto a : axis)
+        {
+            r.moveCenter(a.vector.toPointF() * 40);
+
+            p.setPen(QPen(a.color, 2));
+            p.drawText(r, Qt::AlignCenter, a.label);
+        }
     }
 }
 
 void Axis::setModelView(const QMatrix4x4 &mat)
 {
     modelView = mat;
+    update();
+}
+
+void Axis::setTextVisible(bool czy)
+{
+    textVisible = czy;
+    update();
+}
+
+void Axis::setScale(double s)
+{
+    scale = s;
     update();
 }

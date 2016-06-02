@@ -32,8 +32,14 @@ Viewport::Viewport(QWidget *parent) :
     // editor axis position
 
     // editor axis scale
+    connect(ui->doubleSpinBox_2, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        axis_->setScale(value / 100);
+    });
 
     // editor axis text
+    connect(ui->checkBox_2, &QCheckBox::toggled, [this] (bool czy) {
+        axis_->setTextVisible(czy);
+    });
 
     // background color
     connect(ui->widget_2, &Picker::valueChanged, [this] (QColor color) {
@@ -74,4 +80,9 @@ void Viewport::setVizWidget(VizWidget *vizWidget)
 void Viewport::setBlind(Blind *blind)
 {
     blind_ = blind;
+}
+
+void Viewport::setAxis(Axis *axis)
+{
+    axis_ = axis;
 }
