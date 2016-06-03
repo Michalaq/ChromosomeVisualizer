@@ -401,7 +401,7 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyyMMddHHmmss") : "";
+    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, suffix);
 
     system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
@@ -413,7 +413,7 @@ void MainWindow::capture()
 
 void MainWindow::captureMovie()
 {
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyyMMddHHmmss") : "";
+    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
 
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
