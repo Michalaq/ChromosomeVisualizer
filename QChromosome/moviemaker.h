@@ -27,14 +27,14 @@ class MovieMaker
 {
 public:
 
-    static void inline makeMovie(QString filename, int frames, float framerate, int fps, bool timestamp)
+    static void inline makeMovie(QString filename, int frames, float framerate, int fps, QString suffix)
     {
         QStringList argv;
         argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
              << "-r " + QString::number(fps) << "-pix_fmt yuv420p" << filename + ".mp4";
         //QProcess::execute("ffmpeg", argv);
         QProcess::execute(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(framerate) + " -i " + filename + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
-                          + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + (timestamp ? QDateTime::currentDateTime().toString(Qt::ISODate) : "") + ".mp4");
+                          + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
     }
 
     static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString suffix)
@@ -73,7 +73,7 @@ public:
 
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
+        argv << "povray.ini" << "-D" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
         QProcess::execute("povray", argv);
 #elif _WIN32
         qDebug() << "windows povray photo";

@@ -72,6 +72,9 @@ public:
     /* 360 Degrees Camera  */
     bool cam360() const;
 
+    /* Open File After Rendering  */
+    bool openFile() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
