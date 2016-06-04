@@ -864,7 +864,7 @@ AtomSelection VizWidget::customSelection(const QList<unsigned int> &indices)
     return AtomSelection(indices, this);
 }
 
-void VizWidget::setVisibleSelection(AtomSelection s)
+void VizWidget::setVisibleSelection(AtomSelection s, bool e)
 {
     for (const auto & id : currentSelection_.selectedIndices())
         selectedBitmap_[id] = false;
@@ -876,11 +876,14 @@ void VizWidget::setVisibleSelection(AtomSelection s)
     for (const auto & id : currentSelection_.selectedIndices())
         selectedBitmap_[id] = true;
 
-    emit selectionChangedIndices(
-                currentSelection_.selectedIndices(),
-                s.selectedIndices());
-    emit selectionChanged(selectedSpheres(), oldAtoms);
-    emit selectionChangedObject(selectedSpheresObject());
+    if (e)
+    {
+        emit selectionChangedIndices(
+                    currentSelection_.selectedIndices(),
+                    s.selectedIndices());
+        emit selectionChanged(selectedSpheres(), oldAtoms);
+        emit selectionChangedObject(selectedSpheresObject());
+    }
 
     setFrame(frameNumber_);
     update();

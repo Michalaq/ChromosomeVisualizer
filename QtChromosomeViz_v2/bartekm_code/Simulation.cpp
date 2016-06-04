@@ -102,7 +102,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
 {
     const auto offset = getFrame(0)->atoms.size();
     layerConcatenations_.emplace_back(slc);
-
+    
     connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
             [this] (int frameCount) {
         if (frameCount_ < frameCount) {
@@ -113,8 +113,10 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
 
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
+   
+    auto f = slc->getFrame(0);
+    model->setupModelData(f->atoms, f->connectedRanges, layerConcatenations_.size(), offset);
 
-    model->setupModelData(slc->getFrame(0)->atoms, layerConcatenations_.size(), offset);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)

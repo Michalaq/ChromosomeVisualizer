@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Attributes</class>
- <widget class="QWidget" name="Attributes">
+ <class>LayerAttributes</class>
+ <widget class="QWidget" name="LayerAttributes">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -47,17 +47,14 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/objects/atom</normaloff>:/objects/atom</iconset>
+         <normaloff>:/objects/layer</normaloff>:/objects/layer</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="label_14">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="text">
+        <string>Layer [Layer.1]</string>
        </property>
       </widget>
      </item>

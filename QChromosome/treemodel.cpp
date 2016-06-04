@@ -57,7 +57,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 2;
+    return 3;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -138,26 +138,63 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void TreeModel::setupModelData(const std::vector<Atom> &data, unsigned int n, unsigned int offset)
+void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n) : "")}, header);
+    TreeItem* root = new TreeItem({QString("Chromosome") + (n ? QString(".") + QString::number(n) : "")}, parent);
 
     QMap<QString, TreeItem*> types;
 
-    for (auto atom : data)
+    for (auto atom = first; atom != last; atom++)
     {
-        QString t(atom.type);
+        QString t(atom->type);
 
         if (!types.contains(t))
             types[t] = new TreeItem({t}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom.id), atom.id + offset}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), ObjectType::AtomObject, atom->id + offset}, types[t]));
     }
 
     for (auto t : types)
         root->appendChild(t);
 
+    parent->appendChild(root);
+}
+
+#include <QBitArray>
+
+void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset)
+{
+    QBitArray used(atoms.size(), false);
+
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n) : ""), ObjectType::LayerObject}, header);
+
+    unsigned int i = 0;
+
+    for (auto range : connectedRanges)
+    {
+        used.fill(true, range.first - 1, range.second);
+        appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root);
+    }
+
+    QMap<QString, TreeItem*> types;
+
+    for (auto i = 0; i < atoms.size(); i++)
+        if (!used.testBit(i))
+        {
+            QString t(atoms[i].type);
+
+            if (!types.contains(t))
+                types[t] = new TreeItem({t}, root);
+
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), ObjectType::AtomObject, atoms[i].id + offset}, types[t]));
+        }
+
+    for (auto t : types)
+        root->appendChild(t);
+
     beginInsertRows(QModelIndex(), rowCount(), rowCount() + 1);
+
     header->appendChild(root);
+
     endInsertRows();
 }

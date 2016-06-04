@@ -736,7 +736,7 @@ MediaControl:checked {
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>Attributes</string>
+    <string>Project settings</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -759,6 +759,8 @@ MediaControl:checked {
       <widget class="QStackedWidget" name="stackedWidget">
        <widget class="ProjectSettings" name="page"/>
        <widget class="Attributes" name="page_2"/>
+       <widget class="LayerAttributes" name="page_3"/>
+       <widget class="Viewport" name="page_4"/>
       </widget>
      </item>
     </layout>
@@ -816,44 +818,9 @@ MediaControl:checked {
     <bool>false</bool>
    </attribute>
    <addaction name="actionQuick_Render"/>
-   <addaction name="actionQuick_RenderMovie"/>
+   <addaction name="actionSnapshot"/>
+   <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_4">
-   <property name="styleSheet">
-    <string notr="true">#dockWidget_4{color: white;}
-#dockWidget_4::title {background: #262626;}</string>
-   </property>
-   <property name="windowTitle">
-    <string>Atom display options</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_4">
-    <layout class="QGridLayout" name="gridLayout_7">
-     <item row="0" column="0">
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>256</width>
-          <height>56</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">#scrollAreaWidgetContents{background: #1a1a1a;}</string>
-        </property>
-       </widget>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -865,7 +832,7 @@ MediaControl:checked {
   </action>
   <action name="actionAdd_Layer">
    <property name="text">
-    <string>Merge...</string>
+    <string>Import...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
@@ -957,37 +924,7 @@ MediaControl:checked {
      <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
    </property>
    <property name="text">
-    <string>Quick Render</string>
-   </property>
-   <property name="statusTip">
-    <string>Quick render [Shortcut Ctrl+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionQuick_RenderMovie">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
-   </property>
-   <property name="text">
-    <string>Quick Render</string>
-   </property>
-   <property name="statusTip">
-    <string>Quick render [Shortcut Ctrl+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionRenderer">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/renderer</normaloff>:/render/renderer</iconset>
-   </property>
-   <property name="text">
-    <string>Renderer</string>
+    <string>Quick render</string>
    </property>
   </action>
   <action name="actionSettings">
@@ -996,7 +933,7 @@ MediaControl:checked {
      <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>Render settings</string>
    </property>
    <property name="statusTip">
     <string>Render settings [Shortcut Ctrl+B]</string>
@@ -1141,6 +1078,44 @@ MediaControl:checked {
     <string>Alt+F4</string>
    </property>
   </action>
+  <action name="actionSnapshot">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/camera</normaloff>:/render/camera</iconset>
+   </property>
+   <property name="text">
+    <string>Capture frame</string>
+   </property>
+   <property name="statusTip">
+    <string>Capture frame [Shortcut Ctrl+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionFilm">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/camcorder</normaloff>:/render/camcorder</iconset>
+   </property>
+   <property name="text">
+    <string>Capture movie</string>
+   </property>
+   <property name="statusTip">
+    <string>Capture movie [Shortcut Shift+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+R</string>
+   </property>
+  </action>
+  <action name="actionViewport">
+   <property name="text">
+    <string>Viewport</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+V</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1241,6 +1216,18 @@ MediaControl:checked {
    <class>Attributes</class>
    <extends>QWidget</extends>
    <header>attributes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LayerAttributes</class>
+   <extends>QWidget</extends>
+   <header>layerattributes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Viewport</class>
+   <extends>QWidget</extends>
+   <header>viewport.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -1537,7 +1524,7 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionQuick_Render</sender>
+   <sender>actionSnapshot</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>capture()</slot>
@@ -1553,7 +1540,7 @@ MediaControl:checked {
    </hints>
   </connection>
   <connection>
-   <sender>actionQuick_RenderMovie</sender>
+   <sender>actionFilm</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>captureMovie()</slot>

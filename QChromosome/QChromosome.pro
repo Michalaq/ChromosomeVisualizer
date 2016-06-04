@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     axis.cpp \
     ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.cpp \
     toolbar.cpp \
     rendersettings.cpp \
     blind.cpp \
@@ -43,7 +42,9 @@ SOURCES += main.cpp\
     treemodel.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
     attributes.cpp \
-    picker.cpp
+    picker.cpp \
+    layerattributes.cpp \
+    viewport.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -60,7 +61,6 @@ HEADERS  += mainwindow.h\
     axis.h \
     ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
-    ../QtChromosomeViz_v2/DisplayParametersWidget.hpp \
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
@@ -93,13 +93,17 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
     attributes.h \
     picker.h \
-    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h
+    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
+    layerattributes.h \
+    viewport.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
     projectsettings.ui \
     rendersettings.ui \
-    attributes.ui
+    attributes.ui \
+    layerattributes.ui \
+    viewport.ui
 
 CONFIG += c++14
 

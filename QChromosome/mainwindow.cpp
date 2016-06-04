@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
 
-#include "../QtChromosomeViz_v2/DisplayParametersWidget.hpp"
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
@@ -39,15 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    //TODO do wywalenia po zaimplementowaniu widgeta
-    auto y = new DisplayParametersWidget(ui->scrollAreaWidgetContents);
-    y->setVizWidget(ui->scene);
-    y->setStyleSheet("DisplayParametersWidget>QLabel { color: #d9d9d9; }");
-    auto boxLayout = new QVBoxLayout();
-    boxLayout->addWidget(y);
-    ui->scrollAreaWidgetContents->setLayout(boxLayout);
-    // koniec
-
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
     connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMaximum);
@@ -64,10 +54,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
+        ui->dockWidget_2->setWindowTitle("Project settings");
+        ui->dockWidget_2->show();
+
         ui->stackedWidget->setCurrentIndex(0);
     });
-
-    connect(ui->page->ui->checkBox, SIGNAL(clicked(bool)), ui->widget_2, SLOT(setVisible(bool)));
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
@@ -105,6 +96,19 @@ MainWindow::MainWindow(QWidget *parent) :
                                                  });
 
     ui->page_2->setVizWidget(ui->scene);
+
+    addAction(ui->actionViewport);
+
+    connect(ui->actionViewport, &QAction::triggered, [this] {
+        ui->dockWidget_2->setWindowTitle("Viewport");
+        ui->dockWidget_2->show();
+
+        ui->stackedWidget->setCurrentIndex(3);
+    });
+
+    ui->page_4->setVizWidget(ui->scene);
+    ui->page_4->setBlind(ui->widget_2);
+    ui->page_4->setAxis(ui->widget);
 
     newProject();
 }
@@ -168,11 +172,12 @@ void MainWindow::newProject()
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
+    ui->treeView->hideColumn(2);
 }
 
 void MainWindow::openProject()
 {
-
+    addLayer();//TODO tymczasowo
 }
 
 void MainWindow::addLayer()
@@ -199,7 +204,6 @@ void MainWindow::addLayer()
     } catch (std::exception& e) {
         QMessageBox::critical(this, "Error occured.", e.what());
     }
-
 }
 
 void MainWindow::updateFrameCount(int n)
@@ -371,16 +375,19 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
+    ui->dockWidget_2->setWindowTitle("Attributes");
+    ui->dockWidget_2->show();
+
+    ui->stackedWidget->setCurrentIndex(1);
+
     ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
 
     ui->page_2->handleSelection(selection);
-
-    ui->stackedWidget->setCurrentIndex(1);
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
 {
-    auto v = root.sibling(root.row(), 1).data();
+    auto v = root.sibling(root.row(), 2).data();
 
     if (v.canConvert<uint>())
         id.append(v.toUInt() - 1);
@@ -392,13 +399,31 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<u
 void MainWindow::handleModelSelection()
 {
     QList<unsigned int> id;
+    QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
+    {
+        auto v = r.sibling(r.row(), 1).data();
+
+        if (v.canConvert<int>())
+            type.insert(v.toInt());
+
         dumpModel(ui->treeView->model(), r, id);
+    }
 
     auto selection = ui->scene->customSelection(id);
 
-    ui->scene->setVisibleSelection(selection);
+    ui->scene->setVisibleSelection(selection, false);
+
+    if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
+    {
+        ui->dockWidget_2->setWindowTitle("Attributes");
+        ui->dockWidget_2->show();
+
+        ui->stackedWidget->setCurrentIndex(2);
+    }
+    else
+        handleSelection(selection);
 }
 
 void MainWindow::setBaseAction(bool enabled)

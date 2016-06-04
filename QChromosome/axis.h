@@ -10,6 +10,9 @@ class Axis : public QWidget
 public:
     explicit Axis(QWidget *parent = 0);
 
+    void setTextVisible(bool czy);
+    void setScale(double s);
+
 signals:
 
 public slots:
@@ -20,6 +23,9 @@ protected:
 
 private:
     QMatrix4x4 modelView;
+
+    bool textVisible;
+    double scale;
 };
 
 #endif // AXIS_H
