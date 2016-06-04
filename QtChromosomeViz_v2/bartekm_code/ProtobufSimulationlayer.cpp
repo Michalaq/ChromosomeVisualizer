@@ -91,12 +91,11 @@ void ProtobufSimulationLayer::setColors(const std::string & simFileName)
     std::string fileName = simFileName;
     std::cout << "NO ELO" << fileName << std::endl;
     std::size_t found = fileName.find("bin");
-    if (found != std::string::npos) {
-        fileName.replace(found, 3, "pdb.meta");
-    } else {
+    fileName.replace(found, 3, "pdb.meta");
+    std::ifstream file(fileName);
+    if (!file.good()) {
         throw ex;
     }
-    std::ifstream file(fileName);
     std::string s;
     while (getline(file, s)) {
         std::cout << "linia: " << s << std::endl;
