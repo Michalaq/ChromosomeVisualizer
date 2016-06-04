@@ -176,6 +176,31 @@ QString RenderSettings::phongSize() const
     return ui->phongSizeSpinBox->text();
 }
 
+QString RenderSettings::metallic() const
+{
+    return ui->metallicSpinBox->text();
+}
+
+QString RenderSettings::iridescence() const
+{
+    return ui->iridDoubleSpinBox->text();
+}
+
+QString RenderSettings::iridescenceThickness() const
+{
+    return ui->iridThicknessDoubleSpinBox->text();
+}
+
+QString RenderSettings::iridescenceTurbulence() const
+{
+    return ui->iridTurbulenceDoubleSpinBox->text();
+}
+
+bool RenderSettings::cam360() const
+{
+    return ui->cam360CheckBox->isChecked();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)
