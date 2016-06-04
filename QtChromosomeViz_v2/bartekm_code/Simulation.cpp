@@ -60,15 +60,20 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 
 frameNumber_t Simulation::getNextTime(frameNumber_t time)
 {
+    if (layerConcatenations_.empty())
+        return 0;
+
+    frameNumber_t maximum = std::numeric_limits<frameNumber_t>::min();
     frameNumber_t minimum = std::numeric_limits<frameNumber_t>::max();
     for (auto & concatenation : layerConcatenations_) {
         frameNumber_t localMinimum = concatenation->getNextTime(time);
         if (localMinimum != time)
             minimum = std::min(minimum, localMinimum);
+        maximum = std::max(maximum, localMinimum);
     }
 
     if (minimum == std::numeric_limits<frameNumber_t>::max())
-        return 0;
+        return maximum;
 
     return minimum;
 }
@@ -77,15 +82,18 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
 {
     if (layerConcatenations_.empty())
         return 0;
+
     frameNumber_t maximum = std::numeric_limits<frameNumber_t>::min();
+    frameNumber_t minimum = std::numeric_limits<frameNumber_t>::max();
     for (auto & concatenation : layerConcatenations_) {
         frameNumber_t localMaximum = concatenation->getPreviousTime(time);
         if (localMaximum != time)
             maximum = std::max(maximum, localMaximum);
+        minimum = std::min(minimum, localMaximum);
     }
 
     if (maximum == std::numeric_limits<frameNumber_t>::min())
-        return 0;
+        return minimum;
 
     return maximum;
 }
