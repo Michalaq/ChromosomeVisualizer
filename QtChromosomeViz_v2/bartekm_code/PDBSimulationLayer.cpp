@@ -190,6 +190,26 @@ std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t time)
 
         cachedTime = readFrameHeader();
         ret = readFrameContents({ cachedPosition, cachedTime });
+
+        if (!ret) {
+            // Oops - the last frame is corrupted
+            // Remove header of the faulty frame
+            numbersAndPositions_.pop_back();
+            cachedFramePositions_.erase(cachedFramePositions_.find(cachedPosition));
+
+            if (cachedFramePositions_.empty()) {
+                // We failed to read the first frame!
+                return std::make_shared<Frame>();
+            } else {
+                // Return the previous one instead
+                cachedPosition = cachedFramePositions_.size() - 1;
+                file_.seekg(cachedFramePositions_[cachedPosition]);
+
+                cachedTime = readFrameHeader();
+                return readFrameContents({ cachedPosition, cachedTime });
+            }
+        }
+
         while (cachedTime <= time && !reachedEndOfFile()) {
             auto filePosition = file_.tellg();
             cachedPosition++;
