@@ -1,5 +1,9 @@
 #include "ProtobufSimulationlayer.h"
 #include <set>
+#include <QDebug>
+#include <fstream>
+#include <exception>
+#include <string>
 
 using namespace protostream;
 
@@ -9,8 +13,10 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , reachedEndOfFile_(false)
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
+    , positionCachedFor_(-1)
     , SimulationLayer(name)
 {
+    setColors(fileName);
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());
     std::cout << header.simulation_name() << std::endl;
@@ -23,55 +29,35 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
               std::cout << "Failed to parse keyframe." << std::endl;
         }
     }
-    std::cout << keyframes_.size() << std::endl;
-    str_types_ = { "BIN", "LAM", "BOU", "UNB" };
-    std::set<std::vector<int>> binder_types;
-    std::vector<std::vector<int>> binder_types_vec;
+    std::cout << keyframes_.size() << std::endl;\
+    /*std::vector<std::string> binderColorMap {
+        "LAM",
+        "BIN"
+    };
+    std::map<std::vector<int>, std::string> evColorMap {
+        {{0, 0}, "UNB"},
+        {{0, 1}, "BOU"},
+        {{1, 0}, "LAM"},
+        {{2, 0}, "LAM"}
+    };*/
+
     for (const auto& binder : keyframes_[0].binders()) {
-        binder_types_.push_back(binder.binder_type());
-        binder_types.insert({binder.binder_type()});
+        binderTypes.push_back(binderColorMap[binder.binder_type()]);
     }
-    for (const auto& chain : header.chains()) { // each chain
-        for (const auto& bead : chain.beads()) { // has atoms
-            std::vector<int> atom_types;
-            if (bead.energy_vector_size() == 0) {
-                std::cout << "Bead without bindings." << std::endl;
-            } else if (bead.energy_vector_size() > 1) {
-                std::cout << "Bead with several bindings." << std::endl;
+    for (const auto& chain : header.chains()) {
+        std::vector<std::string> types;
+        for (const auto& beadDesc : chain.beads()) {
+            std::vector<int> w(header.binders_types_count(), 0);
+            for (const auto& binding : beadDesc.energy_vector()) {
+                w[binding.binder_type()] = binding.force();
             }
-            for (const auto& binding : bead.energy_vector()) { // of several types
-                    auto type = binding.binder_type();
-                    atom_types.push_back(type);
-            }
-            std::sort(atom_types.begin(), atom_types.end());
-            binder_types.insert(atom_types);
-            binder_types_vec.push_back(atom_types);
+            types.push_back(evColorMap[w]);
         }
+        chainAtomTypes.push_back(types);
     }
-    binder_types_real_ = std::vector<std::vector<int>>(binder_types.begin(), binder_types.end()); // mapping index(our type) -> real type
-    int chain_no = 0, atom_no = 0, curr_chain_size = header.chains(chain_no).beads_size();
-    chain_binder_types_renumbered_.resize(chain_binder_types_renumbered_.size() + 1);
-    for (int i = 0; i < binder_types_vec.size(); i++) {
-        if (atom_no >= curr_chain_size) {
-            atom_no -= curr_chain_size;
-            chain_no++;
-            curr_chain_size = header.chains(chain_no).beads_size();
-            chain_binder_types_renumbered_.resize(chain_binder_types_renumbered_.size() + 1);
-        }
-        for (int j = 0; j < binder_types_real_.size(); j++) {
-            if (binder_types_vec[i] == binder_types_real_[j]) {
-                chain_binder_types_renumbered_[chain_no].push_back(j);
-                atom_no++;
-                break;
-            }
-        }
-    }
-    for (int i = 0; i < binder_types_.size(); i++) {
-        for (int j = 0; j < binder_types_real_.size(); j++) {
-            if (binder_types_real_[j] == std::vector<int>{ binder_types_[i] }) {
-                binder_types_[i] = j;
-                break;
-            }
+    for (const auto& d : chainAtomTypes) {
+        for (const auto& e : d) {
+            std::cout << "Typ: " << e << std::endl;
         }
     }
 //    for (const auto& realtyp : chain_binder_types_renumbered_) {
@@ -85,15 +71,77 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //        }
 //    }
 
-    // TODO: Change to rd_.frames_per_keyframe() when libprotostream version is updated
-    for (const auto& delta : keyframesData_[0])
-        deltasPerKeyframe_++;
+    deltasPerKeyframe_ = rd_.frames_per_keyframe();
     std::cout << deltasPerKeyframe_ << std::endl;
+
+    // Get last frame time
+    lastFrameNumber_ = rd_.frame_count() - 1;
+    auto it = keyframesData_.back().begin();
+    if (it == keyframesData_.back().end()) {
+        if (keyframes_.back().has_step_counter())
+            lastFrameNumber_ = keyframes_.back().step_counter();
+    } else {
+        auto it2 = ++keyframesData_.back().begin();
+        while (it2 != keyframesData_.back().end()) {
+            ++it;
+            ++it2;
+        }
+
+        bio::motions::format::proto::Delta delta;
+        delta.ParseFromString(it->get());
+
+        if (delta.has_step_counter())
+            lastFrameNumber_ = delta.step_counter();
+    }
 }
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string & fileName)
     : ProtobufSimulationLayer(fileName, fileName)
 {}
+
+class colors_file_not_found_exception : public std::exception
+{
+  virtual const char* what() const throw()
+  {
+    return "Colors file not found.";
+  }
+} ex;
+
+void ProtobufSimulationLayer::setColors(const std::string & simFileName)
+{
+    std::string fileName = simFileName;
+    std::cout << "NO ELO" << fileName << std::endl;
+    std::size_t found = fileName.find("bin");
+    fileName.replace(found, 3, "pdb.meta");
+    std::ifstream file(fileName);
+    if (!file.good()) {
+        throw ex;
+    }
+    std::string s;
+    while (getline(file, s)) {
+        std::cout << "linia: " << s << std::endl;
+        if (s.find("EV") != std::string::npos) {
+            char s2[10], s3[10];
+            sscanf(s.c_str(), "EV [%[^]]] %s", &s2, &s3);
+            printf("jeden: %s, dwa: %s.\n", s2, s3);
+            char * p = strtok(s2, ",");
+            std::vector<int> bindingSitesTypes;
+            while (p) {
+                int x = atoi(p);
+                bindingSitesTypes.push_back(x);
+                printf("Token: %d\n", x);
+                p = strtok(NULL, " ");
+            }
+            evColorMap[bindingSitesTypes] = std::string(s3);
+        } else if (s.find("BT") != std::string::npos) {
+            char s2[10];
+            int type;
+            sscanf(s.c_str(), "BT %d %s", &type, &s2);
+            printf("Numer typu: %d, nazwa: %s.\n", type, s2);
+            binderColorMap.push_back(std::string(s2));
+        }
+    }
+}
 
 struct lex_comp
 {
@@ -132,12 +180,31 @@ std::pair<std::string, float> parseCallback(bio::motions::format::proto::Callbac
     return {name, value};
 }
 
-std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t time)
 {
-    if (position >= rd_.frame_count() - 1) {
-        position = rd_.frame_count() - 1;
-        reachedEndOfFile_ = true;
+    frameNumber_t position;
+    frameNumber_t nextTime = getPositionInfo(time, 1, &position);
+
+    if (time >= frameCount_) { // hihihi
+        if (time >= lastFrameNumber_) {
+            time = lastFrameNumber_;
+            reachedEndOfFile_ = true;
+        }
+
+        if (time > lastFrameNumber_)
+            time = lastFrameNumber_;
+
+        frameCount_ = nextTime;
+        emit frameCountChanged(frameCount_);
     }
+
+    return getFrameById(position);
+}
+
+std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t position)
+{
+    if (position == positionCachedFor_)
+        return cachedFrame_;
 
     auto kf_no = position / (deltasPerKeyframe_ + 1);
     auto delta_no = position % (deltasPerKeyframe_ + 1);
@@ -145,6 +212,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
     std::set<Atom, lex_comp> atoms;
     std::vector<std::pair<int, int>> connectedRanges;
     std::map<std::string, float> functionValues;
+    frameNumber_t stepNo = kf.has_step_counter() ? kf.step_counter() : position;
     /*for (const auto& cb : kf.callbacks()) {
         std::cout << "callback!" << std::endl;
         auto p = parseCallback(cb);
@@ -161,10 +229,12 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
         auto& point = binder.position();
         Atom a;
         a.id = aid++;
-        strcpy(a.type, str_types_[binder_types_[i]].c_str());
+        strcpy(a.type, binderTypes[a.id - 1].c_str());
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
+        a.layerNo = layerId_;
+        a.inLayerId = a.id;
         atoms.insert(a);
     }
 
@@ -176,12 +246,23 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
             auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
-            strcpy(a.type, str_types_[chain_binder_types_renumbered_[i][j]].c_str());
+            strcpy(a.type, chainAtomTypes[i][j].c_str());
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();
+            a.layerNo = layerId_;
+            a.inLayerId = a.id;
             atoms.insert(a);
         }
+    }
+
+    if (delta_no == 0) {
+        for (const auto& cb : kf.callbacks()) {
+            auto p = parseCallback(cb);
+            functionValues[p.first] = p.second;
+        }
+        if (kf.has_step_counter())
+            stepNo = kf.step_counter();
     }
 
     int i = 0, j = 0;
@@ -191,17 +272,22 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
             break;
         bio::motions::format::proto::Delta delta;
         delta.ParseFromString(delta_it.get());
-        if (i == delta_no - 1)
+        if (i == delta_no - 1) { // the proper, last delta: parse callbacks, get stepno.
             for (const auto& cb : delta.callbacks()) {
                 auto p = parseCallback(cb);
                 functionValues[p.first] = p.second;
             }
+            if (delta.has_step_counter())
+                stepNo = delta.step_counter();
+        }
         auto& p = delta.from();
         auto& q = delta.disp();
         Atom a;
         a.x = p.x();
         a.y = p.y();
         a.z = p.z();
+        a.layerNo = layerId_;
+        a.inLayerId = a.id;
         auto it = atoms.find(a);
         if (it != atoms.end()) {
             atoms.erase(it);
@@ -220,7 +306,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 
     Frame f = {
         position,
-        position,
+        stepNo,
         std::move(bidy),
         std::move(functionValues),
         std::move(connectedRanges)
@@ -230,12 +316,101 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrame(frameNumber_t position)
 //        std::cout << p.first << ", " << p.second << std::endl;
 //    }
 
-    if (position >= frameCount_) { // hihihi
-        frameCount_ = position + 1;
-        emit frameCountChanged(frameCount_);
+    positionCachedFor_ = position;
+    cachedFrame_ = std::make_shared<Frame>(std::move(f));
+
+    // TODO: Emit frameCountChanged here
+
+    return cachedFrame_;
+}
+
+frameNumber_t ProtobufSimulationLayer::getPositionInfo(frameNumber_t time, int offset, frameNumber_t *outPosition) const
+{
+    // Find appropriate keyframe
+    auto compKeyframe = [](const bio::motions::format::proto::Keyframe & key, frameNumber_t time) {
+        return key.step_counter() > time;
+    };
+    auto it = std::lower_bound(keyframes_.rbegin(), keyframes_.rend(), time, compKeyframe);
+    if (it == keyframes_.rend())
+        it = keyframes_.rbegin();
+
+    // Look for the right delta
+    // qDebug() << keyframes_.size();
+    int keyframeID = std::distance(it, keyframes_.rend()) - 1;
+    int deltaID = 0;
+    auto data = keyframesData_.begin() + keyframeID;
+    frameNumber_t position = it->step_counter();
+    auto it2 = data->begin();
+    for (; it2 != data->end(); it2++) {
+        bio::motions::format::proto::Delta delta;
+        delta.ParseFromString(it2->get());
+        frameNumber_t newPosition = delta.step_counter();
+        if (newPosition > time)
+            break;
+        ++deltaID;
+        position = newPosition;
     }
 
-    return std::make_shared<Frame>(f);
+    assert(position <= time);
+
+    if (outPosition)
+        *outPosition = keyframeID * rd_.frames_per_keyframe() + deltaID;
+
+    // Move forwards, or backwards
+    if (offset > 0) {
+        if (it2 == data->end()) {
+            ++data;
+            if (data == keyframesData_.end())
+                return time;
+            --it;
+            position = it->step_counter();
+        } else {
+            bio::motions::format::proto::Delta delta;
+            delta.ParseFromString(it2->get());
+            position = delta.step_counter();
+        }
+    }
+
+    if (offset < 0 && position == time) {
+        if (it2 == data->begin()) {
+            if (data == keyframesData_.begin())
+                return time;
+            --data;
+            auto it3 = data->begin();
+            auto it4 = ++data->begin();
+            while (it4 != data->end()) {
+                ++it3;
+                ++it4;
+            }
+            bio::motions::format::proto::Delta delta;
+            delta.ParseFromString(it3->get());
+            position = delta.step_counter();
+        } else {
+            if (deltaID == 1) {
+                position = it->step_counter();
+            } else {
+                auto it3 = data->begin();
+                deltaID--;
+                while (--deltaID > 0)
+                    it3++;
+                bio::motions::format::proto::Delta delta;
+                delta.ParseFromString(it3->get());
+                position = delta.step_counter();
+            }
+        }
+    }
+
+    return position;
+}
+
+frameNumber_t ProtobufSimulationLayer::getNextTime(frameNumber_t time)
+{
+    return getPositionInfo(time, 1);
+}
+
+frameNumber_t ProtobufSimulationLayer::getPreviousTime(frameNumber_t time)
+{
+    return getPositionInfo(time, -1);
 }
 
 bool ProtobufSimulationLayer::reachedEndOfFile() const

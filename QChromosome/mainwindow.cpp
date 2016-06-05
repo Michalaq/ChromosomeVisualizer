@@ -259,10 +259,14 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
+    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
     if (ui->reverse->isChecked())
     {
         if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-            setFrame(--currentFrame);
+        {
+            currentFrame = previousFrame;
+            setFrame(currentFrame);
+        }
         else
         {
             if (ui->actionSimple->isChecked())
@@ -274,7 +278,10 @@ void MainWindow::previous()
     else
     {
         if (currentFrame > 0)
-            setFrame(--currentFrame);
+        {
+            currentFrame = previousFrame;
+            setFrame(currentFrame);
+        }
     }
 }
 
@@ -326,12 +333,17 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    // simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
+    simulation->getFrame(nextFrame);
 
     if (ui->play->isChecked())
     {
         if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-            setFrame(++currentFrame);
+        {
+            currentFrame = nextFrame;
+            setFrame(currentFrame);
+        }
         else
         {
             if (ui->actionSimple->isChecked())
@@ -343,7 +355,10 @@ void MainWindow::next()
     else
     {
         if (currentFrame < lastFrame)
-            setFrame(++currentFrame);
+        {
+            currentFrame = nextFrame;
+            setFrame(currentFrame);
+        }
     }
 }
 

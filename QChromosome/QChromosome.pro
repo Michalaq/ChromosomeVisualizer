@@ -93,6 +93,7 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
     attributes.h \
     picker.h \
+    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
     viewport.h
 

@@ -9,6 +9,7 @@
 #include "include/cache.h"
 #include "message_format/message.pb.h"
 #include <vector>
+#include <map>
 
 using namespace protostream;
 
@@ -42,24 +43,31 @@ private:
     std::string fileName_;
     int connectionCount_;
     bool reachedEndOfFile_;
+    frameNumber_t lastFrameNumber_;
     std::vector<bio::motions::format::proto::Keyframe> keyframes_;
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
     std::vector<mmap_reader::keyframe_data> keyframesData_;
-    std::vector<std::vector<int>> binder_types_real_;
-    std::vector<std::vector<int>> chain_binder_types_renumbered_;
-    std::vector<Atom> binders_;
-    std::vector<std::vector<Atom>> chains_;
-    std::vector<int> binder_types_;
-    std::vector<std::string> str_types_;
+    std::vector<std::string> binderTypes;
+    std::vector<std::vector<std::string>> chainAtomTypes;
+    std::vector<std::string> binderColorMap;
+    std::map<std::vector<int>, std::string> evColorMap;
+
+    std::shared_ptr<Frame> cachedFrame_;
+    frameNumber_t positionCachedFor_;
 
     static Atom getAtomFromString(const std::string & str);
     std::shared_ptr<Frame> readCurrentFrame();
+    frameNumber_t getPositionInfo(frameNumber_t time, int offset, frameNumber_t *outPosition = nullptr) const;
+    void setColors(const std::string & fileName);
 public:
     ProtobufSimulationLayer(const std::string & name, const std::string & fileName);
     ProtobufSimulationLayer(const std::string & fileName);
     ~ProtobufSimulationLayer() noexcept {};
-    virtual std::shared_ptr<Frame> getFrame(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrameById(frameNumber_t position) override;
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time) override;
+    virtual frameNumber_t getNextTime(frameNumber_t time) override;
+    virtual frameNumber_t getPreviousTime(frameNumber_t time) override;
     virtual bool reachedEndOfFile() const override;
 };
 

@@ -41,21 +41,21 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     legend.clear();
 
-    auto color = colorOrder.constBegin();
+//    auto color = colorOrder.constBegin();
 
-    auto funvals = simulation_->getFrame(1)->functionValues;
-    for (auto i : funvals)
-    {
-        QString fname = QString::fromStdString(i.first);
+//    auto funvals = simulation_->getFrame(1)->functionValues;
+//    for (auto i : funvals)
+//    {
+//        QString fname = QString::fromStdString(i.first);
 
-        auto entry = new Legend(fname, *color, this);
-        connect(entry, SIGNAL(changed()), this, SLOT(update()));
-        layout()->addWidget(entry);
-        legend[fname] = entry;
+//        auto entry = new Legend(fname, *color, this);
+//        connect(entry, SIGNAL(changed()), this, SLOT(update()));
+//        layout()->addWidget(entry);
+//        legend[fname] = entry;
 
-        if (++color == colorOrder.constEnd())
-            color = colorOrder.constBegin();
-    }
+//        if (++color == colorOrder.constEnd())
+//            color = colorOrder.constBegin();
+//    }
 
     update();
 }
@@ -64,12 +64,19 @@ void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
     {
-        for (int i = lastBuffered + 1; i <= m; i++)
+        int prevI;
+        do
         {
-            auto funvals = simulation_->getFrame(i)->functionValues;
+            prevI = lastBuffered;
+            lastBuffered = simulation_->getNextTime(lastBuffered);
+
+            if (prevI == lastBuffered)
+                break;
+
+            auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
             for (auto entry : funvals)
             {
-                data[QString::fromStdString(entry.first)] << QPointF(i, entry.second);
+                data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
                 if (maxval < entry.second)
                     maxval = entry.second;
@@ -77,9 +84,7 @@ void Plot::setMaximum(int m)
                 if (minval > entry.second)
                     minval = entry.second;
             }
-        }
-
-        lastBuffered = m;
+        } while (lastBuffered < m);
     }
 
     SoftSlider::setMaximum(m);
@@ -101,6 +106,16 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 
 #include <QPainter>
 #include <QtMath>
+
+void Plot::addLegend(const QString &fname)
+{
+    const auto color = colorOrder[legend.size() % colorOrder.size()];
+
+    auto entry = new Legend(fname, color, this);
+    connect(entry, SIGNAL(changed()), this, SLOT(update()));
+    layout()->addWidget(entry);
+    legend[fname] = entry;
+}
 
 void Plot::paintEvent(QPaintEvent *event)
 {
@@ -176,10 +191,21 @@ void Plot::paintEvent(QPaintEvent *event)
     // plot data
     for (auto i = data.cbegin(); i != data.cend(); i++)
     {
-        auto interval = i.value().mid(softMinimum, softMaximum - softMinimum + 1);
+        // Ensure we have a legend for this callback type
+        if (!legend.contains(i.key()))
+            addLegend(i.key());
 
-        interval.prepend(QPointF(softMinimum, 0));
-        interval.append(QPointF(softMaximum, 0));
+        const auto & allValues = i.value();
+        int lRange, rRange;
+        QPointF lPoint = sampleAtX(softMinimum, allValues, nullptr, &lRange);
+        QPointF rPoint = sampleAtX(softMaximum, allValues, &rRange, nullptr);
+
+        auto interval = i.value().mid(lRange, rRange - lRange + 1);
+
+        interval.prepend(lPoint);
+        interval.prepend(QPointF(lPoint.x(), 0));
+        interval.append(rPoint);
+        interval.append(QPointF(rPoint.x(), 0));
 
         QLinearGradient gradient(0, minval, 0, maxval);
         gradient.setColorAt(0, Qt::transparent);
@@ -195,7 +221,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
         painter.setPen(pen2);
 
-        painter.drawPolyline(&i.value()[softMinimum], softMaximum - softMinimum + 1);
+        painter.drawPolyline(&interval[1], interval.size() - 2);
     }
 
     QPen pen3(Qt::white, 2.);
@@ -211,4 +237,44 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setBrush(QBrush(Qt::white));
     painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
+}
+
+
+QPointF Plot::sampleAtX(qreal x, const QVector<QPointF> &plot, int *lowerIndex, int *upperIndex)
+{
+    QPointF ret;
+    int lower, upper;
+
+    auto compare = [](const QPointF & pt, qreal x) {
+        return pt.x() < x;
+    };
+
+    auto it = std::lower_bound(plot.begin(), plot.end(), x, compare);
+
+    if (it == plot.end())
+    {
+        lower = upper = plot.size() - 1;
+        ret = QPointF(x, plot.last().y());
+    }
+    else if (it == plot.begin())
+    {
+        lower = upper = 0;
+        ret = QPointF(x, plot.first().y());
+    }
+    else
+    {
+        upper = std::distance(plot.begin(), it);
+        lower = upper - 1;
+
+        QPointF p1 = plot[lower], p2 = plot[upper];
+        qreal t = (x - p1.x()) / (p2.x() - p1.x());
+        ret = QPointF(x, p1.y() + t * (p2.y() - p1.y()));
+    }
+
+    if (lowerIndex)
+        *lowerIndex = lower;
+    if (upperIndex)
+        *upperIndex = upper;
+
+    return ret;
 }
