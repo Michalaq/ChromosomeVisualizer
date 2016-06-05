@@ -159,30 +159,25 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setViewTransformEnabled(false);
 
-    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
+    for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
     {
         auto tick = transform.map(QPoint(i, minval));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));
+        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
     }
+
+    for (qreal i = lt; i <= ut; i += delta)
+        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
     pen1.setStyle(Qt::DashLine);
-
-    painter.setViewTransformEnabled(false);
-
-    for (qreal i = lt; i <= ut; i += delta)
-        painter.drawText(QRect(transform.map(QPoint(0, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
-
-    painter.setViewTransformEnabled(true);
-
     pen1.setColor("#333333");
 
     painter.setPen(pen1);
 
-    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
+    for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
         painter.drawLine(QPoint(i, minval), QPoint(i, maxval));
 
     for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
@@ -224,19 +219,22 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawPolyline(&interval[1], interval.size() - 2);
     }
 
-    QPen pen3(Qt::white, 2.);
-    pen3.setJoinStyle(Qt::MiterJoin);
-    pen3.setCosmetic(true);
+    if (softMinimum <= value() && value() <= softMaximum)
+    {
+        QPen pen3(Qt::white, 2.);
+        pen3.setJoinStyle(Qt::MiterJoin);
+        pen3.setCosmetic(true);
 
-    painter.setPen(pen3);
-    painter.drawLine(value(), minval, value(), maxval);
+        painter.setPen(pen3);
+        painter.drawLine(value(), minval, value(), maxval);
 
-    painter.setViewTransformEnabled(false);
+        painter.setViewTransformEnabled(false);
 
-    auto crs = transform.map(QPoint(value(), maxval));
+        auto crs = transform.map(QPoint(value(), maxval));
 
-    painter.setBrush(QBrush(Qt::white));
-    painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
+        painter.setBrush(QBrush(Qt::white));
+        painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
+    }
 }
 
 
