@@ -123,33 +123,48 @@ double Node::maximum(unsigned lb, unsigned rb, const Node* node)
     return std::max(node->value, std::max(maximum(lb, rb, node->left), maximum(lb, rb, node->right)));
 }
 
-Tree::Tree() : root(nullptr)
+Tree::Tree()
 {
 
 }
 
 Tree::~Tree()
 {
-    delete root;
+    qDeleteAll(roots);
 }
 
-void Tree::insert(unsigned frame, unsigned value)
+void Tree::insert(std::string fname, unsigned frame, unsigned value)
 {
-    root = Node::insert(frame, value, root);
+    auto i = roots.find(fname);
+
+    if (i != roots.end())
+        i.value() = Node::insert(frame, value, i.value());
+    else
+        roots.insert(fname, Node::insert(frame, value, nullptr));
 }
 
 double Tree::minimum(unsigned lbound, unsigned rbound) const
 {
-    return Node::minimum(lbound, rbound, root);
+    double ans = qInf();
+
+    for (auto node : roots)
+        ans = std::min(Node::minimum(lbound, rbound, node), ans);
+
+    return ans;
 }
 
 double Tree::maximum(unsigned lbound, unsigned rbound) const
 {
-    return Node::maximum(lbound, rbound, root);
+    double ans = -qInf();
+
+    for (auto node : roots)
+        ans = std::max(Node::maximum(lbound, rbound, node), ans);
+
+    return ans;
 }
 
 void Tree::clear()
 {
-    delete root;
-    root = nullptr;
+    qDeleteAll(roots);
+    roots.clear();
 }

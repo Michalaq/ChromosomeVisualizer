@@ -34,13 +34,15 @@ private:
     unsigned lsize, rsize;
 };
 
+#include <QMap>
+
 class Tree
 {
 public:
     Tree();
     ~Tree();
 
-    void insert(unsigned frame, unsigned value);
+    void insert(std::string fname, unsigned frame, unsigned value);
 
     double minimum(unsigned lbound, unsigned rbound) const;
     double maximum(unsigned lbound, unsigned rbound) const;
@@ -48,7 +50,7 @@ public:
     void clear();
 
 private:
-    Node* root;
+    QMap<std::string, Node*> roots;
 };
 
 #endif // MULTIMAP_H

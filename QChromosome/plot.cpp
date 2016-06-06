@@ -77,7 +77,7 @@ void Plot::setMaximum(int m)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
-                minimax.insert(lastBuffered, entry.second);
+                minimax.insert(entry.first, lastBuffered, entry.second);
             }
         } while (lastBuffered < m);
     }
