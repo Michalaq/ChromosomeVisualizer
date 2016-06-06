@@ -259,7 +259,8 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
+    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+
     if (ui->reverse->isChecked())
     {
         if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
@@ -299,6 +300,8 @@ void MainWindow::reverse(bool checked)
             setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
+
+        time.restart();
         timer.start();
     }
     else
@@ -322,6 +325,8 @@ void MainWindow::play(bool checked)
             setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
+
+        time.restart();
         timer.start();
     }
     else
@@ -333,9 +338,7 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    // simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
-    simulation->getFrame(nextFrame);
+    qint64 nextFrame = qMin(currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), lastFrame);
 
     if (ui->play->isChecked())
     {
@@ -360,6 +363,8 @@ void MainWindow::next()
             setFrame(currentFrame);
         }
     }
+
+    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()

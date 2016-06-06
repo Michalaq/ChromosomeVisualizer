@@ -66,6 +66,7 @@ private:
     int lastFrame;
 
     QTimer timer;
+    QTime time;
 
     QActionGroup *actionGroup;
     QLinkedList<QAction*> modifiers;
