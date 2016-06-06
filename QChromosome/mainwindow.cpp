@@ -441,15 +441,20 @@ void MainWindow::setBaseAction(bool enabled)
 
 void MainWindow::capture()
 {
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString(Qt::ISODate) : "";
+    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, suffix);
 
     system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
     system("rm povray.ini");
+
+    if (renderSettings->openFile())
+        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
 }
 
 void MainWindow::captureMovie()
 {
+    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
+
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
     for (int i = 1; ; i++)
@@ -461,11 +466,14 @@ void MainWindow::captureMovie()
             break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), renderSettings->timestamp());
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), suffix);
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
     system("rm povray.ini");
+
+    if (renderSettings->openFile())
+        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

@@ -201,6 +201,11 @@ bool RenderSettings::cam360() const
     return ui->cam360CheckBox->isChecked();
 }
 
+bool RenderSettings::openFile() const
+{
+    return ui->openFileCheckBox->isChecked();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)
