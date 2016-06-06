@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     attributes.cpp \
     picker.cpp \
     layerattributes.cpp \
-    viewport.cpp
+    viewport.cpp \
+    multimap.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -95,7 +96,8 @@ HEADERS  += mainwindow.h\
     picker.h \
     ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
-    viewport.h
+    viewport.h \
+    multimap.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

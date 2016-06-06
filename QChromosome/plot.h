@@ -7,6 +7,7 @@
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
+#include "multimap.h"
 
 class Plot : public SoftSlider
 {
@@ -29,8 +30,7 @@ private:
     std::shared_ptr<Simulation> simulation_;
 
     QHash<QString, QVector<QPointF> > data;
-    double maxval;
-    double minval;
+    Tree minimax;
 
     int lastBuffered;
 

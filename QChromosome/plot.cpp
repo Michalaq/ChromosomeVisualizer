@@ -32,8 +32,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = -qInf();
-    minval = +qInf();
+    minimax.clear();
 
     setMinimumHeight(padding_top + 48 + padding_bottom);
 
@@ -78,11 +77,7 @@ void Plot::setMaximum(int m)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
-                if (maxval < entry.second)
-                    maxval = entry.second;
-
-                if (minval > entry.second)
-                    minval = entry.second;
+                minimax.insert(lastBuffered, entry.second);
             }
         } while (lastBuffered < m);
     }
@@ -129,6 +124,9 @@ void Plot::paintEvent(QPaintEvent *event)
     // set coordinate system
     QSize s;
     s.setHeight(height() - padding_top - padding_bottom);
+
+    double minval = minimax.minimum(softMinimum, softMaximum);
+    double maxval = minimax.maximum(softMinimum, softMaximum);
 
     double delta = tickSpan(minval, maxval, s.height(), 24);
     /* TODO do pewnej wysokości nie powinno się rozrzedzać podziałki, tylko ją zwyczajnie skalować */
