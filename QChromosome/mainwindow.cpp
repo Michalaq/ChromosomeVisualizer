@@ -111,6 +111,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_4->setBlind(ui->widget_2);
     ui->page_4->setAxis(ui->widget);
 
+    connect(ui->actionCamera, &QAction::triggered, [this] {
+        ui->dockWidget_2->setWindowTitle("Camera");
+        ui->dockWidget_2->show();
+
+        ui->stackedWidget->setCurrentIndex(4);
+    });
+
     newProject();
 }
 

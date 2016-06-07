@@ -769,6 +769,7 @@ MediaControl:checked {
        <widget class="Attributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
+       <widget class="CameraSettings" name="page_5"/>
       </widget>
      </item>
     </layout>
@@ -1249,6 +1250,12 @@ MediaControl:checked {
    <class>Viewport</class>
    <extends>QWidget</extends>
    <header>viewport.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraSettings</class>
+   <extends>QWidget</extends>
+   <header>camerasettings.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

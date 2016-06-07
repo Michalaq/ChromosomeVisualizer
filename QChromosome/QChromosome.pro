@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     picker.cpp \
     layerattributes.cpp \
     viewport.cpp \
-    multimap.cpp
+    multimap.cpp \
+    camerasettings.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -97,7 +98,8 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
     viewport.h \
-    multimap.h
+    multimap.h \
+    camerasettings.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -106,7 +108,8 @@ FORMS    += mainwindow.ui \
     attributes.ui \
     layerattributes.ui \
     viewport.ui \
-    rswidget.ui
+    rswidget.ui \
+    camerasettings.ui
 
 CONFIG += c++14
 
