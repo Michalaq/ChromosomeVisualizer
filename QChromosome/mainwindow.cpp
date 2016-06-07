@@ -268,28 +268,31 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
+    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
+
+    if (currentFrame > 0)
+    {
+        currentFrame = previousFrame;
+        setFrame(currentFrame);
+    }
+}
+
+void MainWindow::reverse_previous()
+{
     qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
 
-    if (ui->reverse->isChecked())
+    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
     {
-        if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-        {
-            currentFrame = previousFrame;
-            setFrame(currentFrame);
-        }
-        else
-        {
-            if (ui->actionSimple->isChecked())
-                ui->reverse->click();
-            else
-                setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
-        }
+        currentFrame = previousFrame;
+        setFrame(currentFrame);
     }
     else
     {
-        if (currentFrame > 0)
+        if (ui->actionSimple->isChecked())
+            ui->reverse->click();
+        else
         {
-            currentFrame = previousFrame;
+            currentFrame = ui->actionPreview_range->isChecked() ? softMaximum : lastFrame;
             setFrame(currentFrame);
         }
     }
@@ -308,7 +311,7 @@ void MainWindow::reverse(bool checked)
         if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
             setFrame(softMaximum);
 
-        connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
+        connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
 
         time.restart();
         timer.start();
@@ -333,7 +336,7 @@ void MainWindow::play(bool checked)
         if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
             setFrame(softMinimum);
 
-        connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
+        connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
 
         time.restart();
         timer.start();
@@ -347,28 +350,32 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    qint64 nextFrame = qMin(currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), lastFrame);
+    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
+    simulation->getFrame(nextFrame);
 
-    if (ui->play->isChecked())
+    if (currentFrame < lastFrame)
     {
-        if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-        {
-            currentFrame = nextFrame;
-            setFrame(currentFrame);
-        }
-        else
-        {
-            if (ui->actionSimple->isChecked())
-                ui->play->click();
-            else
-                setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
-        }
+        currentFrame = nextFrame;
+        setFrame(currentFrame);
+    }
+}
+
+void MainWindow::play_next()
+{
+    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+
+    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+    {
+        currentFrame = nextFrame;
+        setFrame(currentFrame);
     }
     else
     {
-        if (currentFrame < lastFrame)
+        if (ui->actionSimple->isChecked())
+            ui->play->click();
+        else
         {
-            currentFrame = nextFrame;
+            currentFrame = ui->actionPreview_range->isChecked() ? softMinimum : 0;
             setFrame(currentFrame);
         }
     }

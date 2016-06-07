@@ -41,6 +41,9 @@ public slots:
     void next();
     void end();
 
+    void reverse_previous();
+    void play_next();
+
     /* selection */
     void selectAll();
     void handleSelection(const AtomSelection &selection);
