@@ -91,12 +91,14 @@ void Plot::setMaximum(int m)
 
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 #include <QPainter>
