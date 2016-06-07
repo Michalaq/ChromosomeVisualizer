@@ -49,6 +49,7 @@ public:
 
 private:
     QMap<std::string, Node*> roots;
+    QMap<std::string, std::pair<double, double>> bounds;
 };
 
 #endif // MULTIMAP_H

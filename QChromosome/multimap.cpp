@@ -141,20 +141,24 @@ Tree::~Tree()
 
 void Tree::insert(std::string fname, unsigned frame, unsigned value)
 {
-    auto i = roots.find(fname);
-
-    if (i != roots.end())
-        i.value() = Node::insert(frame, value, i.value());
+    if (roots.contains(fname))
+    {
+        roots[fname] = Node::insert(frame, value, roots[fname]);
+        bounds[fname].second = value;
+    }
     else
-        roots.insert(fname, Node::insert(frame, value, nullptr));
+    {
+        roots[fname] = Node::insert(frame, value, nullptr);
+        bounds[fname] = {value, value};
+    }
 }
 
 double Tree::minimum(unsigned lbound, unsigned rbound) const
 {
     double ans = INFINITY;
 
-    for (auto node : roots)
-        ans = std::min(Node::minimum(lbound, rbound, node, INFINITY, INFINITY), ans);
+    for (auto i = roots.cbegin(); i != roots.cend(); i++)
+        ans = std::min(Node::minimum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
 
     return ans;
 }
@@ -163,8 +167,8 @@ double Tree::maximum(unsigned lbound, unsigned rbound) const
 {
     double ans = -INFINITY;
 
-    for (auto node : roots)
-        ans = std::max(Node::maximum(lbound, rbound, node, -INFINITY, -INFINITY), ans);
+    for (auto i = roots.cbegin(); i != roots.cend(); i++)
+        ans = std::max(Node::maximum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
 
     return ans;
 }
