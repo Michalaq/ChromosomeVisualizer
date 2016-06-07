@@ -63,11 +63,11 @@ double Node::minimum(unsigned lb, unsigned rb, const Node* node, double lm, doub
 {
     // przedział znajduje się całkowicie na lewo
     if (rb < node->lbound)
-        return lm;
+        return std::min(lm, node->value);
 
     // przedział znajduje się całkowicie na prawo
     if (node->rbound < lb)
-        return node->value;
+        return std::min(node->value, rm);
 
     // przedział jest lewostronnie dłuższy
     if (lb < node->lbound)
@@ -98,11 +98,11 @@ double Node::maximum(unsigned lb, unsigned rb, const Node* node, double lm, doub
 {
     // przedział znajduje się całkowicie na lewo
     if (rb < node->lbound)
-        return lm;
+        return std::max(lm, node->value);
 
     // przedział znajduje się całkowicie na prawo
     if (node->rbound < lb)
-        return node->value;
+        return std::max(node->value, rm);
 
     // przedział jest lewostronnie dłuższy
     if (lb < node->lbound)
