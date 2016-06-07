@@ -24,6 +24,9 @@ public:
     /* sets new origin */
     void setOrigin(const QVector3D& o);
 
+    /* moves camera's focus to given point, without rotating it */
+    void setLookAtPosition(const QVector3D& at, qreal distance);
+
     QVector3D position() const;
     QVector3D lookAt() const;
 

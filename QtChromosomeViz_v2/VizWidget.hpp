@@ -68,6 +68,7 @@ public:
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
+    qreal radius() const;
     const QList<unsigned int> & selectedIndices() const;
 
 private:

@@ -51,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
+    connect(ui->actionCenter_on_selection, SIGNAL(triggered(bool)), this, SLOT(centerCameraOnSelection()));
+
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rsw, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
@@ -401,7 +403,8 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->stackedWidget->setCurrentIndex(1);
 
-    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
+    if (selection.atomCount() > 0)
+        ui->camera->setOrigin(selection.weightCenter());
 
     ui->page_2->handleSelection(selection);
 }
@@ -445,6 +448,18 @@ void MainWindow::handleModelSelection()
     }
     else
         handleSelection(selection);
+}
+
+void MainWindow::centerCameraOnSelection()
+{
+    auto currentSelection = ui->scene->selectedSpheresObject();
+    if (currentSelection.selectedIndices().size() == 0)
+        return;
+
+    const auto selectionCenter = currentSelection.weightCenter();
+    const auto selectionRadius = currentSelection.radius();
+    ui->camera->setLookAtPosition(selectionCenter, 2 * (selectionRadius + 1));
+    ui->camera->setOrigin(selectionCenter);
 }
 
 void MainWindow::setBaseAction(bool enabled)

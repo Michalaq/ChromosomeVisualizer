@@ -48,6 +48,7 @@ public slots:
     void selectAll();
     void handleSelection(const AtomSelection &selection);
     void handleModelSelection();
+    void centerCameraOnSelection();
 
     /* actions */
     void setBaseAction(bool enabled);

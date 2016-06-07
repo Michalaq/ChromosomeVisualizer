@@ -60,6 +60,14 @@ void Camera::setOrigin(const QVector3D &o)
     origin = o;
 }
 
+void Camera::setLookAtPosition(const QVector3D &at, qreal distance)
+{
+    eye = at + z * distance;
+
+    /* update scene */
+    emit modelViewChanged(updateModelView());
+}
+
 QVector3D Camera::position() const
 {
     return eye;
