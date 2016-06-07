@@ -684,8 +684,16 @@ MediaControl:checked {
     <addaction name="menuRecently_closed_docks"/>
     <addaction name="menuDockable_dialogs"/>
    </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+    <addaction name="actionCamera"/>
+    <addaction name="actionViewport"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuScene"/>
    <addaction name="menuSelection"/>
    <addaction name="menuAnimation"/>
    <addaction name="menuWindows"/>
@@ -1109,11 +1117,24 @@ MediaControl:checked {
    </property>
   </action>
   <action name="actionViewport">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/view</normaloff>:/dialogs/view</iconset>
+   </property>
    <property name="text">
     <string>Viewport</string>
    </property>
    <property name="shortcut">
     <string>Shift+V</string>
+   </property>
+  </action>
+  <action name="actionCamera">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
+   </property>
+   <property name="text">
+    <string>Camera</string>
    </property>
   </action>
  </widget>

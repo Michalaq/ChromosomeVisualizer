@@ -40,5 +40,6 @@
     </qresource>
     <qresource prefix="/dialogs">
         <file alias="view">icons/view_icon.svg</file>
+        <file alias="film camera">icons/film_camera_icon.svg</file>
     </qresource>
 </RCC>
