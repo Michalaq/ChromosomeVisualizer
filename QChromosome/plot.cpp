@@ -107,7 +107,10 @@ void Plot::addLegend(const QString &fname)
     const auto color = colorOrder[legend.size() % colorOrder.size()];
 
     auto entry = new Legend(fname, color, this);
-    connect(entry, SIGNAL(changed()), this, SLOT(update()));
+    connect(entry, &Legend::changed, [=] {
+        minimax.setPlotVisibility(fname.toStdString(), entry->pen().alpha() != 0);
+        update();
+    });
     layout()->addWidget(entry);
     legend[fname] = entry;
 }
@@ -116,7 +119,7 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_ || softMinimum == softMaximum)
+    if (minimax.empty() || softMinimum == softMaximum)
         return;
 
     QPainter painter(this);
@@ -127,6 +130,9 @@ void Plot::paintEvent(QPaintEvent *event)
 
     double minval = minimax.minimum(softMinimum, softMaximum);
     double maxval = minimax.maximum(softMinimum, softMaximum);
+
+    if (minval == maxval)
+        minval--;
 
     double delta = tickSpan(minval, maxval, s.height(), 24);
     /* TODO do pewnej wysokości nie powinno się rozrzedzać podziałki, tylko ją zwyczajnie skalować */

@@ -150,6 +150,7 @@ void Tree::insert(std::string fname, unsigned frame, unsigned value)
     {
         roots[fname] = Node::insert(frame, value, nullptr);
         bounds[fname] = {value, value};
+        visibility[fname] = true;
     }
 }
 
@@ -158,7 +159,8 @@ double Tree::minimum(unsigned lbound, unsigned rbound) const
     double ans = INFINITY;
 
     for (auto i = roots.cbegin(); i != roots.cend(); i++)
-        ans = std::min(Node::minimum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
+        if (visibility[i.key()])
+            ans = std::min(Node::minimum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
 
     return ans;
 }
@@ -168,7 +170,8 @@ double Tree::maximum(unsigned lbound, unsigned rbound) const
     double ans = -INFINITY;
 
     for (auto i = roots.cbegin(); i != roots.cend(); i++)
-        ans = std::max(Node::maximum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
+        if (visibility[i.key()])
+            ans = std::max(Node::maximum(lbound, rbound, i.value(), bounds[i.key()].first, bounds[i.key()].second), ans);
 
     return ans;
 }
@@ -177,4 +180,17 @@ void Tree::clear()
 {
     qDeleteAll(roots);
     roots.clear();
+}
+
+bool Tree::empty() const
+{
+    for (auto i : visibility)
+        if (i) return false;
+
+    return true;
+}
+
+void Tree::setPlotVisibility(const std::string &fname, bool visible)
+{
+    visibility[fname] = visible;
 }

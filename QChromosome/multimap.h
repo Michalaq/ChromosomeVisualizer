@@ -46,10 +46,14 @@ public:
     double maximum(unsigned lbound, unsigned rbound) const;
 
     void clear();
+    bool empty() const;
+
+    void setPlotVisibility(const std::string& fname, bool visible);
 
 private:
     QMap<std::string, Node*> roots;
     QMap<std::string, std::pair<double, double>> bounds;
+    QMap<std::string, bool> visibility;
 };
 
 #endif // MULTIMAP_H
