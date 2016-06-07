@@ -105,7 +105,8 @@ FORMS    += mainwindow.ui \
     rendersettings.ui \
     attributes.ui \
     layerattributes.ui \
-    viewport.ui
+    viewport.ui \
+    rswidget.ui
 
 CONFIG += c++14
 

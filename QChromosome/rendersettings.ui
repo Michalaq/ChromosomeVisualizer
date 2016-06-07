@@ -10,15 +10,8 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Render Settings</string>
-  </property>
   <property name="styleSheet">
-   <string notr="true">QTabWidget {
-	background: #262626;
-}
-
-QTabBar {
+   <string notr="true">QTabBar {
 	background: #262626;
 }
 
@@ -171,8 +164,8 @@ QScrollArea &gt; QWidget &gt; QWidget {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>412</width>
-         <height>282</height>
+         <width>382</width>
+         <height>189</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -382,8 +375,8 @@ QScrollArea &gt; QWidget &gt; QWidget {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>412</width>
-       <height>282</height>
+       <width>410</width>
+       <height>280</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
@@ -565,8 +558,8 @@ QScrollArea &gt; QWidget &gt; QWidget {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>412</width>
-       <height>282</height>
+       <width>410</width>
+       <height>280</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">

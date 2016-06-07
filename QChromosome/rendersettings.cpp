@@ -217,3 +217,19 @@ void RenderSettings::updateOutputSize()
 
     ui->label_7->setText(QString("%1 x %2 px").arg(QString::number(outSize.width()), QString::number(outSize.height())));
 }
+
+#include "ui_rswidget.h"
+
+RenderSettingsWidget::RenderSettingsWidget(RenderSettings *rs, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::RenderSettingsWidget)
+{
+    ui->setupUi(this);
+
+    layout()->addWidget(rs);
+}
+
+RenderSettingsWidget::~RenderSettingsWidget()
+{
+    delete ui;
+}
