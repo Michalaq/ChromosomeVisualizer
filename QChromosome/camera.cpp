@@ -35,6 +35,10 @@ Camera::Camera(QWidget *parent)
     settings->ui->doubleSpinBox_8->setValue(eye.y());
     settings->ui->doubleSpinBox_9->setValue(eye.z());
 
+    settings->ui->doubleSpinBox_10->setValue(h);
+    settings->ui->doubleSpinBox_11->setValue(p);
+    settings->ui->doubleSpinBox_12->setValue(b);
+
     settings->blockSignals(false);
 }
 
@@ -140,6 +144,11 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     emit modelViewChanged(updateModelView());
 }
 
+void Camera::setEulerAgnles(qreal h_, qreal p_, qreal b_)
+{
+    rotate(h - h_, p - p_, b - b_);
+}
+
 void Camera::rotate(qreal dh, qreal dp, qreal db)
 {
     /* update Euler angles */
@@ -178,6 +187,18 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     y = q.rotatedVector(y);
 
     eye = origin + dq.rotatedVector(eye - origin);
+
+    settings->blockSignals(true);
+
+    settings->ui->doubleSpinBox_7->setValue(eye.x());
+    settings->ui->doubleSpinBox_8->setValue(eye.y());
+    settings->ui->doubleSpinBox_9->setValue(eye.z());
+
+    settings->ui->doubleSpinBox_10->setValue(h);
+    settings->ui->doubleSpinBox_11->setValue(p);
+    settings->ui->doubleSpinBox_12->setValue(b);
+
+    settings->blockSignals(false);
 
     /* update scene */
     emit modelViewChanged(updateModelView());

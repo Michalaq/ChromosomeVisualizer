@@ -26,7 +26,21 @@ CameraSettings::CameraSettings(Camera *parent) :
             camera->setPosition(QVector3D(ui->doubleSpinBox_7->value(), ui->doubleSpinBox_8->value(), value));
     });
 
-    // Euler angles
+    // angles
+    connect(ui->doubleSpinBox_10, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        if (!signalsBlocked())
+            camera->setEulerAgnles(value, ui->doubleSpinBox_11->value(), ui->doubleSpinBox_12->value());
+    });
+
+    connect(ui->doubleSpinBox_11, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        if (!signalsBlocked())
+            camera->setEulerAgnles(ui->doubleSpinBox_10->value(), value, ui->doubleSpinBox_12->value());
+    });
+
+    connect(ui->doubleSpinBox_12, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        if (!signalsBlocked())
+            camera->setEulerAgnles(ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value(), value);
+    });
 }
 
 CameraSettings::~CameraSettings()
