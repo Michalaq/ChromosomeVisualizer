@@ -68,6 +68,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>Coord</string>
@@ -366,40 +369,40 @@
              </item>
              <item row="0" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="minimum">
                 <double>1.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>65535.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>36.000000000000000</double>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="minimum">
                 <double>1.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>65535.000000000000000</double>
                </property>
-               <property name="value">
-                <double>36.000000000000000</double>
-               </property>
               </widget>
              </item>
              <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="suffix">
                 <string>°</string>
                </property>
                <property name="maximum">
                 <double>180.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>53.130000000000003</double>
                </property>
               </widget>
              </item>
@@ -419,6 +422,9 @@
              </item>
              <item row="3" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="maximum">
                 <double>65535.000000000000000</double>
                </property>

@@ -16,8 +16,10 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
+      zoom(1),
       origin(0, 0, 0),
-      settings(new CameraSettings(this))
+      settings(new CameraSettings(this)),
+      rotationType(RT_World)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -38,6 +40,13 @@ Camera::Camera(QWidget *parent)
     settings->ui->doubleSpinBox_10->setValue(h);
     settings->ui->doubleSpinBox_11->setValue(p);
     settings->ui->doubleSpinBox_12->setValue(b);
+
+    settings->ui->doubleSpinBox->setValue(focalLength);
+    settings->ui->doubleSpinBox_2->setValue(apertureWidth);
+    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
+    settings->ui->doubleSpinBox_4->setValue(zoom);
+
+    settings->ui->comboBox->setCurrentIndex(rotationType);
 
     settings->blockSignals(false);
 }
@@ -149,6 +158,35 @@ void Camera::setEulerAgnles(qreal h_, qreal p_, qreal b_)
     rotate(h - h_, p - p_, b - b_);
 }
 
+void Camera::setFocalLength(qreal fl)
+{
+    focalLength = fl;
+    updateAngles();
+
+    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
+}
+
+void Camera::setApertureWidth(qreal aw)
+{
+    apertureWidth = aw;
+    updateAngles();
+
+    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
+}
+
+void Camera::setFieldOfView(qreal fov)
+{
+    focalLength = apertureWidth / 2 / qTan(qDegreesToRadians(fov) / 2);
+    updateAngles();
+
+    settings->ui->doubleSpinBox->setValue(focalLength);
+}
+
+void Camera::setRotationType(int rt)
+{
+    rotationType = rt;
+}
+
 void Camera::rotate(qreal dh, qreal dp, qreal db)
 {
     /* update Euler angles */
@@ -170,7 +208,8 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     x = q.rotatedVector(x);
     z = q.rotatedVector(z);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
     q = QQuaternion::fromAxisAndAngle(x, p);
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
@@ -178,7 +217,8 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     y = q.rotatedVector(y);
     z = q.rotatedVector(z);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
     q = QQuaternion::fromAxisAndAngle(z, b);
     dq = QQuaternion::fromAxisAndAngle(z, -db);
@@ -186,13 +226,17 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     x = q.rotatedVector(x);
     y = q.rotatedVector(y);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
     settings->blockSignals(true);
 
-    settings->ui->doubleSpinBox_7->setValue(eye.x());
-    settings->ui->doubleSpinBox_8->setValue(eye.y());
-    settings->ui->doubleSpinBox_9->setValue(eye.z());
+    if (rotationType == RT_World)
+    {
+        settings->ui->doubleSpinBox_7->setValue(eye.x());
+        settings->ui->doubleSpinBox_8->setValue(eye.y());
+        settings->ui->doubleSpinBox_9->setValue(eye.z());
+    }
 
     settings->ui->doubleSpinBox_10->setValue(h);
     settings->ui->doubleSpinBox_11->setValue(p);

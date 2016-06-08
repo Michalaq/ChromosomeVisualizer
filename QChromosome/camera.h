@@ -36,6 +36,10 @@ public:
 
     void setPosition(const QVector3D& p);
     void setEulerAgnles(qreal h_, qreal p_, qreal b_);
+    void setFocalLength(qreal fl);
+    void setApertureWidth(qreal aw);
+    void setFieldOfView(qreal fov);
+    void setRotationType(int rt);
 
 public slots:
     /* handles mouse move event */
@@ -72,6 +76,8 @@ private:
     qreal horizontalAngle;
     qreal verticalAngle;
 
+    qreal zoom;
+
     QVector3D origin;
 
     QMatrix4x4 modelView;
@@ -93,6 +99,14 @@ private:
     qreal aspectRatio;
 
     CameraSettings *settings;
+
+    enum RotationType
+    {
+        RT_World,
+        RT_Camera
+    };
+
+    int rotationType;
 
 signals:
     void modelViewChanged(QMatrix4x4);

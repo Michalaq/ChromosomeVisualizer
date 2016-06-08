@@ -41,6 +41,28 @@ CameraSettings::CameraSettings(Camera *parent) :
         if (!signalsBlocked())
             camera->setEulerAgnles(ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value(), value);
     });
+
+    // focal length
+    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        camera->setFocalLength(value);
+    });
+
+    // aperture width
+    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        camera->setApertureWidth(value);
+    });
+
+    // field of view
+    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        camera->setFieldOfView(value);
+    });
+
+    // zoom
+
+    // rotation type
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+        camera->setRotationType(index);
+    });
 }
 
 CameraSettings::~CameraSettings()
