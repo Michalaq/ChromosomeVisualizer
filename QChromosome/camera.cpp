@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "ui_camerasettings.h"
 
 const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
@@ -15,7 +16,8 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      origin(0, 0, 0)
+      origin(0, 0, 0),
+      settings(new CameraSettings(this))
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -80,6 +82,11 @@ QVector3D Camera::lookAt() const
 qreal Camera::angle() const
 {
     return horizontalAngle;
+}
+
+CameraSettings* Camera::settingsWidget()
+{
+    return settings;
 }
 
 void Camera::move(int dx, int dy)

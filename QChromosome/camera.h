@@ -8,6 +8,8 @@
 #include <QStack>
 #include <QMetaMethod>
 
+#include "camerasettings.h"
+
 class Camera : public Draggable
 {
     Q_OBJECT
@@ -30,6 +32,8 @@ public:
     QVector3D lookAt() const;
 
     qreal angle() const;
+
+    CameraSettings* settingsWidget();
 
 public slots:
     /* handles mouse move event */
@@ -85,6 +89,8 @@ private:
     static const qreal wheelFactor;
 
     qreal aspectRatio;
+
+    CameraSettings *settings;
 
 signals:
     void modelViewChanged(QMatrix4x4);

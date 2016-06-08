@@ -1,10 +1,12 @@
 #include "camerasettings.h"
 #include "ui_camerasettings.h"
 
-CameraSettings::CameraSettings(QWidget *parent) :
+#include "camera.h"
+
+CameraSettings::CameraSettings(Camera *parent) :
     QWidget(parent),
     ui(new Ui::CameraSettings),
-    camera(nullptr)
+    camera(parent)
 {
     ui->setupUi(this);
 
@@ -27,9 +29,4 @@ CameraSettings::CameraSettings(QWidget *parent) :
 CameraSettings::~CameraSettings()
 {
     delete ui;
-}
-
-void CameraSettings::setCamera(Camera *c)
-{
-    camera = c;
 }

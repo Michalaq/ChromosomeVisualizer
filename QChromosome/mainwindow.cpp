@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget->setCurrentIndex(4);
     });
 
-    ui->page_5->setCamera(ui->camera);
+    ui->stackedWidget->addWidget(ui->camera->settingsWidget());
 
     newProject();
 }
