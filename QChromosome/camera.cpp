@@ -28,6 +28,14 @@ Camera::Camera(QWidget *parent)
     updateModelView();
 
     updateAngles();
+
+    settings->blockSignals(true);
+
+    settings->ui->doubleSpinBox_7->setValue(eye.x());
+    settings->ui->doubleSpinBox_8->setValue(eye.y());
+    settings->ui->doubleSpinBox_9->setValue(eye.z());
+
+    settings->blockSignals(false);
 }
 
 void Camera::resizeEvent(QResizeEvent *event)
@@ -119,6 +127,14 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
 
     /* update eye position */
     eye -= delta;
+
+    settings->blockSignals(true);
+
+    settings->ui->doubleSpinBox_7->setValue(eye.x());
+    settings->ui->doubleSpinBox_8->setValue(eye.y());
+    settings->ui->doubleSpinBox_9->setValue(eye.z());
+
+    settings->blockSignals(false);
 
     /* update scene */
     emit modelViewChanged(updateModelView());

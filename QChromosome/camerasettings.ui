@@ -152,9 +152,6 @@
                  <property name="maximum">
                   <double>32767.000000000000000</double>
                  </property>
-                 <property name="value">
-                  <double>60.000000000000000</double>
-                 </property>
                 </widget>
                </item>
                <item row="1" column="1">
@@ -171,9 +168,6 @@
                  <property name="maximum">
                   <double>32767.000000000000000</double>
                  </property>
-                 <property name="value">
-                  <double>30.000000000000000</double>
-                 </property>
                 </widget>
                </item>
                <item row="2" column="1">
@@ -189,9 +183,6 @@
                  </property>
                  <property name="maximum">
                   <double>32767.000000000000000</double>
-                 </property>
-                 <property name="value">
-                  <double>60.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -327,7 +318,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>362</width>
+            <width>194</width>
             <height>206</height>
            </rect>
           </property>
@@ -481,8 +472,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>187</height>
+            <width>181</width>
+            <height>105</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
