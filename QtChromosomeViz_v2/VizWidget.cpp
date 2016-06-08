@@ -1,10 +1,14 @@
 #include <cassert>
 #include <cstddef>
+#include <parallel/algorithm>
 #include "bartekm_code/PDBSimulationLayer.h"
 #include "VizWidget.hpp"
 
 static const float EPSILON = 1e-4;
 static const int SELECTED_FLAG = 1 << 2;
+static const int HIDDEN_FLAG = 1 << 3;
+
+static const unsigned int PARALLEL_THRESHOLD = 100 * 1000;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -37,6 +41,7 @@ VizWidget::VizWidget(QWidget *parent)
     , needVBOUpdate_(true)
     , fogDensity_(0.01f)
     , fogContribution_(0.8f)
+    , previousOrderingScheme_(-1)
     , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
     , isSelectingState_(false)
@@ -491,6 +496,11 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.release();
 
     selectedBitmap_.fill(false, sphereCount_);
+    hiddenBitmap_.fill(false, sphereCount_);
+
+    sortPermutation_.resize(sphereCount_);
+    for (int i = 0; i < sphereCount_; i++)
+        sortPermutation_[i] = { i, 0, 0, 0 };
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
@@ -528,6 +538,8 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].flags = 0;
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
+        if (hiddenBitmap_[a.id - 1])
+            frameState_[a.id - 1].flags |= HIDDEN_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
@@ -954,18 +966,112 @@ const QVector<VizBallInstance> & VizWidget::getBallInstances() const
     return frameState_;
 }
 
+static int calculateOrderingFromDirection(const QVector3D & direction)
+{
+    // http://iquilezles.org/www/articles/volumesort/volumesort.htm
+    // The returned number encodes ordering of axes in which we need to sort,
+    // and direction in which to sort each axis
+
+    const int sx = direction.x() > 0.0;
+    const int sy = direction.y() > 0.0;
+    const int sz = direction.z() > 0.0;
+
+    const int fx = ((sx << 2) | 0) & 7;
+    const int fy = ((sy << 2) | 1) & 7;
+    const int fz = ((sz << 2) | 2) & 7;
+
+    const qreal ax = std::abs(direction.x());
+    const qreal ay = std::abs(direction.y());
+    const qreal az = std::abs(direction.z());
+
+    if (ax > ay && ax > az)
+    {
+        if (ay > az)
+            return fx | (fy << 3) | (fz << 6);
+        else
+            return fx | (fz << 3) | (fy << 6);
+    }
+    else if (ay > ax && ay > az)
+    {
+        if (ax > az)
+            return fy | (fx << 3) | (fz << 6);
+        else
+            return fy | (fz << 3) | (fx << 6);
+    }
+    else
+    {
+        if (ax > ay)
+            return fz | (fx << 3) | (fy << 6);
+        else
+            return fz | (fy << 3) | (fx << 6);
+    }
+}
+
 void VizWidget::generateSortedState()
 {
-    auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
-        float z1 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(a.position, 1.f));
-        float z2 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(b.position, 1.f));
-        return z1 > z2;
-    };
+    QElapsedTimer timer;
+    QElapsedTimer totalTimer;
 
-    sortedState_ = frameState_;
-    qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
+    totalTimer.start();
+    timer.start();
+
+    const unsigned int sphereCount = sphereCount_;
+
+    const auto row3 = modelViewProjection_.row(2).toVector3D();
+    const int newOrdering = calculateOrderingFromDirection(row3);
+
+    if (previousOrderingScheme_ != newOrdering)
+    {
+        previousOrderingScheme_ = newOrdering;
+
+#pragma omp parallel for if (sphereCount_ >= PARALLEL_THRESHOLD)
+        for (unsigned int i = 0; i < sphereCount; i++)
+        {
+            const int id = sortPermutation_[i].id;
+            sortPermutation_[i].position[0] = frameState_[id].position.x();
+            sortPermutation_[i].position[1] = frameState_[id].position.y();
+            sortPermutation_[i].position[2] = frameState_[id].position.z();
+        }
+
+        qDebug() << "Creating vectors took" << timer.elapsed() << "ms";
+        timer.start();
+
+        auto sorter = [&](const perm_t & a, const perm_t & b) -> bool {
+            int scheme = newOrdering;
+            for (int i = 0; i < 3; i++)
+            {
+                const int aVal = a.position[scheme & 3];
+                const int bVal = b.position[scheme & 3];
+
+                if (aVal != bVal)
+                {
+                    // Logical xor - we might want to flip the comparison
+                    return (!!(scheme & 4)) != (aVal < bVal);
+                }
+
+                scheme >>= 3;
+            }
+
+            return false;
+        };
+
+        if (sphereCount_ >= PARALLEL_THRESHOLD)\
+            __gnu_parallel::sort(sortPermutation_.begin(), sortPermutation_.end(), sorter);
+        else
+            std::sort(sortPermutation_.begin(), sortPermutation_.end(), sorter);
+
+        qDebug() << "Sorting took" << timer.elapsed() << "ms";
+        timer.start();
+    }
+
+    sortedState_.resize(frameState_.size());
+
+#pragma omp parallel for if (sphereCount_ >= PARALLEL_THRESHOLD)
+    for (int i = 0; i < sphereCount; i++)
+        sortedState_[i] = frameState_[sortPermutation_[i].id];
+
+    qDebug() << "Permuting took " << timer.elapsed() << "ms";
+    qDebug() << "Total: " << totalTimer.elapsed() << "ms";
 }
 
 QRect VizWidget::selectionRect() const
@@ -1142,6 +1248,15 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
+void AtomSelection::setHidden(bool hidden)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->hiddenBitmap_[i] = hidden;
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
 QVariant AtomSelection::getColor() const
 {
     if (selectedIndices_.isEmpty())
@@ -1221,6 +1336,20 @@ QVariant AtomSelection::getLabel() const
 
     for (auto i : selectedIndices_)
         if (widget_->atomLabels_.value(i) != ans)
+            return QVariant();
+
+    return ans;
+}
+
+QVariant AtomSelection::getHidden() const
+{
+    if (selectedIndices_.isEmpty())
+        return QVariant();
+
+    bool ans = widget_->hiddenBitmap_[selectedIndices_.front()];
+
+    for (auto i : selectedIndices_)
+        if (widget_->hiddenBitmap_[selectedIndices_.front()] != ans)
             return QVariant();
 
     return ans;

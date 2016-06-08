@@ -42,6 +42,12 @@ struct VizLink
     void update(const QVector3D & p1, const QVector3D & p2);
 };
 
+struct perm_t
+{
+    unsigned int id;
+    int position[3];
+};
+
 class VizWidget;
 
 class AtomSelection
@@ -57,6 +63,7 @@ public:
     void setSpecularExponent(float exponent);
     void setSize(float size);
     void setLabel(const QString & label);
+    void setHidden(bool hidden);
 
     QVariant getColor() const;
     QVariant getAlpha() const;
@@ -64,6 +71,7 @@ public:
     QVariant getSpecularExponent() const;
     QVariant getSize() const;
     QVariant getLabel() const;
+    QVariant getHidden() const;
     QList<QVariant> getCoordinates() const;
 
     unsigned int atomCount() const;
@@ -204,6 +212,8 @@ private:
     
     bool needVBOUpdate_;
     QVector<VizBallInstance> frameState_, sortedState_;
+    QVector<perm_t> sortPermutation_;
+    int previousOrderingScheme_;
     QVector<VizLink> linksState_;
     void generateSortedState();
 
@@ -213,6 +223,7 @@ private:
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     AtomSelection currentSelection_;
     QVector<bool> selectedBitmap_;
+    QVector<bool> hiddenBitmap_;
 
     QRect selectionRect() const;
     QList<unsigned int> pickSpheres();

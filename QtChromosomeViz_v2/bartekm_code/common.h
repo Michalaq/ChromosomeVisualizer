@@ -23,7 +23,7 @@ using frameNumber_t = int64_t;
 struct Atom {
     int id;
     char type[4];
-    float x, y, z;
+    int x, y, z;
     int layerNo, inLayerId;
 };
 

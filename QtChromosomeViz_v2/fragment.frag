@@ -16,6 +16,10 @@ in float fSpecularExponent;
 out vec4 ocColor;
 
 void main() {
+    bool isHidden = (iFlags & 8u) == 8u;
+    if (isHidden)
+        discard;
+
     const vec3 cvLightDirection = vec3(0.7, 0.0, 0.7);
     vec3 vFixedNormal = normalize(vNormal);
     vec4 baseColor = cColor;
