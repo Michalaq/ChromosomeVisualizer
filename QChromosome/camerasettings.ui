@@ -315,8 +315,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>362</width>
-            <height>206</height>
+            <width>376</width>
+            <height>187</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -339,34 +339,6 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Aperture width</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Field of view</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>Zoom</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Rotation</string>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox">
                <property name="accelerated">
@@ -377,6 +349,13 @@
                </property>
                <property name="maximum">
                 <double>65535.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Aperture width</string>
                </property>
               </widget>
              </item>
@@ -393,6 +372,13 @@
                </property>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Field of view</string>
+               </property>
+              </widget>
+             </item>
              <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
                <property name="accelerated">
@@ -406,7 +392,14 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Rotation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
               <widget class="QComboBox" name="comboBox">
                <item>
                 <property name="text">
@@ -418,16 +411,6 @@
                  <string>Camera</string>
                 </property>
                </item>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
-               <property name="accelerated">
-                <bool>true</bool>
-               </property>
-               <property name="maximum">
-                <double>65535.000000000000000</double>
-               </property>
               </widget>
              </item>
             </layout>

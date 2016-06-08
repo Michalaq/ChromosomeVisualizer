@@ -76,8 +76,6 @@ private:
     qreal horizontalAngle;
     qreal verticalAngle;
 
-    qreal zoom;
-
     QVector3D origin;
 
     QMatrix4x4 modelView;

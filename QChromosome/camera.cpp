@@ -16,7 +16,6 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      zoom(1),
       origin(0, 0, 0),
       settings(new CameraSettings(this)),
       rotationType(RT_World)
@@ -44,7 +43,6 @@ Camera::Camera(QWidget *parent)
     settings->ui->doubleSpinBox->setValue(focalLength);
     settings->ui->doubleSpinBox_2->setValue(apertureWidth);
     settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
-    settings->ui->doubleSpinBox_4->setValue(zoom);
 
     settings->ui->comboBox->setCurrentIndex(rotationType);
 
