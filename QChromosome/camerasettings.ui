@@ -138,51 +138,60 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QSpinBox" name="spinBox_3">
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string> Å</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-32768.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
+                  <double>32767.000000000000000</double>
                  </property>
                  <property name="value">
-                  <number>60</number>
+                  <double>60.000000000000000</double>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_2">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string> Å</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-32768.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
+                  <double>32767.000000000000000</double>
                  </property>
                  <property name="value">
-                  <number>30</number>
+                  <double>30.000000000000000</double>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QSpinBox" name="spinBox">
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string> Å</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-32768.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
+                  <double>32767.000000000000000</double>
                  </property>
                  <property name="value">
-                  <number>60</number>
+                  <double>60.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -217,54 +226,66 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="1">
-                <widget class="QSpinBox" name="spinBox_4">
+               <item row="0" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string>°</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-360.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
+                  <double>360.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>45.000000000000000</double>
                  </property>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QSpinBox" name="spinBox_5">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string>°</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-360.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
+                  <double>360.000000000000000</double>
                  </property>
                  <property name="value">
-                  <number>-20</number>
+                  <double>-20.000000000000000</double>
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
-                <widget class="QSpinBox" name="spinBox_6">
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="doubleSpinBox_12">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
                  <property name="suffix">
                   <string>°</string>
                  </property>
                  <property name="minimum">
-                  <number>-32768</number>
+                  <double>-360.000000000000000</double>
                  </property>
                  <property name="maximum">
-                  <number>32767</number>
-                 </property>
-                 <property name="value">
-                  <number>45</number>
+                  <double>360.000000000000000</double>
                  </property>
                 </widget>
                </item>
               </layout>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QWidget" name="widget" native="true"/>
            </item>
            <item>
             <spacer name="verticalSpacer">

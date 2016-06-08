@@ -2,6 +2,7 @@
 #define CAMERASETTINGS_H
 
 #include <QWidget>
+#include "camera.h"
 
 namespace Ui
 {
@@ -15,12 +16,16 @@ public:
     explicit CameraSettings(QWidget *parent = 0);
     ~CameraSettings();
 
+    void setCamera(Camera *c);
+
 signals:
 
 public slots:
 
 private:
     Ui::CameraSettings *ui;
+
+    Camera *camera;
 };
 
 #endif // CAMERASETTINGS_H

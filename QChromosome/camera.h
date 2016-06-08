@@ -25,6 +25,8 @@ public:
     void setOrigin(const QVector3D& o);
 
     QVector3D position() const;
+    void setPosition(const QVector3D& p);
+
     QVector3D lookAt() const;
 
     qreal angle() const;

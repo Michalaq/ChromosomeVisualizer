@@ -65,6 +65,13 @@ QVector3D Camera::position() const
     return eye;
 }
 
+void Camera::setPosition(const QVector3D &p)
+{
+    eye = p;
+
+    emit modelViewChanged(updateModelView());
+}
+
 QVector3D Camera::lookAt() const
 {
     return eye - z;
