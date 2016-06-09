@@ -17,6 +17,7 @@ public:
     ~Plot();
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void updateSimulation();
 
     void setMaximum(int max);
 

@@ -209,7 +209,7 @@ void MainWindow::addLayer()
             simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
             ui->scene->setSimulation(simulation);
-            ui->plot->setSimulation(simulation);
+            ui->plot->updateSimulation();
 
             connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
         }
