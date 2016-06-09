@@ -39,6 +39,8 @@ VizWidget::VizWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
+    , fpsQueryObject_(0)
+    , previousFPS_(60.0)
     , fogDensity_(0.01f)
     , fogContribution_(0.8f)
     , previousOrderingScheme_(-1)
@@ -64,7 +66,7 @@ VizWidget::VizWidget(QWidget *parent)
 
 VizWidget::~VizWidget()
 {
-
+    glDeleteQueries(1, &fpsQueryObject_);
 }
 
 void VizWidget::initializeGL()
@@ -317,6 +319,8 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
+
+    glGenQueries(1, &fpsQueryObject_);
 }
 
 void VizWidget::paintGL()
@@ -330,6 +334,19 @@ void VizWidget::paintGL()
     // QPainter painter;
     // painter.begin(this);
     // painter.setRenderHint(QPainter::Antialiasing);
+
+    int available = 0;
+    glGetQueryObjectiv(fpsQueryObject_, GL_QUERY_RESULT_AVAILABLE, &available);
+    if (available)
+    {
+        GLint64 ns = 0;
+        glGetQueryObjecti64v(fpsQueryObject_, GL_QUERY_RESULT, &ns);
+        qreal fps = (qreal)(1000 * 1000 * 1000) / (qreal)ns;
+        previousFPS_ = 0.1 * previousFPS_ + 0.9 * fps;
+        qDebug() << "VizWidget fps:" << previousFPS_ << "time:" << 1000.0 * (1.0 / fps) << "ms";
+    }
+
+    glBeginQuery(GL_TIME_ELAPSED, fpsQueryObject_);
 
     generateSortedState();
     updateWholeFrameData();
@@ -403,6 +420,16 @@ void VizWidget::paintGL()
     glDisable(GL_DEPTH_TEST);
 
     paintLabels();
+
+    glEndQuery(GL_TIME_ELAPSED);
+
+    auto fpsString = QString("GPU FPS: %1").arg(previousFPS_);
+    labelRenderer_.addRef(fpsString);
+    labelRenderer_.begin();
+    labelRenderer_.renderAt(QPointF(64, 64), fpsString,
+                            QColor(255, 255, 255), QColor(0, 0, 0));
+    labelRenderer_.end();
+    labelRenderer_.release(fpsString);
 }
 
 void VizWidget::resizeGL(int w, int h)
@@ -572,6 +599,8 @@ void VizWidget::setFrame(frameNumber_t frame)
         }
     }
 
+    // Force sorting, as ordering may have changed
+    previousOrderingScheme_ = -1;
     needVBOUpdate_ = true;
 }
 

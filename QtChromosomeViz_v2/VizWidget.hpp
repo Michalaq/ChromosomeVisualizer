@@ -194,6 +194,9 @@ private:
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
+    GLuint fpsQueryObject_;
+    qreal previousFPS_;
+
     QMatrix4x4 projection_;
     QMatrix4x4 modelViewProjection_;
     QMatrix4x4 modelView_;
