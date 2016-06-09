@@ -91,8 +91,16 @@ void Attributes::handleSelection(const AtomSelection &selection)
 
     list.clear();
 
+    int lengthStop = 100;
     for (auto i : selection.selectedIndices())
+    {
         list += "Atom." + QString::number(i + 1) + ", ";
+        if (--lengthStop == 0)
+        {
+            list += "..., ";
+            break;
+        }
+    }
 
     list.chop(2);
 
