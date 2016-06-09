@@ -18,7 +18,9 @@ Camera::Camera(QWidget *parent)
       apertureWidth(36),
       origin(0, 0, 0),
       settings(new CameraSettings(this)),
-      rotationType(RT_World)
+      rotationType(RT_World),
+      nearClipping(.1),
+      farClipping(1000.)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -45,6 +47,9 @@ Camera::Camera(QWidget *parent)
     settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
 
     settings->ui->comboBox->setCurrentIndex(rotationType);
+
+    settings->ui->doubleSpinBox_5->setValue(nearClipping);
+    settings->ui->doubleSpinBox_6->setValue(farClipping);
 
     settings->blockSignals(false);
 }
@@ -185,6 +190,20 @@ void Camera::setRotationType(int rt)
     rotationType = rt;
 }
 
+void Camera::setNearClipping(qreal nc)
+{
+    nearClipping = nc;
+
+    emit projectionChanged(updateProjection());
+}
+
+void Camera::setFarClipping(qreal fc)
+{
+    farClipping = fc;
+
+    emit projectionChanged(updateProjection());
+}
+
 void Camera::rotate(qreal dh, qreal dp, qreal db)
 {
     /* update Euler angles */
@@ -265,12 +284,12 @@ QMatrix4x4& Camera::updateProjection()
     if (aspectRatio_ < aspectRatio)
     {
         projection.rotate(-90, {0, 0, 1});
-        projection.perspective(horizontalAngle, 1. / aspectRatio_, .1, 1000.);
+        projection.perspective(horizontalAngle, 1. / aspectRatio_, nearClipping, farClipping);
         projection.rotate(+90, {0, 0, 1});
     }
     else
     {
-        projection.perspective(verticalAngle, aspectRatio_, .1, 1000.);
+        projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
     return projection;

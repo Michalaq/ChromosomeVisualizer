@@ -57,11 +57,19 @@ CameraSettings::CameraSettings(Camera *parent) :
         camera->setFieldOfView(value);
     });
 
-    // zoom
-
     // rotation type
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
         camera->setRotationType(index);
+    });
+
+    // near clipping
+    connect(ui->doubleSpinBox_5, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        camera->setNearClipping(value);
+    });
+
+    // far clipping
+    connect(ui->doubleSpinBox_6, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
+        camera->setFarClipping(value);
     });
 }
 

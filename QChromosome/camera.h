@@ -40,6 +40,8 @@ public:
     void setApertureWidth(qreal aw);
     void setFieldOfView(qreal fov);
     void setRotationType(int rt);
+    void setNearClipping(qreal nc);
+    void setFarClipping(qreal fc);
 
 public slots:
     /* handles mouse move event */
@@ -105,6 +107,9 @@ private:
     };
 
     int rotationType;
+
+    qreal nearClipping;
+    qreal farClipping;
 
 signals:
     void modelViewChanged(QMatrix4x4);
