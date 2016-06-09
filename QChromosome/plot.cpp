@@ -59,6 +59,13 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     update();
 }
 
+void Plot::updateSimulation()
+{
+    auto oldBuffered = lastBuffered;
+    lastBuffered = -1;
+    setMaximum(oldBuffered);
+}
+
 void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
