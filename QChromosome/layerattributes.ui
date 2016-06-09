@@ -53,6 +53,12 @@
      </item>
      <item>
       <widget class="QLabel" name="label_14">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="text">
         <string>Layer [Layer.1]</string>
        </property>
@@ -82,9 +88,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>376</width>
-            <height>187</height>
+            <y>-33</y>
+            <width>362</width>
+            <height>220</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -175,6 +181,13 @@
             </layout>
            </item>
            <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="text">
+              <string>Append simulation layer</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -190,6 +203,7 @@
           </layout>
           <zorder>label_5</zorder>
           <zorder>verticalSpacer</zorder>
+          <zorder>pushButton_2</zorder>
          </widget>
         </widget>
        </item>

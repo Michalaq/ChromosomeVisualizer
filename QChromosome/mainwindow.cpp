@@ -180,6 +180,7 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
+    ui->page_3->setSimulation(simulation);
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
@@ -403,26 +404,26 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->stackedWidget->setCurrentIndex(1);
 
-    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
-
     ui->page_2->handleSelection(selection);
+
+    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
 {
     auto t = root.sibling(root.row(), 1).data().toInt();
     auto v = root.sibling(root.row(), 2).data();
 
-    if (t == NodeType::AtomObject)
-        id.append(v.toUInt() - 1);
-    else
-        for (int r = 0; r < model->rowCount(root); r++)
-            dumpModel(model, root.child(r, 0), id);
+    if (v.canConvert<uint>())
+        id[t].append(v.toUInt());
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
 }
 
 void MainWindow::handleModelSelection()
 {
-    QList<unsigned int> id;
+    QVector<QList<unsigned int>> id(5);
     QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
@@ -434,7 +435,7 @@ void MainWindow::handleModelSelection()
         dumpModel(ui->treeView->model(), r, id);
     }
 
-    auto selection = ui->scene->customSelection(id);
+    auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
 
     ui->scene->setVisibleSelection(selection, false);
 
@@ -444,6 +445,8 @@ void MainWindow::handleModelSelection()
         ui->dockWidget_2->show();
 
         ui->stackedWidget->setCurrentIndex(2);
+
+        ui->page_3->handleSelection(id[NodeType::LayerObject]);
     }
     else
         handleSelection(selection);

@@ -151,7 +151,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         if (!types.contains(t))
             types[t] = new TreeItem({t, NodeType::BinderObject}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id + offset}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset}, types[t]));
     }
 
     for (auto t : types)
@@ -186,7 +186,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             if (!types.contains(t))
                 types[t] = new TreeItem({t, NodeType::BinderObject}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id + offset}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset}, types[t]));
         }
 
     for (auto t : types)

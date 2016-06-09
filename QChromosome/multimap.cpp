@@ -180,6 +180,8 @@ void Tree::clear()
 {
     qDeleteAll(roots);
     roots.clear();
+    bounds.clear();
+    visibility.clear();
 }
 
 bool Tree::empty() const

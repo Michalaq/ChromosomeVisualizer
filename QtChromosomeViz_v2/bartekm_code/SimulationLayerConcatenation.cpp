@@ -115,15 +115,18 @@ frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
     if (time < 0)
         time = 0;
 
+    frameNumber_t framesSkipped = 0;
+
     for (const auto & layer : layers_) {
         if (time < layer->getFrameCount()) {
             frameNumber_t nextTime = layer->getNextTime(time);
             if (nextTime != time)
-                return transform_.transformBack(nextTime);
+                return transform_.transformBack(framesSkipped + nextTime);
         }
 
         // Try the next one
         time -= layer->getFrameCount();
+        framesSkipped += layer->getFrameCount();
     }
 
     return oldTime;
