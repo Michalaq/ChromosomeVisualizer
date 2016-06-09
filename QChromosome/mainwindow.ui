@@ -636,12 +636,6 @@ MediaControl:checked {
     </property>
     <addaction name="actionSelect_All"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionProject_Settings"/>
-   </widget>
    <widget class="QMenu" name="menuAnimation">
     <property name="title">
      <string>Animation</string>
@@ -690,7 +684,6 @@ MediaControl:checked {
     <addaction name="actionViewport"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuScene"/>
    <addaction name="menuSelection"/>
    <addaction name="menuAnimation"/>

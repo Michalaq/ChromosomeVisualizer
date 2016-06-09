@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_projectsettings.h"
+#include "ui_rendersettings.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
@@ -69,11 +69,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
 
-    connect(ui->page->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+    connect(renderSettings->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
         timer.setInterval(1000 / value);
     });
 
-    timer.setInterval(1000 / ui->page->ui->spinBox->value());
+    timer.setInterval(1000 / renderSettings->ui->spinBox->value());
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -123,6 +123,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->addWidget(ui->camera->settingsWidget());
 
     newProject();
+
+    ui->dockWidget_2->close();
 }
 
 MainWindow::~MainWindow()
@@ -284,7 +286,7 @@ void MainWindow::previous()
 
 void MainWindow::reverse_previous()
 {
-    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000), 0);
 
     if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
     {
@@ -367,7 +369,7 @@ void MainWindow::next()
 
 void MainWindow::play_next()
 {
-    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000);
 
     if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
     {
@@ -504,7 +506,7 @@ void MainWindow::captureMovie()
             break;
     }
 
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), renderSettings->timestamp());
+    MovieMaker::makeMovie(renderSettings->saveFile(), frames, renderSettings->ui->spinBox->value(), renderSettings->ui->spinBox->value(), renderSettings->timestamp());
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());

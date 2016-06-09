@@ -25,6 +25,7 @@ public:
 
 #include <QFileDialog>
 #include <QtMath>
+#include <QSettings>
 
 RenderSettings::RenderSettings(QWidget *parent) :
     QTabWidget(parent),
@@ -99,6 +100,27 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
         updateOutputSize();
     });
+
+    //PROJECT SETTINGS
+    connect(ui->toolButton_2, &QToolButton::clicked, [this] {
+        QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui->lineEdit_2->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+        if (!path.isEmpty())
+        {
+            ui->lineEdit_2->setText(path);
+
+            QSettings settings;
+            settings.setValue("povraypath", path);
+        }
+    });
+
+    connect(ui->lineEdit_2, &QLineEdit::textChanged, [this](const QString& path) {
+        QSettings settings;
+        settings.setValue("povraypath", path);
+    });
+
+    QSettings settings;
+    ui->lineEdit_2->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
 }
 
 RenderSettings::~RenderSettings()

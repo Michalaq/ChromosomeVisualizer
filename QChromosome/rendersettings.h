@@ -95,6 +95,7 @@ signals:
 
 public slots:
 
+friend class MainWindow;
 };
 
 class RenderSettingsWidget : public QWidget
