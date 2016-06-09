@@ -175,7 +175,7 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
-    ui->page_3->setSimulation(simulation);
+    ui->page_3->setSimulation(simulation, ui->scene);
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
@@ -450,7 +450,7 @@ void MainWindow::handleModelSelection()
 
         ui->stackedWidget->setCurrentIndex(1);
 
-        ui->page_3->handleSelection(id[NodeType::LayerObject]);
+        ui->page_3->handleSelection(id[NodeType::LayerObject], selection);
     }
     else
         handleSelection(selection);

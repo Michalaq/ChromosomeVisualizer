@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 namespace Ui {
     class LayerAttributes;
@@ -15,9 +16,9 @@ public:
     explicit LayerAttributes(QWidget *parent = 0);
     ~LayerAttributes();
 
-    void setSimulation(std::shared_ptr<Simulation> s);
+    void setSimulation(std::shared_ptr<Simulation> s, VizWidget* vw);
 
-    void handleSelection(const QList<unsigned int>& selection);
+    void handleSelection(const QList<unsigned int>& selection, const AtomSelection& as);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -31,6 +32,7 @@ private:
     Ui::LayerAttributes *ui;
 
     std::shared_ptr<Simulation> simulation;
+    VizWidget *vizWidget_;
 
     QString title, list;
 
