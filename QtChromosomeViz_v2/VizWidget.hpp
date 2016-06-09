@@ -95,6 +95,7 @@ public:
     virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    std::shared_ptr<Frame> currentFrame() const;
 
 public slots:
     void advanceFrame();
@@ -200,7 +201,7 @@ private:
 
     std::shared_ptr<Simulation> simulation_;
     frameNumber_t frameNumber_;
-    
+
     bool needVBOUpdate_;
     QVector<VizBallInstance> frameState_, sortedState_;
     QVector<VizLink> linksState_;

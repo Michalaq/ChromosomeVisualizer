@@ -466,6 +466,11 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
     setFirstFrame();
 }
 
+std::shared_ptr<Frame> VizWidget::currentFrame() const
+{
+    return simulation_->getFrame(frameNumber_);
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
@@ -649,14 +654,14 @@ QVector<VizVertex> VizWidget::generateSolidOfRevolution(
 QVector<VizVertex> VizWidget::generateSphere(unsigned int rings, unsigned int segments)
 {
     assert(rings > 1);
-    
+
     const QVector3D auxAxis { 1.0, 0.0, 0.0 };
     const QVector3D mainAxis { 0.0, 0.0, 1.0 };
     const VizVertex auxVertex {
         { 0.0, 0.0, 1.0 },
         { 0.0, 0.0, 1.0 }
     };
-    
+
     // Generate quads outline
     QVector<VizSegment> outline;
     for (unsigned int i = 0; i < rings; i++)
