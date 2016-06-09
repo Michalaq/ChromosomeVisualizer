@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Chromosome Visualizer</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
@@ -1760,6 +1760,22 @@ MediaControl:checked {
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>record</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>captureMovie()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>549</x>
+     <y>352</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>
