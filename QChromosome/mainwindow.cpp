@@ -56,13 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSettings, SIGNAL(triggered(bool)), rsw, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
-    connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Project settings");
-        ui->dockWidget_2->show();
-
-        ui->stackedWidget->setCurrentIndex(0);
-    });
-
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
     auto *ag = new QActionGroup(this);
@@ -106,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->setWindowTitle("Viewport");
         ui->dockWidget_2->show();
 
-        ui->stackedWidget->setCurrentIndex(3);
+        ui->stackedWidget->setCurrentIndex(2);
     });
 
     ui->page_4->setVizWidget(ui->scene);
@@ -117,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->setWindowTitle("Camera");
         ui->dockWidget_2->show();
 
-        ui->stackedWidget->setCurrentIndex(4);
+        ui->stackedWidget->setCurrentIndex(3);
     });
 
     ui->stackedWidget->addWidget(ui->camera->settingsWidget());
@@ -410,7 +403,7 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     ui->dockWidget_2->setWindowTitle("Attributes");
     ui->dockWidget_2->show();
 
-    ui->stackedWidget->setCurrentIndex(1);
+    ui->stackedWidget->setCurrentIndex(0);
 
     if (selection.atomCount() > 0)
         ui->camera->setOrigin(selection.weightCenter());
@@ -455,7 +448,7 @@ void MainWindow::handleModelSelection()
         ui->dockWidget_2->setWindowTitle("Attributes");
         ui->dockWidget_2->show();
 
-        ui->stackedWidget->setCurrentIndex(2);
+        ui->stackedWidget->setCurrentIndex(1);
 
         ui->page_3->handleSelection(id[NodeType::LayerObject]);
     }
