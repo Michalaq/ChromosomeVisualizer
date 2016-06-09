@@ -618,7 +618,7 @@ MediaControl:checked {
      <x>0</x>
      <y>0</y>
      <width>848</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -715,6 +715,7 @@ MediaControl:checked {
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelect"/>
+   <addaction name="actionCenter_on_selection"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
@@ -1135,6 +1136,18 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionCenter_on_selection">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/icons/crosshair.svg</normaloff>:/selection/icons/crosshair.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Center on selection</string>
+   </property>
+   <property name="statusTip">
+    <string>Center on selection</string>
    </property>
   </action>
  </widget>

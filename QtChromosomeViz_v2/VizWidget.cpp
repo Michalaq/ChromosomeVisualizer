@@ -1288,6 +1288,24 @@ QVector3D AtomSelection::weightCenter() const
     return sum /= (float)atomCount();
 }
 
+qreal AtomSelection::radius() const
+{
+    const auto center = weightCenter();
+    qreal maxDistance = 0.0;
+    auto frame = widget_->simulation_->getFrame(0);
+
+    for (unsigned int i : selectedIndices_)
+    {
+        QVector3D atomPos(frame->atoms[i].x,
+                          frame->atoms[i].y,
+                          frame->atoms[i].z);
+        qreal distance = (center - atomPos).lengthSquared();
+        maxDistance = std::max(maxDistance, distance);
+    }
+
+    return qSqrt(maxDistance);
+}
+
 const QList<unsigned int> & AtomSelection::selectedIndices() const
 {
     return selectedIndices_;

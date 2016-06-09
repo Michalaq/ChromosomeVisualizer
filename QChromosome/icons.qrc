@@ -16,6 +16,7 @@
     </qresource>
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
+        <file>icons/crosshair.svg</file>
     </qresource>
     <qresource prefix="/dock">
         <file alias="float">icons/float_icon.svg</file>
@@ -42,4 +43,5 @@
         <file alias="view">icons/view_icon.svg</file>
         <file alias="film camera">icons/film_camera_icon.svg</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>
