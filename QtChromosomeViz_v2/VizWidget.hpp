@@ -96,6 +96,7 @@ public:
 
     void setSimulation(std::shared_ptr<Simulation> dp);
     std::shared_ptr<Frame> currentFrame() const;
+    void nextInterestingFrame();
 
 public slots:
     void advanceFrame();

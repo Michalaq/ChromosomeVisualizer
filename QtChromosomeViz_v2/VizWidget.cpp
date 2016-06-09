@@ -471,6 +471,12 @@ std::shared_ptr<Frame> VizWidget::currentFrame() const
     return simulation_->getFrame(frameNumber_);
 }
 
+void VizWidget::nextInterestingFrame()
+{
+    auto next = simulation_->getNextTime(frameNumber_);
+    setFrame(next);
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
