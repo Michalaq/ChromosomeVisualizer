@@ -123,8 +123,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->stackedWidget->addWidget(ui->camera->settingsWidget());
 
     newProject();
-
-    ui->dockWidget_2->close();
 }
 
 MainWindow::~MainWindow()

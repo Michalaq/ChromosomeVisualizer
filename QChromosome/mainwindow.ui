@@ -757,7 +757,9 @@ MediaControl:checked {
      </property>
      <item row="0" column="0">
       <widget class="QStackedWidget" name="stackedWidget">
-       <widget class="ProjectSettings" name="page"/>
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
        <widget class="Attributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
@@ -1213,12 +1215,6 @@ MediaControl:checked {
    <class>Blind</class>
    <extends>QWidget</extends>
    <header>blind.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ProjectSettings</class>
-   <extends>QWidget</extends>
-   <header>projectsettings.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
