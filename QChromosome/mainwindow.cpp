@@ -410,13 +410,14 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
 {
+    auto t = root.sibling(root.row(), 1).data().toInt();
     auto v = root.sibling(root.row(), 2).data();
 
-    if (v.canConvert<uint>())
+    if (t == NodeType::AtomObject)
         id.append(v.toUInt() - 1);
-
-    for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, root.child(r, 0), id);
+    else
+        for (int r = 0; r < model->rowCount(root); r++)
+            dumpModel(model, root.child(r, 0), id);
 }
 
 void MainWindow::handleModelSelection()
@@ -426,10 +427,9 @@ void MainWindow::handleModelSelection()
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
     {
-        auto v = r.sibling(r.row(), 1).data();
+        auto t = r.sibling(r.row(), 1).data().toInt();
 
-        if (v.canConvert<int>())
-            type.insert(v.toInt());
+        type.insert(t);
 
         dumpModel(ui->treeView->model(), r, id);
     }
@@ -438,7 +438,7 @@ void MainWindow::handleModelSelection()
 
     ui->scene->setVisibleSelection(selection, false);
 
-    if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
+    if (type.size() == 1 && *type.begin() == NodeType::LayerObject)
     {
         ui->dockWidget_2->setWindowTitle("Attributes");
         ui->dockWidget_2->show();

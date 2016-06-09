@@ -47,10 +47,13 @@
 
 #include "../QtChromosomeViz_v2/bartekm_code/common.h"
 
-enum ObjectType
+enum NodeType
 {
-    AtomObject,
-    LayerObject
+    HeaderObject,
+    LayerObject,
+    ChromosomeObject,
+    BinderObject,
+    AtomObject
 };
 
 class TreeItem;
