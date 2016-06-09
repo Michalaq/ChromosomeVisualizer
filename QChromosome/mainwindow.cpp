@@ -284,7 +284,10 @@ void MainWindow::previous()
 
 void MainWindow::reverse_previous()
 {
-    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000), 0);
+    int delta = qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000);
+    qint64 previousFrame = currentFrame;
+    for (int i = 0; i < delta; i++)
+        previousFrame = simulation->getPreviousTime(previousFrame);
 
     if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
     {
@@ -367,7 +370,10 @@ void MainWindow::next()
 
 void MainWindow::play_next()
 {
-    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000);
+    int delta = qRound(1. * time.restart() * renderSettings->ui->spinBox->value() / 1000);
+    qint64 nextFrame = currentFrame;
+    for (int i = 0; i < delta; i++)
+        nextFrame = simulation->getNextTime(nextFrame);
 
     if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
     {
