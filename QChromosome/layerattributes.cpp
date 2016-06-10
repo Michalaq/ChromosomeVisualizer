@@ -62,9 +62,6 @@ LayerAttributes::LayerAttributes(QWidget *parent) :
     });
 
     connect(ui->pushButton_2, SIGNAL(clicked(bool)), this, SLOT(appendLayer()));
-
-    ui->comboBox->setItemDelegate(new QStyledItemDelegate);
-    ui->comboBox_2->setItemDelegate(new QStyledItemDelegate);
 }
 
 LayerAttributes::~LayerAttributes()

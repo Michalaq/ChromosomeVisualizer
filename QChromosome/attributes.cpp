@@ -60,9 +60,6 @@ Attributes::Attributes(QWidget *parent) :
     connect(ui->widget_2, &Picker::valueChanged, [this] (QColor color) {
         vizWidget_->selectedSpheresObject().setSpecularColor(color);
     });
-
-    ui->comboBox->setItemDelegate(new QStyledItemDelegate);
-    ui->comboBox_2->setItemDelegate(new QStyledItemDelegate);
 }
 
 Attributes::~Attributes()

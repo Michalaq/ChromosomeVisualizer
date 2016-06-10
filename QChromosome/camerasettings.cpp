@@ -72,8 +72,6 @@ CameraSettings::CameraSettings(Camera *parent) :
     connect(ui->doubleSpinBox_6, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         camera->setFarClipping(value);
     });
-
-    ui->comboBox->setItemDelegate(new QStyledItemDelegate);
 }
 
 CameraSettings::~CameraSettings()

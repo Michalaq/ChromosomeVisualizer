@@ -68,8 +68,6 @@ Viewport::Viewport(QWidget *parent) :
     connect(ui->widget_4, &Picker::valueChanged, [this] (QColor color) {
         vizWidget_->setLabelTextColor(color);
     });
-
-    ui->comboBox->setItemDelegate(new QStyledItemDelegate);
 }
 
 Viewport::~Viewport()
