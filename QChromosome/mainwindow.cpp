@@ -98,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_2->setVizWidget(ui->scene);
 
+    ui->page_3->setVizWidget(ui->scene);
+
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
@@ -446,7 +448,7 @@ void MainWindow::handleModelSelection()
 
         ui->stackedWidget->setCurrentIndex(2);
 
-        ui->page_3->handleSelection(id[NodeType::LayerObject]);
+        ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
     }
     else
         handleSelection(selection);

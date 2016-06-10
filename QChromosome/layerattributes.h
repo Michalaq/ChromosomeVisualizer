@@ -2,6 +2,7 @@
 #define LAYERATTRIBUTES_H
 
 #include <QWidget>
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 
 namespace Ui {
@@ -15,9 +16,10 @@ public:
     explicit LayerAttributes(QWidget *parent = 0);
     ~LayerAttributes();
 
+    void setVizWidget(VizWidget* vizWidget);
     void setSimulation(std::shared_ptr<Simulation> s);
 
-    void handleSelection(const QList<unsigned int>& selection);
+    void handleSelection(const AtomSelection& selection, const QList<unsigned int>& layers);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -30,6 +32,7 @@ public slots:
 private:
     Ui::LayerAttributes *ui;
 
+    VizWidget *vizWidget_;
     std::shared_ptr<Simulation> simulation;
 
     QString title, list;
