@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     layerattributes.cpp \
     viewport.cpp \
     multimap.cpp \
-    camerasettings.cpp
+    camerasettings.cpp \
+    doublespinbox.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -99,7 +100,8 @@ HEADERS  += mainwindow.h\
     layerattributes.h \
     viewport.h \
     multimap.h \
-    camerasettings.h
+    camerasettings.h \
+    doublespinbox.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

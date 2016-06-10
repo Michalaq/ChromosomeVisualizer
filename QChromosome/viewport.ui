@@ -88,7 +88,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-122</y>
             <width>362</width>
             <height>309</height>
            </rect>
@@ -134,7 +134,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <widget class="DoubleSpinBox" name="doubleSpinBox">
                <property name="suffix">
                 <string>%</string>
                </property>
@@ -240,7 +240,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+              <widget class="DoubleSpinBox" name="doubleSpinBox_2">
                <property name="suffix">
                 <string>%</string>
                </property>
@@ -326,7 +326,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>197</width>
+            <width>362</width>
             <height>194</height>
            </rect>
           </property>
@@ -417,7 +417,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+              <widget class="DoubleSpinBox" name="doubleSpinBox_3">
                <property name="minimum">
                 <double>0.000000000000000</double>
                </property>
@@ -430,7 +430,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+              <widget class="DoubleSpinBox" name="doubleSpinBox_4">
                <property name="suffix">
                 <string>%</string>
                </property>
@@ -484,8 +484,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>131</width>
-            <height>119</height>
+            <width>376</width>
+            <height>187</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -595,6 +595,11 @@
    <extends>QWidget</extends>
    <header>picker.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

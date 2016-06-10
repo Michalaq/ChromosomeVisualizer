@@ -88,7 +88,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-33</y>
+            <y>0</y>
             <width>362</width>
             <height>220</height>
            </rect>
@@ -229,7 +229,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-62</y>
             <width>362</width>
             <height>249</height>
            </rect>
@@ -269,7 +269,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QSpinBox" name="spinBox_3">
+              <widget class="SpinBox" name="spinBox_3">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -288,7 +288,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QSpinBox" name="spinBox_2">
+              <widget class="SpinBox" name="spinBox_2">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -307,7 +307,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QSpinBox" name="spinBox">
+              <widget class="SpinBox" name="spinBox">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -367,10 +367,10 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QSpinBox" name="spinBox_4"/>
+              <widget class="SpinBox" name="spinBox_4"/>
              </item>
              <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <widget class="DoubleSpinBox" name="doubleSpinBox">
                <property name="accelerated">
                 <bool>true</bool>
                </property>
@@ -423,7 +423,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-45</y>
             <width>362</width>
             <height>232</height>
            </rect>
@@ -456,7 +456,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+              <widget class="DoubleSpinBox" name="doubleSpinBox_2">
                <property name="accelerated">
                 <bool>true</bool>
                </property>
@@ -532,7 +532,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+              <widget class="DoubleSpinBox" name="doubleSpinBox_3">
                <property name="accelerated">
                 <bool>true</bool>
                </property>
@@ -592,10 +592,20 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>Picker</class>
    <extends>QWidget</extends>
    <header>picker.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>
