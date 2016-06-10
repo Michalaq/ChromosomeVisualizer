@@ -219,6 +219,44 @@ QScrollBar::left-arrow:horizontal {
 
 QScrollBar::right-arrow:horizontal {
 	image: url(:/arrows/right);
+}
+
+QComboBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QComboBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QComboBox QAbstractItemView {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: white;
+}
+
+QComboBox QAbstractItemView::item {
+	border: none;
+	min-height: 30px;
+	padding-left: 7px;
+}
+
+QComboBox QAbstractItemView::item:selected {
+	background: #0044aa;
 }</string>
   </property>
   <property name="dockNestingEnabled">

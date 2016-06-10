@@ -2,6 +2,7 @@
 #include "ui_camerasettings.h"
 
 #include "camera.h"
+#include <QStyledItemDelegate>
 
 CameraSettings::CameraSettings(Camera *parent) :
     QWidget(parent),
@@ -71,6 +72,8 @@ CameraSettings::CameraSettings(Camera *parent) :
     connect(ui->doubleSpinBox_6, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         camera->setFarClipping(value);
     });
+
+    ui->comboBox->setItemDelegate(new QStyledItemDelegate);
 }
 
 CameraSettings::~CameraSettings()
