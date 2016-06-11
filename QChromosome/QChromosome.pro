@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     multimap.cpp \
     camerasettings.cpp \
     doublespinbox.cpp \
-    combobox.cpp
+    combobox.cpp \
+    lineedit.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -103,7 +104,8 @@ HEADERS  += mainwindow.h\
     multimap.h \
     camerasettings.h \
     doublespinbox.h \
-    combobox.h
+    combobox.h \
+    lineedit.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

@@ -265,6 +265,22 @@ QCheckBox::indicator:unchecked {
 
 QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
+}
+
+QLineEdit {
+	background: #2d2d2d;
+	border: none;
+	color: gray;
+	height: 26px;
+	selection-background-color: #0066ff;
+	padding-left: 2px;
+}
+
+QLineEdit[focus=&quot;true&quot;] {
+	border: 2px solid #805900;
+	border-radius: 4px;
+	color: lightgray;
+	padding-left: 0px;
 }</string>
   </property>
   <property name="dockNestingEnabled">

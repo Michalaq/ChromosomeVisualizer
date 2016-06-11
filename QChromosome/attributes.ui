@@ -111,7 +111,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="LineEdit" name="lineEdit"/>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_2">
@@ -121,7 +121,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_2"/>
+              <widget class="LineEdit" name="lineEdit_2"/>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_3">
@@ -218,7 +218,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-62</y>
+            <y>0</y>
             <width>362</width>
             <height>249</height>
            </rect>
@@ -412,7 +412,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-45</y>
+            <y>0</y>
             <width>362</width>
             <height>232</height>
            </rect>
@@ -584,6 +584,11 @@
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lineedit.h</header>
   </customwidget>
   <customwidget>
    <class>Picker</class>
