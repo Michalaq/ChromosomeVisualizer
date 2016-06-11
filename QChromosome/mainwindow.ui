@@ -257,6 +257,14 @@ QComboBox QAbstractItemView::item {
 
 QComboBox QAbstractItemView::item:selected {
 	background: #0044aa;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/checkbox/off);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/checkbox/on);
 }</string>
   </property>
   <property name="dockNestingEnabled">

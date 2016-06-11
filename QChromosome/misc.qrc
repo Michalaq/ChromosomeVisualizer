@@ -2,4 +2,8 @@
     <qresource prefix="/">
         <file alias="bar">misc/tab_bar.svg</file>
     </qresource>
+    <qresource prefix="/checkbox">
+        <file alias="on">misc/checkbox_on.svg</file>
+        <file alias="off">misc/checkbox_off.svg</file>
+    </qresource>
 </RCC>
