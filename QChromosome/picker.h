@@ -1,10 +1,10 @@
 #ifndef PICKER_H
 #define PICKER_H
 
-#include <QWidget>
+#include "combobox.h"
 #include <QVariant>
 
-class Picker : public QWidget
+class Picker : public ComboBox
 {
     Q_OBJECT
 public:
