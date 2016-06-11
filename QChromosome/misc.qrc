@@ -3,7 +3,13 @@
         <file alias="bar">misc/tab_bar.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
-        <file alias="on">misc/checkbox_on.svg</file>
-        <file alias="off">misc/checkbox_off.svg</file>
+        <file alias="unchecked">misc/checkbox_unchecked.svg</file>
+        <file alias="checked">misc/checkbox_checked.svg</file>
+    </qresource>
+    <qresource prefix="/arrows">
+        <file alias="up">misc/up_arrow.svg</file>
+        <file alias="right">misc/right_arrow.svg</file>
+        <file alias="left">misc/left_arrow.svg</file>
+        <file alias="down">misc/down_arrow.svg</file>
     </qresource>
 </RCC>

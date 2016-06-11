@@ -260,11 +260,11 @@ QComboBox QAbstractItemView::item:selected {
 }
 
 QCheckBox::indicator:unchecked {
-    image: url(:/checkbox/off);
+    image: url(:/checkbox/unchecked);
 }
 
 QCheckBox::indicator:checked {
-    image: url(:/checkbox/on);
+    image: url(:/checkbox/checked);
 }</string>
   </property>
   <property name="dockNestingEnabled">
