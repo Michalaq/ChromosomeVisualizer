@@ -209,7 +209,7 @@ void Plot::paintEvent(QPaintEvent *event)
         QPointF lPoint = sampleAtX(softMinimum, allValues, nullptr, &lRange);
         QPointF rPoint = sampleAtX(softMaximum, allValues, &rRange, nullptr);
 
-        auto interval = i.value().mid(lRange, rRange - lRange + 1);
+        auto interval = lRange <= rRange ? i.value().mid(lRange, rRange - lRange + 1) : QVector<QPointF>();
 
         interval.prepend(lPoint);
         interval.prepend(QPointF(lPoint.x(), 0));
@@ -270,7 +270,8 @@ QPointF Plot::sampleAtX(qreal x, const QVector<QPointF> &plot, int *lowerIndex, 
     }
     else if (it == plot.begin())
     {
-        lower = upper = 0;
+        lower = -1;
+        upper = 0;
         ret = QPointF(x, plot.first().y());
     }
     else
