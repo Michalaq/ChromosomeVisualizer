@@ -7,7 +7,7 @@ class Node
 {
 public:
     Node(unsigned f, double v);
-    Node(unsigned f, double v, Node* l, Node* r);
+    Node(unsigned f, double v, Node* r, Node* l);
     ~Node();
 
     double minimum(unsigned lb, unsigned rb, double lm, double rm) const;
