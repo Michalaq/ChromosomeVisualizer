@@ -4,7 +4,7 @@
 Node::Node(unsigned f, double v) :
     left(nullptr),
     right(nullptr),
-    data({f, v}),
+    rightm({f, v}),
     lbound(f),
     rbound(f),
     minv(v),
@@ -18,7 +18,7 @@ Node::Node(unsigned f, double v) :
 Node::Node(unsigned f, double v, Node* r, Node* l) :
     left(l),
     right(r),
-    data({f, v}),
+    rightm({f, v}),
     lbound(l->lbound),
     rbound(f),
     minv(std::min({l->minv, r->minv, v})),
@@ -39,7 +39,7 @@ double value(unsigned frame, Keyframe a, Keyframe b)
 {
     Q_ASSERT(a.frame <= frame && frame <= b.frame);
 
-    return std::min(a.value, b.value);
+    return (a.value * (b.frame - frame) + b.value * (frame - a.frame)) / (b.frame - a.frame);
 }
 
 double Node::minimum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
@@ -50,7 +50,7 @@ double Node::minimum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
 
     // przedział znajduje się całkowicie na prawo
     if (rbound < lb)
-        return std::min(value(lb, data, rm), value(rb, data, rm));
+        return std::min(value(lb, rightm, rm), value(rb, rightm, rm));
 
     // przedział jest lewostronnie dłuższy
     if (lb < lbound)
@@ -58,7 +58,7 @@ double Node::minimum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
 
     // przedział jest prawostronnie dłuższy
     if (rbound < rb)
-        return std::min(minimum(lb, rbound, lm, data), value(rb, data, rm));
+        return std::min(minimum(lb, rbound, lm, rightm), value(rb, rightm, rm));
 
     // przedział jest równy zakresowi poddrzewa
     if (lb == lbound && rbound == rb)
@@ -72,29 +72,29 @@ double Node::minimum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
 
     // przedział jest rozłączny z lewym poddrzewem
     if (left->rbound < lb)
-        return right->minimum(lb, rb, left->data, data);
+        return right->minimum(lb, rb, left->rightm, rightm);
 
     // przedział ma część wspólną z każdym poddrzewem
-    return std::min(left->minimum(lb, right->leftm.frame, lm, right->leftm), right->minimum(left->data.frame, rb, left->data, data));
+    return std::min(left->minimum(lb, right->leftm.frame, lm, right->leftm), right->minimum(left->rightm.frame, rb, left->rightm, rightm));
 }
 
 double Node::maximum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
 {
     // przedział znajduje się całkowicie na lewo
     if (rb < lbound)
-        return std::max(lm.value, leftm.value);
+        return std::max(value(lb, lm, leftm), value(rb, lm, leftm));
 
     // przedział znajduje się całkowicie na prawo
     if (rbound < lb)
-        return std::max(data.value, rm.value);
+        return std::max(value(lb, rightm, rm), value(rb, rightm, rm));
 
     // przedział jest lewostronnie dłuższy
     if (lb < lbound)
-        return std::max(lm.value, maximum(lbound, rb, lm, rm));
+        return std::max(value(lb, lm, leftm), maximum(lbound, rb, leftm, rm));
 
     // przedział jest prawostronnie dłuższy
     if (rbound < rb)
-        return std::max(maximum(lb, rbound, lm, rm), rm.value);
+        return std::max(maximum(lb, rbound, lm, rightm), value(rb, rightm, rm));
 
     // przedział jest równy zakresowi poddrzewa
     if (lb == lbound && rbound == rb)
@@ -108,10 +108,10 @@ double Node::maximum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const
 
     // przedział jest rozłączny z lewym poddrzewem
     if (left->rbound < lb)
-        return right->maximum(lb, rb, left->data, data);
+        return right->maximum(lb, rb, left->rightm, rightm);
 
     // przedział ma część wspólną z każdym poddrzewem
-    return std::max(left->maximum(lb, rb, lm, right->leftm), right->maximum(lb, rb, left->data, data));
+    return std::max(left->maximum(lb, right->leftm.frame, lm, right->leftm), right->maximum(left->rightm.frame, rb, left->rightm, rightm));
 }
 
 Nodes::Nodes() : visible(true)
@@ -137,7 +137,7 @@ double Nodes::maximum(unsigned lbound, unsigned rbound) const
     double ans = std::numeric_limits<double>::min();
 
     Keyframe leftm = nodes.last()->leftm;
-    Keyframe rightm = nodes.first()->data;
+    Keyframe rightm = nodes.first()->rightm;
 
     auto i = nodes.cbegin();
 
@@ -151,8 +151,9 @@ double Nodes::maximum(unsigned lbound, unsigned rbound) const
 
     while (i != nodes.cend() && (*i)->lbound >= lbound)
     {
-        ans = std::max((*i)->maximum(lbound, rbound, (*i)->leftm, rightm), ans);
+        ans = std::max((*i)->maximum((*i)->leftm.frame, rbound, (*i)->leftm, rightm), ans);
         rightm = (*i)->leftm;
+        rbound = rightm.frame;
         i++;
     }
 
@@ -169,7 +170,7 @@ double Nodes::minimum(unsigned lbound, unsigned rbound) const
     double ans = std::numeric_limits<double>::max();
 
     Keyframe leftm = nodes.last()->leftm;
-    Keyframe rightm = nodes.first()->data;
+    Keyframe rightm = nodes.first()->rightm;
 
     auto i = nodes.cbegin();
 
@@ -183,16 +184,16 @@ double Nodes::minimum(unsigned lbound, unsigned rbound) const
 
     while (i != nodes.cend() && (*i)->lbound >= lbound)
     {
-        ans = std::min((*i)->minimum(lbound, rbound, {0, (*i)->leftm.value}, rightm), ans);
+        ans = std::min((*i)->minimum((*i)->leftm.frame, rbound, (*i)->leftm, rightm), ans);
         rightm = (*i)->leftm;
-        rbound = rightm.frame - 1;
+        rbound = rightm.frame;
         i++;
     }
 
     // teraz i to pierwszy przedział, którego lewy koniec jest mniejszy od lewego końca zakresu
 
     if (i != nodes.cend())
-        return std::min((*i)->minimum(lbound, rbound, {0, NAN}, {10000000, rightm.value}), ans);
+        return std::min((*i)->minimum(lbound, rbound, {0, NAN}, rightm), ans);
     else
         return std::min(leftm.value, ans);
 }

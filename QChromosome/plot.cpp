@@ -137,8 +137,9 @@ void Plot::paintEvent(QPaintEvent *event)
     QSize s;
     s.setHeight(height() - padding_top - padding_bottom);
 
-    double minval = minimax.minimum(softMinimum, softMaximum);
-    double maxval = minimax.maximum(softMinimum, softMaximum);
+    // TODO bug - wykres nie działa, jeśli wartości brzegowe nie są całkowite - problem z setWindow
+    double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
+    double maxval = qCeil(minimax.maximum(softMinimum, softMaximum));
 
     if (minval == maxval)
         minval--;

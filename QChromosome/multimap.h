@@ -24,7 +24,7 @@ private:
     Node *left, *right;
 
     // ramka i wartość funkcji
-    Keyframe data;
+    Keyframe rightm;
 
     // końce reprezentowanego przedziału ramek
     unsigned lbound, rbound;
