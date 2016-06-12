@@ -1,6 +1,12 @@
 #ifndef MULTIMAP_H
 #define MULTIMAP_H
 
+// klatka kluczowa
+struct Keyframe
+{
+    unsigned frame;
+    double value;
+};
 
 // wierzchołek pełnego drzewa binarnego
 class Node
@@ -10,16 +16,15 @@ public:
     Node(unsigned f, double v, Node* r, Node* l);
     ~Node();
 
-    double minimum(unsigned lb, unsigned rb, double lm, double rm) const;
-    double maximum(unsigned lb, unsigned rb, double lm, double rm) const;
+    double minimum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const;
+    double maximum(unsigned lb, unsigned rb, Keyframe lm, Keyframe rm) const;
 
 private:
     // lewe i prawe poddrzewo
     Node *left, *right;
 
     // ramka i wartość funkcji
-    unsigned frame;
-    double value;
+    Keyframe data;
 
     // końce reprezentowanego przedziału ramek
     unsigned lbound, rbound;
@@ -27,8 +32,8 @@ private:
     // maksymalna i minimalna wartość w poddrzewie
     double minv, maxv;
 
-    // wartość najwcześniejszego wierzchołka w poddrzewie
-    double leftm;
+    // skrajnie lewy wierzchołek w poddrzewie
+    Keyframe leftm;
 
     // głębokość poddrzewa
     unsigned size;
