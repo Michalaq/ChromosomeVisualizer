@@ -117,7 +117,7 @@ void Plot::addLegend(const QString &fname)
 
     auto entry = new Legend(fname, color, this);
     connect(entry, &Legend::changed, [=] {
-        minimax.setPlotVisibility(fname.toStdString(), entry->pen().alpha() != 0);
+        minimax.setVisible(fname.toStdString(), entry->pen().alpha() != 0);
         update();
     });
     layout()->addWidget(entry);

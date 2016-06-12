@@ -49,6 +49,8 @@ public:
     double minimum(unsigned lbound, unsigned rbound) const;
     double maximum(unsigned lbound, unsigned rbound) const;
 
+    bool visible;
+
 private:
     QList<Node*> nodes;
 };
@@ -65,15 +67,14 @@ public:
     double minimum(unsigned lbound, unsigned rbound) const;
     double maximum(unsigned lbound, unsigned rbound) const;
 
+    void setVisible(const std::string& fname, bool visible);
+
     bool empty() const;
 
     void clear();
 
-    void setPlotVisibility(const std::string& fname, bool visible);
-
 private:
     QMap<std::string, Nodes> roots;
-    QMap<std::string, bool> visibility;
 };
 
 #endif // MULTIMAP_H

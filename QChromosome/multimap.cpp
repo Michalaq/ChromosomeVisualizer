@@ -109,7 +109,7 @@ double Node::maximum(unsigned lb, unsigned rb, double lm, double rm) const
     return std::max(left->maximum(lb, rb, lm, right->leftm), right->maximum(lb, rb, left->value, value));
 }
 
-Nodes::Nodes()
+Nodes::Nodes() : visible(true)
 {
 
 }
@@ -203,24 +203,16 @@ Tree::Tree()
 
 void Tree::insert(std::string fname, unsigned frame, unsigned value)
 {
-    if (roots.contains(fname))
-    {
-        roots[fname].insert(frame, value);
-    }
-    else
-    {
-        roots[fname].insert(frame, value);
-        visibility[fname] = true;
-    }
+    roots[fname].insert(frame, value);
 }
 
 double Tree::minimum(unsigned lbound, unsigned rbound) const
 {
     double ans = std::numeric_limits<double>::max();
 
-    for (auto i = roots.cbegin(); i != roots.cend(); i++)
-        if (visibility[i.key()])
-            ans = std::min(i.value().minimum(lbound, rbound), ans);
+    for (auto& i : roots)
+        if (i.visible)
+            ans = std::min(i.minimum(lbound, rbound), ans);
 
     return ans;
 }
@@ -229,9 +221,9 @@ double Tree::maximum(unsigned lbound, unsigned rbound) const
 {
     double ans = std::numeric_limits<double>::min();
 
-    for (auto i = roots.cbegin(); i != roots.cend(); i++)
-        if (visibility[i.key()])
-            ans = std::max(i.value().maximum(lbound, rbound), ans);
+    for (auto& i : roots)
+        if (i.visible)
+            ans = std::max(i.maximum(lbound, rbound), ans);
 
     return ans;
 }
@@ -239,18 +231,17 @@ double Tree::maximum(unsigned lbound, unsigned rbound) const
 void Tree::clear()
 {
     roots.clear();
-    visibility.clear();
 }
 
 bool Tree::empty() const
 {
-    for (auto i : visibility)
-        if (i) return false;
+    for (auto& i : roots)
+        if (i.visible) return false;
 
     return true;
 }
 
-void Tree::setPlotVisibility(const std::string &fname, bool visible)
+void Tree::setVisible(const std::string &fname, bool visible)
 {
-    visibility[fname] = visible;
+    roots[fname].visible = visible;
 }
