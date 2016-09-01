@@ -55,10 +55,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Project settings");
-        ui->dockWidget_2->show();
-
         ui->stackedWidget->setCurrentIndex(0);
+        ui->dockWidget_2->show();
     });
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
@@ -103,10 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Viewport");
-        ui->dockWidget_2->show();
-
         ui->stackedWidget->setCurrentIndex(3);
+        ui->dockWidget_2->show();
     });
 
     ui->page_4->setVizWidget(ui->scene);
@@ -114,10 +110,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_4->setAxis(ui->widget);
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Camera");
-        ui->dockWidget_2->show();
-
         ui->stackedWidget->setCurrentIndex(4);
+        ui->dockWidget_2->show();
     });
 
     ui->stackedWidget->addWidget(ui->camera->settingsWidget());

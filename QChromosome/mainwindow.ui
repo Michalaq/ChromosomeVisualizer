@@ -680,7 +680,7 @@ MediaControl:checked {
      <x>0</x>
      <y>0</y>
      <width>848</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -806,7 +806,7 @@ MediaControl:checked {
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>Project settings</string>
+    <string>Attributes</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -1208,6 +1208,11 @@ MediaControl:checked {
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
@@ -1237,11 +1242,6 @@ MediaControl:checked {
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>RangeSlider</class>
