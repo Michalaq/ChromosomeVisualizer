@@ -247,7 +247,10 @@ void Plot::paintEvent(QPaintEvent *event)
         auto crs = transform.map(QPoint(value(), maxval));
 
         painter.setBrush(QBrush(Qt::white));
-        painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
+        painter.translate(crs.x(), crs.y() + (1. - qSqrt(2.)) * 2.5);
+        painter.drawEllipse(QPoint(), 5, 5);
+        painter.rotate(45);
+        painter.drawRect(0, 0, 5, 5);
     }
 }
 
