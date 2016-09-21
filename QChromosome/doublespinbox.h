@@ -13,6 +13,8 @@ protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
+    void mousePressEvent(QMouseEvent *event);
+
 signals:
 
 public slots:
