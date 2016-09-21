@@ -23,9 +23,6 @@ public:
     }
 };
 
-#include <QFileDialog>
-#include <QtMath>
-
 RenderSettings::RenderSettings(QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TabWidget)
@@ -41,13 +38,6 @@ RenderSettings::RenderSettings(QWidget *parent) :
     currentResolutionUnit = ui->comboBox_2->currentIndex() ? "in" : "cm";
 
     updateOutputSize();
-
-    connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString path = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
-
-        if (!path.isEmpty())
-            ui->lineEdit->setText(path);
-    });
 
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox->isChecked())

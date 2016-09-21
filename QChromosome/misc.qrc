@@ -12,4 +12,7 @@
         <file alias="left">misc/left_arrow.svg</file>
         <file alias="down">misc/down_arrow.svg</file>
     </qresource>
+    <qresource prefix="/lineedit">
+        <file alias="search">icons/search_icon.svg</file>
+    </qresource>
 </RCC>

@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     camerasettings.cpp \
     doublespinbox.cpp \
     combobox.cpp \
-    lineedit.cpp
+    lineedit.cpp \
+    fileedit.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -105,7 +106,8 @@ HEADERS  += mainwindow.h\
     camerasettings.h \
     doublespinbox.h \
     combobox.h \
-    lineedit.h
+    lineedit.h \
+    fileedit.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

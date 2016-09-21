@@ -281,6 +281,14 @@ QLineEdit[focus=&quot;true&quot;] {
 	border-radius: 4px;
 	color: lightgray;
 	padding-left: 0px;
+}
+
+QLineEdit &gt; MediaControl {
+	background: #b2b2b2;
+}
+
+QLineEdit &gt; MediaControl:hover {
+	background: white;
 }</string>
   </property>
   <property name="dockNestingEnabled">
@@ -1204,14 +1212,14 @@ MediaControl:checked {
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
    <class>VizWidget</class>
