@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    ui->stackedWidget->addWidget(ui->camera->settingsWidget());
+    ui->page_5->setCamera(ui->camera);
 
     newProject();
 }
@@ -456,7 +456,7 @@ void MainWindow::setBaseAction(bool enabled)
         connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
     }
     else
-        ui->camera->disconnect(ui->camera);
+        disconnect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
 }
 
 #include "moviemaker.h"

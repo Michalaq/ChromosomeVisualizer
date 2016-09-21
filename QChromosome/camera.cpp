@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "ui_camerasettings.h"
 
 const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
@@ -17,7 +16,6 @@ Camera::Camera(QWidget *parent)
       focalLength(36),
       apertureWidth(36),
       origin(0, 0, 0),
-      settings(new CameraSettings(this)),
       rotationType(RT_World),
       nearClipping(.1),
       farClipping(1000.)
@@ -31,27 +29,6 @@ Camera::Camera(QWidget *parent)
     updateModelView();
 
     updateAngles();
-
-    settings->blockSignals(true);
-
-    settings->ui->doubleSpinBox_7->setValue(eye.x());
-    settings->ui->doubleSpinBox_8->setValue(eye.y());
-    settings->ui->doubleSpinBox_9->setValue(eye.z());
-
-    settings->ui->doubleSpinBox_10->setValue(h);
-    settings->ui->doubleSpinBox_11->setValue(p);
-    settings->ui->doubleSpinBox_12->setValue(b);
-
-    settings->ui->doubleSpinBox->setValue(focalLength);
-    settings->ui->doubleSpinBox_2->setValue(apertureWidth);
-    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
-
-    settings->ui->comboBox->setCurrentIndex(rotationType);
-
-    settings->ui->doubleSpinBox_5->setValue(nearClipping);
-    settings->ui->doubleSpinBox_6->setValue(farClipping);
-
-    settings->blockSignals(false);
 }
 
 void Camera::resizeEvent(QResizeEvent *event)
@@ -108,11 +85,6 @@ qreal Camera::angle() const
     return horizontalAngle;
 }
 
-CameraSettings* Camera::settingsWidget()
-{
-    return settings;
-}
-
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
@@ -144,14 +116,6 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     /* update eye position */
     eye -= delta;
 
-    settings->blockSignals(true);
-
-    settings->ui->doubleSpinBox_7->setValue(eye.x());
-    settings->ui->doubleSpinBox_8->setValue(eye.y());
-    settings->ui->doubleSpinBox_9->setValue(eye.z());
-
-    settings->blockSignals(false);
-
     /* update scene */
     emit modelViewChanged(updateModelView());
 }
@@ -165,24 +129,18 @@ void Camera::setFocalLength(qreal fl)
 {
     focalLength = fl;
     updateAngles();
-
-    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
 }
 
 void Camera::setApertureWidth(qreal aw)
 {
     apertureWidth = aw;
     updateAngles();
-
-    settings->ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength)));
 }
 
 void Camera::setFieldOfView(qreal fov)
 {
     focalLength = apertureWidth / 2 / qTan(qDegreesToRadians(fov) / 2);
     updateAngles();
-
-    settings->ui->doubleSpinBox->setValue(focalLength);
 }
 
 void Camera::setRotationType(int rt)
@@ -246,22 +204,6 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     if (rotationType == RT_World)
         eye = origin + dq.rotatedVector(eye - origin);
 
-    settings->blockSignals(true);
-
-    if (rotationType == RT_World)
-    {
-        settings->ui->doubleSpinBox_7->setValue(eye.x());
-        settings->ui->doubleSpinBox_8->setValue(eye.y());
-        settings->ui->doubleSpinBox_9->setValue(eye.z());
-    }
-
-    settings->ui->doubleSpinBox_10->setValue(h);
-    settings->ui->doubleSpinBox_11->setValue(p);
-    settings->ui->doubleSpinBox_12->setValue(b);
-
-    settings->blockSignals(false);
-
-    /* update scene */
     emit modelViewChanged(updateModelView());
 }
 

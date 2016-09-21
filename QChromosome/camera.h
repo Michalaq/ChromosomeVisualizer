@@ -8,8 +8,6 @@
 #include <QStack>
 #include <QMetaMethod>
 
-#include "camerasettings.h"
-
 class Camera : public Draggable
 {
     Q_OBJECT
@@ -31,8 +29,6 @@ public:
     QVector3D lookAt() const;
 
     qreal angle() const;
-
-    CameraSettings* settingsWidget();
 
     void setPosition(const QVector3D& p);
     void setEulerAgnles(qreal h_, qreal p_, qreal b_);
@@ -98,8 +94,6 @@ private:
 
     qreal aspectRatio;
 
-    CameraSettings *settings;
-
     enum RotationType
     {
         RT_World,
@@ -114,6 +108,8 @@ private:
 signals:
     void modelViewChanged(QMatrix4x4);
     void projectionChanged(QMatrix4x4);
+
+friend class CameraSettings;
 };
 
 #endif // CAMERA_H
