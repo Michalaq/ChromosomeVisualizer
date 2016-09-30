@@ -15,4 +15,8 @@
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
     </qresource>
+    <qresource prefix="/fonts">
+        <file alias="DroidSans">fonts/DroidSans.ttf</file>
+        <file alias="DroidSans-Bold">fonts/DroidSans-Bold.ttf</file>
+    </qresource>
 </RCC>

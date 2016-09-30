@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QSurfaceFormat>
+#include <QFontDatabase>
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,9 @@ int main(int argc, char *argv[])
     format.setVersion(3, 3);
     format.setProfile(QSurfaceFormat::CompatibilityProfile);
     QSurfaceFormat::setDefaultFormat(format);
+
+    QFontDatabase::addApplicationFont(":/fonts/DroidSans");
+    QFontDatabase::addApplicationFont(":/fonts/DroidSans-Bold");
 
     MainWindow w;
 

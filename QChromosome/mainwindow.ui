@@ -19,6 +19,10 @@
 	color: lightgrey;
 }
 
+QWidget {
+	font-family: Droid Sans;
+}
+
 QStatusBar {
 	background: #672178;
 	color: white;
