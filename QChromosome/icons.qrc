@@ -36,5 +36,6 @@
         <file alias="view">icons/view_icon.svg</file>
         <file alias="film camera">icons/film_camera_icon.svg</file>
         <file alias="project">icons/project_icon.svg</file>
+        <file alias="project2">icons/project2_icon.svg</file>
     </qresource>
 </RCC>
