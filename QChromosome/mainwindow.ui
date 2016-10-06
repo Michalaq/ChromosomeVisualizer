@@ -1026,6 +1026,10 @@ MediaControl:checked {
    </property>
   </action>
   <action name="actionProject_Settings">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/project2</normaloff>:/dialogs/project2</iconset>
+   </property>
    <property name="text">
     <string>Project Settings</string>
    </property>

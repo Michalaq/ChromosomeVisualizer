@@ -1,7 +1,7 @@
 #include "dockwidget.h"
 #include "ui_dockwidget.h"
 
-QAction* DockWidget::none = new QAction("(none)", 0);
+QAction* DockWidget::none = new QAction("Empty", 0);
 
 int DockWidget::n = 0;
 
