@@ -132,7 +132,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="Label" name="label">
              <property name="text">
               <string>POV-Ray installation path</string>
              </property>
@@ -209,6 +209,11 @@
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -50,7 +50,8 @@ SOURCES += main.cpp\
     doublespinbox.cpp \
     combobox.cpp \
     lineedit.cpp \
-    fileedit.cpp
+    fileedit.cpp \
+    label.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -107,7 +108,8 @@ HEADERS  += mainwindow.h\
     doublespinbox.h \
     combobox.h \
     lineedit.h \
-    fileedit.h
+    fileedit.h \
+    label.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
