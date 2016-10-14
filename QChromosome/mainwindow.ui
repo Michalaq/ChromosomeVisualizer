@@ -742,7 +742,7 @@ MediaControl:checked {
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
-     <string>Windows</string>
+     <string>Window</string>
     </property>
     <widget class="QMenu" name="menuDockable_dialogs">
      <property name="title">
@@ -765,12 +765,19 @@ MediaControl:checked {
     <addaction name="actionCamera"/>
     <addaction name="actionViewport"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionInfo"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuScene"/>
    <addaction name="menuSelection"/>
    <addaction name="menuAnimation"/>
    <addaction name="menuWindows"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="ToolBar" name="mainToolBar">
    <property name="minimumSize">
@@ -1214,6 +1221,11 @@ MediaControl:checked {
    </property>
    <property name="text">
     <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="text">
+    <string>Info...</string>
    </property>
   </action>
  </widget>
