@@ -38,4 +38,7 @@
         <file alias="project">icons/project_icon.svg</file>
         <file alias="project2">icons/project2_icon.svg</file>
     </qresource>
+    <qresource prefix="/application">
+        <file alias="icon">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
+    </qresource>
 </RCC>

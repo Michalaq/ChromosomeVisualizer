@@ -7,8 +7,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QApplication::setOrganizationName("Organizacja");
-    QApplication::setApplicationName("Nazwa");
+    QApplication::setOrganizationName("Regulomics");
+    QApplication::setApplicationName("QChromosome 4D Studio");
+    QApplication::setWindowIcon(QIcon(":/application/icon"));
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
