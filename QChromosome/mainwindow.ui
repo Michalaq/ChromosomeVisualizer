@@ -677,6 +677,9 @@ MediaControl:checked {
            <iconset resource="icons.qrc">
             <normaloff>:/media/record</normaloff>:/media/record</iconset>
           </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>

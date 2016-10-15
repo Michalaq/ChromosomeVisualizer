@@ -120,6 +120,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_5->setCamera(ui->camera);
 
+    connect(ui->record, &MediaControl::toggled, [this](bool b) {
+        if (b)
+            ui->canvas->setStyleSheet("background: #d40000;");
+        else
+            ui->canvas->setStyleSheet("background: #4d4d4d;");
+    });
+
     newProject();
 }
 

@@ -109,7 +109,8 @@ HEADERS  += mainwindow.h\
     combobox.h \
     lineedit.h \
     fileedit.h \
-    label.h
+    label.h \
+    spline.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
