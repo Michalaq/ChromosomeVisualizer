@@ -6,6 +6,7 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
+#include "spline.h"
 
 namespace Ui
 {
@@ -84,6 +85,9 @@ private:
 
     int softMinimum;
     int softMaximum;
+
+    QMap<double, QVector3D> keyframes;
+    tk::spline _x, _y, _z;
 };
 
 #endif // MAINWINDOW_H

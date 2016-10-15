@@ -13,6 +13,10 @@ MainWindow::MainWindow(QWidget *parent) :
     renderSettings(new RenderSettings()),
     rsw(new RenderSettingsWidget(renderSettings))
 {
+    _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+    _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+    _z.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -125,6 +129,31 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->canvas->setStyleSheet("background: #d40000;");
         else
             ui->canvas->setStyleSheet("background: #4d4d4d;");
+    });
+
+    connect(ui->camera, &Camera::modelViewChanged, [this] {
+        if (ui->record->isChecked())
+        {
+            keyframes[currentFrame] = ui->camera->position();
+
+            int n = keyframes.size();
+
+            if (n <= 2) return;
+
+            std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n);
+
+            for (int i = 0; i < n; i++)
+            {
+                auto f = keyframes[d[i]];
+                __x[i] = f.x();
+                __y[i] = f.y();
+                __z[i] = f.z();
+            }
+
+            _x.set_points(d, __x);
+            _y.set_points(d, __y);
+            _z.set_points(d, __z);
+        }
     });
 
     newProject();
@@ -253,6 +282,9 @@ void MainWindow::setFrame(int n)
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
+
+    if (keyframes.size() > 2)
+        ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
 }
 
 void MainWindow::setSoftMinimum(int min)
