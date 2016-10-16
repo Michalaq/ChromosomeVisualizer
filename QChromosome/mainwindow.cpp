@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
     renderSettings(new RenderSettings()),
-    rsw(new RenderSettingsWidget(renderSettings))
+    rsw(new RenderSettingsWidget(renderSettings)),
+    ignore(false)
 {
     _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
     _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
@@ -126,19 +127,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->record, &MediaControl::toggled, [this](bool b) {
         if (b)
+        {
             ui->canvas->setStyleSheet("background: #d40000;");
+            initp = ui->camera->position();
+        }
         else
             ui->canvas->setStyleSheet("background: #4d4d4d;");
     });
 
     connect(ui->camera, &Camera::modelViewChanged, [this] {
-        if (ui->record->isChecked())
+        if (ui->record->isChecked() && !ignore)
         {
+            if (keyframes.isEmpty())
+                keyframes[0] = initp;
+
             keyframes[currentFrame] = ui->camera->position();
 
             int n = keyframes.size();
-
-            if (n <= 2) return;
 
             std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n);
 
@@ -154,6 +159,8 @@ MainWindow::MainWindow(QWidget *parent) :
             _y.set_points(d, __y);
             _z.set_points(d, __z);
         }
+
+        ignore = false;
     });
 
     newProject();
@@ -283,8 +290,11 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
 
-    if (keyframes.size() > 2)
+    if (!keyframes.isEmpty())
+    {
+        ignore = true;
         ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
+    }
 }
 
 void MainWindow::setSoftMinimum(int min)
