@@ -18,7 +18,7 @@ FileEdit::FileEdit(QWidget *parent) : LineEdit(parent)
     addAction(widgetAction, QLineEdit::TrailingPosition);
 
     connect(widget, &MediaControl::clicked, [this]() {
-        QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString path = QFileDialog::getExistingDirectory(0, tr("Open Directory"), text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
         if (!path.isEmpty())
             setText(path);

@@ -49,7 +49,7 @@ void Legend::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
-        QColor tmp = QColorDialog::getColor(color, this);
+        QColor tmp = QColorDialog::getColor(color);
 
         if (tmp.isValid())
         {

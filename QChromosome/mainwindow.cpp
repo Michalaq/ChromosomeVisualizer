@@ -195,7 +195,7 @@ void MainWindow::openProject()
 void MainWindow::addLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
 
         if (!path.isEmpty())
         {
@@ -214,7 +214,7 @@ void MainWindow::addLayer()
             connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
         }
     } catch (std::exception& e) {
-        QMessageBox::critical(this, "Error occured.", e.what());
+        QMessageBox::critical(0, "Error occured.", e.what());
     }
 }
 

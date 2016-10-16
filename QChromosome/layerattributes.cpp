@@ -220,7 +220,7 @@ void LayerAttributes::resizeEvent(QResizeEvent *event)
 void LayerAttributes::appendLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
 
         if (!path.isEmpty())
         {
@@ -234,6 +234,6 @@ void LayerAttributes::appendLayer()
             simulation->getSimulationLayerConcatenation(id)->appendSimulationLayer(simulationLayer);
         }
     } catch (std::exception& e) {
-        QMessageBox::critical(this, "Error occured.", e.what());
+        QMessageBox::critical(0, "Error occured.", e.what());
     }
 }
