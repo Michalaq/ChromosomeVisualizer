@@ -121,6 +121,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_5->setCamera(ui->camera);
 
     newProject();
+
+    for (int i = 0; i < 1000000; i++)
+        QApplication::processEvents();
+    //TODO usunąć, gdy splash będzie potrzebny
 }
 
 MainWindow::~MainWindow()

@@ -8,7 +8,7 @@ QT       += core gui opengl svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QChromosome
+TARGET = "QChromosome 4D Studio"
 TEMPLATE = app
 
 

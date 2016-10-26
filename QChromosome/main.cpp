@@ -2,10 +2,14 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 #include <QFontDatabase>
+#include <QSplashScreen>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    QSplashScreen s(QPixmap(":/application/icon").scaled(600, 500), Qt::WindowStaysOnTopHint);
+    s.show();
 
     QApplication::setOrganizationName("Regulomics");
     QApplication::setApplicationName("QChromosome 4D Studio");
@@ -25,6 +29,8 @@ int main(int argc, char *argv[])
     a.installEventFilter(&w);
 
     w.showMaximized();
+
+    s.finish(&w);
 
     return a.exec();
 }
