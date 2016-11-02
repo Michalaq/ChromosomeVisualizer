@@ -92,6 +92,7 @@ QPushButton {
 	width: 85px;
 	height: 27px;
 	color: white;
+	icon-size: 24px;
 }
 
 QPushButton:hover {
@@ -275,16 +276,17 @@ QLineEdit {
 	background: #2d2d2d;
 	border: none;
 	color: gray;
-	height: 26px;
+	height: 30px;
 	selection-background-color: #0066ff;
-	padding-left: 2px;
+	margin: 2px;
+	padding-left: 10px;
 }
 
 QLineEdit[focus=&quot;true&quot;] {
 	border: 2px solid #805900;
 	border-radius: 4px;
 	color: lightgray;
-	padding-left: 0px;
+	margin: 0px;
 }
 
 QLineEdit &gt; MediaControl {
@@ -1232,14 +1234,14 @@ MediaControl:checked {
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>VizWidget</class>
