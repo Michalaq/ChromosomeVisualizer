@@ -7,6 +7,7 @@ CameraSettings::CameraSettings(QWidget *parent) :
     camera(nullptr)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     // coordinates
     connect(ui->doubleSpinBox_7, &QDoubleSpinBox::editingFinished, [this]() {

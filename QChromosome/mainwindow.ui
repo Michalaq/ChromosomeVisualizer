@@ -487,9 +487,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to start of animation [Shortcut F6]</string>
           </property>
@@ -513,9 +510,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to previous frame [Shortcut F]</string>
           </property>
@@ -538,9 +532,6 @@ MediaControl:checked {
             <width>24</width>
             <height>24</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
            <string>Play backwards</string>
@@ -573,9 +564,6 @@ MediaControl:checked {
             <width>32</width>
             <height>32</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
            <string>Play forwards [Shortcut F7]</string>
@@ -615,9 +603,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to next frame [Shortcut G]</string>
           </property>
@@ -641,9 +626,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to end of animation [Shortcut F8]</string>
           </property>
@@ -666,9 +648,6 @@ MediaControl:checked {
             <width>24</width>
             <height>24</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {

@@ -215,6 +215,7 @@ RenderSettingsWidget::RenderSettingsWidget(RenderSettings *rs, QWidget *parent) 
     ui(new Ui::RenderSettingsWidget)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     layout()->addWidget(rs);
 }

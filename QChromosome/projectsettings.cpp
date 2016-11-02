@@ -8,6 +8,7 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
     ui(new Ui::Form)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this]() {
         QSettings settings;

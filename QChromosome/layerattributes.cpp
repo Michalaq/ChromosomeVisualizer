@@ -6,6 +6,7 @@ LayerAttributes::LayerAttributes(QWidget *parent) :
     ui(new Ui::LayerAttributes)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     // set name
 

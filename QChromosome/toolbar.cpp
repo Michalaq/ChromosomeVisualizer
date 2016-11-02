@@ -25,8 +25,6 @@ void ToolBar::addAction(QAction *action)
 
     widget->setText(action->text());
 
-    widget->setCursor(Qt::PointingHandCursor);
-
     connect(action, &QAction::changed, widget, [widget, action] {
         widget->setStatusTip(action->statusTip());
     });

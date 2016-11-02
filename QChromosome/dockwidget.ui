@@ -82,9 +82,6 @@ MediaControl:hover {
        <height>10</height>
       </size>
      </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
-     </property>
      <property name="icon">
       <iconset resource="icons.qrc">
        <normaloff>:/dock/float</normaloff>
@@ -114,9 +111,6 @@ MediaControl:hover {
        <width>10</width>
        <height>10</height>
       </size>
-     </property>
-     <property name="cursor">
-      <cursorShape>PointingHandCursor</cursorShape>
      </property>
      <property name="icon">
       <iconset resource="icons.qrc">

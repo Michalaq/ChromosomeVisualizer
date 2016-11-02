@@ -2,7 +2,7 @@
 
 MediaControl::MediaControl(QWidget *parent) : QPushButton(parent)
 {
-
+    setCursor(Qt::PointingHandCursor);
 }
 
 MediaControl::~MediaControl()

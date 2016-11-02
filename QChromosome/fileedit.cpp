@@ -10,7 +10,6 @@ FileEdit::FileEdit(QWidget *parent) : LineEdit(parent)
 
     MediaControl *widget = new MediaControl(this);
     widget->setIcon(QIcon(":/lineedit/search"));
-    widget->setCursor(Qt::PointingHandCursor);
     widget->setFocusPolicy(Qt::NoFocus);
     widget->setIconSize(QSize(16, 16));
 
