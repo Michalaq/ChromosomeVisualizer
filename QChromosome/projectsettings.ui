@@ -47,7 +47,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/dialogs/project2</normaloff>:/dialogs/project2</iconset>
+         <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
        </property>
       </widget>
      </item>
@@ -196,14 +196,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>FileEdit</class>
