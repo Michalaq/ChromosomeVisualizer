@@ -4,7 +4,8 @@ Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
     QLabel(text, parent),
     color(color),
     undergraph("Show undergraph", this),
-    visible("Visible", this)
+    visible("Visible", this),
+    hover(false)
 {
     undergraph.setCheckable(true);
     undergraph.setChecked(true);
@@ -37,6 +38,13 @@ void Legend::paintEvent(QPaintEvent *event)
     painter.setBrush(undergraph.isChecked() ? QBrush(color) : Qt::NoBrush);
 
     painter.drawEllipse(8, 8, 9, 9);
+
+    if (hover)
+    {
+        painter.setPen(Qt::NoPen);
+        painter.setOpacity(.25);
+        painter.drawEllipse(3, 3, 19, 19);
+    }
 }
 
 #include <QMouseEvent>
@@ -68,4 +76,20 @@ void Legend::mousePressEvent(QMouseEvent *event)
             emit changed();
         }
     }
+}
+
+void Legend::enterEvent(QEvent *event)
+{
+    QLabel::enterEvent(event);
+
+    hover = true;
+    update();
+}
+
+void Legend::leaveEvent(QEvent *event)
+{
+    QLabel::leaveEvent(event);
+
+    hover = false;
+    update();
 }
