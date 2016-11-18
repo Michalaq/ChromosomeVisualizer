@@ -33,18 +33,6 @@ QToolBar {
 	border: none;
 }
 
-QToolBar &gt; MediaControl {
-	background: #b2b2b2;
-}
-
-QToolBar &gt; MediaControl:hover {
-	background: white;
-}
-
-QToolBar &gt; MediaControl:checked {
-	background: white;
-}
-
 QDockWidget {
 	background: #1a1a1a;
 	border: 1px solid #4d4d4d;
@@ -101,6 +89,18 @@ QPushButton:hover {
 
 QPushButton:pressed {
 	background: #003380;
+}
+
+MediaControl {
+	background: #b2b2b2;
+}
+
+MediaControl:hover {
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
 }
 
 QToolBox::tab {
@@ -289,14 +289,6 @@ QLineEdit[focus=&quot;true&quot;] {
 	margin: 0px;
 }
 
-QLineEdit &gt; MediaControl {
-	background: #b2b2b2;
-}
-
-QLineEdit &gt; MediaControl:hover {
-	background: white;
-}
-
 Label {
 	min-width: 125px;
 	min-height: 30px;
@@ -309,27 +301,6 @@ Label {
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <property name="styleSheet">
-    <string notr="true">MouseControl {
-	background: #cccccc;
-}
-
-MouseControl:hover {
-	background: white;
-}
-
-MediaControl {
-	background: #b3b3b3;
-}
-
-MediaControl:hover {
-	background: white;
-}
-
-MediaControl:checked {
-	background: white;
-}</string>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
