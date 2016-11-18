@@ -90,7 +90,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>187</height>
+            <height>192</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -310,7 +310,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>187</height>
+            <height>192</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -327,7 +327,7 @@
            <item>
             <layout class="QFormLayout" name="formLayout">
              <item row="0" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="Label" name="label">
                <property name="text">
                 <string>Focal length</string>
                </property>
@@ -347,7 +347,7 @@
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
+              <widget class="Label" name="label_2">
                <property name="text">
                 <string>Aperture width</string>
                </property>
@@ -367,7 +367,7 @@
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="label_3">
+              <widget class="Label" name="label_3">
                <property name="text">
                 <string>Field of view</string>
                </property>
@@ -387,7 +387,7 @@
               </widget>
              </item>
              <item row="3" column="0">
-              <widget class="QLabel" name="label_5">
+              <widget class="Label" name="label_5">
                <property name="text">
                 <string>Rotation</string>
                </property>
@@ -450,7 +450,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>187</height>
+            <height>192</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -467,14 +467,14 @@
            <item>
             <layout class="QFormLayout" name="formLayout_4">
              <item row="0" column="0">
-              <widget class="QLabel" name="label_16">
+              <widget class="Label" name="label_16">
                <property name="text">
                 <string>Near clipping</string>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_17">
+              <widget class="Label" name="label_17">
                <property name="text">
                 <string>Far clipping</string>
                </property>
@@ -546,6 +546,11 @@
    <class>ComboBox</class>
    <extends>QComboBox</extends>
    <header>combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -18,9 +18,10 @@ void Label::paintEvent(QPaintEvent *event)
 
     int offset = fm.width(text());
 
-    int h = fm.height();
+    int h = height();
     int dx = fm.width(".") + 5;
+    int flags = (alignment() & Qt::AlignVertical_Mask) | Qt::AlignRight;
 
     for (int x = width() - dx; x > offset; x -= dx)
-        p.drawText(x, 0, dx, h, Qt::AlignRight, ".");
+        p.drawText(x, 0, dx, h, flags, ".");
 }

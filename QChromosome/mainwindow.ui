@@ -295,6 +295,11 @@ QLineEdit &gt; MediaControl {
 
 QLineEdit &gt; MediaControl:hover {
 	background: white;
+}
+
+Label {
+	min-width: 125px;
+	min-height: 30px;
 }</string>
   </property>
   <property name="dockNestingEnabled">
