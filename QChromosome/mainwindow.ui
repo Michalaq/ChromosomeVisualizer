@@ -159,7 +159,7 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-	background: #666666;
+	background: #4d4d4d;
 	width: 12px;
 	min-height: 20px;
 }
@@ -197,7 +197,7 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-	background: #666666;
+	background: #4d4d4d;
 	height: 12px;
 	min-width: 20px;
 }
@@ -224,6 +224,10 @@ QScrollBar::left-arrow:horizontal {
 
 QScrollBar::right-arrow:horizontal {
 	image: url(:/arrows/right);
+}
+
+QScrollBar::handle:hover {
+	background: #666666;
 }
 
 QComboBox {
@@ -291,6 +295,17 @@ QLineEdit[focus=&quot;true&quot;] {
 
 Label {
 	min-width: 125px;
+	min-height: 30px;
+}
+
+.section {
+	background: #262626;
+	font: bold;
+	min-height: 20px;
+	padding-left: 1px;
+}
+
+.label {
 	min-height: 30px;
 }</string>
   </property>

@@ -99,18 +99,18 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Project settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Project settings</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout">
              <item row="0" column="0">
-              <widget class="QLabel" name="label_2">
+              <widget class="Label" name="label_2">
                <property name="text">
                 <string>FPS</string>
                </property>
@@ -140,6 +140,16 @@
            </item>
            <item>
             <widget class="FileEdit" name="lineEdit"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>TODO: Ten widget zyska sens, gdy będzie można zaisywać sesję do pliku. Nie będzie tak wyglądał.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <spacer name="verticalSpacer">
@@ -206,14 +216,14 @@
    <header>spinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -88,7 +88,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-94</y>
+            <y>0</y>
             <width>362</width>
             <height>286</height>
            </rect>
@@ -96,11 +96,11 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;View&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>View</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -195,11 +195,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_9">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Editor axis&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Editor axis</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -333,11 +333,11 @@
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QLabel" name="label_6">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Background&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Background</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -392,11 +392,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_11">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Environment&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Environment</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -491,11 +491,11 @@
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <widget class="QLabel" name="label_15">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Atom labels&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Atom labels</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>

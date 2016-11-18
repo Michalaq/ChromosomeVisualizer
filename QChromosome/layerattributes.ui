@@ -96,11 +96,11 @@
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QLabel" name="label_5">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Basic properties&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Basic properties</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -229,7 +229,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-36</y>
+            <y>0</y>
             <width>362</width>
             <height>228</height>
            </rect>
@@ -237,11 +237,11 @@
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QLabel" name="label_6">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Coordinates&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Coordinates</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -252,6 +252,9 @@
                <property name="text">
                 <string>X</string>
                </property>
+               <property name="class" stdset="0">
+                <string>label</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
@@ -259,12 +262,18 @@
                <property name="text">
                 <string>Y</string>
                </property>
+               <property name="class" stdset="0">
+                <string>label</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_9">
                <property name="text">
                 <string>Z</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>label</string>
                </property>
               </widget>
              </item>
@@ -342,11 +351,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_10">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Object properties&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Object properties</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -423,7 +432,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-28</y>
+            <y>0</y>
             <width>362</width>
             <height>220</height>
            </rect>
@@ -431,11 +440,11 @@
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
             <widget class="QLabel" name="label_13">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Color&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Color</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
@@ -507,11 +516,11 @@
            </item>
            <item>
             <widget class="QLabel" name="label_17">
-             <property name="styleSheet">
-              <string notr="true">background: #262626;</string>
-             </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Specular&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Specular</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
