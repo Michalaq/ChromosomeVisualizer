@@ -135,16 +135,11 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->canvas->setStyleSheet("background: #4d4d4d;");
     });
 
-    connect(ui->camera, &Camera::modelViewChanged, [this] {
-        if (ui->record->isChecked() && !ignore)
-        {
-            if (keyframes.isEmpty())
-                keyframes[0] = initp;
-
-            recordKeyframe();
-        }
-
-        ignore = false;
+    connect(ui->record, &MediaControl::toggled, [this](bool checked) {
+        if (checked)
+            connect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
+        else
+            disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
     });
 
     connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
@@ -177,6 +172,14 @@ void MainWindow::recordKeyframe()
         _y.set_points(d, __y);
         _z.set_points(d, __z);
     }
+}
+
+void MainWindow::recordKeyframes()
+{
+    if (!ignore)
+        recordKeyframe();
+    else
+        ignore = false;
 }
 
 MainWindow::~MainWindow()

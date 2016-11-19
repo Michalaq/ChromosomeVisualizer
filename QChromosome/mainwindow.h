@@ -59,6 +59,7 @@ public slots:
 
     /* keyframes */
     void recordKeyframe();
+    void recordKeyframes();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
