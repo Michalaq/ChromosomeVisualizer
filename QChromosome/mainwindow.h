@@ -6,6 +6,7 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
+#include "spline.h"
 
 namespace Ui
 {
@@ -56,6 +57,10 @@ public slots:
     void capture();
     void captureMovie();
 
+    /* keyframes */
+    void recordKeyframe();
+    void recordKeyframes();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
@@ -84,6 +89,11 @@ private:
 
     int softMinimum;
     int softMaximum;
+
+    QMap<double, QVector3D> keyframes;
+    tk::spline _x, _y, _z;
+    QVector3D initp;
+    bool ignore;
 };
 
 #endif // MAINWINDOW_H
