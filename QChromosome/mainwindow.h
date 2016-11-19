@@ -90,10 +90,9 @@ private:
     int softMinimum;
     int softMaximum;
 
-    QMap<double, QVector3D> keyframes;
-    tk::spline _x, _y, _z;
-    QVector3D initp;
-    bool ignore;
+    QMap<double, QPair<QVector3D,QVector3D>> keyframes;
+    tk::spline _x, _y, _z, _h, _p, _b;
+    int ignore;
 };
 
 #endif // MAINWINDOW_H

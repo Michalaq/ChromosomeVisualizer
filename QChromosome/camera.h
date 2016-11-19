@@ -25,6 +25,7 @@ public:
     void setOrigin(const QVector3D& o);
 
     QVector3D position() const;
+    QVector3D EulerAngles() const;
 
     QVector3D lookAt() const;
 
