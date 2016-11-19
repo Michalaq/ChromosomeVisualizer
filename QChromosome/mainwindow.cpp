@@ -141,29 +141,42 @@ MainWindow::MainWindow(QWidget *parent) :
             if (keyframes.isEmpty())
                 keyframes[0] = initp;
 
-            keyframes[currentFrame] = ui->camera->position();
-
-            int n = keyframes.size();
-
-            std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n);
-
-            for (int i = 0; i < n; i++)
-            {
-                auto f = keyframes[d[i]];
-                __x[i] = f.x();
-                __y[i] = f.y();
-                __z[i] = f.z();
-            }
-
-            _x.set_points(d, __x);
-            _y.set_points(d, __y);
-            _z.set_points(d, __z);
+            recordKeyframe();
         }
 
         ignore = false;
     });
 
+    connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
+
     newProject();
+}
+
+void MainWindow::recordKeyframe()
+{
+    keyframes[currentFrame] = ui->camera->position();
+
+    int n = keyframes.size();
+
+    if (n >= 2)
+    {
+        std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n);
+
+        int i = 0;
+
+        for (auto f : keyframes.values())
+        {
+            __x[i] = f.x();
+            __y[i] = f.y();
+            __z[i] = f.z();
+
+            i++;
+        }
+
+        _x.set_points(d, __x);
+        _y.set_points(d, __y);
+        _z.set_points(d, __z);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -290,7 +303,7 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
 
-    if (!keyframes.isEmpty())
+    if (keyframes.size() >= 2)
     {
         ignore = true;
         ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
