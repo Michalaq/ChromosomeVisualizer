@@ -8,7 +8,7 @@ QT       += core gui opengl svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QChromosome
+TARGET = "QChromosome 4D Studio"
 TEMPLATE = app
 
 
@@ -44,7 +44,14 @@ SOURCES += main.cpp\
     attributes.cpp \
     picker.cpp \
     layerattributes.cpp \
-    viewport.cpp
+    viewport.cpp \
+    multimap.cpp \
+    camerasettings.cpp \
+    doublespinbox.cpp \
+    combobox.cpp \
+    lineedit.cpp \
+    fileedit.cpp \
+    label.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -95,7 +102,15 @@ HEADERS  += mainwindow.h\
     picker.h \
     ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
-    viewport.h
+    viewport.h \
+    multimap.h \
+    camerasettings.h \
+    doublespinbox.h \
+    combobox.h \
+    lineedit.h \
+    fileedit.h \
+    label.h \
+    spline.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -103,7 +118,9 @@ FORMS    += mainwindow.ui \
     rendersettings.ui \
     attributes.ui \
     layerattributes.ui \
-    viewport.ui
+    viewport.ui \
+    rswidget.ui \
+    camerasettings.ui
 
 CONFIG += c++14
 

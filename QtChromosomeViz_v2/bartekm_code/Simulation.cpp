@@ -115,7 +115,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     slc->setLayerId(layerId);
    
     auto f = slc->getFrame(0);
-    model->setupModelData(f->atoms, f->connectedRanges, layerConcatenations_.size(), offset);
+    model->setupModelData(f->atoms, f->connectedRanges, layerId, offset);
 
 }
 

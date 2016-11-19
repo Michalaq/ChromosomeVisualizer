@@ -2,29 +2,17 @@
 #include "ui_projectsettings.h"
 
 #include <QSettings>
-#include <QFileDialog>
 
 ProjectSettings::ProjectSettings(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Form)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
-    connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), ui->lineEdit->text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-        if (!path.isEmpty())
-        {
-            ui->lineEdit->setText(path);
-
-            QSettings settings;
-            settings.setValue("povraypath", path);
-        }
-    });
-
-    connect(ui->lineEdit, &QLineEdit::textChanged, [this](const QString& path) {
+    connect(ui->lineEdit, &QLineEdit::editingFinished, [this]() {
         QSettings settings;
-        settings.setValue("povraypath", path);
+        settings.setValue("povraypath", ui->lineEdit->text());
     });
 
     QSettings settings;

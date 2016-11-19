@@ -15,7 +15,10 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      origin(0, 0, 0)
+      origin(0, 0, 0),
+      rotationType(RT_World),
+      nearClipping(.1),
+      farClipping(1000.)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -65,6 +68,13 @@ QVector3D Camera::position() const
     return eye;
 }
 
+void Camera::setPosition(const QVector3D &p)
+{
+    eye = p;
+
+    emit modelViewChanged(updateModelView());
+}
+
 QVector3D Camera::lookAt() const
 {
     return eye - z;
@@ -110,6 +120,48 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     emit modelViewChanged(updateModelView());
 }
 
+void Camera::setEulerAgnles(qreal h_, qreal p_, qreal b_)
+{
+    rotate(h - h_, p - p_, b - b_);
+}
+
+void Camera::setFocalLength(qreal fl)
+{
+    focalLength = fl;
+    updateAngles();
+}
+
+void Camera::setApertureWidth(qreal aw)
+{
+    apertureWidth = aw;
+    updateAngles();
+}
+
+void Camera::setFieldOfView(qreal fov)
+{
+    focalLength = apertureWidth / 2 / qTan(qDegreesToRadians(fov) / 2);
+    updateAngles();
+}
+
+void Camera::setRotationType(int rt)
+{
+    rotationType = rt;
+}
+
+void Camera::setNearClipping(qreal nc)
+{
+    nearClipping = nc;
+
+    emit projectionChanged(updateProjection());
+}
+
+void Camera::setFarClipping(qreal fc)
+{
+    farClipping = fc;
+
+    emit projectionChanged(updateProjection());
+}
+
 void Camera::rotate(qreal dh, qreal dp, qreal db)
 {
     /* update Euler angles */
@@ -131,7 +183,8 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     x = q.rotatedVector(x);
     z = q.rotatedVector(z);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
     q = QQuaternion::fromAxisAndAngle(x, p);
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
@@ -139,7 +192,8 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     y = q.rotatedVector(y);
     z = q.rotatedVector(z);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
     q = QQuaternion::fromAxisAndAngle(z, b);
     dq = QQuaternion::fromAxisAndAngle(z, -db);
@@ -147,9 +201,9 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     x = q.rotatedVector(x);
     y = q.rotatedVector(y);
 
-    eye = origin + dq.rotatedVector(eye - origin);
+    if (rotationType == RT_World)
+        eye = origin + dq.rotatedVector(eye - origin);
 
-    /* update scene */
     emit modelViewChanged(updateModelView());
 }
 
@@ -172,12 +226,12 @@ QMatrix4x4& Camera::updateProjection()
     if (aspectRatio_ < aspectRatio)
     {
         projection.rotate(-90, {0, 0, 1});
-        projection.perspective(horizontalAngle, 1. / aspectRatio_, .1, 1000.);
+        projection.perspective(horizontalAngle, 1. / aspectRatio_, nearClipping, farClipping);
         projection.rotate(+90, {0, 0, 1});
     }
     else
     {
-        projection.perspective(verticalAngle, aspectRatio_, .1, 1000.);
+        projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
     return projection;

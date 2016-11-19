@@ -6,6 +6,7 @@
 namespace Ui
 {
     class TabWidget;
+    class RenderSettingsWidget;
 }
 
 class RenderSettings : public QTabWidget
@@ -97,6 +98,17 @@ signals:
 
 public slots:
 
+};
+
+class RenderSettingsWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit RenderSettingsWidget(RenderSettings *rs, QWidget *parent = 0);
+    ~RenderSettingsWidget();
+
+private:
+    Ui::RenderSettingsWidget *ui;
 };
 
 #endif // RENDERSETTINGS_H

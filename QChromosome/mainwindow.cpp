@@ -10,14 +10,24 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
-    renderSettings(new RenderSettings())
+    renderSettings(new RenderSettings()),
+    rsw(new RenderSettingsWidget(renderSettings)),
+    ignore(false)
 {
+    _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+    _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+    _z.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     ui->setupUi(this);
+
+    connect(ui->actionInfo, &QAction::triggered, [this] {
+        QMessageBox::about(0, "About QChromosome 4D", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
+    });
 
     actionGroup->addAction(ui->actionSelect);
     actionGroup->addAction(ui->actionMove);
@@ -50,14 +60,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), rsw, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Project settings");
-        ui->dockWidget_2->show();
-
         ui->stackedWidget->setCurrentIndex(0);
+        ui->dockWidget_2->show();
     });
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
@@ -97,25 +105,91 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_2->setVizWidget(ui->scene);
 
+    ui->page_3->setVizWidget(ui->scene);
+
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
-        ui->dockWidget_2->setWindowTitle("Viewport");
-        ui->dockWidget_2->show();
-
         ui->stackedWidget->setCurrentIndex(3);
+        ui->dockWidget_2->show();
     });
 
     ui->page_4->setVizWidget(ui->scene);
     ui->page_4->setBlind(ui->widget_2);
     ui->page_4->setAxis(ui->widget);
 
+    connect(ui->actionCamera, &QAction::triggered, [this] {
+        ui->stackedWidget->setCurrentIndex(4);
+        ui->dockWidget_2->show();
+    });
+
+    ui->page_5->setCamera(ui->camera);
+
+    connect(ui->record, &MediaControl::toggled, [this](bool b) {
+        if (b)
+        {
+            ui->canvas->setStyleSheet("background: #d40000;");
+            initp = ui->camera->position();
+        }
+        else
+            ui->canvas->setStyleSheet("background: #4d4d4d;");
+    });
+
+    connect(ui->record, &MediaControl::toggled, [this](bool checked) {
+        if (checked)
+            connect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
+        else
+            disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
+    });
+
+    connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
+
     newProject();
+
+    for (int i = 0; i < 1000000; i++)
+        QApplication::processEvents();
+    //TODO usunąć, gdy splash będzie potrzebny
+}
+
+void MainWindow::recordKeyframe()
+{
+    keyframes[currentFrame] = ui->camera->position();
+
+    int n = keyframes.size();
+
+    if (n >= 2)
+    {
+        std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n);
+
+        int i = 0;
+
+        for (auto f : keyframes.values())
+        {
+            __x[i] = f.x();
+            __y[i] = f.y();
+            __z[i] = f.z();
+
+            i++;
+        }
+
+        _x.set_points(d, __x);
+        _y.set_points(d, __y);
+        _z.set_points(d, __z);
+    }
+}
+
+void MainWindow::recordKeyframes()
+{
+    if (!ignore)
+        recordKeyframe();
+    else
+        ignore = false;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete rsw;
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -169,6 +243,7 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
+    ui->page_3->setSimulation(simulation);
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
@@ -183,7 +258,7 @@ void MainWindow::openProject()
 void MainWindow::addLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(this, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
 
         if (!path.isEmpty())
         {
@@ -197,12 +272,12 @@ void MainWindow::addLayer()
             simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
             ui->scene->setSimulation(simulation);
-            ui->plot->setSimulation(simulation);
+            ui->plot->updateSimulation();
 
             connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
         }
     } catch (std::exception& e) {
-        QMessageBox::critical(this, "Error occured.", e.what());
+        QMessageBox::critical(0, "Error occured.", e.what());
     }
 }
 
@@ -234,6 +309,12 @@ void MainWindow::setFrame(int n)
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
+
+    if (keyframes.size() >= 2)
+    {
+        ignore = true;
+        ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
+    }
 }
 
 void MainWindow::setSoftMinimum(int min)
@@ -260,26 +341,30 @@ void MainWindow::start()
 void MainWindow::previous()
 {
     frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
-    if (ui->reverse->isChecked())
+
+    if (currentFrame > 0)
     {
-        if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-        {
-            currentFrame = previousFrame;
-            setFrame(currentFrame);
-        }
-        else
-        {
-            if (ui->actionSimple->isChecked())
-                ui->reverse->click();
-            else
-                setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
-        }
+        currentFrame = previousFrame;
+        setFrame(currentFrame);
+    }
+}
+
+void MainWindow::reverse_previous()
+{
+    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+
+    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+    {
+        currentFrame = previousFrame;
+        setFrame(currentFrame);
     }
     else
     {
-        if (currentFrame > 0)
+        if (ui->actionSimple->isChecked())
+            ui->reverse->click();
+        else
         {
-            currentFrame = previousFrame;
+            currentFrame = ui->actionPreview_range->isChecked() ? softMaximum : lastFrame;
             setFrame(currentFrame);
         }
     }
@@ -298,7 +383,9 @@ void MainWindow::reverse(bool checked)
         if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
             setFrame(softMaximum);
 
-        connect(&timer, SIGNAL(timeout()), this, SLOT(previous()));
+        connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
+
+        time.restart();
         timer.start();
     }
     else
@@ -321,7 +408,9 @@ void MainWindow::play(bool checked)
         if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
             setFrame(softMinimum);
 
-        connect(&timer, SIGNAL(timeout()), this, SLOT(next()));
+        connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
+
+        time.restart();
         timer.start();
     }
     else
@@ -333,33 +422,37 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    // simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
     frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
     simulation->getFrame(nextFrame);
 
-    if (ui->play->isChecked())
+    if (currentFrame < lastFrame)
     {
-        if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-        {
-            currentFrame = nextFrame;
-            setFrame(currentFrame);
-        }
-        else
-        {
-            if (ui->actionSimple->isChecked())
-                ui->play->click();
-            else
-                setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
-        }
+        currentFrame = nextFrame;
+        setFrame(currentFrame);
+    }
+}
+
+void MainWindow::play_next()
+{
+    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+
+    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+    {
+        currentFrame = nextFrame;
+        setFrame(currentFrame);
     }
     else
     {
-        if (currentFrame < lastFrame)
+        if (ui->actionSimple->isChecked())
+            ui->play->click();
+        else
         {
-            currentFrame = nextFrame;
+            currentFrame = ui->actionPreview_range->isChecked() ? softMinimum : 0;
             setFrame(currentFrame);
         }
     }
+
+    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
@@ -380,17 +473,18 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->stackedWidget->setCurrentIndex(1);
 
-    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
-
     ui->page_2->handleSelection(selection);
+
+    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<unsigned int>& id)
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
 {
+    auto t = root.sibling(root.row(), 1).data().toInt();
     auto v = root.sibling(root.row(), 2).data();
 
     if (v.canConvert<uint>())
-        id.append(v.toUInt() - 1);
+        id[t].append(v.toUInt());
 
     for (int r = 0; r < model->rowCount(root); r++)
         dumpModel(model, root.child(r, 0), id);
@@ -398,29 +492,30 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QList<u
 
 void MainWindow::handleModelSelection()
 {
-    QList<unsigned int> id;
+    QVector<QList<unsigned int>> id(5);
     QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
     {
-        auto v = r.sibling(r.row(), 1).data();
+        auto t = r.sibling(r.row(), 1).data().toInt();
 
-        if (v.canConvert<int>())
-            type.insert(v.toInt());
+        type.insert(t);
 
         dumpModel(ui->treeView->model(), r, id);
     }
 
-    auto selection = ui->scene->customSelection(id);
+    auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
 
     ui->scene->setVisibleSelection(selection, false);
 
-    if (type.size() == 1 && type.toList().first() == ObjectType::LayerObject)
+    if (type.size() == 1 && *type.begin() == NodeType::LayerObject)
     {
         ui->dockWidget_2->setWindowTitle("Attributes");
         ui->dockWidget_2->show();
 
         ui->stackedWidget->setCurrentIndex(2);
+
+        ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
     }
     else
         handleSelection(selection);
@@ -434,7 +529,7 @@ void MainWindow::setBaseAction(bool enabled)
         connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
     }
     else
-        ui->camera->disconnect(ui->camera);
+        disconnect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
 }
 
 #include "moviemaker.h"

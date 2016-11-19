@@ -25,9 +25,19 @@ public:
     void setOrigin(const QVector3D& o);
 
     QVector3D position() const;
+
     QVector3D lookAt() const;
 
     qreal angle() const;
+
+    void setPosition(const QVector3D& p);
+    void setEulerAgnles(qreal h_, qreal p_, qreal b_);
+    void setFocalLength(qreal fl);
+    void setApertureWidth(qreal aw);
+    void setFieldOfView(qreal fov);
+    void setRotationType(int rt);
+    void setNearClipping(qreal nc);
+    void setFarClipping(qreal fc);
 
 public slots:
     /* handles mouse move event */
@@ -84,9 +94,22 @@ private:
 
     qreal aspectRatio;
 
+    enum RotationType
+    {
+        RT_World,
+        RT_Camera
+    };
+
+    int rotationType;
+
+    qreal nearClipping;
+    qreal farClipping;
+
 signals:
     void modelViewChanged(QMatrix4x4);
     void projectionChanged(QMatrix4x4);
+
+friend class CameraSettings;
 };
 
 #endif // CAMERA_H

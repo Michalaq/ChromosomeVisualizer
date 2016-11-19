@@ -6,6 +6,7 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
+#include "spline.h"
 
 namespace Ui
 {
@@ -41,6 +42,9 @@ public slots:
     void next();
     void end();
 
+    void reverse_previous();
+    void play_next();
+
     /* selection */
     void selectAll();
     void handleSelection(const AtomSelection &selection);
@@ -52,6 +56,10 @@ public slots:
     /* povray */
     void capture();
     void captureMovie();
+
+    /* keyframes */
+    void recordKeyframe();
+    void recordKeyframes();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -66,6 +74,7 @@ private:
     int lastFrame;
 
     QTimer timer;
+    QTime time;
 
     QActionGroup *actionGroup;
     QLinkedList<QAction*> modifiers;
@@ -76,9 +85,15 @@ private:
     QHash<QObject*, const char*> mappedSlot;
 
     RenderSettings *renderSettings;
+    RenderSettingsWidget *rsw;
 
     int softMinimum;
     int softMaximum;
+
+    QMap<double, QVector3D> keyframes;
+    tk::spline _x, _y, _z;
+    QVector3D initp;
+    bool ignore;
 };
 
 #endif // MAINWINDOW_H

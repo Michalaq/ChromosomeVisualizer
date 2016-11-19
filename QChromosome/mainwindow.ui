@@ -11,12 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QChromosome 4D Studio</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
 	background: #1a1a1a;
 	color: lightgrey;
+}
+
+QWidget {
+	font-family: Droid Sans;
 }
 
 QStatusBar {
@@ -27,18 +31,6 @@ QStatusBar {
 QToolBar {
 	background: #333333;
 	border: none;
-}
-
-QToolBar &gt; MediaControl {
-	background: #b2b2b2;
-}
-
-QToolBar &gt; MediaControl:hover {
-	background: white;
-}
-
-QToolBar &gt; MediaControl:checked {
-	background: white;
 }
 
 QDockWidget {
@@ -88,6 +80,7 @@ QPushButton {
 	width: 85px;
 	height: 27px;
 	color: white;
+	icon-size: 24px;
 }
 
 QPushButton:hover {
@@ -96,6 +89,18 @@ QPushButton:hover {
 
 QPushButton:pressed {
 	background: #003380;
+}
+
+MediaControl {
+	background: #b2b2b2;
+}
+
+MediaControl:hover {
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
 }
 
 QToolBox::tab {
@@ -154,7 +159,7 @@ QScrollBar:vertical {
 }
 
 QScrollBar::handle:vertical {
-	background: #666666;
+	background: #4d4d4d;
 	width: 12px;
 	min-height: 20px;
 }
@@ -192,7 +197,7 @@ QScrollBar:horizontal {
 }
 
 QScrollBar::handle:horizontal {
-	background: #666666;
+	background: #4d4d4d;
 	height: 12px;
 	min-width: 20px;
 }
@@ -219,6 +224,89 @@ QScrollBar::left-arrow:horizontal {
 
 QScrollBar::right-arrow:horizontal {
 	image: url(:/arrows/right);
+}
+
+QScrollBar::handle:hover {
+	background: #666666;
+}
+
+QComboBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QComboBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QComboBox QAbstractItemView {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #808080;
+}
+
+QComboBox QAbstractItemView::item {
+	border: none;
+	min-height: 30px;
+	padding-left: 7px;
+}
+
+QComboBox QAbstractItemView::item:selected {
+	background: #0044aa;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/checkbox/unchecked);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/checkbox/checked);
+}
+
+QLineEdit {
+	background: #2d2d2d;
+	border: none;
+	color: gray;
+	height: 30px;
+	selection-background-color: #0066ff;
+	margin: 2px;
+	padding-left: 10px;
+}
+
+QLineEdit[focus=&quot;true&quot;] {
+	border: 2px solid #805900;
+	border-radius: 4px;
+	color: lightgray;
+	margin: 0px;
+}
+
+Label {
+	min-width: 125px;
+	min-height: 30px;
+}
+
+.section {
+	background: #262626;
+	font: bold;
+	min-height: 20px;
+	padding-left: 1px;
+}
+
+.label {
+	min-height: 30px;
 }</string>
   </property>
   <property name="dockNestingEnabled">
@@ -228,27 +316,6 @@ QScrollBar::right-arrow:horizontal {
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <property name="styleSheet">
-    <string notr="true">MouseControl {
-	background: #cccccc;
-}
-
-MouseControl:hover {
-	background: white;
-}
-
-MediaControl {
-	background: #b3b3b3;
-}
-
-MediaControl:hover {
-	background: white;
-}
-
-MediaControl:checked {
-	background: white;
-}</string>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -411,9 +478,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to start of animation [Shortcut F6]</string>
           </property>
@@ -437,9 +501,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to previous frame [Shortcut F]</string>
           </property>
@@ -462,9 +523,6 @@ MediaControl:checked {
             <width>24</width>
             <height>24</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
            <string>Play backwards</string>
@@ -497,9 +555,6 @@ MediaControl:checked {
             <width>32</width>
             <height>32</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
            <string>Play forwards [Shortcut F7]</string>
@@ -539,9 +594,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="statusTip">
            <string>Go to next frame [Shortcut G]</string>
           </property>
@@ -564,9 +616,6 @@ MediaControl:checked {
             <width>24</width>
             <height>24</height>
            </size>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
           </property>
           <property name="statusTip">
            <string>Go to end of animation [Shortcut F8]</string>
@@ -591,9 +640,6 @@ MediaControl:checked {
             <height>24</height>
            </size>
           </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -602,6 +648,40 @@ MediaControl:checked {
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/record</normaloff>:/media/record</iconset>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="MediaControl" name="key">
+          <property name="minimumSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">:!hover:!checked {
+	background: #d40000;
+}</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/media/key</normaloff>:/media/key</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -618,7 +698,7 @@ MediaControl:checked {
      <x>0</x>
      <y>0</y>
      <width>848</width>
-     <height>27</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -668,7 +748,7 @@ MediaControl:checked {
    </widget>
    <widget class="QMenu" name="menuWindows">
     <property name="title">
-     <string>Windows</string>
+     <string>Window</string>
     </property>
     <widget class="QMenu" name="menuDockable_dialogs">
      <property name="title">
@@ -684,11 +764,26 @@ MediaControl:checked {
     <addaction name="menuRecently_closed_docks"/>
     <addaction name="menuDockable_dialogs"/>
    </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+    <addaction name="actionCamera"/>
+    <addaction name="actionViewport"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionInfo"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuScene"/>
    <addaction name="menuSelection"/>
    <addaction name="menuAnimation"/>
    <addaction name="menuWindows"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="ToolBar" name="mainToolBar">
    <property name="minimumSize">
@@ -736,7 +831,7 @@ MediaControl:checked {
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
-    <string>Project settings</string>
+    <string>Attributes</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -761,6 +856,7 @@ MediaControl:checked {
        <widget class="Attributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
+       <widget class="CameraSettings" name="page_5"/>
       </widget>
      </item>
     </layout>
@@ -943,6 +1039,10 @@ MediaControl:checked {
    </property>
   </action>
   <action name="actionProject_Settings">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+   </property>
    <property name="text">
     <string>Project Settings</string>
    </property>
@@ -1109,11 +1209,29 @@ MediaControl:checked {
    </property>
   </action>
   <action name="actionViewport">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/view</normaloff>:/dialogs/view</iconset>
+   </property>
    <property name="text">
     <string>Viewport</string>
    </property>
    <property name="shortcut">
     <string>Shift+V</string>
+   </property>
+  </action>
+  <action name="actionCamera">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
+   </property>
+   <property name="text">
+    <string>Camera</string>
+   </property>
+  </action>
+  <action name="actionInfo">
+   <property name="text">
+    <string>Info...</string>
    </property>
   </action>
  </widget>
@@ -1123,6 +1241,11 @@ MediaControl:checked {
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>VizWidget</class>
@@ -1154,11 +1277,6 @@ MediaControl:checked {
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>RangeSlider</class>
@@ -1228,6 +1346,12 @@ MediaControl:checked {
    <class>Viewport</class>
    <extends>QWidget</extends>
    <header>viewport.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraSettings</class>
+   <extends>QWidget</extends>
+   <header>camerasettings.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

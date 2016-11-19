@@ -13,6 +13,17 @@ public:
     void setTextVisible(bool czy);
     void setScale(double s);
 
+    enum AxisPosition
+    {
+        Off,
+        BottomLeft,
+        BottomRight,
+        TopLeft,
+        TopRight
+    };
+
+    void setPosition(int p);
+
 signals:
 
 public slots:
@@ -26,6 +37,7 @@ private:
 
     bool textVisible;
     double scale;
+    int position;
 };
 
 #endif // AXIS_H

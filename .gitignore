@@ -1,5 +1,5 @@
 QChromosome/QChromosome.pro.user
 build*
-QtChromosomeViz_v2/bartekm_code/message_format/message.pb.cc
-QtChromosomeViz_v2/bartekm_code/message_format/message.pb.h
+QtChromosomeViz_v2/bartekm_code/message_format/*
+!QtChromosomeViz_v2/bartekm_code/message_format/*.proto
 

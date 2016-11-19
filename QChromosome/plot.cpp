@@ -32,8 +32,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     setRange(0, 0);
     lastBuffered = -1;
 
-    maxval = -qInf();
-    minval = +qInf();
+    minimax.clear();
 
     setMinimumHeight(padding_top + 48 + padding_bottom);
 
@@ -60,6 +59,13 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     update();
 }
 
+void Plot::updateSimulation()
+{
+    auto oldBuffered = lastBuffered;
+    lastBuffered = -1;
+    setMaximum(oldBuffered);
+}
+
 void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
@@ -78,11 +84,7 @@ void Plot::setMaximum(int m)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
-                if (maxval < entry.second)
-                    maxval = entry.second;
-
-                if (minval > entry.second)
-                    minval = entry.second;
+                minimax.insert(entry.first, lastBuffered, entry.second);
             }
         } while (lastBuffered < m);
     }
@@ -96,12 +98,14 @@ void Plot::setMaximum(int m)
 
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+    if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
 #include <QPainter>
@@ -112,7 +116,10 @@ void Plot::addLegend(const QString &fname)
     const auto color = colorOrder[legend.size() % colorOrder.size()];
 
     auto entry = new Legend(fname, color, this);
-    connect(entry, SIGNAL(changed()), this, SLOT(update()));
+    connect(entry, &Legend::changed, [=] {
+        minimax.setVisible(fname.toStdString(), entry->pen().alpha() != 0);
+        update();
+    });
     layout()->addWidget(entry);
     legend[fname] = entry;
 }
@@ -121,7 +128,7 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (!simulation_ || softMinimum == softMaximum)
+    if (minimax.empty() || softMinimum == softMaximum)
         return;
 
     QPainter painter(this);
@@ -129,6 +136,13 @@ void Plot::paintEvent(QPaintEvent *event)
     // set coordinate system
     QSize s;
     s.setHeight(height() - padding_top - padding_bottom);
+
+    // TODO bug - wykres nie działa, jeśli wartości brzegowe nie są całkowite - problem z setWindow
+    double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
+    double maxval = qCeil(minimax.maximum(softMinimum, softMaximum));
+
+    if (minval == maxval)
+        minval--;
 
     double delta = tickSpan(minval, maxval, s.height(), 24);
     /* TODO do pewnej wysokości nie powinno się rozrzedzać podziałki, tylko ją zwyczajnie skalować */
@@ -159,30 +173,25 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setViewTransformEnabled(false);
 
-    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
+    for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
     {
         auto tick = transform.map(QPoint(i, minval));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(softMinimum + i));
+        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
     }
+
+    for (qreal i = lt; i <= ut; i += delta)
+        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
     pen1.setStyle(Qt::DashLine);
-
-    painter.setViewTransformEnabled(false);
-
-    for (qreal i = lt; i <= ut; i += delta)
-        painter.drawText(QRect(transform.map(QPoint(0, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
-
-    painter.setViewTransformEnabled(true);
-
     pen1.setColor("#333333");
 
     painter.setPen(pen1);
 
-    for (int i = (gap - (softMinimum % gap)) % gap; i <= softMaximum - softMinimum; i += gap)
+    for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
         painter.drawLine(QPoint(i, minval), QPoint(i, maxval));
 
     for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
@@ -200,7 +209,7 @@ void Plot::paintEvent(QPaintEvent *event)
         QPointF lPoint = sampleAtX(softMinimum, allValues, nullptr, &lRange);
         QPointF rPoint = sampleAtX(softMaximum, allValues, &rRange, nullptr);
 
-        auto interval = i.value().mid(lRange, rRange - lRange + 1);
+        auto interval = lRange <= rRange ? i.value().mid(lRange, rRange - lRange + 1) : QVector<QPointF>();
 
         interval.prepend(lPoint);
         interval.prepend(QPointF(lPoint.x(), 0));
@@ -224,19 +233,25 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawPolyline(&interval[1], interval.size() - 2);
     }
 
-    QPen pen3(Qt::white, 2.);
-    pen3.setJoinStyle(Qt::MiterJoin);
-    pen3.setCosmetic(true);
+    if (softMinimum <= value() && value() <= softMaximum)
+    {
+        QPen pen3(Qt::white, 2.);
+        pen3.setJoinStyle(Qt::MiterJoin);
+        pen3.setCosmetic(true);
 
-    painter.setPen(pen3);
-    painter.drawLine(value(), minval, value(), maxval);
+        painter.setPen(pen3);
+        painter.drawLine(value(), minval, value(), maxval);
 
-    painter.setViewTransformEnabled(false);
+        painter.setViewTransformEnabled(false);
 
-    auto crs = transform.map(QPoint(value(), maxval));
+        auto crs = transform.map(QPoint(value(), maxval));
 
-    painter.setBrush(QBrush(Qt::white));
-    painter.drawPolygon(QPolygon({crs, crs + QPoint(4, -5), crs + QPoint(-4, -5)}));
+        painter.setBrush(QBrush(Qt::white));
+        painter.translate(crs.x(), crs.y() + (1. - qSqrt(2.)) * 2.5);
+        painter.drawEllipse(QPoint(), 5, 5);
+        painter.rotate(45);
+        painter.drawRect(0, 0, 5, 5);
+    }
 }
 
 
@@ -258,7 +273,8 @@ QPointF Plot::sampleAtX(qreal x, const QVector<QPointF> &plot, int *lowerIndex, 
     }
     else if (it == plot.begin())
     {
-        lower = upper = 0;
+        lower = -1;
+        upper = 0;
         ret = QPointF(x, plot.first().y());
     }
     else

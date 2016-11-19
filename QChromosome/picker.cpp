@@ -1,37 +1,40 @@
-#include "picker.h"
+#include "picker.h">
 
-Picker::Picker(QWidget *parent) : QWidget(parent)
+Picker::Picker(QWidget *parent) : ComboBox(parent)
 {
-
+    addItem(QIcon(), "<< multiple values >>");
 }
 
 void Picker::setValue(const QVariant& c)
 {
     color = c;
+
+    setItemText(0, color.isValid() ? color.value<QColor>().name() : "<< multiple values >>");
+
     update();
 }
 
-#include <QPainter>
+#include <QStylePainter>
 
-void Picker::paintEvent(QPaintEvent *event)
+void Picker::paintEvent(QPaintEvent *)
 {
-    QWidget::paintEvent(event);
+    QStylePainter painter(this);
+    painter.setPen(palette().color(QPalette::Text));
 
-    QPainter p(this);
+    // draw the combobox frame, focusrect and selected etc.
+    QStyleOptionComboBox opt;
+    initStyleOption(&opt);
+    painter.drawComplexControl(QStyle::CC_ComboBox, opt);
 
+    // draw color indicator
     if (color.isValid())
-        p.fillRect(rect(), color.value<QColor>());
-    else
     {
-        p.setPen("#4d4d4d");
-        p.drawRect(0, 0, width() - 1, height() - 1);
-
-        QTextOption opt;
-        opt.setAlignment(Qt::AlignVCenter);
-        opt.setWrapMode(QTextOption::NoWrap);
-
-        p.drawText(QRect(15, 0, width() - 30, height()), "<< multipe values >>", opt);
+        painter.translate(22, 0);
+        QPainter(this).fillRect(5, 5, 22, 22, color.value<QColor>());
     }
+
+    // draw the icon and text
+    painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
 }
 
 #include <QColorDialog>
@@ -44,9 +47,7 @@ void Picker::mousePressEvent(QMouseEvent *event)
 
     if (c.isValid() && c != color)
     {
+        setValue(c);
         emit valueChanged(c);
-
-        color = c;
-        update();
     }
 }

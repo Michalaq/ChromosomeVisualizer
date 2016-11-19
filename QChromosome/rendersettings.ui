@@ -10,15 +10,8 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Render Settings</string>
-  </property>
   <property name="styleSheet">
-   <string notr="true">QTabWidget {
-	background: #262626;
-}
-
-QTabBar {
+   <string notr="true">QTabBar {
 	background: #262626;
 }
 
@@ -98,13 +91,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
           </property>
          </spacer>
         </item>
-        <item row="0" column="2">
-         <widget class="QToolButton" name="toolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
@@ -130,7 +116,7 @@ QScrollArea &gt; QWidget &gt; QWidget {
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="FileEdit" name="lineEdit">
           <property name="text">
            <string>untitled</string>
           </property>
@@ -777,6 +763,13 @@ QScrollArea &gt; QWidget &gt; QWidget {
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <slots>

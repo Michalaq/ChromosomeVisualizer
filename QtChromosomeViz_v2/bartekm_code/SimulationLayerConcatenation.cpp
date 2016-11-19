@@ -115,15 +115,18 @@ frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
     if (time < 0)
         time = 0;
 
+    frameNumber_t framesSkipped = 0;
+
     for (const auto & layer : layers_) {
         if (time < layer->getFrameCount()) {
             frameNumber_t nextTime = layer->getNextTime(time);
             if (nextTime != time)
-                return transform_.transformBack(nextTime);
+                return framesSkipped + transform_.transformBack(nextTime);
         }
 
         // Try the next one
         time -= layer->getFrameCount();
+        framesSkipped += layer->getFrameCount();
     }
 
     return oldTime;
@@ -136,15 +139,18 @@ frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)
     if (time < 0)
         return 0;
 
+    frameNumber_t framesSkipped = 0;
+
     for (const auto & layer : layers_) {
         frameNumber_t count = layer->getFrameCount();
         if (time == count && layer->reachedEndOfFile())
-            return transform_.transformBack(count - 1);
+            return framesSkipped + transform_.transformBack(count - 1);
         if (time < count)
-            return transform_.transformBack(layer->getPreviousTime(time));
+            return framesSkipped + transform_.transformBack(layer->getPreviousTime(time));
 
         // Try the next one
         time -= layer->getFrameCount();
+        framesSkipped += layer->getFrameCount();
     }
 
     return transform_.transformBack(oldTime - time - 1);

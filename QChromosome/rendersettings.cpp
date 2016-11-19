@@ -23,9 +23,6 @@ public:
     }
 };
 
-#include <QFileDialog>
-#include <QtMath>
-
 RenderSettings::RenderSettings(QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TabWidget)
@@ -41,13 +38,6 @@ RenderSettings::RenderSettings(QWidget *parent) :
     currentResolutionUnit = ui->comboBox_2->currentIndex() ? "in" : "cm";
 
     updateOutputSize();
-
-    connect(ui->toolButton, &QToolButton::clicked, [this] {
-        QString path = QFileDialog::getSaveFileName(this, tr("Save File"), ui->lineEdit->text(), tr("Images (*.png *.xpm *.jpg)"));
-
-        if (!path.isEmpty())
-            ui->lineEdit->setText(path);
-    });
 
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox->isChecked())
@@ -221,4 +211,21 @@ void RenderSettings::updateOutputSize()
     outSize = QSize(ui->doubleSpinBox->value() * multiplier + .5, ui->doubleSpinBox_2->value() * multiplier + .5);
 
     ui->label_7->setText(QString("%1 x %2 px").arg(QString::number(outSize.width()), QString::number(outSize.height())));
+}
+
+#include "ui_rswidget.h"
+
+RenderSettingsWidget::RenderSettingsWidget(RenderSettings *rs, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::RenderSettingsWidget)
+{
+    ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+
+    layout()->addWidget(rs);
+}
+
+RenderSettingsWidget::~RenderSettingsWidget()
+{
+    delete ui;
 }

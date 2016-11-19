@@ -3,7 +3,8 @@
 Axis::Axis(QWidget *parent) :
     QWidget(parent),
     textVisible(true),
-    scale(1)
+    scale(1),
+    position(BottomLeft)
 {
     setAttribute(Qt::WA_TransparentForMouseEvents);
 }
@@ -13,6 +14,9 @@ Axis::Axis(QWidget *parent) :
 void Axis::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
+
+    if (position == Off)
+        return;
 
     struct
     {
@@ -36,7 +40,8 @@ void Axis::paintEvent(QPaintEvent *event)
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
 
-    p.translate(50 * scale, height() - 50 * scale);
+    p.translate(position == TopLeft || position == BottomLeft ? 50 * scale : width() - 50 * scale,
+                position == TopLeft || position == TopRight ? 50 * scale : height() - 50 * scale);
     p.scale(scale, scale);
 
     for (auto a : axis)
@@ -67,5 +72,11 @@ void Axis::setTextVisible(bool czy)
 void Axis::setScale(double s)
 {
     scale = s;
+    update();
+}
+
+void Axis::setPosition(int p)
+{
+    position = p;
     update();
 }

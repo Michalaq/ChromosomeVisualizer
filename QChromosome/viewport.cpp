@@ -8,6 +8,7 @@ Viewport::Viewport(QWidget *parent) :
     ui(new Ui::Viewport)
 {
     ui->setupUi(this);
+    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     ui->widget->setValue(QColor(Qt::black));
     ui->widget_2->setValue(QColor(Qt::black));
@@ -30,6 +31,9 @@ Viewport::Viewport(QWidget *parent) :
     });
 
     // editor axis position
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+        axis_->setPosition(index);
+    });
 
     // editor axis scale
     connect(ui->doubleSpinBox_2, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
