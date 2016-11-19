@@ -68,6 +68,11 @@ QVector3D Camera::position() const
     return eye;
 }
 
+QVector3D Camera::EulerAngles() const
+{
+    return QVector3D(h, p, b);
+}
+
 void Camera::setPosition(const QVector3D &p)
 {
     eye = p;
