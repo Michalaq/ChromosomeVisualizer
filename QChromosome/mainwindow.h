@@ -92,7 +92,7 @@ private:
 
     QMap<double, QPair<QVector3D,QVector3D>> keyframes;
     tk::spline _x, _y, _z, _h, _p, _b;
-    bool ignore;
+    int ignore;
 };
 
 #endif // MAINWINDOW_H

@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup(new QActionGroup(this)),
     renderSettings(new RenderSettings()),
     rsw(new RenderSettingsWidget(renderSettings)),
-    ignore(false)
+    ignore(0)
 {
     _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
     _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
@@ -185,10 +185,10 @@ void MainWindow::recordKeyframe()
 
 void MainWindow::recordKeyframes()
 {
-    if (!ignore)
-        recordKeyframe();
+    if (ignore)
+        ignore--;
     else
-        ignore = false;
+        recordKeyframe();
 }
 
 MainWindow::~MainWindow()
@@ -317,7 +317,7 @@ void MainWindow::setFrame(int n)
 
     if (keyframes.size() >= 2)
     {
-        ignore = true;
+        ignore = 2;
         ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
         ui->camera->setEulerAgnles(_h(n), _p(n), _b(n));
     }
