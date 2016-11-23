@@ -299,10 +299,8 @@ Label {
 }
 
 .section {
-	background: #262626;
 	font: bold;
-	min-height: 20px;
-	padding-left: 1px;
+	color: #4080d0;
 }
 
 .label {

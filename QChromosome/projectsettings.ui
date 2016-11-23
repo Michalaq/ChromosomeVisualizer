@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QLabel {
+   <string notr="true">.QLabel, .Label, .label {
 	color: lightgray;
 }
 </string>
