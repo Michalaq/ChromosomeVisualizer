@@ -25,7 +25,6 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
     axis.cpp \
-    ../QtChromosomeViz_v2/SelectionRectWidget.cpp \
     legend.cpp \
     toolbar.cpp \
     rendersettings.cpp \
@@ -51,7 +50,8 @@ SOURCES += main.cpp\
     combobox.cpp \
     lineedit.cpp \
     fileedit.cpp \
-    label.cpp
+    label.cpp \
+    selection.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -66,7 +66,6 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
     axis.h \
-    ../QtChromosomeViz_v2/SelectionRectWidget.hpp \
     legend.h \
     toolbar.h \
     rendersettings.h \
@@ -110,7 +109,8 @@ HEADERS  += mainwindow.h\
     lineedit.h \
     fileedit.h \
     label.h \
-    spline.h
+    spline.h \
+    selection.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

@@ -370,6 +370,9 @@ Label {
             <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
             </item>
+            <item row="0" column="0">
+             <widget class="Selection" name="widget_3" native="true"/>
+            </item>
            </layout>
           </widget>
          </item>
@@ -1256,7 +1259,7 @@ Label {
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
-    <slot>setSelectingState(bool)</slot>
+    <slot>setSelectionRect(QRect,Qt::KeyboardModifiers)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -1354,6 +1357,16 @@ Label {
    <header>camerasettings.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>Selection</class>
+   <extends>QWidget</extends>
+   <header>selection.h</header>
+   <container>1</container>
+   <slots>
+    <signal>selectionRectChanged(QRect,Qt::KeyboardModifiers)</signal>
+    <slot>enableSelecting(bool)</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
@@ -1394,16 +1407,16 @@ Label {
   <connection>
    <sender>actionSelect</sender>
    <signal>toggled(bool)</signal>
-   <receiver>scene</receiver>
-   <slot>setSelectingState(bool)</slot>
+   <receiver>widget_3</receiver>
+   <slot>enableSelecting(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>199</x>
-     <y>200</y>
+     <x>286</x>
+     <y>131</y>
     </hint>
    </hints>
   </connection>
@@ -1868,6 +1881,22 @@ Label {
     <hint type="destinationlabel">
      <x>423</x>
      <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widget_3</sender>
+   <signal>selectionRectChanged(QRect,Qt::KeyboardModifiers)</signal>
+   <receiver>scene</receiver>
+   <slot>setSelectionRect(QRect,Qt::KeyboardModifiers)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>286</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>131</y>
     </hint>
    </hints>
   </connection>
