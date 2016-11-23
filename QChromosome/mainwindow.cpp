@@ -144,10 +144,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
 
     newProject();
-
-    for (int i = 0; i < 1000000; i++)
-        QApplication::processEvents();
-    //TODO usunąć, gdy splash będzie potrzebny
 }
 
 void MainWindow::recordKeyframe()
