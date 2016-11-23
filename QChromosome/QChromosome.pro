@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     combobox.cpp \
     lineedit.cpp \
     fileedit.cpp \
-    label.cpp
+    label.cpp \
+    keyframe.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -110,7 +111,8 @@ HEADERS  += mainwindow.h\
     lineedit.h \
     fileedit.h \
     label.h \
-    spline.h
+    spline.h \
+    keyframe.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -120,7 +122,8 @@ FORMS    += mainwindow.ui \
     layerattributes.ui \
     viewport.ui \
     rswidget.ui \
-    camerasettings.ui
+    camerasettings.ui \
+    keyframe.ui
 
 CONFIG += c++14
 

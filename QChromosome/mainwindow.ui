@@ -855,6 +855,7 @@ Label {
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
        <widget class="CameraSettings" name="page_5"/>
+       <widget class="Keyframes" name="page_6"/>
       </widget>
      </item>
     </layout>
@@ -1350,6 +1351,12 @@ Label {
    <class>CameraSettings</class>
    <extends>QWidget</extends>
    <header>camerasettings.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Keyframes</class>
+   <extends>QWidget</extends>
+   <header>keyframe.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
