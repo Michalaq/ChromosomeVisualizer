@@ -45,7 +45,7 @@ void Slider::paintEvent(QPaintEvent *event)
 
     p.setPen("#4d4d4d");
 
-    p.drawLine(QPoint(0, 0), QPoint(width(), 0));
+    p.drawLine(QPoint(0, 4), QPoint(width(), 4));
 
     auto it = ip->keyframes.keyBegin();
 
@@ -60,7 +60,7 @@ void Slider::paintEvent(QPaintEvent *event)
     {
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + *it, width() - 20) + 10;
 
-        p.drawRect(QRect(tick - dx/2, 0, dx, 12));
+        p.drawRect(QRect(tick - dx/2, 4, dx, 8));
     }
 
     p.setPen(Qt::white);
@@ -71,8 +71,8 @@ void Slider::paintEvent(QPaintEvent *event)
     {
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width() - 20) + 10;
 
-        p.drawLine(QPoint(tick, 0), QPoint(tick, 12));
-        p.drawText(QRect(tick, -12, 0, 12), Qt::AlignCenter | Qt::TextDontClip, QString::number(softMinimum + i));
+        p.drawLine(QPoint(tick, 4), QPoint(tick, 12));
+        p.drawText(QRect(tick, -12, 0, 16), Qt::AlignCenter | Qt::TextDontClip, QString::number(softMinimum + i));
     }
 
     int sgap = gap >= 10 ? gap / 10 : 1;
@@ -84,7 +84,7 @@ void Slider::paintEvent(QPaintEvent *event)
 
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width() - 20) + 10;
 
-        p.drawLine(QPoint(tick, 6), QPoint(tick, 12));
+        p.drawLine(QPoint(tick, 8), QPoint(tick, 12));
     }
 
     if (softMinimum <= value() && value() <= softMaximum)
