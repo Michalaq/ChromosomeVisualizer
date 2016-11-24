@@ -13,7 +13,7 @@
         <file alias="record">icons/record.svg</file>
         <file alias="reverse">icons/reverse.svg</file>
         <file alias="start">icons/start.svg</file>
-        <file alias="key">icons/key.svg</file>
+        <file alias="key">icons/key_icon.svg</file>
     </qresource>
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
