@@ -1,6 +1,6 @@
 #include "slider.h"
 
-Slider::Slider(QWidget *parent) : SoftSlider(parent)
+Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr)
 {
 
 }
@@ -8,6 +8,11 @@ Slider::Slider(QWidget *parent) : SoftSlider(parent)
 QSize Slider::minimumSizeHint() const
 {
     return QSize(20, 30);
+}
+
+void Slider::setInterpolator(Interpolator *_ip)
+{
+    ip = _ip;
 }
 
 #include <QMouseEvent>
@@ -41,6 +46,22 @@ void Slider::paintEvent(QPaintEvent *event)
     p.setPen("#4d4d4d");
 
     p.drawLine(QPoint(0, 0), QPoint(width(), 0));
+
+    auto it = ip->keyframes.keyBegin();
+
+    while (it != ip->keyframes.keyEnd() && *it < softMinimum) it++;
+
+    p.setPen("#318db9");
+    p.setBrush(QBrush("#7f318db9"));
+
+    qreal dx = (width() - 20) / (softMaximum - softMinimum);
+
+    for (; it != ip->keyframes.keyEnd() && *it <= softMaximum; it++)
+    {
+        auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + *it, width() - 20) + 10;
+
+        p.drawRect(QRect(tick - dx/2, 0, dx, 12));
+    }
 
     p.setPen(Qt::white);
 

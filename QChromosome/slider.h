@@ -2,6 +2,7 @@
 #define SLIDER_H
 
 #include "softslider.h"
+#include "interpolator.h"
 
 class Slider : public SoftSlider
 {
@@ -10,6 +11,8 @@ public:
     explicit Slider(QWidget *parent = 0);
 
     QSize minimumSizeHint() const;
+
+    void setInterpolator(Interpolator *_ip);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -20,6 +23,9 @@ protected:
 signals:
 
 public slots:
+
+private:
+    Interpolator *ip;
 };
 
 #endif // SLIDER_H

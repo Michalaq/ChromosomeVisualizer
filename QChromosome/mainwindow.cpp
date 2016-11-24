@@ -136,7 +136,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->key, &MediaControl::clicked, [this] {
         ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
+        ui->horizontalSlider->update();
     });
+
+    ui->horizontalSlider->setInterpolator(&ip);
 
     newProject();
 }
@@ -146,7 +149,10 @@ void MainWindow::recordKeyframe()
     if (ignore)
         ignore--;
     else
+    {
         ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
+        ui->horizontalSlider->update();
+    }
 }
 
 MainWindow::~MainWindow()
