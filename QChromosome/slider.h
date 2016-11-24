@@ -26,6 +26,8 @@ public slots:
 
 private:
     Interpolator *ip;
+    bool movemarker;
+    int frame;
 };
 
 #endif // SLIDER_H
