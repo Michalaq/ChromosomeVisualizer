@@ -28,12 +28,15 @@ void Slider::mousePressEvent(QMouseEvent *event)
     else
     {
         movemarker = false;
+
         frame = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
-        if (ip->keyframes.contains(frame))
-            ;
-        else
+
+        if (!ip->keyframes.contains(frame))
             frame = -1;
+
         update();
+
+        emit keyframeSelected(frame);
     }
 }
 

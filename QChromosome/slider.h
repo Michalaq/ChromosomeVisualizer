@@ -21,6 +21,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 signals:
+    void keyframeSelected(int);
 
 public slots:
 

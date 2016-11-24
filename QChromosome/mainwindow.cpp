@@ -141,6 +141,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->horizontalSlider->setInterpolator(&ip);
 
+    connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {
+        if (frame >= 0)
+            ui->stackedWidget->setCurrentIndex(5);
+    });
+
     newProject();
 }
 
