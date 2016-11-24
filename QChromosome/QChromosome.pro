@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     lineedit.cpp \
     fileedit.cpp \
     label.cpp \
-    keyframe.cpp
+    keyframe.cpp \
+    interpolator.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -112,7 +113,8 @@ HEADERS  += mainwindow.h\
     fileedit.h \
     label.h \
     spline.h \
-    keyframe.h
+    keyframe.h \
+    interpolator.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

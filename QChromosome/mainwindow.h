@@ -6,7 +6,7 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
-#include "spline.h"
+#include "interpolator.h"
 
 namespace Ui
 {
@@ -59,7 +59,6 @@ public slots:
 
     /* keyframes */
     void recordKeyframe();
-    void recordKeyframes();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -90,8 +89,7 @@ private:
     int softMinimum;
     int softMaximum;
 
-    QMap<double, QPair<QVector3D,QVector3D>> keyframes;
-    tk::spline _x, _y, _z, _h, _p, _b;
+    Interpolator ip;
     int ignore;
 };
 

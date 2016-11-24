@@ -14,13 +14,6 @@ MainWindow::MainWindow(QWidget *parent) :
     rsw(new RenderSettingsWidget(renderSettings)),
     ignore(0)
 {
-    _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-    _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-    _z.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-    _h.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-    _p.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-    _b.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
-
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -132,59 +125,28 @@ MainWindow::MainWindow(QWidget *parent) :
         if (checked)
         {
             ui->canvas->setStyleSheet("background: #d40000;");
-            connect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
+            connect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframe);
         }
         else
         {
             ui->canvas->setStyleSheet("background: #4d4d4d;");
-            disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframes);
+            disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframe);
         }
     });
 
-    connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
+    connect(ui->key, &MediaControl::clicked, [this] {
+        ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
+    });
 
     newProject();
 }
 
 void MainWindow::recordKeyframe()
 {
-    keyframes[currentFrame] = { ui->camera->position(), ui->camera->EulerAngles() };
-
-    int n = keyframes.size();
-
-    if (n >= 2)
-    {
-        std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n), __h(n), __p(n), __b(n);
-
-        int i = 0;
-
-        for (auto f : keyframes.values())
-        {
-            __x[i] = f.first.x();
-            __y[i] = f.first.y();
-            __z[i] = f.first.z();
-            __h[i] = f.second.x();
-            __p[i] = f.second.y();
-            __b[i] = f.second.z();
-
-            i++;
-        }
-
-        _x.set_points(d, __x);
-        _y.set_points(d, __y);
-        _z.set_points(d, __z);
-        _h.set_points(d, __h);
-        _p.set_points(d, __p);
-        _b.set_points(d, __b);
-    }
-}
-
-void MainWindow::recordKeyframes()
-{
     if (ignore)
         ignore--;
     else
-        recordKeyframe();
+        ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
 }
 
 MainWindow::~MainWindow()
@@ -311,11 +273,11 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
 
-    if (keyframes.size() >= 2)
+    if (ip.keyframes.size() >= 2)
     {
         ignore = 2;
-        ui->camera->setPosition(QVector3D(_x(n), _y(n), _z(n)));
-        ui->camera->setEulerAgnles(_h(n), _p(n), _b(n));
+        ui->camera->setPosition(QVector3D(ip._x(n), ip._y(n), ip._z(n)));
+        ui->camera->setEulerAgnles(ip._h(n), ip._p(n), ip._b(n));
     }
 }
 
