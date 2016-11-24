@@ -278,19 +278,17 @@ QCheckBox::indicator:checked {
 
 QLineEdit {
 	background: #2d2d2d;
-	border: none;
+	border: 1px solid #2d2d2d;
+	border-radius: 2px;
 	color: gray;
-	height: 30px;
+	height: 28px;
 	selection-background-color: #0066ff;
-	margin: 2px;
 	padding-left: 10px;
 }
 
 QLineEdit[focus=&quot;true&quot;] {
-	border: 2px solid #805900;
-	border-radius: 4px;
+	border-color: #205375;
 	color: lightgray;
-	margin: 0px;
 }
 
 Label {
