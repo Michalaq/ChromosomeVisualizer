@@ -2,7 +2,21 @@
 
 Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr)
 {
+    s = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 
+    connect(s, &QShortcut::activated, [this] {
+        if (frame != ip->keyframes.end())
+        {
+            ip->keyframes.erase(frame);
+            frame = ip->keyframes.end();
+            update();
+        }
+    });
+}
+
+Slider::~Slider()
+{
+    delete s;
 }
 
 QSize Slider::minimumSizeHint() const
@@ -52,6 +66,20 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
             frame = ip->keyframes.insertMulti(sv, v);
             update();
         }
+}
+
+void Slider::mouseReleaseEvent(QMouseEvent *event)
+{
+    SoftSlider::mouseReleaseEvent(event);
+
+    if (frame != ip->keyframes.end() && ip->keyframes.count(frame.key()) > 1)
+    {
+        auto k = frame.key();
+        auto v = frame.value();
+        ip->keyframes.remove(k);
+        frame = ip->keyframes.insert(k, v);
+        update();
+    }
 }
 
 #include <QPainter>
