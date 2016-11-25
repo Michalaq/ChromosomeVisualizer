@@ -28,7 +28,7 @@ public slots:
 private:
     Interpolator *ip;
     bool movemarker;
-    int frame;
+    QMap<double, QPair<QVector3D, QVector3D>>::iterator frame;
 };
 
 #endif // SLIDER_H
