@@ -43,4 +43,8 @@
     <qresource prefix="/application">
         <file alias="icon">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
     </qresource>
+    <qresource prefix="/locks">
+        <file alias="world">icons/world_icon.svg</file>
+        <file alias="tilt">icons/tilt_icon.svg</file>
+    </qresource>
 </RCC>

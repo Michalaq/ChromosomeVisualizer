@@ -895,6 +895,12 @@ Label {
    </widget>
   </widget>
   <widget class="ToolBar" name="toolBar_2">
+   <property name="minimumSize">
+    <size>
+     <width>50</width>
+     <height>50</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>toolBar_2</string>
    </property>
@@ -1253,6 +1259,10 @@ Label {
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="misc.qrc">
+     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+   </property>
    <property name="text">
     <string>X Axis Lock/Unlock</string>
    </property>
@@ -1269,6 +1279,10 @@ Label {
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="misc.qrc">
+     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
    </property>
    <property name="text">
     <string>Y Axis Lock/Unlock</string>
@@ -1287,6 +1301,10 @@ Label {
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="misc.qrc">
+     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+   </property>
    <property name="text">
     <string>Z Axis Lock/Unlock</string>
    </property>
@@ -1300,6 +1318,11 @@ Label {
   <action name="actionCoordinates">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/world</normaloff>
+     <normalon>:/locks/tilt</normalon>:/locks/world</iconset>
    </property>
    <property name="text">
     <string>Use World/Object Coordinate System</string>
@@ -1439,6 +1462,7 @@ Label {
   </customwidget>
  </customwidgets>
  <resources>
+  <include location="misc.qrc"/>
   <include location="icons.qrc"/>
  </resources>
  <connections>
