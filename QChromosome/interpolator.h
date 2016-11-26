@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QPair>
 #include <QVector3D>
+#include <QDoubleSpinBox>
 #include "spline.h"
 
 class Interpolator : public QObject
@@ -24,10 +25,21 @@ public:
     QMap<double, QPair<QVector3D,QVector3D>>::iterator frame;
     QMap<int,bool> locked;
 
+    void trackKeys(QVector<QDoubleSpinBox *> sb);
+
+    void setFrame(int frame);
+
 signals:
     void interpolationChanged();
 
 public slots:
+
+private:
+    QVector<QDoubleSpinBox*> keys;
+    QMap<double, QVector<double>> values;
+    QVector<tk::spline> splines;
+
+    void updateSplines();
 };
 
 #endif // INTERPOLATOR_H

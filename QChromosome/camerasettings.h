@@ -28,6 +28,8 @@ private:
     Ui::CameraSettings *ui;
 
     Camera *camera;
+
+friend class MainWindow;
 };
 
 #endif // CAMERASETTINGS_H

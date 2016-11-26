@@ -21,6 +21,17 @@ Interpolator::~Interpolator()
 
 void Interpolator::recordKeyframe(int frame, QPair<QVector3D,QVector3D> value)
 {
+    int n = keys.size();
+
+    QVector<double> v(n);
+
+    for (int i = 0; i < n; i++)
+        v[i] = keys[i]->value();
+
+    values.insert(frame, v);
+
+    updateSplines();
+
     keyframes[frame] = value;
 
     updateCurves();
@@ -54,4 +65,55 @@ void Interpolator::updateCurves()
     _b.set_points(d, __b);
 
     emit interpolationChanged();
+}
+
+void Interpolator::trackKeys(QVector<QDoubleSpinBox *> sb)
+{
+    keys.swap(sb);
+
+    splines.resize(keys.size());
+
+    for (auto& s : splines)
+        s.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+}
+
+void Interpolator::setFrame(int frame)
+{
+    if (values.uniqueKeys().size() < 2)
+        return;
+    // TODO hack, omijający nadpisywanie przez modelViewChanged
+    for (int i = 0; i < 3; i++)
+        keys[i]->setValue(splines[i](frame));
+
+    keys[0]->editingFinished();
+
+    for (int i = 3; i < 6; i++)
+        keys[i]->setValue(splines[i](frame));
+
+    keys[3]->editingFinished();
+}
+
+void Interpolator::updateSplines()
+{
+    std::vector<double> d = values.uniqueKeys().toVector().toStdVector();
+
+    int n = d.size();
+
+    if (n < 2)
+        return;
+
+    int m = keys.size();
+
+    auto v = new std::vector<double>[m];
+
+    for (int i = 0; i < n; i++)
+    {
+        auto& t = values[d[i]];
+
+        for (int j = 0; j < m; j++)
+            v[j].push_back(t[j]);
+    }
+
+    for (int i = 0; i < m; i++)
+        splines[i].set_points(d, v[i]);
 }

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
+#include "ui_camerasettings.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
@@ -138,6 +139,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
         ui->horizontalSlider->update();
     });
+
+    ip.trackKeys({ui->page_5->ui->doubleSpinBox_7, ui->page_5->ui->doubleSpinBox_8, ui->page_5->ui->doubleSpinBox_9, ui->page_5->ui->doubleSpinBox_10, ui->page_5->ui->doubleSpinBox_11, ui->page_5->ui->doubleSpinBox_12});
 
     ui->horizontalSlider->setInterpolator(&ip);
 
@@ -305,9 +308,11 @@ void MainWindow::setFrame(int n)
 
     if (ip.keyframes.size() >= 2)
     {
-        ignore = 2;
+        /*ignore = 2;
         ui->camera->setPosition(QVector3D(ip._x(n), ip._y(n), ip._z(n)));
-        ui->camera->setEulerAgnles(ip._h(n), ip._p(n), ip._b(n));
+        ui->camera->setEulerAgnles(ip._h(n), ip._p(n), ip._b(n));*/
+        ignore = 6;
+        ip.setFrame(n);
     }
 }
 
