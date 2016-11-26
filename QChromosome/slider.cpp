@@ -67,6 +67,7 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
             ip->frame = ip->keyframes.insertMulti(sv, v);
             ip->updateCurves();
             update();
+            emit keyframeSelected(sv);
         }
 }
 

@@ -12,3 +12,13 @@ Keyframes::~Keyframes()
 {
     delete ui;
 }
+
+void Keyframes::setInterpolator(Interpolator *_ip)
+{
+    ip = _ip;
+}
+
+void Keyframes::updateContents()
+{
+    ui->spinBox->setValue(ip->frame.key());
+}

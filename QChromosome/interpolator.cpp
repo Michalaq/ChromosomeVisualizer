@@ -28,25 +28,22 @@ void Interpolator::recordKeyframe(int frame, QPair<QVector3D,QVector3D> value)
 
 void Interpolator::updateCurves()
 {
-    int n = keyframes.size();
+    int n = keyframes.uniqueKeys().size();
 
     if (n < 2)
         return;
 
-    std::vector<double> d = keyframes.keys().toVector().toStdVector(), __x(n), __y(n), __z(n), __h(n), __p(n), __b(n);
+    std::vector<double> d = keyframes.uniqueKeys().toVector().toStdVector(), __x(n), __y(n), __z(n), __h(n), __p(n), __b(n);
 
-    int i = 0;
-
-    for (auto f : keyframes.values())
+    for (int i = 0; i < n; i++)
     {
+        auto f = keyframes[d[i]];
         __x[i] = f.first.x();
         __y[i] = f.first.y();
         __z[i] = f.first.z();
         __h[i] = f.second.x();
         __p[i] = f.second.y();
         __b[i] = f.second.z();
-
-        i++;
     }
 
     _x.set_points(d, __x);

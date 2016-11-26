@@ -141,9 +141,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->horizontalSlider->setInterpolator(&ip);
 
+    ui->page_6->setInterpolator(&ip);
+
     connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {
         if (frame >= 0)
         {
+            ui->page_6->updateContents();
+
             ui->stackedWidget->setCurrentIndex(5);
             ui->dockWidget_2->show();
             ui->page_6->show();
