@@ -13,7 +13,7 @@
         <file alias="record">icons/record.svg</file>
         <file alias="reverse">icons/reverse.svg</file>
         <file alias="start">icons/start.svg</file>
-        <file alias="key">icons/key.svg</file>
+        <file alias="key">icons/key_icon.svg</file>
     </qresource>
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
@@ -38,8 +38,13 @@
         <file alias="film camera">icons/film_camera_icon.svg</file>
         <file alias="document">icons/document_icon.svg</file>
         <file alias="equipment">icons/equipment_icon.svg</file>
+        <file alias="keyframe">icons/keyframe_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="icon">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
+    </qresource>
+    <qresource prefix="/locks">
+        <file alias="world">icons/world_icon.svg</file>
+        <file alias="tilt">icons/tilt_icon.svg</file>
     </qresource>
 </RCC>

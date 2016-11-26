@@ -1,8 +1,24 @@
 #include "slider.h"
 
-Slider::Slider(QWidget *parent) : SoftSlider(parent)
+Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr)
 {
+    s = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 
+    connect(s, &QShortcut::activated, [this] {
+        if (ip->frame != ip->keyframes.end())
+        {
+            ip->keyframes.erase(ip->frame);
+            ip->updateCurves();
+            ip->frame = ip->keyframes.end();
+            emit keyframeSelected(-1);
+            update();
+        }
+    });
+}
+
+Slider::~Slider()
+{
+    delete s;
 }
 
 QSize Slider::minimumSizeHint() const
@@ -10,17 +26,63 @@ QSize Slider::minimumSizeHint() const
     return QSize(20, 30);
 }
 
+void Slider::setInterpolator(Interpolator *_ip)
+{
+    ip = _ip;
+}
+
 #include <QMouseEvent>
 #include <QStyle>
 
 void Slider::mousePressEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20));
+    auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
+
+    if (event->pos().y() < 20)
+    {
+        movemarker = true;
+        setValue(sv);
+    }
+    else
+    {
+        movemarker = false;
+        ip->frame = ip->keyframes.find(sv);
+        update();
+
+        emit keyframeSelected(ip->frame == ip->keyframes.end() ? -1 : ip->frame.key());
+    }
 }
 
 void Slider::mouseMoveEvent(QMouseEvent *event)
 {
-    setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20));
+    auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
+
+    if (movemarker)
+        setValue(sv);
+    else
+        if (ip->frame != ip->keyframes.end() && !ip->locked[ip->frame.key()])
+        {
+            auto v = ip->frame.value();
+            ip->keyframes.erase(ip->frame);
+            ip->frame = ip->keyframes.insertMulti(sv, v);
+            ip->updateCurves();
+            update();
+            emit keyframeSelected(sv);
+        }
+}
+
+void Slider::mouseReleaseEvent(QMouseEvent *event)
+{
+    SoftSlider::mouseReleaseEvent(event);
+
+    if (ip->frame != ip->keyframes.end() && ip->keyframes.count(ip->frame.key()) > 1)
+    {
+        auto k = ip->frame.key();
+        auto v = ip->frame.value();
+        ip->keyframes.remove(k);
+        ip->frame = ip->keyframes.insert(k, v);
+        update();
+    }
 }
 
 #include <QPainter>
@@ -40,7 +102,34 @@ void Slider::paintEvent(QPaintEvent *event)
 
     p.setPen("#4d4d4d");
 
-    p.drawLine(QPoint(0, 0), QPoint(width(), 0));
+    p.drawLine(QPoint(0, 4), QPoint(width(), 4));
+
+    auto it = ip->keyframes.constBegin();
+
+    while (it != ip->keyframes.constEnd() && it.key() < softMinimum) it++;
+
+    p.setPen("#318db9");
+    p.setBrush(QBrush("#355668"));
+
+    qreal dx = (width() - 20) / (softMaximum - softMinimum);
+
+    for (; it != ip->keyframes.constEnd() && it.key() <= softMaximum; it++)
+        if (it != ip->frame)
+        {
+            auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + it.key(), width() - 20) + 10;
+
+            p.drawRect(QRect(tick - dx/2, 4, dx, 8));
+        }
+
+    if (ip->frame != ip->keyframes.end() && softMinimum <= ip->frame.key() && ip->frame.key() <= softMaximum)
+    {
+        p.setPen("#f47750");
+        p.setBrush(QBrush("#fcd5c6"));
+
+        auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, ip->frame.key(), width() - 20) + 10;
+
+        p.drawRect(QRect(tick - dx/2, 4, dx, 8));
+    }
 
     p.setPen(Qt::white);
 
@@ -50,8 +139,8 @@ void Slider::paintEvent(QPaintEvent *event)
     {
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width() - 20) + 10;
 
-        p.drawLine(QPoint(tick, 0), QPoint(tick, 12));
-        p.drawText(QRect(tick, -12, 0, 12), Qt::AlignCenter | Qt::TextDontClip, QString::number(softMinimum + i));
+        p.drawLine(QPoint(tick, 4), QPoint(tick, 12));
+        p.drawText(QRect(tick, -12, 0, 16), Qt::AlignCenter | Qt::TextDontClip, QString::number(softMinimum + i));
     }
 
     int sgap = gap >= 10 ? gap / 10 : 1;
@@ -63,7 +152,7 @@ void Slider::paintEvent(QPaintEvent *event)
 
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + i, width() - 20) + 10;
 
-        p.drawLine(QPoint(tick, 6), QPoint(tick, 12));
+        p.drawLine(QPoint(tick, 8), QPoint(tick, 12));
     }
 
     if (softMinimum <= value() && value() <= softMaximum)
@@ -73,7 +162,7 @@ void Slider::paintEvent(QPaintEvent *event)
         p.setPen("#0072bd");
 
         p.fillRect(QRect(tick, -12, p.fontMetrics().width(QString::number(value())) + 10, 12), "#262626");
-        p.drawText(QRect(tick + 10, -12, 0, 12), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
+        p.drawText(QRect(tick + 10, -12, 0, 16), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
 
         p.setPen(Qt::NoPen);
         p.setBrush(QColor("#0072bd"));

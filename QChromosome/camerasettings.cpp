@@ -7,7 +7,6 @@ CameraSettings::CameraSettings(QWidget *parent) :
     camera(nullptr)
 {
     ui->setupUi(this);
-    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     // coordinates
     connect(ui->doubleSpinBox_7, &QDoubleSpinBox::editingFinished, [this]() {
@@ -109,6 +108,11 @@ void CameraSettings::setCamera(Camera *c)
     ui->doubleSpinBox_6->setValue(camera->farClipping);
 
     connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+}
+
+void CameraSettings::setRotationType(int rt)
+{
+    ui->comboBox->setCurrentIndex(rt);
 }
 
 void CameraSettings::updateModelView()

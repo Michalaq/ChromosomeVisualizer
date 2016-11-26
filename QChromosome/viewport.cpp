@@ -8,7 +8,6 @@ Viewport::Viewport(QWidget *parent) :
     ui(new Ui::Viewport)
 {
     ui->setupUi(this);
-    ui->pushButton->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     ui->widget->setValue(QColor(Qt::black));
     ui->widget_2->setValue(QColor(Qt::black));
