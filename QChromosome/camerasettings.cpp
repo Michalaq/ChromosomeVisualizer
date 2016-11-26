@@ -110,6 +110,11 @@ void CameraSettings::setCamera(Camera *c)
     connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
 }
 
+void CameraSettings::setRotationType(int rt)
+{
+    ui->comboBox->setCurrentIndex(rt);
+}
+
 void CameraSettings::updateModelView()
 {
     // coordinates

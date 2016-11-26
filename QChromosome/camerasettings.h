@@ -17,6 +17,7 @@ public:
     ~CameraSettings();
 
     void setCamera(Camera *c);
+    void setRotationType(int rt);
 
 signals:
 

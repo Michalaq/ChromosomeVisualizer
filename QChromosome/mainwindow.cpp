@@ -161,6 +161,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->horizontalSlider->update();
     });
 
+    connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
+        ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
+    });
+
     newProject();
 }
 

@@ -40,6 +40,12 @@ public:
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
 
+    enum RotationType
+    {
+        RT_World,
+        RT_Camera
+    };
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -94,12 +100,6 @@ private:
     static const qreal wheelFactor;
 
     qreal aspectRatio;
-
-    enum RotationType
-    {
-        RT_World,
-        RT_Camera
-    };
 
     int rotationType;
 
