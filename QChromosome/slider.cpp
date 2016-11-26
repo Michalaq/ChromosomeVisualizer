@@ -60,7 +60,7 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
     if (movemarker)
         setValue(sv);
     else
-        if (ip->frame != ip->keyframes.end())
+        if (ip->frame != ip->keyframes.end() && !ip->locked[ip->frame.key()])
         {
             auto v = ip->frame.value();
             ip->keyframes.erase(ip->frame);

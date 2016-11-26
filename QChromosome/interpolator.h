@@ -22,6 +22,7 @@ public:
     void updateCurves();
 
     QMap<double, QPair<QVector3D,QVector3D>>::iterator frame;
+    QMap<int,bool> locked;
 
 signals:
     void interpolationChanged();

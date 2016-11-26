@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&ip, &Interpolator::interpolationChanged, [this] {
         setFrame(currentFrame);
+        ui->horizontalSlider->update();
     });
 
     newProject();
