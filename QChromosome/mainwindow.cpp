@@ -143,7 +143,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {
         if (frame >= 0)
+        {
             ui->stackedWidget->setCurrentIndex(5);
+            ui->dockWidget_2->show();
+            ui->page_6->show();
+        }
+        else
+            ui->page_6->hide();
     });
 
     connect(&ip, &Interpolator::interpolationChanged, [this] {
@@ -447,7 +453,6 @@ void MainWindow::selectAll()
 
 void MainWindow::handleSelection(const AtomSelection &selection)
 {
-    ui->dockWidget_2->setWindowTitle("Attributes");
     ui->dockWidget_2->show();
 
     ui->stackedWidget->setCurrentIndex(1);
@@ -489,7 +494,6 @@ void MainWindow::handleModelSelection()
 
     if (type.size() == 1 && *type.begin() == NodeType::LayerObject)
     {
-        ui->dockWidget_2->setWindowTitle("Attributes");
         ui->dockWidget_2->show();
 
         ui->stackedWidget->setCurrentIndex(2);

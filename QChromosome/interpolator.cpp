@@ -8,6 +8,8 @@ Interpolator::Interpolator(QObject *parent) : QObject(parent)
     _h.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
     _p.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
     _b.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+
+    frame = keyframes.end();
 }
 
 Interpolator::~Interpolator()
