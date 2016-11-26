@@ -24,6 +24,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="MediaControl" name="pushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -591,12 +594,6 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>Picker</class>
-   <extends>QWidget</extends>
-   <header>picker.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>doublespinbox.h</header>
@@ -610,6 +607,12 @@
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Picker</class>
+   <extends>QWidget</extends>
+   <header>picker.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
