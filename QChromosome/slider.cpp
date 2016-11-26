@@ -8,7 +8,9 @@ Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr)
         if (frame != ip->keyframes.end())
         {
             ip->keyframes.erase(frame);
+            ip->updateCurves();
             frame = ip->keyframes.end();
+            emit keyframeSelected(-1);
             update();
         }
     });
@@ -64,6 +66,7 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
             auto v = *frame;
             ip->keyframes.erase(frame);
             frame = ip->keyframes.insertMulti(sv, v);
+            ip->updateCurves();
             update();
         }
 }

@@ -146,6 +146,10 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->stackedWidget->setCurrentIndex(5);
     });
 
+    connect(&ip, &Interpolator::interpolationChanged, [this] {
+        setFrame(currentFrame);
+    });
+
     newProject();
 }
 

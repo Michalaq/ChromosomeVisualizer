@@ -19,7 +19,10 @@ public:
     QMap<double, QPair<QVector3D,QVector3D>> keyframes;
     tk::spline _x, _y, _z, _h, _p, _b;
 
+    void updateCurves();
+
 signals:
+    void interpolationChanged();
 
 public slots:
 };
