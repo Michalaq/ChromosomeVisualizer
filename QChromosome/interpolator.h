@@ -29,7 +29,10 @@ public:
 
     void setFrame(int frame);
 
+    void setRecordingState(bool b);
+
 signals:
+    void keyframeSelected();
     void interpolationChanged();
 
 public slots:
@@ -40,6 +43,10 @@ private:
     QVector<tk::spline> splines;
 
     void updateSplines();
+
+    int ignore;
+
+    bool isRecording;
 };
 
 #endif // INTERPOLATOR_H

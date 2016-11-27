@@ -123,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_5->setCamera(ui->camera);
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
+        ip.setRecordingState(checked);
         if (checked)
         {
             ui->canvas->setStyleSheet("background: #d40000;");
@@ -146,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->page_6->setInterpolator(&ip);
 
-    connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {
+    connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {//podłączyć do interpolatora
         if (frame >= 0)
         {
             ui->page_6->updateContents();
@@ -173,13 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::recordKeyframe()
 {
-    if (ignore)
-        ignore--;
-    else
-    {
-        ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
-        ui->horizontalSlider->update();
-    }
+    ip.recordKeyframe(currentFrame, {});
 }
 
 MainWindow::~MainWindow()
@@ -305,15 +300,7 @@ void MainWindow::setFrame(int n)
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
-
-    if (ip.keyframes.size() >= 2)
-    {
-        /*ignore = 2;
-        ui->camera->setPosition(QVector3D(ip._x(n), ip._y(n), ip._z(n)));
-        ui->camera->setEulerAgnles(ip._h(n), ip._p(n), ip._b(n));*/
-        ignore = 6;
-        ip.setFrame(n);
-    }
+    ip.setFrame(n);
 }
 
 void MainWindow::setSoftMinimum(int min)

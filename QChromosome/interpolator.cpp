@@ -1,6 +1,6 @@
 #include "interpolator.h"
 
-Interpolator::Interpolator(QObject *parent) : QObject(parent)
+Interpolator::Interpolator(QObject *parent) : QObject(parent), ignore(0)
 {
     _x.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
     _y.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
@@ -21,20 +21,25 @@ Interpolator::~Interpolator()
 
 void Interpolator::recordKeyframe(int frame, QPair<QVector3D,QVector3D> value)
 {
-    int n = keys.size();
+    if (ignore)
+        ignore--;
+    else
+    {
+        int n = keys.size();
 
-    QVector<double> v(n);
+        QVector<double> v(n);
 
-    for (int i = 0; i < n; i++)
-        v[i] = keys[i]->value();
+        for (int i = 0; i < n; i++)
+            v[i] = keys[i]->value();
 
-    values.insert(frame, v);
+        values.insert(frame, v);
 
-    updateSplines();
+        updateSplines();
 
-    keyframes[frame] = value;
+        keyframes[frame] = value;
 
-    updateCurves();
+        updateCurves();
+    }
 }
 
 void Interpolator::updateCurves()
@@ -81,6 +86,9 @@ void Interpolator::setFrame(int frame)
 {
     if (values.uniqueKeys().size() < 2)
         return;
+
+    ignore = isRecording ? 2 : 0;
+
     // TODO hack, omijający nadpisywanie przez modelViewChanged
     for (int i = 0; i < 3; i++)
         keys[i]->setValue(splines[i](frame));
@@ -91,6 +99,11 @@ void Interpolator::setFrame(int frame)
         keys[i]->setValue(splines[i](frame));
 
     keys[3]->editingFinished();
+}
+
+void Interpolator::setRecordingState(bool b)
+{
+    isRecording = b;
 }
 
 void Interpolator::updateSplines()
@@ -116,4 +129,6 @@ void Interpolator::updateSplines()
 
     for (int i = 0; i < m; i++)
         splines[i].set_points(d, v[i]);
+
+    emit interpolationChanged();
 }
