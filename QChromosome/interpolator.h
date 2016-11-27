@@ -15,8 +15,6 @@ public:
     explicit Interpolator(QObject *parent = 0);
     ~Interpolator();
 
-    void recordKeyframe(int frame, QPair<QVector3D,QVector3D> value);
-
     QMap<double, QPair<QVector3D,QVector3D>> keyframes;
     tk::spline _x, _y, _z, _h, _p, _b;
 
@@ -25,7 +23,8 @@ public:
     QMap<double, QPair<QVector3D,QVector3D>>::iterator frame;
     QMap<int,bool> locked;
 
-    void trackKeys(QVector<QDoubleSpinBox *> sb);
+    void setKey(QSpinBox* sb);
+    void trackValues(QVector<QDoubleSpinBox *> sb);
 
     void setFrame(int frame);
 
@@ -39,8 +38,10 @@ signals:
     void interpolationChanged();
 
 public slots:
+    void recordKeyframe();
 
 private:
+    QSpinBox* key;
     QVector<QDoubleSpinBox*> keys;
     QMap<double, QVector<double>> values;
     QVector<tk::spline> splines;

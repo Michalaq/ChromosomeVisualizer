@@ -21,7 +21,7 @@ Interpolator::~Interpolator()
 
 #include <QVector>
 
-void Interpolator::recordKeyframe(int frame, QPair<QVector3D,QVector3D> value)
+void Interpolator::recordKeyframe()
 {
     if (ignore)
         ignore--;
@@ -34,13 +34,9 @@ void Interpolator::recordKeyframe(int frame, QPair<QVector3D,QVector3D> value)
         for (int i = 0; i < n; i++)
             v[i] = keys[i]->value();
 
-        values.insert(frame, v);
+        values.insert(key->value(), v);
 
         updateSplines();
-
-        keyframes[frame] = value;
-
-        updateCurves();
     }
 }
 
@@ -74,7 +70,12 @@ void Interpolator::updateCurves()
     emit interpolationChanged();
 }
 
-void Interpolator::trackKeys(QVector<QDoubleSpinBox *> sb)
+void Interpolator::setKey(QSpinBox *sb)
+{
+    key = sb;
+}
+
+void Interpolator::trackValues(QVector<QDoubleSpinBox *> sb)
 {
     keys.swap(sb);
 

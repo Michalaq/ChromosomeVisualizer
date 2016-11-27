@@ -126,22 +126,25 @@ MainWindow::MainWindow(QWidget *parent) :
         if (checked)
         {
             ui->canvas->setStyleSheet("background: #d40000;");
-            connect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframe);
+            connect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
         }
         else
         {
             ui->canvas->setStyleSheet("background: #4d4d4d;");
-            disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframe);
+            disconnect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
         }
         ip.setRecordingState(checked);
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {
-        ip.recordKeyframe(currentFrame, {ui->camera->position(), ui->camera->EulerAngles()});
+        ip.recordKeyframe();
         ui->horizontalSlider->update();
     });
 
-    ip.trackKeys({ui->page_5->ui->doubleSpinBox_7, ui->page_5->ui->doubleSpinBox_8, ui->page_5->ui->doubleSpinBox_9, ui->page_5->ui->doubleSpinBox_10, ui->page_5->ui->doubleSpinBox_11, ui->page_5->ui->doubleSpinBox_12});
+    ip.setKey(ui->spinBox);
+
+    auto p = ui->page_5->ui;
+    ip.trackValues({ p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
     ui->horizontalSlider->setInterpolator(&ip);
     ui->page_6->setInterpolator(&ip);
@@ -161,20 +164,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&ip, &Interpolator::interpolationChanged, [this] {
         setFrame(currentFrame); //TODO hack, odświeżenie widoku
+        ui->horizontalSlider->update();
     });
-
-    connect(&ip, SIGNAL(interpolationChanged()), ui->horizontalSlider, SLOT(update()));
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
         ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
     });
 
     newProject();
-}
-
-void MainWindow::recordKeyframe()
-{
-    ip.recordKeyframe(currentFrame, {});
 }
 
 MainWindow::~MainWindow()
