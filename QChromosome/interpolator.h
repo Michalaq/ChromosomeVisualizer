@@ -31,6 +31,9 @@ public:
 
     void setRecordingState(bool b);
 
+    void selectKeyframe(int frame);
+    int selectedKeyframe() const;
+
 signals:
     void keyframeSelected();
     void interpolationChanged();
@@ -47,6 +50,8 @@ private:
     int ignore;
 
     bool isRecording;
+
+    QMap<double, QVector<double>>::iterator selectedFrame;
 };
 
 #endif // INTERPOLATOR_H

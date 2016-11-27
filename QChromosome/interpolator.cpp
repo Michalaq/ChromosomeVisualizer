@@ -10,6 +10,8 @@ Interpolator::Interpolator(QObject *parent) : QObject(parent), ignore(0)
     _b.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
 
     frame = keyframes.end();
+
+    selectedFrame = values.end();
 }
 
 Interpolator::~Interpolator()
@@ -104,6 +106,18 @@ void Interpolator::setFrame(int frame)
 void Interpolator::setRecordingState(bool b)
 {
     isRecording = b;
+}
+
+void Interpolator::selectKeyframe(int frame)
+{
+    selectedFrame = values.find(frame);
+
+    emit keyframeSelected();
+}
+
+int Interpolator::selectedKeyframe() const
+{
+    return selectedFrame == values.end() ? -1 : selectedFrame.key();
 }
 
 void Interpolator::updateSplines()

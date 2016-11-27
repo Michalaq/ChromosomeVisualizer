@@ -123,7 +123,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_5->setCamera(ui->camera);
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
-        ip.setRecordingState(checked);
         if (checked)
         {
             ui->canvas->setStyleSheet("background: #d40000;");
@@ -134,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->canvas->setStyleSheet("background: #4d4d4d;");
             disconnect(ui->camera, &Camera::modelViewChanged, this, &MainWindow::recordKeyframe);
         }
+        ip.setRecordingState(checked);
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {
@@ -144,11 +144,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ip.trackKeys({ui->page_5->ui->doubleSpinBox_7, ui->page_5->ui->doubleSpinBox_8, ui->page_5->ui->doubleSpinBox_9, ui->page_5->ui->doubleSpinBox_10, ui->page_5->ui->doubleSpinBox_11, ui->page_5->ui->doubleSpinBox_12});
 
     ui->horizontalSlider->setInterpolator(&ip);
-
     ui->page_6->setInterpolator(&ip);
 
-    connect(ui->horizontalSlider, &Slider::keyframeSelected, [this](int frame) {//podłączyć do interpolatora
-        if (frame >= 0)
+    connect(&ip, &Interpolator::keyframeSelected, [this] {
+        if (ip.selectedKeyframe() >= 0)
         {
             ui->page_6->updateContents();
 
@@ -161,9 +160,10 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(&ip, &Interpolator::interpolationChanged, [this] {
-        setFrame(currentFrame);
-        ui->horizontalSlider->update();
+        setFrame(currentFrame); //TODO hack, odświeżenie widoku
     });
+
+    connect(&ip, SIGNAL(interpolationChanged()), ui->horizontalSlider, SLOT(update()));
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
         ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
