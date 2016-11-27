@@ -1,8 +1,8 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 
-#include <QObject>
 #include <QMap>
+#include <QSet>
 #include <QPair>
 #include <QVector3D>
 #include <QDoubleSpinBox>
@@ -33,6 +33,10 @@ public:
     void selectKeyframe(int frame);
     int selectedKeyframe() const;
 
+    QList<double> keys() const;
+
+    void changeKey(int frame, bool hard = true);
+
 signals:
     void keyframeSelected();
     void interpolationChanged();
@@ -42,7 +46,7 @@ public slots:
 
 private:
     QSpinBox* key;
-    QVector<QDoubleSpinBox*> keys;
+    QVector<QDoubleSpinBox*> tracked;
     QMap<double, QVector<double>> values;
     QVector<tk::spline> splines;
 
@@ -53,6 +57,8 @@ private:
     bool isRecording;
 
     QMap<double, QVector<double>>::iterator selectedFrame;
+
+    QSet<double> lockedKeys;
 };
 
 #endif // INTERPOLATOR_H

@@ -27,12 +27,12 @@ void Interpolator::recordKeyframe()
         ignore--;
     else
     {
-        int n = keys.size();
+        int n = tracked.size();
 
         QVector<double> v(n);
 
         for (int i = 0; i < n; i++)
-            v[i] = keys[i]->value();
+            v[i] = tracked[i]->value();
 
         values.insert(key->value(), v);
 
@@ -77,9 +77,9 @@ void Interpolator::setKey(QSpinBox *sb)
 
 void Interpolator::trackValues(QVector<QDoubleSpinBox *> sb)
 {
-    keys.swap(sb);
+    tracked.swap(sb);
 
-    splines.resize(keys.size());
+    splines.resize(tracked.size());
 
     for (auto& s : splines)
         s.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
@@ -94,14 +94,14 @@ void Interpolator::setFrame(int frame)
 
     // TODO hack, omijający nadpisywanie przez modelViewChanged
     for (int i = 0; i < 3; i++)
-        keys[i]->setValue(splines[i](frame));
+        tracked[i]->setValue(splines[i](frame));
 
-    keys[0]->editingFinished();
+    tracked[0]->editingFinished();
 
     for (int i = 3; i < 6; i++)
-        keys[i]->setValue(splines[i](frame));
+        tracked[i]->setValue(splines[i](frame));
 
-    keys[3]->editingFinished();
+    tracked[3]->editingFinished();
 }
 
 void Interpolator::setRecordingState(bool b)
@@ -121,6 +121,25 @@ int Interpolator::selectedKeyframe() const
     return selectedFrame == values.end() ? -1 : selectedFrame.key();
 }
 
+QList<double> Interpolator::keys() const
+{
+    return values.uniqueKeys();
+}
+
+void Interpolator::changeKey(int frame, bool hard)
+{
+    if (selectedFrame == values.end() || (selectedFrame.key() == frame && !hard) || lockedKeys.contains(selectedFrame.key()))
+        return;
+
+    auto v = selectedFrame.value();
+
+    values.erase(selectedFrame);
+
+    selectedFrame = hard ? values.insert(frame, v) : values.insertMulti(frame, v);
+
+    updateSplines();
+}
+
 void Interpolator::updateSplines()
 {
     std::vector<double> d = values.uniqueKeys().toVector().toStdVector();
@@ -130,7 +149,7 @@ void Interpolator::updateSplines()
     if (n < 2)
         return;
 
-    int m = keys.size();
+    int m = tracked.size();
 
     auto v = new std::vector<double>[m];
 
