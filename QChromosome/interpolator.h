@@ -15,15 +15,8 @@ public:
     explicit Interpolator(QObject *parent = 0);
     ~Interpolator();
 
-    QMap<double, QPair<QVector3D,QVector3D>> keyframes;
-    tk::spline _x, _y, _z, _h, _p, _b;
-
-    void updateCurves();
-
-    QMap<double, QPair<QVector3D,QVector3D>>::iterator frame;
-    QMap<int,bool> locked;
-
     void setKey(QSpinBox* sb);
+
     void trackValues(QVector<QDoubleSpinBox *> sb);
 
     void setFrame(int frame);
