@@ -123,6 +123,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_5->setCamera(ui->camera);
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
+        ip.setRecordingState(checked);
         if (checked)
         {
             ui->canvas->setStyleSheet("background: #d40000;");
@@ -133,7 +134,6 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->canvas->setStyleSheet("background: #4d4d4d;");
             disconnect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
         }
-        ip.setRecordingState(checked);
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {

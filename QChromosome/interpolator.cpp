@@ -68,6 +68,7 @@ void Interpolator::setFrame(int frame)
 void Interpolator::setRecordingState(bool b)
 {
     isRecording = b;
+    if (b) ignore = 1; //TODO hack, żeby ominąć sygnał wysłany przez connectNotify
 }
 
 void Interpolator::selectKeyframe(int frame)
@@ -139,7 +140,10 @@ void Interpolator::updateSplines()
     int n = d.size();
 
     if (n < 2)
+    {
+        emit interpolationChanged();
         return;
+    }
 
     int m = tracked.size();
 
