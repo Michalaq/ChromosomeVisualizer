@@ -41,7 +41,8 @@
         <file alias="keyframe">icons/keyframe_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
-        <file alias="icon">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
+        <file alias="splash">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
+        <file alias="icon">icons/QChromosome_icon.svg</file>
     </qresource>
     <qresource prefix="/locks">
         <file alias="world">icons/world_icon.svg</file>
