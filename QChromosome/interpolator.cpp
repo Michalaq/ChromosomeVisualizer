@@ -113,7 +113,7 @@ void Interpolator::selectKeyframe(int frame)
 {
     selectedFrame = values.find(frame);
 
-    emit keyframeSelected();
+    emit selectionChanged();
 }
 
 int Interpolator::selectedKeyframe() const
@@ -138,6 +138,21 @@ void Interpolator::changeKey(int frame, bool hard)
     selectedFrame = hard ? values.insert(frame, v) : values.insertMulti(frame, v);
 
     updateSplines();
+
+    emit selectionChanged();
+}
+
+void Interpolator::deleteKeyrame()
+{
+    if (selectedFrame != values.end())
+    {
+        values.erase(selectedFrame);
+        selectedFrame = values.end();
+
+        updateSplines();
+
+        emit selectionChanged();
+    }
 }
 
 void Interpolator::updateSplines()

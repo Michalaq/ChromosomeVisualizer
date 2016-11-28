@@ -1,19 +1,8 @@
 #include "slider.h"
 
-Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr)
+Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr), s(new QShortcut(QKeySequence(Qt::Key_Delete), this))
 {
-    s = new QShortcut(QKeySequence(Qt::Key_Delete), this);
 
-    connect(s, &QShortcut::activated, [this] {
-        if (ip->frame != ip->keyframes.end())
-        {
-            ip->keyframes.erase(ip->frame);
-            ip->updateCurves();
-            ip->frame = ip->keyframes.end();
-            //emit keyframeSelected(-1);
-            update();
-        }
-    });
 }
 
 Slider::~Slider()
@@ -29,6 +18,7 @@ QSize Slider::minimumSizeHint() const
 void Slider::setInterpolator(Interpolator *_ip)
 {
     ip = _ip;
+    connect(s, SIGNAL(activated()), ip, SLOT(deleteKeyrame()));
 }
 
 #include <QMouseEvent>

@@ -38,11 +38,12 @@ public:
     void changeKey(int frame, bool hard = true);
 
 signals:
-    void keyframeSelected();
+    void selectionChanged();
     void interpolationChanged();
 
 public slots:
     void recordKeyframe();
+    void deleteKeyrame();
 
 private:
     QSpinBox* key;
