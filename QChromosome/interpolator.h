@@ -37,6 +37,9 @@ public:
 
     void changeKey(int frame, bool hard = true);
 
+    void lockKey(bool c = true);
+    bool isKeyLocked(int frame) const;
+
 signals:
     void selectionChanged();
     void interpolationChanged();

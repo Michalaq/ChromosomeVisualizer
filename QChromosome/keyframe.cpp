@@ -7,15 +7,12 @@ Keyframes::Keyframes(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int sv) {
-        auto v = ip->frame.value();
-        ip->keyframes.erase(ip->frame);
-        ip->frame = ip->keyframes.insertMulti(sv, v);
-        ip->updateCurves();
+    connect(ui->spinBox, &QSpinBox::editingFinished, [this] {
+        ip->changeKey(ui->spinBox->value());
     });
 
     connect(ui->checkBox, &QCheckBox::toggled, [this](bool b) {
-        ip->locked[ip->frame.key()] = b;
+        ip->lockKey(b);
         ui->spinBox->setEnabled(!b);
     });
 }
@@ -32,6 +29,6 @@ void Keyframes::setInterpolator(Interpolator *_ip)
 
 void Keyframes::updateContents()
 {
-    ui->spinBox->setValue(ip->frame.key());
-    ui->checkBox->setChecked(ip->locked[ip->frame.key()]);
+    ui->spinBox->setValue(ip->selectedKeyframe());
+    ui->checkBox->setChecked(ip->isKeyLocked(ip->selectedKeyframe()));
 }

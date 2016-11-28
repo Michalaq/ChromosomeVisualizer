@@ -142,6 +142,22 @@ void Interpolator::changeKey(int frame, bool hard)
     emit selectionChanged();
 }
 
+void Interpolator::lockKey(bool c)
+{
+    if (selectedFrame != values.end())
+    {
+        if (c)
+            lockedKeys.insert(selectedFrame.key());
+        else
+            lockedKeys.remove(selectedFrame.key());
+    }
+}
+
+bool Interpolator::isKeyLocked(int frame) const
+{
+    return lockedKeys.contains(frame);
+}
+
 void Interpolator::deleteKeyrame()
 {
     if (selectedFrame != values.end())

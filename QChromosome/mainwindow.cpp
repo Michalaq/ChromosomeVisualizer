@@ -151,12 +151,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&ip, &Interpolator::selectionChanged, [this] {
         ui->horizontalSlider->update();
-        ui->page_6->updateContents();
 
         if (ip.selectedKeyframe() >= 0)
         {
             ui->stackedWidget->setCurrentIndex(5);
             ui->dockWidget_2->show();
+            ui->page_6->updateContents();
             ui->page_6->show();
         }
         else
