@@ -172,6 +172,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
     });
 
+    connect(ui->page_5->ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated), [this](int i) {
+        ui->actionCoordinates->setChecked(i == 1);
+    });
+
     newProject();
 }
 
