@@ -1,13 +1,35 @@
 #include "selection.h"
 
-Selection::Selection(QWidget *parent) : QWidget(parent), isSelecting(false)
+Selection::Selection(QWidget *parent) : QWidget(parent), isSelecting(false), isSelectingState(false)
 {
-    enableSelecting(false);
+
 }
 
 Selection::~Selection()
 {
 
+}
+
+#include <QEvent>
+
+bool Selection::event(QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonRelease)
+    {
+        if (isSelectingState)
+        {
+            bool b = QWidget::event(event);
+            event->accept(); // accept mouse events when selecting and stop propagation
+            return b;
+        }
+        else
+        {
+            event->ignore(); // ignore mouse events when not selecting and allow propagation
+            return false;
+        }
+    }
+
+    return QWidget::event(event);
 }
 
 #include <QPaintEvent>
@@ -63,6 +85,5 @@ void Selection::mouseReleaseEvent(QMouseEvent *event)
 
 void Selection::enableSelecting(bool b)
 {
-    setAttribute(Qt::WA_NoMousePropagation, b);
-    setAttribute(Qt::WA_TransparentForMouseEvents, !b);
+    isSelectingState = b;
 }

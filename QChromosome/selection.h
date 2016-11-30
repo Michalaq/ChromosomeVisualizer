@@ -10,6 +10,8 @@ public:
     explicit Selection(QWidget *parent = 0);
     ~Selection();
 
+    bool event(QEvent *event);
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -19,7 +21,7 @@ protected:
 
 private:
     QPoint tl, br;
-    bool isSelecting;
+    bool isSelecting, isSelectingState;
     QRect sr;
 
 signals:
