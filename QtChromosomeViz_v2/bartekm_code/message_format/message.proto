@@ -27,6 +27,9 @@ message Header {
   optional int32 binders_types_count = 3;
   //^number of possible binder types
 
+  repeated string binder_types_names = 6;
+  //^names of binders (in order of their numbers)
+
   message ChainDescription {
     optional string chain_name = 1;
 
@@ -40,6 +43,7 @@ message Header {
     repeated BeadDescription beads = 2;
   }
   repeated ChainDescription chains = 5;
+  //NEXT_ID=7
 }
 
 message Delta {
