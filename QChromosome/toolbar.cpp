@@ -21,7 +21,7 @@ void ToolBar::addAction(QAction *action)
     widget->setEnabled(action->isEnabled());
 
     widget->setIcon(action->icon());
-    widget->setIconSize(iconSize());
+    widget->resize(30, 30);
 
     widget->setText(action->text());
 
