@@ -2,34 +2,12 @@
 
 Selection::Selection(QWidget *parent) : QWidget(parent), isSelecting(false), isSelectingState(false)
 {
-
+    setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 Selection::~Selection()
 {
 
-}
-
-#include <QEvent>
-
-bool Selection::event(QEvent *event)
-{
-    if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseMove || event->type() == QEvent::MouseButtonRelease)
-    {
-        if (isSelectingState)
-        {
-            bool b = QWidget::event(event);
-            event->accept(); // accept mouse events when selecting and stop propagation
-            return b;
-        }
-        else
-        {
-            event->ignore(); // ignore mouse events when not selecting and allow propagation
-            return false;
-        }
-    }
-
-    return QWidget::event(event);
 }
 
 #include <QPaintEvent>
@@ -59,6 +37,8 @@ void Selection::mousePressEvent(QMouseEvent *event)
 
     isSelecting = true;
     update();
+
+    event->accept();
 }
 
 void Selection::mouseMoveEvent(QMouseEvent *event)
@@ -69,6 +49,8 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
     sr = QRect(tl, br).intersected(rect());
 
     update();
+
+    event->accept();
 }
 
 void Selection::mouseReleaseEvent(QMouseEvent *event)
@@ -81,9 +63,12 @@ void Selection::mouseReleaseEvent(QMouseEvent *event)
 
     isSelecting = false;
     update();
+
+    event->accept();
 }
 
 void Selection::enableSelecting(bool b)
 {
     isSelectingState = b;
+    setAttribute(Qt::WA_TransparentForMouseEvents, !b);
 }

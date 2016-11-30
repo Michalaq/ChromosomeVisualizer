@@ -10,8 +10,6 @@ public:
     explicit Selection(QWidget *parent = 0);
     ~Selection();
 
-    bool event(QEvent *event);
-
 protected:
     void paintEvent(QPaintEvent *event);
 
