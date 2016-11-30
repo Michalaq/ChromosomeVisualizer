@@ -798,6 +798,7 @@ Label {
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelect"/>
+   <addaction name="actionFocus"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
@@ -1332,6 +1333,15 @@ Label {
    </property>
    <property name="shortcut">
     <string>W</string>
+   </property>
+  </action>
+  <action name="actionFocus">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/focus</normaloff>:/selection/focus</iconset>
+   </property>
+   <property name="text">
+    <string>Focus</string>
    </property>
   </action>
  </widget>

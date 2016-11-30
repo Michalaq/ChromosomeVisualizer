@@ -17,6 +17,7 @@
     </qresource>
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
+        <file alias="focus">icons/focus_correction_icon.svg</file>
     </qresource>
     <qresource prefix="/dock">
         <file alias="float">icons/float_icon.svg</file>
