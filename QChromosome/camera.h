@@ -39,6 +39,7 @@ public:
     void setRotationType(int rt);
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
+    void setLookAt(const QVector3D& target);
 
     enum RotationType
     {

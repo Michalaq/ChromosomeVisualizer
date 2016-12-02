@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
                                                 ui->mainToolBar->toggleViewAction(),
+
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
@@ -173,6 +174,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->page_5->ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated), [this](int i) {
         ui->actionCoordinates->setChecked(i == 1);
+    });
+
+    connect(ui->actionFocus, &QAction::triggered, [this] {
+        focusSelection(ui->scene->selectedSpheresObject());
     });
 
     newProject();
@@ -506,9 +511,12 @@ void MainWindow::handleModelSelection()
         handleSelection(selection);
 }
 
-void MainWindow::focusSelection()
+void MainWindow::focusSelection(const AtomSelection& s)
 {
-    auto c = ui->scene->selectedSpheresObject().weightCenter();
+    auto c = s.weightCenter();
+    ui->camera->setPosition(c + QVector3D(-50, 50, -50));
+    ui->camera->setLookAt(c);
+    ui->camera->setOrigin(c);
 }
 
 void MainWindow::setBaseAction(bool enabled)

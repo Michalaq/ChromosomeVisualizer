@@ -127,7 +127,10 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
 
 void Camera::setEulerAgnles(qreal h_, qreal p_, qreal b_)
 {
+    int cp = RotationType::RT_Camera;
+    std::swap(rotationType, cp);
     rotate(h - h_, p - p_, b - b_);
+    std::swap(rotationType, cp);
 }
 
 void Camera::setFocalLength(qreal fl)
@@ -165,6 +168,12 @@ void Camera::setFarClipping(qreal fc)
     farClipping = fc;
 
     emit projectionChanged(updateProjection());
+}
+
+void Camera::setLookAt(const QVector3D &target)
+{
+    auto f = target - eye;
+    setEulerAgnles(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
 }
 
 void Camera::rotate(qreal dh, qreal dp, qreal db)
