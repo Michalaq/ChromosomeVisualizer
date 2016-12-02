@@ -83,7 +83,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
                                                 ui->mainToolBar->toggleViewAction(),
-                                                ui->toolBar->toggleViewAction(),
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
@@ -462,7 +461,7 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->page_2->handleSelection(selection);
 
-    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
+    ui->camera->setOrigin(selection.weightCenter());
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
@@ -505,6 +504,11 @@ void MainWindow::handleModelSelection()
     }
     else
         handleSelection(selection);
+}
+
+void MainWindow::focusSelection()
+{
+    auto c = ui->scene->selectedSpheresObject().weightCenter();
 }
 
 void MainWindow::setBaseAction(bool enabled)
