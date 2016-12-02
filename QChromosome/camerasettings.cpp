@@ -108,6 +108,17 @@ void CameraSettings::setCamera(Camera *c)
     ui->doubleSpinBox_6->setValue(camera->farClipping);
 
     connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+
+    connect(camera, &Camera::projectionChanged, [this] {
+        // focal length
+        ui->doubleSpinBox->setValue(camera->focalLength);
+
+        // aperture width
+        ui->doubleSpinBox_2->setValue(camera->apertureWidth);
+
+        // field of view
+        ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)));
+    });
 }
 
 void CameraSettings::setRotationType(int rt)
