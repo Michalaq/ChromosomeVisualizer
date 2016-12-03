@@ -569,6 +569,11 @@ void MainWindow::captureMovie()
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
 }
 
+void MainWindow::updateLocks()
+{
+    ui->camera->lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->isAutoRepeat())

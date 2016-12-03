@@ -58,6 +58,8 @@ public slots:
     void capture();
     void captureMovie();
 
+    void updateLocks();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);

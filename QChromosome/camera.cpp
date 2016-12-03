@@ -18,7 +18,8 @@ Camera::Camera(QWidget *parent)
       origin(0, 0, 0),
       rotationType(RT_World),
       nearClipping(.1),
-      farClipping(1000.)
+      farClipping(1000.),
+      lockX(false), lockY(false), lockZ(false)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
@@ -113,10 +114,21 @@ void Camera::setAspectRatio(qreal ar)
     updateAngles();
 }
 
+void Camera::lockCoordinates(bool x, bool y, bool z)
+{
+    lockX = x;
+    lockY = y;
+    lockZ = z;
+}
+
 void Camera::move(qreal dx, qreal dy, qreal dz)
 {
     /* change to global coordinates */
     QVector3D delta = x * dx + y * dy + z * dz;
+
+    if (lockX) delta.setX(0);
+    if (lockY) delta.setY(0);
+    if (lockZ) delta.setZ(0);
 
     /* update eye position */
     eye -= delta;

@@ -60,6 +60,8 @@ public slots:
     /* updates aspect ratio */
     void setAspectRatio(qreal ar);
 
+    void lockCoordinates(bool x, bool y, bool z);
+
 private:
     /* eye position */
     QVector3D eye;
@@ -106,6 +108,8 @@ private:
 
     qreal nearClipping;
     qreal farClipping;
+
+    bool lockX, lockY, lockZ;
 
 signals:
     void modelViewChanged(QMatrix4x4);

@@ -35,8 +35,8 @@ QToolBar {
 
 QToolBar::separator {
 	border: none;
-	width: 11px;
-	height: 11px;
+	width: 15px;
+	height: 15px;
 }
 
 QDockWidget {
@@ -1236,8 +1236,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/x</normaloff>:/locks/x</iconset>
    </property>
    <property name="text">
     <string>X Axis Lock/Unlock</string>
@@ -1257,8 +1257,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/y</normaloff>:/locks/y</iconset>
    </property>
    <property name="text">
     <string>Y Axis Lock/Unlock</string>
@@ -1278,8 +1278,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/z</normaloff>:/locks/z</iconset>
    </property>
    <property name="text">
     <string>Z Axis Lock/Unlock</string>
@@ -1447,7 +1447,6 @@ Label {
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="misc.qrc"/>
   <include location="icons.qrc"/>
  </resources>
  <connections>
@@ -1963,6 +1962,54 @@ Label {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionXLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionYLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openProject()</slot>
@@ -1983,5 +2030,6 @@ Label {
   <slot>addLayer()</slot>
   <slot>handleModelSelection()</slot>
   <slot>newProject()</slot>
+  <slot>updateLocks()</slot>
  </slots>
 </ui>
