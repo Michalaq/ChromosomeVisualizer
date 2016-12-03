@@ -31,7 +31,10 @@ public:
     void changeKey(int frame, bool hard = true);
 
     void lockKey(bool c = true);
-    bool isKeyLocked(int frame) const;
+    bool isKeyLocked() const;
+
+    void lockValue(bool c = true);
+    bool isValueLocked(int frame) const;
 
 signals:
     void selectionChanged();
@@ -44,7 +47,7 @@ public slots:
 private:
     QSpinBox* key;
     QVector<QDoubleSpinBox*> tracked;
-    QMap<double, QVector<double>> values;
+    QMap<double, QPair<QVector<double>, QPair<bool, bool>>> values;
     QVector<tk::spline> splines;
 
     void updateSplines();
@@ -53,9 +56,7 @@ private:
 
     bool isRecording;
 
-    QMap<double, QVector<double>>::iterator selectedFrame;
-
-    QSet<double> lockedKeys;
+    QMap<double, QPair<QVector<double>, QPair<bool, bool>>>::iterator selectedFrame;
 };
 
 #endif // INTERPOLATOR_H

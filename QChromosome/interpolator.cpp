@@ -18,16 +18,19 @@ void Interpolator::recordKeyframe()
         ignore--;
     else
     {
-        int n = tracked.size();
+        if (!isValueLocked(key->value()))
+        {
+            int n = tracked.size();
 
-        QVector<double> v(n);
+            QVector<double> v(n);
 
-        for (int i = 0; i < n; i++)
-            v[i] = tracked[i]->value();
+            for (int i = 0; i < n; i++)
+                v[i] = tracked[i]->value();
 
-        values.insert(key->value(), v);
+            values.insert(key->value(), {v, {false, false}});
 
-        updateSplines();
+            updateSplines();
+        }
     }
 }
 
@@ -51,7 +54,7 @@ void Interpolator::setFrame(int frame)
     if (values.uniqueKeys().size() < 2)
         return;
 
-    ignore = isRecording ? 2 : 0;
+    ignore = isRecording ? 3 : 0;
 
     // TODO hack, omijający nadpisywanie przez modelViewChanged
     for (int i = 0; i < 3; i++)
@@ -63,12 +66,17 @@ void Interpolator::setFrame(int frame)
         tracked[i]->setValue(splines[i](frame));
 
     tracked[3]->editingFinished();
+
+    for (int i = 6; i < 9; i++)
+        tracked[i]->setValue(splines[i](frame));
+
+    tracked[6]->editingFinished();
 }
 
 void Interpolator::setRecordingState(bool b)
 {
     isRecording = b;
-    if (b) ignore = 1; //TODO hack, żeby ominąć sygnał wysłany przez connectNotify
+    if (b) ignore = 2; //TODO hack, żeby ominąć sygnał wysłany przez connectNotify
 }
 
 void Interpolator::selectKeyframe(int frame)
@@ -90,7 +98,7 @@ QList<double> Interpolator::keys() const
 
 void Interpolator::changeKey(int frame, bool hard)
 {
-    if (selectedFrame == values.end() || (selectedFrame.key() == frame && !hard) || lockedKeys.contains(selectedFrame.key()))
+    if (selectedFrame == values.end() || (selectedFrame.key() == frame && !hard) || isKeyLocked())
         return;
 
     auto v = selectedFrame.value();
@@ -107,17 +115,24 @@ void Interpolator::changeKey(int frame, bool hard)
 void Interpolator::lockKey(bool c)
 {
     if (selectedFrame != values.end())
-    {
-        if (c)
-            lockedKeys.insert(selectedFrame.key());
-        else
-            lockedKeys.remove(selectedFrame.key());
-    }
+        selectedFrame->second.first = c;
 }
 
-bool Interpolator::isKeyLocked(int frame) const
+bool Interpolator::isKeyLocked() const
 {
-    return lockedKeys.contains(frame);
+    return selectedFrame != values.end() && selectedFrame->second.first;
+}
+
+void Interpolator::lockValue(bool c)
+{
+    if (selectedFrame != values.end())
+        selectedFrame->second.second = c;
+}
+
+bool Interpolator::isValueLocked(int frame) const
+{
+    auto f = values.find(frame);
+    return f != values.end() && f->second.second;
 }
 
 void Interpolator::deleteKeyrame()
@@ -151,7 +166,7 @@ void Interpolator::updateSplines()
 
     for (int i = 0; i < n; i++)
     {
-        auto& t = values[d[i]];
+        auto& t = values[d[i]].first;
 
         for (int j = 0; j < m; j++)
             v[j].push_back(t[j]);

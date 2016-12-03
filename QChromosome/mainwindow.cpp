@@ -128,11 +128,13 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             ui->canvas->setStyleSheet("background: #d40000;");
             connect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
+            connect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
         }
         else
         {
             ui->canvas->setStyleSheet("background: #4d4d4d;");
             disconnect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
+            disconnect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
         }
     });
 
@@ -144,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ip.setKey(ui->spinBox);
 
     auto p = ui->page_5->ui;
-    ip.trackValues({ p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
+    ip.trackValues({ p->doubleSpinBox, p->doubleSpinBox_2, p->doubleSpinBox_3, p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
     ui->horizontalSlider->setInterpolator(&ip);
     ui->page_6->setInterpolator(&ip);
