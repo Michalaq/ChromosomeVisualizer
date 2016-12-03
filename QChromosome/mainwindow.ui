@@ -804,11 +804,11 @@ Label {
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelect"/>
+   <addaction name="actionFocus"/>
+   <addaction name="separator"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
-   <addaction name="separator"/>
-   <addaction name="actionFocus"/>
    <addaction name="separator"/>
    <addaction name="actionXLock"/>
    <addaction name="actionYLock"/>
