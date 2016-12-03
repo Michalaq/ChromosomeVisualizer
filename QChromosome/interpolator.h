@@ -33,6 +33,9 @@ public:
     void lockKey(bool c = true);
     bool isKeyLocked(int frame) const;
 
+    void lockValue(bool c = true);
+    bool isValueLocked(int frame) const;
+
 signals:
     void selectionChanged();
     void interpolationChanged();
@@ -56,6 +59,7 @@ private:
     QMap<double, QVector<double>>::iterator selectedFrame;
 
     QSet<double> lockedKeys;
+    QSet<double> lockedValues;
 };
 
 #endif // INTERPOLATOR_H

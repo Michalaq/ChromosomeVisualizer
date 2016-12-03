@@ -18,16 +18,19 @@ void Interpolator::recordKeyframe()
         ignore--;
     else
     {
-        int n = tracked.size();
+        if (!isValueLocked(key->value()))
+        {
+            int n = tracked.size();
 
-        QVector<double> v(n);
+            QVector<double> v(n);
 
-        for (int i = 0; i < n; i++)
-            v[i] = tracked[i]->value();
+            for (int i = 0; i < n; i++)
+                v[i] = tracked[i]->value();
 
-        values.insert(key->value(), v);
+            values.insert(key->value(), v);
 
-        updateSplines();
+            updateSplines();
+        }
     }
 }
 
@@ -125,10 +128,29 @@ bool Interpolator::isKeyLocked(int frame) const
     return lockedKeys.contains(frame);
 }
 
+void Interpolator::lockValue(bool c)
+{
+    if (selectedFrame != values.end())
+    {
+        if (c)
+            lockedValues.insert(selectedFrame.key());
+        else
+            lockedValues.remove(selectedFrame.key());
+    }
+}
+
+bool Interpolator::isValueLocked(int frame) const
+{
+    return lockedValues.contains(frame);
+}
+
 void Interpolator::deleteKeyrame()
 {
     if (selectedFrame != values.end())
     {
+        lockedKeys.remove(selectedFrame.key());
+        lockedValues.remove(selectedFrame.key());
+
         values.erase(selectedFrame);
         selectedFrame = values.end();
 
