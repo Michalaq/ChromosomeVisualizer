@@ -28,7 +28,7 @@ void Axis::paintEvent(QPaintEvent *event)
     {
         {modelView.mapVector({1, 0, 0}), Qt::red,   'X'},
         {modelView.mapVector({0, 1, 0}), Qt::green, 'Y'},
-        {modelView.mapVector({0, 0,-1}), Qt::blue,  'Z'}
+        {modelView.mapVector({0, 0, 1}), Qt::blue,  'Z'}
     };
 
     if (axis[0].vector.z() > axis[1].vector.z()) std::swap(axis[0], axis[1]);

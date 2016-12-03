@@ -173,6 +173,7 @@ void Camera::setFarClipping(qreal fc)
 void Camera::setLookAt(const QVector3D &target)
 {
     auto f = target - eye;
+    f.setZ(-f.z());
     setEulerAgnles(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
 }
 
