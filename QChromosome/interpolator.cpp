@@ -51,7 +51,7 @@ void Interpolator::setFrame(int frame)
     if (values.uniqueKeys().size() < 2)
         return;
 
-    ignore = isRecording ? 2 : 0;
+    ignore = isRecording ? 3 : 0;
 
     // TODO hack, omijający nadpisywanie przez modelViewChanged
     for (int i = 0; i < 3; i++)
@@ -63,12 +63,17 @@ void Interpolator::setFrame(int frame)
         tracked[i]->setValue(splines[i](frame));
 
     tracked[3]->editingFinished();
+
+    for (int i = 6; i < 9; i++)
+        tracked[i]->setValue(splines[i](frame));
+
+    tracked[6]->editingFinished();
 }
 
 void Interpolator::setRecordingState(bool b)
 {
     isRecording = b;
-    if (b) ignore = 1; //TODO hack, żeby ominąć sygnał wysłany przez connectNotify
+    if (b) ignore = 2; //TODO hack, żeby ominąć sygnał wysłany przez connectNotify
 }
 
 void Interpolator::selectKeyframe(int frame)
