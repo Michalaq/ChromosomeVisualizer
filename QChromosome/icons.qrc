@@ -48,8 +48,8 @@
     <qresource prefix="/locks">
         <file alias="world">icons/world_icon.svg</file>
         <file alias="tilt">icons/tilt_icon.svg</file>
-        <file alias="x">icons/x_icon.svg</file>
-        <file alias="y">icons/y_icon.svg</file>
-        <file alias="z">icons/z_icon.svg</file>
+        <file alias="move x">icons/move_x_icon.svg</file>
+        <file alias="move y">icons/move_y_icon.svg</file>
+        <file alias="move z">icons/move_z_icon.svg</file>
     </qresource>
 </RCC>

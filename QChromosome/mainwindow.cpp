@@ -516,7 +516,6 @@ void MainWindow::focusSelection(const AtomSelection& s)
     auto c = s.weightCenter();
     ui->camera->setPosition(c + QVector3D(-50, 50, -50));
     ui->camera->setLookAt(c);
-    ui->camera->setOrigin(c);
 }
 
 void MainWindow::setBaseAction(bool enabled)
