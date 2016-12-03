@@ -15,6 +15,11 @@ Keyframes::Keyframes(QWidget *parent) :
         ip->lockKey(b);
         ui->spinBox->setEnabled(!b);
     });
+
+    connect(ui->checkBox_2, &QCheckBox::toggled, [this](bool b) {
+        ip->lockValue(b);
+        ui->doubleSpinBox->setEnabled(!b);
+    });
 }
 
 Keyframes::~Keyframes()
@@ -30,5 +35,6 @@ void Keyframes::setInterpolator(Interpolator *_ip)
 void Keyframes::updateContents()
 {
     ui->spinBox->setValue(ip->selectedKeyframe());
-    ui->checkBox->setChecked(ip->isKeyLocked(ip->selectedKeyframe()));
+    ui->checkBox->setChecked(ip->isKeyLocked());
+    ui->checkBox_2->setChecked(ip->isValueLocked(ip->selectedKeyframe()));
 }

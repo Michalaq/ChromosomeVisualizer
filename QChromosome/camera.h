@@ -39,6 +39,7 @@ public:
     void setRotationType(int rt);
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
+    void setLookAt(const QVector3D& target);
 
     enum RotationType
     {
@@ -58,6 +59,8 @@ public slots:
 
     /* updates aspect ratio */
     void setAspectRatio(qreal ar);
+
+    void lockCoordinates(bool x, bool y, bool z);
 
 private:
     /* eye position */
@@ -105,6 +108,8 @@ private:
 
     qreal nearClipping;
     qreal farClipping;
+
+    bool lockX, lockY, lockZ;
 
 signals:
     void modelViewChanged(QMatrix4x4);

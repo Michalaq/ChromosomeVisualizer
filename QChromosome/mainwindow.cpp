@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
                                                 ui->mainToolBar->toggleViewAction(),
-                                                ui->toolBar->toggleViewAction(),
+
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
@@ -128,11 +128,13 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             ui->canvas->setStyleSheet("background: #d40000;");
             connect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
+            connect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
         }
         else
         {
             ui->canvas->setStyleSheet("background: #4d4d4d;");
             disconnect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
+            disconnect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
         }
     });
 
@@ -144,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ip.setKey(ui->spinBox);
 
     auto p = ui->page_5->ui;
-    ip.trackValues({ p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
+    ip.trackValues({ p->doubleSpinBox, p->doubleSpinBox_2, p->doubleSpinBox_3, p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
     ui->horizontalSlider->setInterpolator(&ip);
     ui->page_6->setInterpolator(&ip);
@@ -170,6 +172,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
         ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
+    });
+
+    connect(ui->page_5->ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated), [this](int i) {
+        ui->actionCoordinates->setChecked(i == 1);
+    });
+
+    connect(ui->actionFocus, &QAction::triggered, [this] {
+        focusSelection(ui->scene->selectedSpheresObject());
     });
 
     newProject();
@@ -458,7 +468,7 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->page_2->handleSelection(selection);
 
-    ui->camera->setOrigin(selection.atomCount() ? selection.weightCenter() : QVector3D(0, 0, 0));
+    ui->camera->setOrigin(selection.weightCenter());
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
@@ -501,6 +511,13 @@ void MainWindow::handleModelSelection()
     }
     else
         handleSelection(selection);
+}
+
+void MainWindow::focusSelection(const AtomSelection& s)
+{
+    auto c = s.weightCenter();
+    ui->camera->setPosition(c + QVector3D(-50, 50, -50));
+    ui->camera->setLookAt(c);
 }
 
 void MainWindow::setBaseAction(bool enabled)
@@ -551,6 +568,11 @@ void MainWindow::captureMovie()
 
     if (renderSettings->openFile())
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
+}
+
+void MainWindow::updateLocks()
+{
+    ui->camera->lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

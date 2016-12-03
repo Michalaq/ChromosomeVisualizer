@@ -37,8 +37,23 @@ Node::~Node()
 
 double value(unsigned frame, Keyframe a, Keyframe b)
 {
+    // ramka znajduje się na lewo od reprezentowanego zakresu
+    if (frame < a.frame)
+    {
+        Q_ASSERT(a.frame == b.frame);
+        return a.value;
+    }
+
+    // ramka znajduje się na prawo od reprezentowanego zakresu
+    if (frame > b.frame)
+    {
+        Q_ASSERT(a.frame == b.frame);
+        return b.value;
+    }
+
     Q_ASSERT(a.frame <= frame && frame <= b.frame);
 
+    // ramka znajduje się wewnątrz przedziału bazowego
     return (a.value * (b.frame - frame) + b.value * (frame - a.frame)) / (b.frame - a.frame);
 }
 

@@ -49,6 +49,7 @@ public slots:
     void selectAll();
     void handleSelection(const AtomSelection &selection);
     void handleModelSelection();
+    void focusSelection(const AtomSelection &s);
 
     /* actions */
     void setBaseAction(bool enabled);
@@ -56,6 +57,8 @@ public slots:
     /* povray */
     void capture();
     void captureMovie();
+
+    void updateLocks();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

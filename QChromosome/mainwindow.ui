@@ -33,6 +33,12 @@ QToolBar {
 	border: none;
 }
 
+QToolBar::separator {
+	border: none;
+	width: 15px;
+	height: 15px;
+}
+
 QDockWidget {
 	background: #1a1a1a;
 	border: 1px solid #4d4d4d;
@@ -798,9 +804,21 @@ Label {
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelect"/>
+   <addaction name="actionFocus"/>
+   <addaction name="separator"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
+   <addaction name="separator"/>
+   <addaction name="actionXLock"/>
+   <addaction name="actionYLock"/>
+   <addaction name="actionZLock"/>
+   <addaction name="actionCoordinates"/>
+   <addaction name="separator"/>
+   <addaction name="actionQuick_Render"/>
+   <addaction name="actionSnapshot"/>
+   <addaction name="actionFilm"/>
+   <addaction name="actionSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
@@ -893,48 +911,6 @@ Label {
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="ToolBar" name="toolBar_2">
-   <property name="minimumSize">
-    <size>
-     <width>50</width>
-     <height>50</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>toolBar_2</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionXLock"/>
-   <addaction name="actionYLock"/>
-   <addaction name="actionZLock"/>
-   <addaction name="actionCoordinates"/>
-  </widget>
-  <widget class="ToolBar" name="toolBar">
-   <property name="minimumSize">
-    <size>
-     <width>50</width>
-     <height>50</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Rendering toolbar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="actionQuick_Render"/>
-   <addaction name="actionSnapshot"/>
-   <addaction name="actionFilm"/>
-   <addaction name="actionSettings"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -1260,8 +1236,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/move x</normaloff>:/locks/move x</iconset>
    </property>
    <property name="text">
     <string>X Axis Lock/Unlock</string>
@@ -1281,8 +1257,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/move y</normaloff>:/locks/move y</iconset>
    </property>
    <property name="text">
     <string>Y Axis Lock/Unlock</string>
@@ -1302,8 +1278,8 @@ Label {
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="misc.qrc">
-     <normaloff>:/checkbox/unchecked</normaloff>:/checkbox/unchecked</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/locks/move z</normaloff>:/locks/move z</iconset>
    </property>
    <property name="text">
     <string>Z Axis Lock/Unlock</string>
@@ -1332,6 +1308,15 @@ Label {
    </property>
    <property name="shortcut">
     <string>W</string>
+   </property>
+  </action>
+  <action name="actionFocus">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/focus</normaloff>:/selection/focus</iconset>
+   </property>
+   <property name="text">
+    <string>Focus</string>
    </property>
   </action>
  </widget>
@@ -1462,7 +1447,6 @@ Label {
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="misc.qrc"/>
   <include location="icons.qrc"/>
  </resources>
  <connections>
@@ -1978,6 +1962,54 @@ Label {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionXLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionYLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZLock</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>updateLocks()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openProject()</slot>
@@ -1998,5 +2030,6 @@ Label {
   <slot>addLayer()</slot>
   <slot>handleModelSelection()</slot>
   <slot>newProject()</slot>
+  <slot>updateLocks()</slot>
  </slots>
 </ui>
