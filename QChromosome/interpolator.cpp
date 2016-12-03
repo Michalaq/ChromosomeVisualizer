@@ -27,7 +27,7 @@ void Interpolator::recordKeyframe()
             for (int i = 0; i < n; i++)
                 v[i] = tracked[i]->value();
 
-            values.insert(key->value(), v);
+            values.insert(key->value(), {v, {false, false}});
 
             updateSplines();
         }
@@ -98,7 +98,7 @@ QList<double> Interpolator::keys() const
 
 void Interpolator::changeKey(int frame, bool hard)
 {
-    if (selectedFrame == values.end() || (selectedFrame.key() == frame && !hard) || lockedKeys.contains(selectedFrame.key()))
+    if (selectedFrame == values.end() || (selectedFrame.key() == frame && !hard) || isKeyLocked())
         return;
 
     auto v = selectedFrame.value();
@@ -115,42 +115,30 @@ void Interpolator::changeKey(int frame, bool hard)
 void Interpolator::lockKey(bool c)
 {
     if (selectedFrame != values.end())
-    {
-        if (c)
-            lockedKeys.insert(selectedFrame.key());
-        else
-            lockedKeys.remove(selectedFrame.key());
-    }
+        selectedFrame->second.first = c;
 }
 
-bool Interpolator::isKeyLocked(int frame) const
+bool Interpolator::isKeyLocked() const
 {
-    return lockedKeys.contains(frame);
+    return selectedFrame != values.end() && selectedFrame->second.first;
 }
 
 void Interpolator::lockValue(bool c)
 {
     if (selectedFrame != values.end())
-    {
-        if (c)
-            lockedValues.insert(selectedFrame.key());
-        else
-            lockedValues.remove(selectedFrame.key());
-    }
+        selectedFrame->second.second = c;
 }
 
 bool Interpolator::isValueLocked(int frame) const
 {
-    return lockedValues.contains(frame);
+    auto f = values.find(frame);
+    return f != values.end() && f->second.second;
 }
 
 void Interpolator::deleteKeyrame()
 {
     if (selectedFrame != values.end())
     {
-        lockedKeys.remove(selectedFrame.key());
-        lockedValues.remove(selectedFrame.key());
-
         values.erase(selectedFrame);
         selectedFrame = values.end();
 
@@ -178,7 +166,7 @@ void Interpolator::updateSplines()
 
     for (int i = 0; i < n; i++)
     {
-        auto& t = values[d[i]];
+        auto& t = values[d[i]].first;
 
         for (int j = 0; j < m; j++)
             v[j].push_back(t[j]);

@@ -35,6 +35,6 @@ void Keyframes::setInterpolator(Interpolator *_ip)
 void Keyframes::updateContents()
 {
     ui->spinBox->setValue(ip->selectedKeyframe());
-    ui->checkBox->setChecked(ip->isKeyLocked(ip->selectedKeyframe()));
+    ui->checkBox->setChecked(ip->isKeyLocked());
     ui->checkBox_2->setChecked(ip->isValueLocked(ip->selectedKeyframe()));
 }
