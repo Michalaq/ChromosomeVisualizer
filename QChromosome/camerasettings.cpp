@@ -8,6 +8,10 @@ CameraSettings::CameraSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // ALERT hide unused controls
+    ui->label_2->hide(); ui->formLayout->removeWidget(ui->label_2);
+    ui->doubleSpinBox_2->hide(); ui->formLayout->removeWidget(ui->doubleSpinBox_2);
+
     // coordinates
     connect(ui->doubleSpinBox_7, &QDoubleSpinBox::editingFinished, [this]() {
         camera->setPosition(QVector3D(ui->doubleSpinBox_7->value(), ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value()));

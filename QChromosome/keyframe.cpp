@@ -7,6 +7,12 @@ Keyframes::Keyframes(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // ALERT hide unused controls
+    ui->label_2->hide(); ui->formLayout_2->removeWidget(ui->label_2);
+    ui->doubleSpinBox->hide(); ui->formLayout_2->removeWidget(ui->doubleSpinBox);
+    ui->label_3->hide(); ui->formLayout_2->removeWidget(ui->label_3);
+    ui->comboBox->hide(); ui->formLayout_2->removeWidget(ui->comboBox);
+
     connect(ui->spinBox, &QSpinBox::editingFinished, [this] {
         ip->changeKey(ui->spinBox->value());
     });
