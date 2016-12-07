@@ -112,8 +112,8 @@ private:
     bool lockX, lockY, lockZ;
 
 signals:
-    void modelViewChanged(QMatrix4x4);
-    void projectionChanged(QMatrix4x4);
+    void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
+    void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
 
 friend class CameraSettings;
 };
