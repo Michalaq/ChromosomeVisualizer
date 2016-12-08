@@ -16,7 +16,6 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , positionCachedFor_(-1)
     , SimulationLayer(name)
 {
-    setColors(fileName);
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());
     std::cout << header.simulation_name() << std::endl;
@@ -29,8 +28,8 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
               std::cout << "Failed to parse keyframe." << std::endl;
         }
     }
-    std::cout << keyframes_.size() << std::endl;\
-    /*std::vector<std::string> binderColorMap {
+    std::cout << keyframes_.size() << std::endl;
+    std::vector<std::string> binderColorMap {
         "LAM",
         "BIN"
     };
@@ -39,7 +38,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
         {{0, 1}, "BOU"},
         {{1, 0}, "LAM"},
         {{2, 0}, "LAM"}
-    };*/
+    };
 
     for (const auto& binder : keyframes_[0].binders()) {
         binderTypes.push_back(binderColorMap[binder.binder_type()]);
@@ -98,50 +97,6 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string & fileName)
     : ProtobufSimulationLayer(fileName, fileName)
 {}
-
-class colors_file_not_found_exception : public std::exception
-{
-  virtual const char* what() const throw()
-  {
-    return "Colors file not found.";
-  }
-} ex;
-
-void ProtobufSimulationLayer::setColors(const std::string & simFileName)
-{
-    std::string fileName = simFileName;
-    std::cout << "NO ELO" << fileName << std::endl;
-    std::size_t found = fileName.find("bin");
-    fileName.replace(found, 3, "pdb.meta");
-    std::ifstream file(fileName);
-    if (!file.good()) {
-        throw ex;
-    }
-    std::string s;
-    while (getline(file, s)) {
-        std::cout << "linia: " << s << std::endl;
-        if (s.find("EV") != std::string::npos) {
-            char s2[10], s3[10];
-            sscanf(s.c_str(), "EV [%[^]]] %s", &s2, &s3);
-            printf("jeden: %s, dwa: %s.\n", s2, s3);
-            char * p = strtok(s2, ",");
-            std::vector<int> bindingSitesTypes;
-            while (p) {
-                int x = atoi(p);
-                bindingSitesTypes.push_back(x);
-                printf("Token: %d\n", x);
-                p = strtok(NULL, " ");
-            }
-            evColorMap[bindingSitesTypes] = std::string(s3);
-        } else if (s.find("BT") != std::string::npos) {
-            char s2[10];
-            int type;
-            sscanf(s.c_str(), "BT %d %s", &type, &s2);
-            printf("Numer typu: %d, nazwa: %s.\n", type, s2);
-            binderColorMap.push_back(std::string(s2));
-        }
-    }
-}
 
 struct lex_comp
 {
