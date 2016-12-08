@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Defaults</class>
+ <widget class="QWidget" name="Defaults">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTableWidget" name="tableWidget">
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Binder type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Binder name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Default color</string>
+      </property>
+     </column>
+     <item row="0" column="0">
+      <property name="text">
+       <string>0</string>
+      </property>
+     </item>
+     <item row="0" column="1">
+      <property name="text">
+       <string>LAM</string>
+      </property>
+     </item>
+     <item row="0" column="2">
+      <property name="text">
+       <string>0x000000ff</string>
+      </property>
+     </item>
+     <item row="1" column="0">
+      <property name="text">
+       <string>1</string>
+      </property>
+     </item>
+     <item row="1" column="1">
+      <property name="text">
+       <string>BIN</string>
+      </property>
+     </item>
+     <item row="1" column="2">
+      <property name="text">
+       <string>0x7fffffff</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="tableWidget_2">
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Nowy wiersz</string>
+      </property>
+     </row>
+     <column>
+      <property name="text">
+       <string>Energy vector</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Bead name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Default color</string>
+      </property>
+     </column>
+     <item row="0" column="0">
+      <property name="text">
+       <string>[0,0]</string>
+      </property>
+     </item>
+     <item row="0" column="1">
+      <property name="text">
+       <string>UNB</string>
+      </property>
+     </item>
+     <item row="0" column="2">
+      <property name="text">
+       <string>0x00ff0000</string>
+      </property>
+     </item>
+     <item row="1" column="0">
+      <property name="text">
+       <string>[0,1]</string>
+      </property>
+     </item>
+     <item row="1" column="1">
+      <property name="text">
+       <string>BOU</string>
+      </property>
+     </item>
+     <item row="1" column="2">
+      <property name="text">
+       <string>0x0000ff00</string>
+      </property>
+     </item>
+     <item row="2" column="0">
+      <property name="text">
+       <string>[1,0]</string>
+      </property>
+     </item>
+     <item row="2" column="1">
+      <property name="text">
+       <string>LAM</string>
+      </property>
+     </item>
+     <item row="2" column="2">
+      <property name="text">
+       <string>0x000000ff</string>
+      </property>
+     </item>
+     <item row="3" column="0">
+      <property name="text">
+       <string>[2,0]</string>
+      </property>
+     </item>
+     <item row="3" column="1">
+      <property name="text">
+       <string>LAM</string>
+      </property>
+     </item>
+     <item row="3" column="2">
+      <property name="text">
+       <string>0x000000ff</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
