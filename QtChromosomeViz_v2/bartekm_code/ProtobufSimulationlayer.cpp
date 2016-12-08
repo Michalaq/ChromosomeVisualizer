@@ -4,6 +4,7 @@
 #include <fstream>
 #include <exception>
 #include <string>
+#include "defaults.h"
 
 using namespace protostream;
 
@@ -29,19 +30,9 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
         }
     }
     std::cout << keyframes_.size() << std::endl;
-    std::vector<std::string> binderColorMap {
-        "LAM",
-        "BIN"
-    };
-    std::map<std::vector<int>, std::string> evColorMap {
-        {{0, 0}, "UNB"},
-        {{0, 1}, "BOU"},
-        {{1, 0}, "LAM"},
-        {{2, 0}, "LAM"}
-    };
 
     for (const auto& binder : keyframes_[0].binders()) {
-        binderTypes.push_back(binderColorMap[binder.binder_type()]);
+        binderTypes.push_back(Defaults::bt2name(binder.binder_type()));
     }
     for (const auto& chain : header.chains()) {
         std::vector<std::string> types;
@@ -50,7 +41,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
             for (const auto& binding : beadDesc.energy_vector()) {
                 w[binding.binder_type()] = binding.force();
             }
-            types.push_back(evColorMap[w]);
+            types.push_back(Defaults::ev2name(w));
         }
         chainAtomTypes.push_back(types);
     }
