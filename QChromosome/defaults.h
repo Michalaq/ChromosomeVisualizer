@@ -31,7 +31,8 @@ private:
     static QMap<std::vector<int>, std::string> ev2n; // maps energy vector to bead name
 
     QVariant previous;
-    int key;
+    int key1;
+    std::vector<int> key2;
 };
 
 #endif // DEFAULTS_H

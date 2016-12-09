@@ -13,13 +13,49 @@ QMap<std::vector<int>, std::string> Defaults::ev2n = {
     {{2,0}, "LAM"}
 }; // maps energy vector to bead name
 
+#include <QJsonDocument>
+#include <QJsonArray>
+
+std::vector<int> parseJsonArray(QByteArray stream, bool *ok = Q_NULLPTR)
+{
+    auto document = QJsonDocument::fromJson(stream);
+
+    if (!document.isArray())
+    {
+        *ok = false;
+        return {};
+    }
+
+    auto array = document.array().toVariantList();
+
+    std::vector<int> ans;
+
+    bool b;
+
+    for (auto x : array)
+    {
+        auto y = x.toInt(&b);
+
+        if (!b)
+        {
+            if (ok) *ok = false;
+            return {};
+        }
+
+        ans.push_back(y);
+    }
+
+    if (ok) *ok = true;
+    return ans;
+}
+
 Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
     connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
-        key = ui->tableWidget->item(i->row(), 0)->data(Qt::DisplayRole).toInt();
+        key1 = ui->tableWidget->item(i->row(), 0)->data(Qt::DisplayRole).toInt();
     });
 
     connect(ui->tableWidget, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
@@ -32,7 +68,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
                 int v = i->data(Qt::DisplayRole).toInt(&ok);
                 if (ok && !bt2n.contains(v))
                 {
-                    auto s = bt2n.take(key);
+                    auto s = bt2n.take(key1);
                     bt2n.insert(v, s);
                 }
                 else
@@ -41,7 +77,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
             break;
         case 1: // binder name
             if (i->data(Qt::DisplayRole).canConvert<QString>())
-                bt2n.insert(key, i->data(Qt::DisplayRole).toString().toStdString());
+                bt2n.insert(key1, i->data(Qt::DisplayRole).toString().toStdString());
             else
                 i->setData(Qt::DisplayRole, previous);
             break;
@@ -50,6 +86,11 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         }
 
         previous = i->data(Qt::DisplayRole);
+    });
+
+    connect(ui->tableWidget_2, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+        previous = i->data(Qt::DisplayRole);
+        key2 = parseJsonArray(ui->tableWidget_2->item(i->row(), 0)->data(Qt::DisplayRole).toByteArray());
     });
 }
 
