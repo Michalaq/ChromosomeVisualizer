@@ -34,7 +34,7 @@ private:
     int key1;
     std::vector<int> key2;
 
-    static QVector<const char*> dump1;
+    QVector<QByteArray> dump;
 };
 
 #endif // DEFAULTS_H

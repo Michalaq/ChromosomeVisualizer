@@ -176,6 +176,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         Atom a;
         a.id = aid++;
         strcpy(a.type, binderTypes[a.id - 1]);
+        a.t = binderTypes[a.id - 1];
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
@@ -186,13 +187,13 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
 
     for (int i = 0; i < kf.chains_size(); i++) {
         auto& chain = kf.chains(i);
-        int old = aid;
         connectedRanges.push_back({ aid, aid + chain.bead_positions_size() - 1 });
         for (int j = 0; j < chain.bead_positions_size(); j++) {
             auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
             strcpy(a.type, chainAtomTypes[i][j]);
+            a.t = chainAtomTypes[i][j];
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();

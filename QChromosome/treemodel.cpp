@@ -146,7 +146,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
     for (auto atom = first; atom != last; atom++)
     {
-        QString t(atom->type);
+        QString t(atom->t ? atom->t : atom->type);
 
         if (!types.contains(t))
             types[t] = new TreeItem({t, NodeType::BinderObject}, root);
@@ -181,7 +181,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     for (auto i = 0; i < atoms.size(); i++)
         if (!used.testBit(i))
         {
-            QString t(atoms[i].type);
+            QString t(atoms[i].t ? atoms[i].t : atoms[i].type);
 
             if (!types.contains(t))
                 types[t] = new TreeItem({t, NodeType::BinderObject}, root);
