@@ -92,6 +92,36 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         previous = i->data(Qt::DisplayRole);
         key2 = parseJsonArray(ui->tableWidget_2->item(i->row(), 0)->data(Qt::DisplayRole).toByteArray());
     });
+
+    connect(ui->tableWidget_2, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
+        int c = i->column();
+        switch (c)
+        {
+        case 0: // energy vector
+            {
+                bool ok;
+                auto v = parseJsonArray(i->data(Qt::DisplayRole).toByteArray(), &ok);
+                if (ok && !ev2n.contains(v))
+                {
+                    auto s = ev2n.take(key2);
+                    ev2n.insert(v, s);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            break;
+        case 1: // bead name
+            if (i->data(Qt::DisplayRole).canConvert<QString>())
+                ev2n.insert(key2, i->data(Qt::DisplayRole).toString().toStdString());
+            else
+                i->setData(Qt::DisplayRole, previous);
+            break;
+        case 2: // bead color
+            break;
+        }
+
+        previous = i->data(Qt::DisplayRole);
+    });
 }
 
 Defaults::~Defaults()
