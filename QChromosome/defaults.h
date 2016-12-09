@@ -2,11 +2,13 @@
 #define DEFAULTS_H
 
 #include <QWidget>
+#include <QVariant>
 
 namespace Ui
 {
     class Defaults;
 }
+
 //TODO should be implemented as singleton
 class Defaults : public QWidget
 {
@@ -27,6 +29,9 @@ private:
 
     static QMap<int, std::string> bt2n; // maps binder type to its name
     static QMap<std::vector<int>, std::string> ev2n; // maps energy vector to bead name
+
+    QVariant previous;
+    int key;
 };
 
 #endif // DEFAULTS_H
