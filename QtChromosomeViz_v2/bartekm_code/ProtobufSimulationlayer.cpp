@@ -35,7 +35,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
         binderTypes.push_back(Defaults::bt2name(binder.binder_type()));
     }
     for (const auto& chain : header.chains()) {
-        std::vector<std::string> types;
+        std::vector<const char*> types;
         for (const auto& beadDesc : chain.beads()) {
             std::vector<int> w(header.binders_types_count(), 0);
             for (const auto& binding : beadDesc.energy_vector()) {
@@ -175,7 +175,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         auto& point = binder.position();
         Atom a;
         a.id = aid++;
-        strcpy(a.type, binderTypes[a.id - 1].c_str());
+        strcpy(a.type, binderTypes[a.id - 1]);
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
@@ -192,7 +192,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
             auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
-            strcpy(a.type, chainAtomTypes[i][j].c_str());
+            strcpy(a.type, chainAtomTypes[i][j]);
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();

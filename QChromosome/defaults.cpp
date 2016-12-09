@@ -1,17 +1,22 @@
 #include "defaults.h"
 #include "ui_defaults.h"
 
-QMap<int, std::string> Defaults::bt2n = {
+QMap<int, const char*> Defaults::bt2n = {
     {0, "LAM"},
     {1, "BIN"}
 }; // maps binder type to its name
 
-QMap<std::vector<int>, std::string> Defaults::ev2n = {
+QMap<std::vector<int>, const char*> Defaults::ev2n = {
     {{0,0}, "UNB"},
     {{0,1}, "BOU"},
     {{1,0}, "LAM"},
     {{2,0}, "LAM"}
 }; // maps energy vector to bead name
+
+QVector<const char*> Defaults::dump1 = {
+    "(unresolved binder type)",
+    "(unresolved bead type)"
+};
 
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -77,7 +82,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
             break;
         case 1: // binder name
             if (i->data(Qt::DisplayRole).canConvert<QString>())
-                bt2n.insert(key1, i->data(Qt::DisplayRole).toString().toStdString());
+                ;//bt2n.insert(key1, i->data(Qt::DisplayRole).toString().toStdString());
             else
                 i->setData(Qt::DisplayRole, previous);
             break;
@@ -112,7 +117,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
             break;
         case 1: // bead name
             if (i->data(Qt::DisplayRole).canConvert<QString>())
-                ev2n.insert(key2, i->data(Qt::DisplayRole).toString().toStdString());
+                ;//ev2n.insert(key2, i->data(Qt::DisplayRole).toString().toStdString());
             else
                 i->setData(Qt::DisplayRole, previous);
             break;
@@ -129,14 +134,14 @@ Defaults::~Defaults()
     delete ui;
 }
 
-std::string Defaults::bt2name(int bt)
+const char *Defaults::bt2name(int bt)
 {
     auto i = bt2n.find(bt);
-    return i != bt2n.end() ? i.value() : "(undefined binder type)";
+    return i != bt2n.end() ? i.value() : dump1[0];
 }
 
-std::string Defaults::ev2name(std::vector<int> ev)
+const char *Defaults::ev2name(std::vector<int> ev)
 {
     auto i = ev2n.find(ev);
-    return i != ev2n.end() ? i.value() : "(undefined bead type)";
+    return i != ev2n.end() ? i.value() : dump1[1];
 }
