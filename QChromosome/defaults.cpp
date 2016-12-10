@@ -14,10 +14,10 @@ QMap<std::vector<int>, int> Defaults::ev2tn = {
 }; // maps energy vector to bead name
 
 QMap<int, QPair<const char*, QColor>> Defaults::tn2defaults = {
-    {0, {"(unresolved binder type)", Qt::black}},
-    {1, {"(unresolved bead type)", Qt::black}},
+    {0, {"(unresolved binder type)", Qt::gray}},
+    {1, {"(unresolved bead type)", Qt::gray}},
     {2, {"LAM", Qt::blue}},
-    {3, {"BIN", Qt::white}},
+    {3, {"BIN", QColor("#7fffffff")}},
     {4, {"UNB", Qt::red}},
     {5, {"BOU", Qt::green}},
     {6, {"LAM", Qt::blue}},
@@ -101,6 +101,20 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
                 i->setData(Qt::DisplayRole, previous);
             break;
         case 2: // binder color
+            if (i->data(Qt::DisplayRole).canConvert<QString>())
+            {
+                auto c = QColor(i->data(Qt::DisplayRole).toString());
+                if (c.isValid())
+                {
+                    auto v = tn2defaults.take(key);
+                    v.second = c;
+                    tn2defaults.insert(key, v);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            else
+                i->setData(Qt::DisplayRole, previous);
             break;
         }
 
@@ -142,6 +156,20 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
                 i->setData(Qt::DisplayRole, previous);
             break;
         case 2: // bead color
+            if (i->data(Qt::DisplayRole).canConvert<QString>())
+            {
+                auto c = QColor(i->data(Qt::DisplayRole).toString());
+                if (c.isValid())
+                {
+                    auto v = tn2defaults.take(key);
+                    v.second = c;
+                    tn2defaults.insert(key, v);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            else
+                i->setData(Qt::DisplayRole, previous);
             break;
         }
 
