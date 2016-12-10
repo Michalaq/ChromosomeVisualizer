@@ -48,10 +48,8 @@ private:
     mmap_reader rd_;
     frameNumber_t deltasPerKeyframe_;
     std::vector<mmap_reader::keyframe_data> keyframesData_;
-    std::vector<std::string> binderTypes;
-    std::vector<std::vector<std::string>> chainAtomTypes;
-    std::vector<std::string> binderColorMap;
-    std::map<std::vector<int>, std::string> evColorMap;
+    std::vector<int> binderTypes;
+    std::vector<std::vector<int>> chainAtomTypes;
 
     std::shared_ptr<Frame> cachedFrame_;
     frameNumber_t positionCachedFor_;

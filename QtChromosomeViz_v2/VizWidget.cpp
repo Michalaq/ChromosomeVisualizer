@@ -471,6 +471,8 @@ void VizWidget::advanceFrame()
     setFrame(frameNumber_ + 1);
 }
 
+#include "defaults.h"
+
 void VizWidget::setFirstFrame()
 {
     auto frame = simulation_->getFrame(0);
@@ -513,6 +515,13 @@ void VizWidget::setFirstFrame()
     selection.setColor(Qt::white);
     selection.setAlpha(0.5f);
     selection.setSpecularColor(QRgb(0x000000));
+
+    for (unsigned int i = 0; i < sphereCount_; i++)
+        if (frame->atoms[i].tn != -1)
+            frameState_[i].color = Defaults::typename2color(frame->atoms[i].tn).rgba();
+
+    needVBOUpdate_ = true;
+    update();
 
     // Run this again to update link colours
     setFrame(0);

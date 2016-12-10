@@ -53,7 +53,8 @@ SOURCES += main.cpp\
     fileedit.cpp \
     label.cpp \
     keyframe.cpp \
-    interpolator.cpp
+    interpolator.cpp \
+    defaults.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -114,7 +115,8 @@ HEADERS  += mainwindow.h\
     label.h \
     spline.h \
     keyframe.h \
-    interpolator.h
+    interpolator.h \
+    defaults.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -125,7 +127,8 @@ FORMS    += mainwindow.ui \
     viewport.ui \
     rswidget.ui \
     camerasettings.ui \
-    keyframe.ui
+    keyframe.ui \
+    defaults.ui
 
 CONFIG += c++14
 

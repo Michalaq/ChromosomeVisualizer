@@ -71,9 +71,6 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Project</string>
@@ -173,6 +170,11 @@
        </item>
       </layout>
      </widget>
+     <widget class="Defaults" name="tab_3">
+      <attribute name="title">
+       <string>Defaults</string>
+      </attribute>
+     </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>Info</string>
@@ -227,6 +229,12 @@
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Defaults</class>
+   <extends>QWidget</extends>
+   <header>defaults.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
