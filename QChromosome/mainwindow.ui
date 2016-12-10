@@ -1237,7 +1237,8 @@ Label {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/move x</normaloff>:/locks/move x</iconset>
+     <normaloff>:/locks/lock x</normaloff>
+     <normalon>:/locks/move x</normalon>:/locks/lock x</iconset>
    </property>
    <property name="text">
     <string>X Axis Lock/Unlock</string>
@@ -1258,7 +1259,8 @@ Label {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/move y</normaloff>:/locks/move y</iconset>
+     <normaloff>:/locks/lock y</normaloff>
+     <normalon>:/locks/move y</normalon>:/locks/lock y</iconset>
    </property>
    <property name="text">
     <string>Y Axis Lock/Unlock</string>
@@ -1279,7 +1281,8 @@ Label {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/move z</normaloff>:/locks/move z</iconset>
+     <normaloff>:/locks/lock z</normaloff>
+     <normalon>:/locks/move z</normalon>:/locks/lock z</iconset>
    </property>
    <property name="text">
     <string>Z Axis Lock/Unlock</string>

@@ -148,7 +148,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
     for (auto atom = first; atom != last; atom++)
     {
-        QString t(atom->tn == -1 ? atom->type : Defaults::typename2label(atom->tn));
+        QString t(atom->tn == -1 ? atom->type : Defaults::typename2label(atom->tn));//TODO wywalić po implementacji typów dla pdb
 
         if (!types.contains(t))
             types[t] = new TreeItem({t, NodeType::BinderObject}, root);
@@ -183,7 +183,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     for (auto i = 0; i < atoms.size(); i++)
         if (!used.testBit(i))
         {
-            QString t(atoms[i].tn == -1 ? atoms[i].type : Defaults::typename2label(atoms[i].tn));
+            QString t(atoms[i].tn == -1 ? atoms[i].type : Defaults::typename2label(atoms[i].tn));//TODO wywalić po implementacji typów dla pdb
 
             if (!types.contains(t))
                 types[t] = new TreeItem({t, NodeType::BinderObject}, root);

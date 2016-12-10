@@ -507,7 +507,7 @@ void VizWidget::setFirstFrame()
     setFrame(0);
 
     // Assign appropriate default colors
-    atomTypeSelection("UNB").setColor(0xFF0000);
+    atomTypeSelection("UNB").setColor(0xFF0000);//TODO wywalić po implementacji typów dla pdb
     atomTypeSelection("BOU").setColor(0x00FF00);
     atomTypeSelection("LAM").setColor(0x0000FF);
 
