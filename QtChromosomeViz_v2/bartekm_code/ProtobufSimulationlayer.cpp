@@ -4,6 +4,7 @@
 #include <fstream>
 #include <exception>
 #include <string>
+#include "defaults.h"
 
 using namespace protostream;
 
@@ -16,7 +17,6 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , positionCachedFor_(-1)
     , SimulationLayer(name)
 {
-    setColors(fileName);
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());
     std::cout << header.simulation_name() << std::endl;
@@ -29,29 +29,19 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
               std::cout << "Failed to parse keyframe." << std::endl;
         }
     }
-    std::cout << keyframes_.size() << std::endl;\
-    /*std::vector<std::string> binderColorMap {
-        "LAM",
-        "BIN"
-    };
-    std::map<std::vector<int>, std::string> evColorMap {
-        {{0, 0}, "UNB"},
-        {{0, 1}, "BOU"},
-        {{1, 0}, "LAM"},
-        {{2, 0}, "LAM"}
-    };*/
+    std::cout << keyframes_.size() << std::endl;
 
     for (const auto& binder : keyframes_[0].binders()) {
-        binderTypes.push_back(binderColorMap[binder.binder_type()]);
+        binderTypes.push_back(Defaults::bt2typename(binder.binder_type()));
     }
     for (const auto& chain : header.chains()) {
-        std::vector<std::string> types;
+        std::vector<int> types;
         for (const auto& beadDesc : chain.beads()) {
             std::vector<int> w(header.binders_types_count(), 0);
             for (const auto& binding : beadDesc.energy_vector()) {
                 w[binding.binder_type()] = binding.force();
             }
-            types.push_back(evColorMap[w]);
+            types.push_back(Defaults::ev2typename(w));
         }
         chainAtomTypes.push_back(types);
     }
@@ -98,50 +88,6 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string & fileName)
     : ProtobufSimulationLayer(fileName, fileName)
 {}
-
-class colors_file_not_found_exception : public std::exception
-{
-  virtual const char* what() const throw()
-  {
-    return "Colors file not found.";
-  }
-} ex;
-
-void ProtobufSimulationLayer::setColors(const std::string & simFileName)
-{
-    std::string fileName = simFileName;
-    std::cout << "NO ELO" << fileName << std::endl;
-    std::size_t found = fileName.find("bin");
-    fileName.replace(found, 3, "pdb.meta");
-    std::ifstream file(fileName);
-    if (!file.good()) {
-        throw ex;
-    }
-    std::string s;
-    while (getline(file, s)) {
-        std::cout << "linia: " << s << std::endl;
-        if (s.find("EV") != std::string::npos) {
-            char s2[10], s3[10];
-            sscanf(s.c_str(), "EV [%[^]]] %s", &s2, &s3);
-            printf("jeden: %s, dwa: %s.\n", s2, s3);
-            char * p = strtok(s2, ",");
-            std::vector<int> bindingSitesTypes;
-            while (p) {
-                int x = atoi(p);
-                bindingSitesTypes.push_back(x);
-                printf("Token: %d\n", x);
-                p = strtok(NULL, " ");
-            }
-            evColorMap[bindingSitesTypes] = std::string(s3);
-        } else if (s.find("BT") != std::string::npos) {
-            char s2[10];
-            int type;
-            sscanf(s.c_str(), "BT %d %s", &type, &s2);
-            printf("Numer typu: %d, nazwa: %s.\n", type, s2);
-            binderColorMap.push_back(std::string(s2));
-        }
-    }
-}
 
 struct lex_comp
 {
@@ -229,7 +175,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         auto& point = binder.position();
         Atom a;
         a.id = aid++;
-        strcpy(a.type, binderTypes[a.id - 1].c_str());
+        a.tn = binderTypes[a.id - 1];
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
@@ -240,13 +186,12 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
 
     for (int i = 0; i < kf.chains_size(); i++) {
         auto& chain = kf.chains(i);
-        int old = aid;
         connectedRanges.push_back({ aid, aid + chain.bead_positions_size() - 1 });
         for (int j = 0; j < chain.bead_positions_size(); j++) {
             auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
-            strcpy(a.type, chainAtomTypes[i][j].c_str());
+            a.tn = chainAtomTypes[i][j];
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();

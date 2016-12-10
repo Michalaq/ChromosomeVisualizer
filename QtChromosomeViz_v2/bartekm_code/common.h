@@ -25,6 +25,7 @@ struct Atom {
     char type[4];
     float x, y, z;
     int layerNo, inLayerId;
+    int tn = -1;
 };
 
 inline bool operator ==(const Atom& lhs, const Atom &rhs) {

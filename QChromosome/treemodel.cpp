@@ -138,6 +138,8 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
+#include "defaults.h"
+
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
     TreeItem* root = new TreeItem({QString("Chromosome") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChromosomeObject}, parent);
@@ -146,7 +148,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
     for (auto atom = first; atom != last; atom++)
     {
-        QString t(atom->type);
+        QString t(atom->tn == -1 ? atom->type : Defaults::typename2label(atom->tn));
 
         if (!types.contains(t))
             types[t] = new TreeItem({t, NodeType::BinderObject}, root);
@@ -181,7 +183,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     for (auto i = 0; i < atoms.size(); i++)
         if (!used.testBit(i))
         {
-            QString t(atoms[i].type);
+            QString t(atoms[i].tn == -1 ? atoms[i].type : Defaults::typename2label(atoms[i].tn));
 
             if (!types.contains(t))
                 types[t] = new TreeItem({t, NodeType::BinderObject}, root);
