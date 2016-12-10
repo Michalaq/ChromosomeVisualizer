@@ -62,6 +62,8 @@ std::vector<int> parseJsonArray(QByteArray stream, bool *ok = Q_NULLPTR)
     return ans;
 }
 
+#include "picker.h"
+
 Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
@@ -175,6 +177,30 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });
+    //TODO this should be implemented using QAbstractItemDelegate
+    for (int i = 0; i < 2; i++)
+    {
+        Picker *p = new Picker;
+        ui->tableWidget->setCellWidget(i, 2, p);
+        p->setValue(ui->tableWidget->item(i, 2)->data(Qt::DisplayRole));
+
+        connect(p, &Picker::valueChanged, [=](QColor c) {
+            ui->tableWidget->setCurrentCell(i, 2);
+            ui->tableWidget->currentItem()->setData(Qt::DisplayRole, c.name());
+        });
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        Picker *p = new Picker;
+        ui->tableWidget_2->setCellWidget(i, 2, p);
+        p->setValue(ui->tableWidget_2->item(i, 2)->data(Qt::DisplayRole));
+
+        connect(p, &Picker::valueChanged, [=](QColor c) {
+            ui->tableWidget_2->setCurrentCell(i, 2);
+            ui->tableWidget_2->currentItem()->setData(Qt::DisplayRole, c.name());
+        });
+    }
 }
 
 Defaults::~Defaults()
