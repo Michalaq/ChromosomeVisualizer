@@ -51,5 +51,8 @@
         <file alias="move x">icons/move_x_icon.svg</file>
         <file alias="move y">icons/move_y_icon.svg</file>
         <file alias="move z">icons/move_z_icon.svg</file>
+        <file alias="lock y">icons/y_icon.svg</file>
+        <file alias="lock x">icons/x_icon.svg</file>
+        <file alias="lock z">icons/z_icon.svg</file>
     </qresource>
 </RCC>
