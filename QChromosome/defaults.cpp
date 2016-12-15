@@ -189,6 +189,49 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });
+
+    connect(ui->tableWidget_3, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+        previous = i->data(Qt::DisplayRole);
+        key3 = ui->tableWidget_3->item(i->row(), 0)->data(Qt::DisplayRole).toString().toStdString();
+        key = rs2tn[key3];
+    });
+
+    connect(ui->tableWidget_3, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
+        int c = i->column();
+        switch (c)
+        {
+        case 0: // residue name
+            {
+                auto v = i->data(Qt::DisplayRole).toString().toStdString();
+                if (!rs2tn.contains(v))
+                {
+                    auto oldtn = rs2tn.take(key3);
+                    rs2tn.insert(v, oldtn);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            break;
+        case 1: // atom color
+            if (i->data(Qt::DisplayRole).canConvert<QString>())
+            {
+                auto c = QColor(i->data(Qt::DisplayRole).toString());
+                if (c.isValid())
+                {
+                    auto v = tn2defaults.take(key);
+                    v.second = c;
+                    tn2defaults.insert(key, v);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            else
+                i->setData(Qt::DisplayRole, previous);
+            break;
+        }
+
+        previous = i->data(Qt::DisplayRole);
+    });
     //TODO this should be implemented using QAbstractItemDelegate
     for (int i = 0; i < 2; i++)
     {

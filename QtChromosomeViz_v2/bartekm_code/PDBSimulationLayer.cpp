@@ -299,18 +299,22 @@ bool PDBSimulationLayer::reachedEndOfFile() const
     return reachedEndOfFile_;
 }
 
+#include "defaults.h"
+
 Atom PDBSimulationLayer::getAtomFromString(const std::string & str)
 {
     Atom a;
     int x, y, z;
+    char type[4];
 
     if (str[21] != ' ') {
         sscanf(str.c_str(), "ATOM %d %*c %s %*c %*d %d.%*s %d.%*s %d.%*s",
-            &a.id, &a.type, &x, &y, &z);
+            &a.id, type, &x, &y, &z);
     } else {
         sscanf(str.c_str(), "ATOM %d %*c %s %*d %d.%*s %d.%*s %d.%*s",
-            &a.id, &a.type, &x, &y, &z);
+            &a.id, type, &x, &y, &z);
     }
+    a.tn = Defaults::rs2typename(type);
     a.x = x;
     a.y = y;
     a.z = z;

@@ -39,6 +39,7 @@ private:
     QVariant previous;
     int key, key1;
     std::vector<int> key2;
+    std::string key3;
 
     QVector<QByteArray> dump;
 
