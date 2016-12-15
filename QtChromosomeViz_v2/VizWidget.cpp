@@ -5,6 +5,7 @@
 
 static const float EPSILON = 1e-4;
 static const int SELECTED_FLAG = 1 << 2;
+static const int VISIBLE_FLAG = 1 << 3;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -300,6 +301,7 @@ void VizWidget::initializeGL()
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere.geom");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
     assert(sphereProgram_.link());
 
@@ -310,6 +312,7 @@ void VizWidget::initializeGL()
 
     assert(pickingProgram_.create());
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere.geom");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
 }
