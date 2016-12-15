@@ -314,7 +314,7 @@ Atom PDBSimulationLayer::getAtomFromString(const std::string & str)
         sscanf(str.c_str(), "ATOM %d %*c %s %*d %d.%*s %d.%*s %d.%*s",
             &a.id, type, &x, &y, &z);
     }
-    a.tn = Defaults::rs2typename(type);
+    a.type = Defaults::rs2typename(type);
     a.x = x;
     a.y = y;
     a.z = z;

@@ -508,7 +508,7 @@ void VizWidget::setFirstFrame()
 
     // Assign appropriate default colors
     for (unsigned int i = 0; i < sphereCount_; i++)
-        frameState_[i].color = Defaults::typename2color(frame->atoms[i].tn).rgba();
+        frameState_[i].color = Defaults::typename2color(frame->atoms[i].type).rgba();
 
     needVBOUpdate_ = true;
     update();
@@ -846,7 +846,7 @@ AtomSelection VizWidget::atomTypeSelection(const char * s)
     const auto frame = simulation_->getFrame(0);
     for (unsigned int i = 0; i < sphereCount_; i++)
     {
-        if (strcmp(frame->atoms[i].type, s) == 0)
+        if (strcmp(Defaults::typename2label(frame->atoms[i].type), s) == 0)
             l.push_back(i);
     }
 
