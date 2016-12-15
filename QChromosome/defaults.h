@@ -19,6 +19,7 @@ public:
 
     static int bt2typename(int bt);
     static int ev2typename(std::vector<int> ev);
+    static int rs2typename(std::string rs);
 
     static const char *typename2label(int tn);
     static QColor typename2color(int tn);
@@ -32,6 +33,7 @@ private:
 
     static QMap<int, int> bt2tn; // maps binder type to its typename
     static QMap<std::vector<int>, int> ev2tn; // maps energy vector to bead typename
+    static QMap<std::string, int> rs2tn; // maps residue name to typename
     static QMap<int, QPair<const char*, QColor>> tn2defaults; // maps typenames to their defaults
 
     QVariant previous;
