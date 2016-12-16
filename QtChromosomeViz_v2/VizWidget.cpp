@@ -5,6 +5,7 @@
 
 static const float EPSILON = 1e-4;
 static const int SELECTED_FLAG = 1 << 2;
+static const int VISIBLE_FLAG = 1 << 3;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -300,6 +301,7 @@ void VizWidget::initializeGL()
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere.geom");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
     assert(sphereProgram_.link());
 
@@ -310,6 +312,7 @@ void VizWidget::initializeGL()
 
     assert(pickingProgram_.create());
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere.geom");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
 }
@@ -493,6 +496,7 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.release();
 
     selectedBitmap_.fill(false, sphereCount_);
+    visibleBitmap_.fill(true, sphereCount_);
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
@@ -507,18 +511,8 @@ void VizWidget::setFirstFrame()
     setFrame(0);
 
     // Assign appropriate default colors
-    atomTypeSelection("UNB").setColor(0xFF0000);//TODO wywalić po implementacji typów dla pdb
-    atomTypeSelection("BOU").setColor(0x00FF00);
-    atomTypeSelection("LAM").setColor(0x0000FF);
-
-    auto selection = atomTypeSelection("BIN");
-    selection.setColor(Qt::white);
-    selection.setAlpha(0.5f);
-    selection.setSpecularColor(QRgb(0x000000));
-
     for (unsigned int i = 0; i < sphereCount_; i++)
-        if (frame->atoms[i].tn != -1)
-            frameState_[i].color = Defaults::typename2color(frame->atoms[i].tn).rgba();
+        frameState_[i].color = Defaults::typename2color(frame->atoms[i].type).rgba();
 
     needVBOUpdate_ = true;
     update();
@@ -537,6 +531,8 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].flags = 0;
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
+        if (visibleBitmap_[a.id - 1])
+            frameState_[a.id - 1].flags |= VISIBLE_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
@@ -856,7 +852,7 @@ AtomSelection VizWidget::atomTypeSelection(const char * s)
     const auto frame = simulation_->getFrame(0);
     for (unsigned int i = 0; i < sphereCount_; i++)
     {
-        if (strcmp(frame->atoms[i].type, s) == 0)
+        if (strcmp(Defaults::typename2label(frame->atoms[i].type), s) == 0)
             l.push_back(i);
     }
 
@@ -1151,6 +1147,15 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
+void AtomSelection::setVisible(bool visible)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->visibleBitmap_[i] = visible;
+
+    widget_->needVBOUpdate_ = true;
+    widget_->update();
+}
+
 QVariant AtomSelection::getColor() const
 {
     if (selectedIndices_.isEmpty())
@@ -1271,6 +1276,25 @@ QList<QVariant> AtomSelection::getCoordinates() const
     ans.push_back(qIsNaN(z) ? QVariant() : z);
 
     return ans;
+}
+
+int AtomSelection::getVisibility() const
+{
+    int a = 0, b = 0;
+
+    for (auto i : selectedIndices_)
+    {
+        if (widget_->frameState_[i].flags & VISIBLE_FLAG)
+            a++;
+        else
+            b++;
+    }
+
+    if (a == 0)
+        return 2;
+    if (b == 0)
+        return 1;
+    return 0;
 }
 
 unsigned int AtomSelection::atomCount() const

@@ -6,5 +6,6 @@
         <file>cylinder.vert</file>
         <file>label.vert</file>
         <file>label.frag</file>
+        <file>sphere.geom</file>
     </qresource>
 </RCC>

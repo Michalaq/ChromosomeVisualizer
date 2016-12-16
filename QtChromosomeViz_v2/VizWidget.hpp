@@ -57,6 +57,7 @@ public:
     void setSpecularExponent(float exponent);
     void setSize(float size);
     void setLabel(const QString & label);
+    void setVisible(bool visible = true);
 
     QVariant getColor() const;
     QVariant getAlpha() const;
@@ -65,6 +66,7 @@ public:
     QVariant getSize() const;
     QVariant getLabel() const;
     QList<QVariant> getCoordinates() const;
+    int getVisibility() const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -212,6 +214,7 @@ private:
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     AtomSelection currentSelection_;
     QVector<bool> selectedBitmap_;
+    QVector<bool> visibleBitmap_;
 
     QRect selectionRect() const;
     QList<unsigned int> pickSpheres();

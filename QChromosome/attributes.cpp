@@ -16,6 +16,18 @@ Attributes::Attributes(QWidget *parent) :
     });
 
     // set vie
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
+        switch (i) {
+        case 0: // default
+            break;
+        case 1: // on
+            vizWidget_->selectedSpheresObject().setVisible(true);
+            break;
+        case 2: // off
+            vizWidget_->selectedSpheresObject().setVisible(false);
+            break;
+        }
+    });
 
     // set vir
 
@@ -98,6 +110,9 @@ void Attributes::handleSelection(const AtomSelection &selection)
     auto l = selection.getLabel();
 
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
+
+    // set vie
+    ui->comboBox->setCurrentIndex(selection.getVisibility());
 
     // set coordinates
     auto c = selection.getCoordinates();
