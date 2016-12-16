@@ -103,7 +103,7 @@ public slots:
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);
 
-    void setSelectionRect(const QRect& sr, Qt::KeyboardModifiers m);
+    void setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m);
 
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
@@ -204,7 +204,7 @@ private:
     AtomSelection currentSelection_;
     QVector<bool> selectedBitmap_;
 
-    QRect selectionRect;
+    QPainterPath selectionPath;
     QList<unsigned int> pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;

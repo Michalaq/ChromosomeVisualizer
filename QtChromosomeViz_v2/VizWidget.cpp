@@ -708,9 +708,9 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.release();
 }
 
-void VizWidget::setSelectionRect(const QRect& sr, Qt::KeyboardModifiers m)
+void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
 {
-    selectionRect = sr;
+    selectionPath = p;
 
     const bool ctrl = m & Qt::ControlModifier;
     const bool shift = m & Qt::ShiftModifier;
@@ -969,14 +969,17 @@ QList<unsigned int> VizWidget::pickSpheres()
 
     QSet<unsigned int> ballIDs;
 
-    const auto r = selectionRect;
+    const auto r = selectionPath.boundingRect();
     for (int y = r.top(); y <= r.bottom(); y++)
     {
         for (int x = r.left(); x <= r.right(); x++)
         {
-            auto color = image.pixel(x, y);
-            if (color != 0xFFFFFFFFU)
-                ballIDs.insert(color);
+            if (selectionPath.contains(QPointF(x, y)))
+            {
+                auto color = image.pixel(x, y);
+                if (color != 0xFFFFFFFFU)
+                    ballIDs.insert(color);
+            }
         }
     }
 

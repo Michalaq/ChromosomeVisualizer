@@ -1259,7 +1259,8 @@ Label {
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
-    <slot>setSelectionRect(QRect,Qt::KeyboardModifiers)</slot>
+    <slot>setSelectingState(bool)</slot>
+    <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -1363,7 +1364,7 @@ Label {
    <header>selection.h</header>
    <container>1</container>
    <slots>
-    <signal>selectionRectChanged(QRect,Qt::KeyboardModifiers)</signal>
+    <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
     <slot>enableSelecting(bool)</slot>
    </slots>
   </customwidget>
@@ -1886,9 +1887,9 @@ Label {
   </connection>
   <connection>
    <sender>widget_3</sender>
-   <signal>selectionRectChanged(QRect,Qt::KeyboardModifiers)</signal>
+   <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
    <receiver>scene</receiver>
-   <slot>setSelectionRect(QRect,Qt::KeyboardModifiers)</slot>
+   <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>286</x>

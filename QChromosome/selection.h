@@ -21,9 +21,10 @@ private:
     QPoint tl, br;
     bool isSelecting, isSelectingState;
     QRect sr;
+    QPainterPath path;
 
 signals:
-    void selectionRectChanged(const QRect&, Qt::KeyboardModifiers);
+    void selectionPathChanged(const QPainterPath&, Qt::KeyboardModifiers);
 
 public slots:
     void enableSelecting(bool b);

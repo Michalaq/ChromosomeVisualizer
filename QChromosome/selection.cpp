@@ -18,9 +18,11 @@ void Selection::paintEvent(QPaintEvent *)
     if (isSelecting)
     {
         QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing);
 
         p.setPen(Qt::white);
-        p.drawRect(sr.adjusted(0, 0, -1, -1));
+        //p.drawRect(sr.adjusted(0, 0, -1, -1));
+        p.drawPath(path);
     }
 }
 
@@ -32,8 +34,10 @@ void Selection::mousePressEvent(QMouseEvent *event)
 
     QApplication::setOverrideCursor(Qt::CrossCursor);
 
-    tl = br = event->pos();
-    sr = QRect(tl, br).intersected(rect());
+    //tl = br = event->pos();
+    //sr = QRect(tl, br).intersected(rect());
+    path = QPainterPath();
+    path.moveTo(event->pos());
 
     isSelecting = true;
     update();
@@ -45,8 +49,9 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
 {
     QWidget::mouseMoveEvent(event);
 
-    br = event->pos();
-    sr = QRect(tl, br).intersected(rect());
+    //br = event->pos();
+    //sr = QRect(tl, br).intersected(rect());
+    path.lineTo(event->pos());
 
     update();
 
@@ -59,7 +64,8 @@ void Selection::mouseReleaseEvent(QMouseEvent *event)
 
     QApplication::restoreOverrideCursor();
 
-    emit selectionRectChanged(sr, event->modifiers());
+    //emit selectionPathChanged(sr, event->modifiers());
+    emit selectionPathChanged(path, event->modifiers());
 
     isSelecting = false;
     update();
