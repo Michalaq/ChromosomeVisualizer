@@ -28,7 +28,7 @@ void Selection::paintEvent(QPaintEvent *)
         switch (st)
         {
         case RECTANGULAR_SELECTION:
-            p.drawRect(sr.adjusted(0, 0, -1, -1));
+            p.drawRect(sr);
             break;
         case CUSTOM_SHAPE_SELECTION:
             p.drawPath(path);
@@ -49,7 +49,7 @@ void Selection::mousePressEvent(QMouseEvent *event)
     {
     case RECTANGULAR_SELECTION:
         tl = br = event->pos();
-        sr = QRect(tl, br).intersected(rect());
+        sr = QRect(tl, br);
         break;
     case CUSTOM_SHAPE_SELECTION:
         path = QPainterPath();
@@ -63,6 +63,17 @@ void Selection::mousePressEvent(QMouseEvent *event)
     event->accept();
 }
 
+QPoint inbounds(QPoint p, QRect r)
+{
+    if (p.x() < r.left()) p.setX(r.left());
+    if (p.x() > r.right()) p.setX(r.right());
+
+    if (p.y() < r.top()) p.setY(r.top());
+    if (p.y() > r.bottom()) p.setY(r.bottom());
+
+    return p;
+}
+
 void Selection::mouseMoveEvent(QMouseEvent *event)
 {
     QWidget::mouseMoveEvent(event);
@@ -70,11 +81,11 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
     switch (st)
     {
     case RECTANGULAR_SELECTION:
-        br = event->pos();
-        sr = QRect(tl, br).intersected(rect());
+        br = inbounds(event->pos(), rect());
+        sr = QRect(tl, br).adjusted(0, 0, -1, -1);
         break;
     case CUSTOM_SHAPE_SELECTION:
-        path.lineTo(event->pos());
+        path.lineTo(inbounds(event->pos(), rect()));
         break;
     }
 
