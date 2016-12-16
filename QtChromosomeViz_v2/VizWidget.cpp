@@ -38,9 +38,7 @@ VizWidget::VizWidget(QWidget *parent)
     , needVBOUpdate_(true)
     , fogDensity_(0.01f)
     , fogContribution_(0.8f)
-    , isSelecting_(false)
     , pickingFramebuffer_(nullptr)
-    , isSelectingState_(false)
     , currentSelection_(this)
     , ballQualityParameters_(0, 0)
     , labelRenderer_(QSizeF(800, 600))
@@ -48,14 +46,7 @@ VizWidget::VizWidget(QWidget *parent)
     , labelTextColor_(255, 255, 255)
     , labelBackgroundColor_(0, 0, 0, 255)
 {
-    selectionRectWidget_ = new SelectionRectWidget();
-    selectionRectWidget_->setVisible(false);
 
-    QVBoxLayout * layout = new QVBoxLayout();
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(selectionRectWidget_);
-
-    setLayout(layout);
 }
 
 VizWidget::~VizWidget()
@@ -453,16 +444,6 @@ void VizWidget::setProjection(QMatrix4x4 mat)
     update();
 }
 
-void VizWidget::setSelectingState(bool flag)
-{
-    isSelectingState_ = flag;
-
-    if (flag)
-        setCursor(Qt::CrossCursor);
-    else
-        unsetCursor();
-}
-
 void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
 {
     simulation_ = std::move(dp);
@@ -732,88 +713,46 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.release();
 }
 
-void VizWidget::mousePressEvent(QMouseEvent * event)
+void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
 {
-    if (!isSelectingState_)
-        return event->ignore();
+    selectionPath = p;
 
-    isSelecting_ = true;
-    selectionRectWidget_->setVisible(true);
-    selectionPoints_[0] = event->pos();
-    selectionPoints_[1] = event->pos();
+    const bool ctrl = m & Qt::ControlModifier;
+    const bool shift = m & Qt::ShiftModifier;
 
-    selectionRectWidget_->setRectangle(selectionRect());
-}
-
-void VizWidget::mouseMoveEvent(QMouseEvent * event)
-{
-    if (!isSelectingState_)
-        return event->ignore();
-
-    if (isSelecting_)
+    if (!(ctrl || shift))
     {
-        QRegion r;
-        r += selectionRect();
-        selectionPoints_[1] = event->pos();
-        r += selectionRect();
-        selectionRectWidget_->setRectangle(selectionRect());
-        update(r);
+        // Clear old selection
+        for (auto & sphere : selectedBitmap_)
+            sphere = false;
     }
-}
 
-void VizWidget::mouseReleaseEvent(QMouseEvent * event)
-{
-    selectionRectWidget_->setVisible(false);
+    auto oldAtoms = selectedSpheres();
+    auto oldIndices = selectedSphereIndices();
+    auto pickedIndices = pickSpheres();
 
-    if (!isSelectingState_)
-        return event->ignore();
+    // New selection
+    for (const auto & id : pickedIndices)
+        selectedBitmap_[id] = !ctrl;
 
-    if (isSelecting_)
+    // Now we can get the real list of all selected atoms
+    QList<unsigned int> newIndices;
+    for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
     {
-        isSelecting_ = false;
-
-        const bool ctrl = event->modifiers() & Qt::ControlModifier;
-        const bool shift = event->modifiers() & Qt::ShiftModifier;
-
-        if (!(ctrl || shift))
-        {
-            // Clear old selection
-            for (auto & sphere : selectedBitmap_)
-                sphere = false;
-        }
-
-        auto oldAtoms = selectedSpheres();
-        auto oldIndices = selectedSphereIndices();
-        auto pickedIndices = pickSpheres();
-
-        // New selection
-        for (const auto & id : pickedIndices)
-            selectedBitmap_[id] = !ctrl;
-
-        // Now we can get the real list of all selected atoms
-        QList<unsigned int> newIndices;
-        for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
-        {
-            if (selectedBitmap_[i])
-                newIndices.push_back(i);
-        }
-
-        AtomSelection nuSelectionObject(newIndices, this);
-        qSwap(currentSelection_, nuSelectionObject);
-
-        // That's a hack, but it forces updating the flags
-        setFrame(frameNumber_);
-        update();
-
-        emit selectionChangedIndices(newIndices, oldIndices);
-        emit selectionChanged(selectedSpheres(), oldAtoms);
-        emit selectionChangedObject(selectedSpheresObject());
+        if (selectedBitmap_[i])
+            newIndices.push_back(i);
     }
-}
 
-bool VizWidget::isSelecting() const
-{
-    return isSelecting_;
+    AtomSelection nuSelectionObject(newIndices, this);
+    qSwap(currentSelection_, nuSelectionObject);
+
+    // That's a hack, but it forces updating the flags
+    setFrame(frameNumber_);
+    update();
+
+    emit selectionChangedIndices(newIndices, oldIndices);
+    emit selectionChanged(selectedSpheres(), oldAtoms);
+    emit selectionChangedObject(selectedSpheresObject());
 }
 
 QList<unsigned int> VizWidget::selectedSphereIndices() const
@@ -973,13 +912,6 @@ void VizWidget::generateSortedState()
     qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
 }
 
-QRect VizWidget::selectionRect() const
-{
-    QRect r1(selectionPoints_[0], QSize(1, 1));
-    QRect r2(selectionPoints_[1], QSize(1, 1));
-    return r1.united(r2).intersected(geometry());
-}
-
 QList<unsigned int> VizWidget::pickSpheres()
 {
     makeCurrent();
@@ -1040,9 +972,16 @@ QList<unsigned int> VizWidget::pickSpheres()
     QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(),
                  QImage::Format_ARGB32);
 
+    auto mask = QPainterPath();
+    mask.addRect(image.rect());
+    mask = mask.subtracted(selectionPath);
+
+    QPainter p(&image);
+    p.fillPath(mask, QColor(0xFFFFFFFFU));
+
     QSet<unsigned int> ballIDs;
 
-    const auto r = selectionRect();
+    const auto r = selectionPath.boundingRect();
     for (int y = r.top(); y <= r.bottom(); y++)
     {
         for (int x = r.left(); x <= r.right(); x++)

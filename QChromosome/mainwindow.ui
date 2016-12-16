@@ -372,6 +372,9 @@ Label {
             <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
             </item>
+            <item row="0" column="0">
+             <widget class="Selection" name="widget_3" native="true"/>
+            </item>
            </layout>
           </widget>
          </item>
@@ -804,6 +807,7 @@ Label {
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelect"/>
+   <addaction name="actionCustom"/>
    <addaction name="actionFocus"/>
    <addaction name="separator"/>
    <addaction name="actionMove"/>
@@ -1322,6 +1326,18 @@ Label {
     <string>Focus</string>
    </property>
   </action>
+  <action name="actionCustom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/custom</normaloff>:/selection/custom</iconset>
+   </property>
+   <property name="text">
+    <string>Custom</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -1345,6 +1361,7 @@ Label {
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
     <slot>setSelectingState(bool)</slot>
+    <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -1448,6 +1465,16 @@ Label {
    <header>keyframe.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>Selection</class>
+   <extends>QWidget</extends>
+   <header>selection.h</header>
+   <container>1</container>
+   <slots>
+    <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
+    <slot>enableSelecting(bool)</slot>
+   </slots>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
@@ -1488,16 +1515,16 @@ Label {
   <connection>
    <sender>actionSelect</sender>
    <signal>toggled(bool)</signal>
-   <receiver>scene</receiver>
-   <slot>setSelectingState(bool)</slot>
+   <receiver>widget_3</receiver>
+   <slot>enableSelecting(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>199</x>
-     <y>200</y>
+     <x>286</x>
+     <y>131</y>
     </hint>
    </hints>
   </connection>
@@ -1998,6 +2025,22 @@ Label {
    </hints>
   </connection>
   <connection>
+   <sender>widget_3</sender>
+   <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
+   <receiver>scene</receiver>
+   <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>286</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>actionZLock</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
@@ -2010,6 +2053,22 @@ Label {
     <hint type="destinationlabel">
      <x>423</x>
      <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionCustom</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>widget_3</receiver>
+   <slot>enableSelecting(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>131</y>
     </hint>
    </hints>
   </connection>
