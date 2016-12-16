@@ -9,7 +9,6 @@
 
 #include "bartekm_code/Simulation.h"
 #include "LabelRenderer.hpp"
-#include "SelectionRectWidget.hpp"
 
 struct VizVertex
 {
@@ -106,12 +105,11 @@ public slots:
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);
 
-    void setSelectingState(bool flag);
+    void setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m);
 
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
 
-    bool isSelecting() const;
     QList<unsigned int> selectedSphereIndices() const;
     QList<Atom> selectedSpheres() const;
     AtomSelection selectedSpheresObject() const;
@@ -168,10 +166,6 @@ protected:
     void setFirstFrame();
     void updateWholeFrameData();
 
-    virtual void mousePressEvent(QMouseEvent * event) override final;
-    virtual void mouseMoveEvent(QMouseEvent * event) override final;
-    virtual void mouseReleaseEvent(QMouseEvent * event) override final;
-
 private:
     QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
@@ -208,15 +202,12 @@ private:
     QVector<VizLink> linksState_;
     void generateSortedState();
 
-    bool isSelecting_;
-    bool isSelectingState_;
-    QPoint selectionPoints_[2];
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     AtomSelection currentSelection_;
     QVector<bool> selectedBitmap_;
     QVector<bool> visibleBitmap_;
 
-    QRect selectionRect() const;
+    QPainterPath selectionPath;
     QList<unsigned int> pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;
@@ -224,7 +215,6 @@ private:
     QMap<unsigned int, QString> atomLabels_;
 
     LabelRenderer labelRenderer_;
-    SelectionRectWidget * selectionRectWidget_;
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;

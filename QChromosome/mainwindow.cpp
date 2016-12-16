@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     actionGroup->addAction(ui->actionSelect);
+    actionGroup->addAction(ui->actionCustom);
     actionGroup->addAction(ui->actionMove);
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
@@ -180,6 +181,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
         focusSelection(ui->scene->selectedSpheresObject());
+    });
+
+    connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
+        if (checked)
+            ui->widget_3->setSelectionType(SelectionType::RECTANGULAR_SELECTION);
+    });
+
+    connect(ui->actionCustom, &QAction::toggled, [this](bool checked) {
+        if (checked)
+            ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
     newProject();
