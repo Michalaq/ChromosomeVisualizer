@@ -511,18 +511,8 @@ void VizWidget::setFirstFrame()
     setFrame(0);
 
     // Assign appropriate default colors
-    atomTypeSelection("UNB").setColor(0xFF0000);//TODO wywalić po implementacji typów dla pdb
-    atomTypeSelection("BOU").setColor(0x00FF00);
-    atomTypeSelection("LAM").setColor(0x0000FF);
-
-    auto selection = atomTypeSelection("BIN");
-    selection.setColor(Qt::white);
-    selection.setAlpha(0.5f);
-    selection.setSpecularColor(QRgb(0x000000));
-
     for (unsigned int i = 0; i < sphereCount_; i++)
-        if (frame->atoms[i].tn != -1)
-            frameState_[i].color = Defaults::typename2color(frame->atoms[i].tn).rgba();
+        frameState_[i].color = Defaults::typename2color(frame->atoms[i].type).rgba();
 
     needVBOUpdate_ = true;
     update();
@@ -862,7 +852,7 @@ AtomSelection VizWidget::atomTypeSelection(const char * s)
     const auto frame = simulation_->getFrame(0);
     for (unsigned int i = 0; i < sphereCount_; i++)
     {
-        if (strcmp(frame->atoms[i].type, s) == 0)
+        if (strcmp(Defaults::typename2label(frame->atoms[i].type), s) == 0)
             l.push_back(i);
     }
 

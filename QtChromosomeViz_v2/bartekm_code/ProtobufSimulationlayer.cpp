@@ -175,7 +175,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         auto& point = binder.position();
         Atom a;
         a.id = aid++;
-        a.tn = binderTypes[a.id - 1];
+        a.type = binderTypes[a.id - 1];
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
@@ -191,7 +191,7 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
             auto& point = chain.bead_positions(j);
             Atom a;
             a.id = aid++;
-            a.tn = chainAtomTypes[i][j];
+            a.type = chainAtomTypes[i][j];
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();

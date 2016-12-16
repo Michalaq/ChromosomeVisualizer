@@ -144,14 +144,14 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 {
     TreeItem* root = new TreeItem({QString("Chromosome") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChromosomeObject}, parent);
 
-    QMap<QString, TreeItem*> types;
+    QMap<int, TreeItem*> types;
 
     for (auto atom = first; atom != last; atom++)
     {
-        QString t(atom->tn == -1 ? atom->type : Defaults::typename2label(atom->tn));//TODO wywalić po implementacji typów dla pdb
+        int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({t, NodeType::BinderObject}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
 
         types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset}, types[t]));
     }
@@ -178,15 +178,15 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
         appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root);
     }
 
-    QMap<QString, TreeItem*> types;
+    QMap<int, TreeItem*> types;
 
     for (auto i = 0; i < atoms.size(); i++)
         if (!used.testBit(i))
         {
-            QString t(atoms[i].tn == -1 ? atoms[i].type : Defaults::typename2label(atoms[i].tn));//TODO wywalić po implementacji typów dla pdb
+            int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({t, NodeType::BinderObject}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
 
             types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset}, types[t]));
         }

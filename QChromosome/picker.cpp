@@ -14,6 +14,11 @@ void Picker::setValue(const QVariant& c)
     update();
 }
 
+void Picker::showAlphaChannel(bool c)
+{
+    alpha = c;
+}
+
 #include <QStylePainter>
 
 void Picker::paintEvent(QPaintEvent *)
@@ -29,8 +34,13 @@ void Picker::paintEvent(QPaintEvent *)
     // draw color indicator
     if (color.isValid())
     {
-        painter.translate(22, 0);
-        QPainter(this).fillRect(5, 5, 22, 22, color.value<QColor>());
+        // draw alpha chessboard
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                painter.fillRect(4 + 6 * i, 4 + 6 * j, 6, 6, (i + j) % 2 ? "#666666" : "#999999");
+
+        painter.translate(28, 0);
+        QPainter(this).fillRect(4, 4, 24, 24, color.value<QColor>());
     }
 
     // draw the icon and text
@@ -43,7 +53,7 @@ void Picker::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
 
-    QColor c = QColorDialog::getColor(color.value<QColor>());
+    QColor c = QColorDialog::getColor(color.value<QColor>(), Q_NULLPTR, QString(), alpha ? QColorDialog::ShowAlphaChannel : QColorDialog::ColorDialogOptions());
 
     if (c.isValid() && c != color)
     {

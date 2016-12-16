@@ -11,6 +11,7 @@ public:
     explicit Picker(QWidget *parent = 0);
 
     void setValue(const QVariant& c);
+    void showAlphaChannel(bool c = true);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -18,6 +19,7 @@ protected:
 
 private:
     QVariant color;
+    bool alpha;
 
 signals:
     void valueChanged(QColor);

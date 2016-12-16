@@ -13,6 +13,13 @@ QMap<std::vector<int>, int> Defaults::ev2tn = {
     {{2,0}, 7}
 }; // maps energy vector to bead name
 
+QMap<std::string, int> Defaults::rs2tn = {
+    {"LAM", 9},
+    {"BIN", 10},
+    {"UNB", 11},
+    {"BOU", 12}
+}; // maps residue name to atom name
+
 QMap<int, QPair<const char*, QColor>> Defaults::tn2defaults = {
     {0, {"(unresolved binder type)", Qt::gray}},
     {1, {"(unresolved bead type)", Qt::gray}},
@@ -21,7 +28,12 @@ QMap<int, QPair<const char*, QColor>> Defaults::tn2defaults = {
     {4, {"UNB", Qt::red}},
     {5, {"BOU", Qt::green}},
     {6, {"LAM", Qt::blue}},
-    {7, {"LAM", Qt::blue}}
+    {7, {"LAM", Qt::blue}},
+    {8, {"(unresolved atom type)", Qt::gray}},
+    {9, {"LAM", Qt::blue}},
+    {10, {"BIN", QColor("#7fffffff")}},
+    {11, {"UNB", Qt::red}},
+    {12, {"BOU", Qt::green}},
 };
 
 int Defaults::typenames = 8;
@@ -177,10 +189,54 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });
+
+    connect(ui->tableWidget_3, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+        previous = i->data(Qt::DisplayRole);
+        key3 = ui->tableWidget_3->item(i->row(), 0)->data(Qt::DisplayRole).toString().toStdString();
+        key = rs2tn[key3];
+    });
+
+    connect(ui->tableWidget_3, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
+        int c = i->column();
+        switch (c)
+        {
+        case 0: // residue name
+            {
+                auto v = i->data(Qt::DisplayRole).toString().toStdString();
+                if (!rs2tn.contains(v))
+                {
+                    auto oldtn = rs2tn.take(key3);
+                    rs2tn.insert(v, oldtn);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            break;
+        case 1: // atom color
+            if (i->data(Qt::DisplayRole).canConvert<QString>())
+            {
+                auto c = QColor(i->data(Qt::DisplayRole).toString());
+                if (c.isValid())
+                {
+                    auto v = tn2defaults.take(key);
+                    v.second = c;
+                    tn2defaults.insert(key, v);
+                }
+                else
+                    i->setData(Qt::DisplayRole, previous);
+            }
+            else
+                i->setData(Qt::DisplayRole, previous);
+            break;
+        }
+
+        previous = i->data(Qt::DisplayRole);
+    });
     //TODO this should be implemented using QAbstractItemDelegate
     for (int i = 0; i < 2; i++)
     {
         Picker *p = new Picker;
+        p->showAlphaChannel();
         ui->tableWidget->setCellWidget(i, 2, p);
         p->setValue(ui->tableWidget->item(i, 2)->data(Qt::DisplayRole));
 
@@ -193,12 +249,26 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     for (int i = 0; i < 4; i++)
     {
         Picker *p = new Picker;
+        p->showAlphaChannel();
         ui->tableWidget_2->setCellWidget(i, 2, p);
         p->setValue(ui->tableWidget_2->item(i, 2)->data(Qt::DisplayRole));
 
         connect(p, &Picker::valueChanged, [=](QColor c) {
             ui->tableWidget_2->setCurrentCell(i, 2);
             ui->tableWidget_2->currentItem()->setData(Qt::DisplayRole, c.name());
+        });
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        Picker *p = new Picker;
+        p->showAlphaChannel();
+        ui->tableWidget_3->setCellWidget(i, 1, p);
+        p->setValue(ui->tableWidget_3->item(i, 1)->data(Qt::DisplayRole));
+
+        connect(p, &Picker::valueChanged, [=](QColor c) {
+            ui->tableWidget_3->setCurrentCell(i, 1);
+            ui->tableWidget_3->currentItem()->setData(Qt::DisplayRole, c.name());
         });
     }
 }
@@ -218,6 +288,12 @@ int Defaults::ev2typename(std::vector<int> ev)
 {
     auto i = ev2tn.find(ev);
     return i != ev2tn.end() ? i.value() : 1;
+}
+
+int Defaults::rs2typename(std::string rs)
+{
+    auto i = rs2tn.find(rs);
+    return i != rs2tn.end() ? i.value() : 8;
 }
 
 const char* Defaults::typename2label(int tn)
