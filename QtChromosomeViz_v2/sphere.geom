@@ -21,17 +21,20 @@ out vec3 cSpecularColor;
 out float fSpecularExponent;
 
 void main() {
-    for(int i = 0; i < 3; i++)
+    if ((giFlags[0] & 8u) == 8u)
     {
-        gl_Position = vPosition = gl_in[i].gl_Position;
-        vViewPosition = gvViewPosition[i];
-        vNormal = gvNormal[i];
-        iInstanceID = giInstanceID[i];
-        iFlags = giFlags[i];
-        cColor = gcColor[i];
-        cSpecularColor = gcSpecularColor[i];
-        fSpecularExponent = gfSpecularExponent[i];
-        EmitVertex();
+        for(int i = 0; i < 3; i++)
+        {
+            gl_Position = vPosition = gl_in[i].gl_Position;
+            vViewPosition = gvViewPosition[i];
+            vNormal = gvNormal[i];
+            iInstanceID = giInstanceID[i];
+            iFlags = giFlags[i];
+            cColor = gcColor[i];
+            cSpecularColor = gcSpecularColor[i];
+            fSpecularExponent = gfSpecularExponent[i];
+            EmitVertex();
+        }
+        EndPrimitive();
     }
-    EndPrimitive();
 }

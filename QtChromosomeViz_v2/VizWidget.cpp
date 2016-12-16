@@ -496,6 +496,7 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.release();
 
     selectedBitmap_.fill(false, sphereCount_);
+    visibleBitmap_.fill(true, sphereCount_);
 
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
@@ -540,6 +541,8 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].flags = 0;
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
+        if (visibleBitmap_[a.id - 1])
+            frameState_[a.id - 1].flags |= VISIBLE_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
@@ -1151,6 +1154,15 @@ void AtomSelection::setLabel(const QString & label)
         }
     }
 
+    widget_->update();
+}
+
+void AtomSelection::setVisible(bool visible)
+{
+    for (unsigned int i : selectedIndices_)
+        widget_->visibleBitmap_[i] = visible;
+
+    widget_->needVBOUpdate_ = true;
     widget_->update();
 }
 
