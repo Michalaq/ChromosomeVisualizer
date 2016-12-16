@@ -111,6 +111,9 @@ void Attributes::handleSelection(const AtomSelection &selection)
 
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
+    // set vie
+    ui->comboBox->setCurrentIndex(selection.getVisibility());
+
     // set coordinates
     auto c = selection.getCoordinates();
 

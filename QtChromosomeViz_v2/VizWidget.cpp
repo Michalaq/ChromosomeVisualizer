@@ -1288,6 +1288,25 @@ QList<QVariant> AtomSelection::getCoordinates() const
     return ans;
 }
 
+int AtomSelection::getVisibility() const
+{
+    int a = 0, b = 0;
+
+    for (auto i : selectedIndices_)
+    {
+        if (widget_->frameState_[i].flags & VISIBLE_FLAG)
+            a++;
+        else
+            b++;
+    }
+
+    if (a == 0)
+        return 2;
+    if (b == 0)
+        return 1;
+    return 0;
+}
+
 unsigned int AtomSelection::atomCount() const
 {
     return selectedIndices_.size();

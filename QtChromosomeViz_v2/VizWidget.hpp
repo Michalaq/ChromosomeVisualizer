@@ -66,6 +66,7 @@ public:
     QVariant getSize() const;
     QVariant getLabel() const;
     QList<QVariant> getCoordinates() const;
+    int getVisibility() const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
