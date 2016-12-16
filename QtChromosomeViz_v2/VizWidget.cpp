@@ -967,6 +967,13 @@ QList<unsigned int> VizWidget::pickSpheres()
     QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(),
                  QImage::Format_ARGB32);
 
+    auto mask = QPainterPath();
+    mask.addRect(image.rect());
+    mask = mask.subtracted(selectionPath);
+
+    QPainter p(&image);
+    p.fillPath(mask, QColor(0xFFFFFFFFU));
+
     QSet<unsigned int> ballIDs;
 
     const auto r = selectionPath.boundingRect();
@@ -974,12 +981,9 @@ QList<unsigned int> VizWidget::pickSpheres()
     {
         for (int x = r.left(); x <= r.right(); x++)
         {
-            if (selectionPath.contains(QPointF(x, y)))
-            {
-                auto color = image.pixel(x, y);
-                if (color != 0xFFFFFFFFU)
-                    ballIDs.insert(color);
-            }
+            auto color = image.pixel(x, y);
+            if (color != 0xFFFFFFFFU)
+                ballIDs.insert(color);
         }
     }
 
