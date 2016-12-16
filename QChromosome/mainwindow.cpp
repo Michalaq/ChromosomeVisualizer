@@ -144,6 +144,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->key, &MediaControl::clicked, this, &MainWindow::recordKeyframe);
 
+    connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
+        if (checked)
+            ui->widget_3->setSelectionType(SelectionType::RECTANGULAR_SELECTION);
+    });
+
+    connect(ui->actionCustom, &QAction::toggled, [this](bool checked) {
+        if (checked)
+            ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
+    });
+
     newProject();
 
     for (int i = 0; i < 1000000; i++)

@@ -3,12 +3,19 @@
 
 #include <QWidget>
 
+enum SelectionType {
+    CUSTOM_SHAPE_SELECTION,
+    RECTANGULAR_SELECTION
+};
+
 class Selection : public QWidget
 {
     Q_OBJECT
 public:
     explicit Selection(QWidget *parent = 0);
     ~Selection();
+
+    void setSelectionType(SelectionType t);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -22,6 +29,7 @@ private:
     bool isSelecting, isSelectingState;
     QRect sr;
     QPainterPath path;
+    SelectionType st;
 
 signals:
     void selectionPathChanged(const QPainterPath&, Qt::KeyboardModifiers);

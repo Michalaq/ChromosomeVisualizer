@@ -10,6 +10,11 @@ Selection::~Selection()
 
 }
 
+void Selection::setSelectionType(SelectionType t)
+{
+    st = t;
+}
+
 #include <QPaintEvent>
 #include <QPainter>
 
@@ -18,11 +23,17 @@ void Selection::paintEvent(QPaintEvent *)
     if (isSelecting)
     {
         QPainter p(this);
-        p.setRenderHint(QPainter::Antialiasing);
-
         p.setPen(Qt::white);
-        //p.drawRect(sr.adjusted(0, 0, -1, -1));
-        p.drawPath(path);
+
+        switch (st)
+        {
+        case RECTANGULAR_SELECTION:
+            p.drawRect(sr.adjusted(0, 0, -1, -1));
+            break;
+        case CUSTOM_SHAPE_SELECTION:
+            p.drawPath(path);
+            break;
+        }
     }
 }
 
@@ -34,10 +45,17 @@ void Selection::mousePressEvent(QMouseEvent *event)
 
     QApplication::setOverrideCursor(Qt::CrossCursor);
 
-    //tl = br = event->pos();
-    //sr = QRect(tl, br).intersected(rect());
-    path = QPainterPath();
-    path.moveTo(event->pos());
+    switch (st)
+    {
+    case RECTANGULAR_SELECTION:
+        tl = br = event->pos();
+        sr = QRect(tl, br).intersected(rect());
+        break;
+    case CUSTOM_SHAPE_SELECTION:
+        path = QPainterPath();
+        path.moveTo(event->pos());
+        break;
+    }
 
     isSelecting = true;
     update();
@@ -49,9 +67,16 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
 {
     QWidget::mouseMoveEvent(event);
 
-    //br = event->pos();
-    //sr = QRect(tl, br).intersected(rect());
-    path.lineTo(event->pos());
+    switch (st)
+    {
+    case RECTANGULAR_SELECTION:
+        br = event->pos();
+        sr = QRect(tl, br).intersected(rect());
+        break;
+    case CUSTOM_SHAPE_SELECTION:
+        path.lineTo(event->pos());
+        break;
+    }
 
     update();
 
@@ -64,7 +89,12 @@ void Selection::mouseReleaseEvent(QMouseEvent *event)
 
     QApplication::restoreOverrideCursor();
 
-    //emit selectionPathChanged(sr, event->modifiers());
+    if (st == RECTANGULAR_SELECTION)
+    {
+        path = QPainterPath();
+        path.addRect(sr);
+    }
+
     emit selectionPathChanged(path, event->modifiers());
 
     isSelecting = false;
