@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     actionGroup->addAction(ui->actionSelect);
+    actionGroup->addAction(ui->actionCustom);
     actionGroup->addAction(ui->actionMove);
     actionGroup->addAction(ui->actionRotate);
     actionGroup->addAction(ui->actionScale);
