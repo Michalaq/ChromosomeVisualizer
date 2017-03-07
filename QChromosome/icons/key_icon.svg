@@ -9,14 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48px"
-   height="48px"
-   id="svg4337"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32"
+   id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="key_icon.svg">
   <defs
-     id="defs4339" />
+     id="defs4" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,54 +25,62 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="22.559884"
-     inkscape:cy="22.432918"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     inkscape:grid-bbox="true"
+     inkscape:zoom="16"
+     inkscape:cx="8.1795606"
+     inkscape:cy="14.236019"
      inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
      inkscape:window-width="1600"
      inkscape:window-height="835"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
-     id="metadata4342">
+     id="metadata7">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1020.3622)">
     <path
        inkscape:connector-curvature="0"
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.48300004;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 39.715172,7.0943472 A 13.921165,11.15903 45 0 0 21.980879,5.1401363 13.921165,11.15903 45 0 0 23.933709,22.87581 13.921165,11.15903 45 0 0 41.668002,24.82726 13.921165,11.15903 45 0 0 39.715172,7.0943472 Z M 36.660258,10.13823 a 5.3806405,4.3485398 45 0 1 0.727823,6.879099 5.3806405,4.3485398 45 0 1 -6.877718,-0.729204 5.3806405,4.3485398 45 0 1 -0.730585,-6.8790995 5.3806405,4.3485398 45 0 1 6.88048,0.7292045 z"
+       d="m 21.361165,1030.5949 a 4.7491474,3.8068566 45 0 0 -6.04998,-0.6667 4.7491474,3.8068566 45 0 0 0.6662,6.0505 4.7491474,3.8068566 45 0 0 6.04998,0.6657 4.7491474,3.8068566 45 0 0 -0.6662,-6.0495 z m -1.042171,1.0384 a 1.8355831,1.4834862 45 0 1 0.248294,2.3468 1.8355831,1.4834862 45 0 1 -2.346305,-0.2488 1.8355831,1.4834862 45 0 1 -0.249236,-2.3468 1.8355831,1.4834862 45 0 1 2.347247,0.2488 z"
        id="path4203" />
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.48300004;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4206"
-       width="5.745244"
-       height="29.477516"
-       x="30.226252"
-       y="-4.9029884"
-       rx="2"
-       ry="2"
+       width="1.9599661"
+       height="10.056131"
+       x="742.86511"
+       y="719.8324"
+       rx="0.68229169"
+       ry="0.68229169"
        transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)" />
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 24.027577,36.530639 -3.062781,3.062781 -2.366687,-2.366686 -3,3 2.366687,2.366687 -3.000001,3 L 8.9338745,39.5625 17.996656,30.499718 Z"
+       d="m 16.009408,1040.637 -1.044855,1.0448 -0.807386,-0.8074 -1.023437,1.0235 0.807385,0.8074 -1.023438,1.0234 -2.057423,-2.0574 3.09173,-3.0917 z"
        id="path4208"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccccc" />
+    <circle
+       transform="scale(-1,-1)"
+       r="15"
+       cy="-1036.3622"
+       cx="-16"
+       id="circle4168"
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
 </svg>
