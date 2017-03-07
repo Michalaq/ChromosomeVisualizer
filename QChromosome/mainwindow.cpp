@@ -262,13 +262,18 @@ void MainWindow::newProject()
 
 void MainWindow::openProject()
 {
-    addLayer();//TODO tymczasowo
+    QString path = QFileDialog::getOpenFileName(0, "", "/home", "QChromosome 4D Project File (*.chs)");
+
+    if (!path.isEmpty())
+    {
+        newProject();
+    }
 }
 
 void MainWindow::addLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", ui->page->ui->lineEdit_2->text(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
 
         if (!path.isEmpty())
         {
