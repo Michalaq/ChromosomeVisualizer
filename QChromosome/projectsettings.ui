@@ -92,8 +92,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>238</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -140,6 +140,16 @@
            </item>
            <item>
             <widget class="FileEdit" name="lineEdit"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Local library</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="FileEdit" name="lineEdit_2"/>
            </item>
            <item>
             <widget class="QLabel" name="label_3">

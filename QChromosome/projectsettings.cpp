@@ -10,12 +10,16 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this]() {
-        QSettings settings;
-        settings.setValue("povraypath", ui->lineEdit->text());
+        QSettings().setValue("povraypath", ui->lineEdit->text());
+    });
+
+    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this]() {
+        QSettings().setValue("locallib", ui->lineEdit_2->text());
     });
 
     QSettings settings;
     ui->lineEdit->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
+    ui->lineEdit_2->setText(settings.value("locallib", "/home").toString());
 }
 
 ProjectSettings::~ProjectSettings()
