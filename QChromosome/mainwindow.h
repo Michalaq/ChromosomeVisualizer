@@ -27,6 +27,8 @@ public slots:
     void newProject();
     void openProject();
     void addLayer();
+    void saveProject();
+    void saveProjectAs();
 
     void setFrame(int n);
     void updateFrameCount(int n);

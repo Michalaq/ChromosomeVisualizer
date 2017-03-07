@@ -296,6 +296,28 @@ void MainWindow::addLayer()
     }
 }
 
+void MainWindow::saveProject()
+{
+    saveProjectAs();//TODO tymczasowo...
+}
+
+void MainWindow::saveProjectAs()
+{
+    QString path = QFileDialog::getSaveFileName(0, "", "/home", "QChromosome 4D Project File (*.chs)");
+
+    if (!path.isEmpty())
+    {
+        QFile file(path);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+        QTextStream stream(&file);
+
+        stream << "Lorem ipsum dolor sit amet";
+
+        file.close();
+    }
+}
+
 void MainWindow::updateFrameCount(int n)
 {
     bool expandRange = ui->spinBox_3->value() == lastFrame;
