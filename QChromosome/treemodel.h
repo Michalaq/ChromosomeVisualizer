@@ -51,8 +51,8 @@ enum NodeType
 {
     HeaderObject,
     LayerObject,
-    ChromosomeObject,
-    BinderObject,
+    ChainObject,
+    ResidueObject,
     AtomObject
 };
 

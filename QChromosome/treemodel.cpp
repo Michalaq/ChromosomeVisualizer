@@ -45,7 +45,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"name", NodeType::HeaderObject}))
+      header(new TreeItem)
 {
 
 }
@@ -57,7 +57,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 3;
+    return 5;
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -90,8 +90,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
-QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
@@ -142,7 +141,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chromosome") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChromosomeObject}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), "On", "Tags"}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -151,9 +150,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "Tags"}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, "On", "Tags"}, types[t]));
     }
 
     for (auto t : types)
@@ -168,7 +167,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, "On", "Tags"}, header);
 
     unsigned int i = 0;
 
@@ -186,9 +185,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "Tags"}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, "On", "Tags"}, types[t]));
         }
 
     for (auto t : types)
