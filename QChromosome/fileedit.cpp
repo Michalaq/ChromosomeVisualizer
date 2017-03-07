@@ -1,14 +1,13 @@
 #include "fileedit.h"
 
 #include <QWidgetAction>
-#include "mediacontrol.h"
 #include <QFileDialog>
 
 FileEdit::FileEdit(QWidget *parent) : LineEdit(parent)
 {
     QWidgetAction *widgetAction = new QWidgetAction(this);
 
-    MediaControl *widget = new MediaControl(this);
+    widget = new MediaControl(this);
     widget->setIcon(QIcon(":/lineedit/search"));
     widget->setFocusPolicy(Qt::NoFocus);
     widget->setIconSize(QSize(16, 16));
@@ -17,15 +16,37 @@ FileEdit::FileEdit(QWidget *parent) : LineEdit(parent)
 
     addAction(widgetAction, QLineEdit::TrailingPosition);
 
-    connect(widget, &MediaControl::clicked, [this]() {
-        QString path = QFileDialog::getExistingDirectory(0, tr("Open Directory"), text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
-        if (!path.isEmpty())
-            setText(path);
-    });
+    setType(FE_File);
 }
 
 FileEdit::~FileEdit()
 {
 
+}
+
+void FileEdit::setType(Type t)
+{
+    type = t;
+
+    widget->disconnect();
+
+    switch (type)
+    {
+    case FE_File:
+        connect(widget, &MediaControl::clicked, [this]() {
+            QString path = QFileDialog::getOpenFileName(0, tr("Open File"), text());
+
+            if (!path.isEmpty())
+                setText(path);
+        });
+        break;
+    case FE_Directory:
+        connect(widget, &MediaControl::clicked, [this]() {
+            QString path = QFileDialog::getExistingDirectory(0, tr("Open Directory"), text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+            if (!path.isEmpty())
+                setText(path);
+        });
+        break;
+    }
 }
