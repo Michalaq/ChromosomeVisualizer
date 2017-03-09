@@ -13,6 +13,8 @@ public:
     void setValue(const QVariant& c);
     void showAlphaChannel(bool c = true);
 
+    QColor getColor() const;
+
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);

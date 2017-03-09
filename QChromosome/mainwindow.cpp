@@ -267,6 +267,14 @@ void MainWindow::openProject()
     if (!path.isEmpty())
     {
         newProject();
+
+        QFile file(path);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        const QJsonObject project = QJsonDocument::fromJson(file.readAll()).object();
+        file.close();
+
+        const QJsonObject viewport = project["Viewport"].toObject();
+        ui->page_4->read(viewport);
     }
 }
 
@@ -307,13 +315,15 @@ void MainWindow::saveProjectAs()
 
     if (!path.isEmpty())
     {
+        QJsonObject project;
+
+        QJsonObject viewport;
+        ui->page_4->write(viewport);
+        project["Viewport"] = viewport;
+
         QFile file(path);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
-
-        QTextStream stream(&file);
-
-        stream << "Lorem ipsum dolor sit amet";
-
+        file.write(QJsonDocument(project).toJson());
         file.close();
     }
 }

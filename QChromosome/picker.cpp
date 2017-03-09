@@ -19,6 +19,11 @@ void Picker::showAlphaChannel(bool c)
     alpha = c;
 }
 
+QColor Picker::getColor() const
+{
+    return color.value<QColor>().name();
+}
+
 #include <QStylePainter>
 
 void Picker::paintEvent(QPaintEvent *)

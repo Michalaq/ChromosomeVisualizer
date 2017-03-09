@@ -89,3 +89,56 @@ void Viewport::setAxis(Axis *axis)
 {
     axis_ = axis;
 }
+
+void Viewport::read(const QJsonObject &json)
+{
+    const QJsonObject view = json["View"].toObject();
+    ui->checkBox->setChecked(view["Safe frames"].toBool());
+    ui->doubleSpinBox->setValue(view["Opacity"].toDouble());
+    ui->widget->setValue(QColor(view["Border color"].toString()));
+
+    const QJsonObject editorAxis = json["Editor axis"].toObject();
+    ui->comboBox->setCurrentText(editorAxis["Position"].toString());
+    ui->doubleSpinBox_2->setValue(editorAxis["Scale"].toDouble());
+    ui->checkBox_2->setChecked(editorAxis["Text"].toBool());
+
+    const QJsonObject background = json["Background"].toObject();
+    ui->widget_2->setValue(QColor(background["Color"].toString()));
+
+    const QJsonObject environment = json["Environment"].toObject();
+    ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
+    ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
+
+    const QJsonObject atomLabels = json["Atom labels"].toObject();
+    ui->widget_3->setValue(QColor(atomLabels["Background color"].toString()));
+    ui->widget_4->setValue(QColor(atomLabels["Text color"].toString()));
+}
+
+void Viewport::write(QJsonObject &json) const
+{
+    QJsonObject view;
+    view["Safe frames"] = ui->checkBox->isChecked();
+    view["Opacity"] = ui->doubleSpinBox->value();
+    view["Border color"] = ui->widget->getColor().name();
+    json["View"] = view;
+
+    QJsonObject editorAxis;
+    editorAxis["Position"] = ui->comboBox->currentText();
+    editorAxis["Scale"] = ui->doubleSpinBox_2->value();
+    editorAxis["Text"] = ui->checkBox_2->isChecked();
+    json["Editor axis"] = editorAxis;
+
+    QJsonObject background;
+    background["Color"] = ui->widget_2->getColor().name();
+    json["Background"] = background;
+
+    QJsonObject environment;
+    environment["Fog density"] = ui->doubleSpinBox_3->value();
+    environment["Fog contribution"] = ui->doubleSpinBox_4->value();
+    json["Environment"] = environment;
+
+    QJsonObject atomLabels;
+    atomLabels["Background color"] = ui->widget_3->getColor().name();
+    atomLabels["Text color"] = ui->widget_4->getColor().name();
+    json["Atom labels"] = atomLabels;
+}
