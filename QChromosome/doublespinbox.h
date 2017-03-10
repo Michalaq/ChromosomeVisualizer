@@ -9,6 +9,8 @@ class DoubleSpinBox : public QDoubleSpinBox
 public:
     explicit DoubleSpinBox(QWidget *parent = 0);
 
+    void setValue(double val, bool spontaneous = true);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);

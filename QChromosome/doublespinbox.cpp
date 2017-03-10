@@ -5,6 +5,19 @@ DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 
 }
 
+void DoubleSpinBox::setValue(double val, bool spontaneous)
+{
+    bool b;
+
+    if (!spontaneous)
+        b = blockSignals(true);
+
+    QDoubleSpinBox::setValue(val);
+
+    if (!spontaneous)
+        blockSignals(b);
+}
+
 #include <QStyle>
 
 void DoubleSpinBox::focusInEvent(QFocusEvent *event)
