@@ -5,6 +5,8 @@ DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 
 }
 
+#include <QLineEdit>
+
 void DoubleSpinBox::setValue(double val, bool spontaneous)
 {
     bool b;
@@ -12,7 +14,10 @@ void DoubleSpinBox::setValue(double val, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    QDoubleSpinBox::setValue(val);
+    if (qIsNaN(val))
+        lineEdit()->setText("<< multiple values >>");
+    else
+        QDoubleSpinBox::setValue(val);
 
     if (!spontaneous)
         blockSignals(b);

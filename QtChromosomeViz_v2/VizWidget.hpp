@@ -59,10 +59,10 @@ public:
     void setVisible(bool visible = true);
 
     QColor getColor() const;
-    QVariant getAlpha() const;
+    double getAlpha() const;
     QColor getSpecularColor() const;
-    QVariant getSpecularExponent() const;
-    QVariant getSize() const;
+    double getSpecularExponent() const;
+    double getSize() const;
     QVariant getLabel() const;
     QList<QVariant> getCoordinates() const;
     int getVisibility() const;

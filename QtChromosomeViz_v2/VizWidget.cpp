@@ -1109,16 +1109,16 @@ QColor AtomSelection::getColor() const
     return QColor(ans);
 }
 
-QVariant AtomSelection::getAlpha() const
+double AtomSelection::getAlpha() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return qSNaN();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].color >> 24;
 
     for (auto i : selectedIndices_)
         if ((widget_->frameState_[i].color >> 24) != ans)
-            return QVariant();
+            return qSNaN();
 
     return (100. * (255 - ans) / 255);
 }
@@ -1137,30 +1137,30 @@ QColor AtomSelection::getSpecularColor() const
     return QColor(ans);
 }
 
-QVariant AtomSelection::getSpecularExponent() const
+double AtomSelection::getSpecularExponent() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return qSNaN();
 
     float ans = widget_->frameState_[selectedIndices_.front()].specularExponent;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].specularExponent != ans)
-            return QVariant();
+            return qSNaN();
 
     return ans;
 }
 
-QVariant AtomSelection::getSize() const
+double AtomSelection::getSize() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return qSNaN();
 
     float ans = widget_->frameState_[selectedIndices_.front()].size;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].size != ans)
-            return QVariant();
+            return qSNaN();
 
     return ans;
 }

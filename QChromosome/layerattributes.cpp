@@ -164,54 +164,21 @@ void LayerAttributes::handleSelection(const AtomSelection &selection, const QLis
     }
 
     // set radius
-    auto r = selection.getSize();
-
-    if (r.isValid())
-    {
-        ui->doubleSpinBox->setValue(r.toFloat());
-        ui->doubleSpinBox->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox->setValue(ui->doubleSpinBox->minimum());
-        ui->doubleSpinBox->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox->setValue(selection.getSize(), false);
 
     // set segments
 
     // set color
-    ui->widget->setValue(selection.getColor());
+    ui->widget->setValue(selection.getColor(), false);
 
     // set transparency
-    auto a = selection.getAlpha();
-
-    if (a.isValid())
-    {
-        ui->doubleSpinBox_2->setValue(a.toFloat());
-        ui->doubleSpinBox_2->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox_2->setValue(ui->doubleSpinBox_2->minimum());
-        ui->doubleSpinBox_2->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox_2->setValue(selection.getAlpha(), false);
 
     // set specular width
-    auto w = selection.getSpecularExponent();
-
-    if (w.isValid())
-    {
-        ui->doubleSpinBox_3->setValue(w.toFloat());
-        ui->doubleSpinBox_3->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox_3->setValue(ui->doubleSpinBox_3->minimum());
-        ui->doubleSpinBox_3->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox_3->setValue(selection.getSpecularExponent(), false);
 
     // set specular color
-    ui->widget_2->setValue(selection.getSpecularColor());
+    ui->widget_2->setValue(selection.getSpecularColor(), false);
 
     show();
 
