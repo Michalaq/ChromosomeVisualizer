@@ -173,7 +173,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
     // set segments
 
     // set color
-    ui->widget->setValue(selection.getColor());
+    ui->widget->setValue(selection.getColor(), false);
 
     // set transparency
     auto a = selection.getAlpha();
@@ -204,7 +204,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
     }
 
     // set specular color
-    ui->widget_2->setValue(selection.getSpecularColor());
+    ui->widget_2->setValue(selection.getSpecularColor(), false);
 
     show();
 }

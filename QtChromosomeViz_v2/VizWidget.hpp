@@ -58,9 +58,9 @@ public:
     void setLabel(const QString & label);
     void setVisible(bool visible = true);
 
-    QVariant getColor() const;
+    QColor getColor() const;
     QVariant getAlpha() const;
-    QVariant getSpecularColor() const;
+    QColor getSpecularColor() const;
     QVariant getSpecularExponent() const;
     QVariant getSize() const;
     QVariant getLabel() const;

@@ -1095,16 +1095,16 @@ void AtomSelection::setVisible(bool visible)
     widget_->update();
 }
 
-QVariant AtomSelection::getColor() const
+QColor AtomSelection::getColor() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return QColor();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].color & 0x00FFFFFF;
 
     for (auto i : selectedIndices_)
         if ((widget_->frameState_[i].color & 0x00FFFFFF) != ans)
-            return QVariant();
+            return QColor();
 
     return QColor(ans);
 }
@@ -1123,16 +1123,16 @@ QVariant AtomSelection::getAlpha() const
     return (100. * (255 - ans) / 255);
 }
 
-QVariant AtomSelection::getSpecularColor() const
+QColor AtomSelection::getSpecularColor() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return QColor();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].specularColor;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].specularColor != ans)
-            return QVariant();
+            return QColor();
 
     return QColor(ans);
 }

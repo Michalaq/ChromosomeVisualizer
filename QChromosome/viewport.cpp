@@ -95,7 +95,7 @@ void Viewport::read(const QJsonObject &json)
     const QJsonObject view = json["View"].toObject();
     ui->checkBox->setChecked(view["Safe frames"].toBool());
     ui->doubleSpinBox->setValue(view["Opacity"].toDouble());
-    ui->widget->setValue(QColor(view["Border color"].toString()));
+    ui->widget->setValue(view["Border color"].toString());
 
     const QJsonObject editorAxis = json["Editor axis"].toObject();
     ui->comboBox->setCurrentText(editorAxis["Position"].toString());
@@ -103,15 +103,15 @@ void Viewport::read(const QJsonObject &json)
     ui->checkBox_2->setChecked(editorAxis["Text"].toBool());
 
     const QJsonObject background = json["Background"].toObject();
-    ui->widget_2->setValue(QColor(background["Color"].toString()));
+    ui->widget_2->setValue(background["Color"].toString());
 
     const QJsonObject environment = json["Environment"].toObject();
     ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
     ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
 
     const QJsonObject atomLabels = json["Atom labels"].toObject();
-    ui->widget_3->setValue(QColor(atomLabels["Background color"].toString()));
-    ui->widget_4->setValue(QColor(atomLabels["Text color"].toString()));
+    ui->widget_3->setValue(atomLabels["Background color"].toString());
+    ui->widget_4->setValue(atomLabels["Text color"].toString());
 }
 
 void Viewport::write(QJsonObject &json) const
@@ -119,7 +119,7 @@ void Viewport::write(QJsonObject &json) const
     QJsonObject view;
     view["Safe frames"] = ui->checkBox->isChecked();
     view["Opacity"] = ui->doubleSpinBox->value();
-    view["Border color"] = ui->widget->getColor().name();
+    view["Border color"] = ui->widget->value().name();
     json["View"] = view;
 
     QJsonObject editorAxis;
@@ -129,7 +129,7 @@ void Viewport::write(QJsonObject &json) const
     json["Editor axis"] = editorAxis;
 
     QJsonObject background;
-    background["Color"] = ui->widget_2->getColor().name();
+    background["Color"] = ui->widget_2->value().name();
     json["Background"] = background;
 
     QJsonObject environment;
@@ -138,7 +138,7 @@ void Viewport::write(QJsonObject &json) const
     json["Environment"] = environment;
 
     QJsonObject atomLabels;
-    atomLabels["Background color"] = ui->widget_3->getColor().name();
-    atomLabels["Text color"] = ui->widget_4->getColor().name();
+    atomLabels["Background color"] = ui->widget_3->value().name();
+    atomLabels["Text color"] = ui->widget_4->value().name();
     json["Atom labels"] = atomLabels;
 }

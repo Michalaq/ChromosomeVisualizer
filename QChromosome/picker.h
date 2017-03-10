@@ -10,17 +10,17 @@ class Picker : public ComboBox
 public:
     explicit Picker(QWidget *parent = 0);
 
-    void setValue(const QVariant& c);
-    void showAlphaChannel(bool c = true);
+    QColor value() const;
+    void setValue(const QColor& c, bool spontaneous = true);
 
-    QColor getColor() const;
+    void showAlphaChannel(bool c = true);
 
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);
 
 private:
-    QVariant color;
+    QColor color;
     bool alpha;
 
 signals:
