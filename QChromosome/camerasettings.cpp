@@ -13,44 +13,50 @@ CameraSettings::CameraSettings(QWidget *parent) :
     ui->doubleSpinBox_2->hide(); ui->formLayout->removeWidget(ui->doubleSpinBox_2);
 
     // coordinates
-    connect(ui->doubleSpinBox_7, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setPosition(QVector3D(ui->doubleSpinBox_7->value(), ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value()));
+    connect(ui->doubleSpinBox_7, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        auto pos = camera->eye;
+        pos.setX(val);
+        camera->setPosition(pos);
     });
 
-    connect(ui->doubleSpinBox_8, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setPosition(QVector3D(ui->doubleSpinBox_7->value(), ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value()));
+    connect(ui->doubleSpinBox_8, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        auto pos = camera->eye;
+        pos.setY(val);
+        camera->setPosition(pos);
     });
 
-    connect(ui->doubleSpinBox_9, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setPosition(QVector3D(ui->doubleSpinBox_7->value(), ui->doubleSpinBox_8->value(), ui->doubleSpinBox_9->value()));
+    connect(ui->doubleSpinBox_9, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        auto pos = camera->eye;
+        pos.setZ(val);
+        camera->setPosition(pos);
     });
 
     // angles
-    connect(ui->doubleSpinBox_10, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setEulerAgnles(ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value(), ui->doubleSpinBox_12->value());
+    connect(ui->doubleSpinBox_10, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setEulerAgnles(val, camera->p, camera->b);
     });
 
-    connect(ui->doubleSpinBox_11, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setEulerAgnles(ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value(), ui->doubleSpinBox_12->value());
+    connect(ui->doubleSpinBox_11, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setEulerAgnles(camera->h, val, camera->b);
     });
 
-    connect(ui->doubleSpinBox_12, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setEulerAgnles(ui->doubleSpinBox_10->value(), ui->doubleSpinBox_11->value(), ui->doubleSpinBox_12->value());
+    connect(ui->doubleSpinBox_12, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setEulerAgnles(camera->h, camera->p, val);
     });
 
     // focal length
-    connect(ui->doubleSpinBox, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setFocalLength(ui->doubleSpinBox->value());
+    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setFocalLength(val);
     });
 
     // aperture width
-    connect(ui->doubleSpinBox_2, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setApertureWidth(ui->doubleSpinBox_2->value());
+    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setApertureWidth(val);
     });
 
     // field of view
-    connect(ui->doubleSpinBox_3, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setFieldOfView(ui->doubleSpinBox_3->value());
+    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setFieldOfView(val);
     });
 
     // rotation type
@@ -59,13 +65,13 @@ CameraSettings::CameraSettings(QWidget *parent) :
     });
 
     // near clipping
-    connect(ui->doubleSpinBox_5, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setNearClipping(ui->doubleSpinBox_5->value());
+    connect(ui->doubleSpinBox_5,static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setNearClipping(val);
     });
 
     // far clipping
-    connect(ui->doubleSpinBox_6, &QDoubleSpinBox::editingFinished, [this]() {
-        camera->setFarClipping(ui->doubleSpinBox_6->value());
+    connect(ui->doubleSpinBox_6, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        camera->setFarClipping(val);
     });
 }
 
@@ -84,44 +90,44 @@ void CameraSettings::setCamera(Camera *c)
     camera = c;
 
     // coordinates
-    ui->doubleSpinBox_7->setValue(camera->eye.x());
-    ui->doubleSpinBox_8->setValue(camera->eye.y());
-    ui->doubleSpinBox_9->setValue(camera->eye.z());
+    ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
+    ui->doubleSpinBox_8->setValue(camera->eye.y(), false);
+    ui->doubleSpinBox_9->setValue(camera->eye.z(), false);
 
     // angles
-    ui->doubleSpinBox_10->setValue(camera->h);
-    ui->doubleSpinBox_11->setValue(camera->p);
-    ui->doubleSpinBox_12->setValue(camera->b);
+    ui->doubleSpinBox_10->setValue(camera->h, false);
+    ui->doubleSpinBox_11->setValue(camera->p, false);
+    ui->doubleSpinBox_12->setValue(camera->b, false);
 
     // focal length
-    ui->doubleSpinBox->setValue(camera->focalLength);
+    ui->doubleSpinBox->setValue(camera->focalLength, false);
 
     // aperture width
-    ui->doubleSpinBox_2->setValue(camera->apertureWidth);
+    ui->doubleSpinBox_2->setValue(camera->apertureWidth, false);
 
     // field of view
-    ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)));
+    ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
 
     // rotation type
     ui->comboBox->setCurrentIndex(camera->rotationType);
 
     // near clipping
-    ui->doubleSpinBox_5->setValue(camera->nearClipping);
+    ui->doubleSpinBox_5->setValue(camera->nearClipping, false);
 
     // far clipping
-    ui->doubleSpinBox_6->setValue(camera->farClipping);
+    ui->doubleSpinBox_6->setValue(camera->farClipping, false);
 
     connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
 
     connect(camera, &Camera::projectionChanged, [this] {
         // focal length
-        ui->doubleSpinBox->setValue(camera->focalLength);
+        ui->doubleSpinBox->setValue(camera->focalLength, false);
 
         // aperture width
-        ui->doubleSpinBox_2->setValue(camera->apertureWidth);
+        ui->doubleSpinBox_2->setValue(camera->apertureWidth, false);
 
         // field of view
-        ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)));
+        ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
     });
 }
 
@@ -133,12 +139,12 @@ void CameraSettings::setRotationType(int rt)
 void CameraSettings::updateModelView()
 {
     // coordinates
-    ui->doubleSpinBox_7->setValue(camera->eye.x());
-    ui->doubleSpinBox_8->setValue(camera->eye.y());
-    ui->doubleSpinBox_9->setValue(camera->eye.z());
+    ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
+    ui->doubleSpinBox_8->setValue(camera->eye.y(), false);
+    ui->doubleSpinBox_9->setValue(camera->eye.z(), false);
 
     // angles
-    ui->doubleSpinBox_10->setValue(camera->h);
-    ui->doubleSpinBox_11->setValue(camera->p);
-    ui->doubleSpinBox_12->setValue(camera->b);
+    ui->doubleSpinBox_10->setValue(camera->h, false);
+    ui->doubleSpinBox_11->setValue(camera->p, false);
+    ui->doubleSpinBox_12->setValue(camera->b, false);
 }
