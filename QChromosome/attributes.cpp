@@ -32,13 +32,8 @@ Attributes::Attributes(QWidget *parent) :
     // set vir
 
     // set radius
-    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox->setSpecialValueText("");
-    });
-
-    connect(ui->doubleSpinBox, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setSize(ui->doubleSpinBox->value());
+    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setSize(val);
     });
 
     // set segments
@@ -49,23 +44,13 @@ Attributes::Attributes(QWidget *parent) :
     });
 
     // set transparency
-    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox_2->setSpecialValueText("");
-    });
-
-    connect(ui->doubleSpinBox_2, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox_2->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setAlpha((100. - ui->doubleSpinBox_2->value()) / 100);
+    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setAlpha((100. - val) / 100);
     });
 
     // set specular width
-    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox_3->setSpecialValueText("");
-    });
-
-    connect(ui->doubleSpinBox_3, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox_3->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setSpecularExponent(ui->doubleSpinBox_3->value());
+    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setSpecularExponent(val);
     });
 
     // set specular color
