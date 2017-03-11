@@ -1,8 +1,17 @@
 #include "doublespinbox.h"
+#include <QLineEdit>
 
 DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 {
     setKeyboardTracking(false);
+
+    lineEdit()->setValidator(Q_NULLPTR);
+
+    re.setPattern(QString("[+-]?\\d+(%1\\d+)?").arg(QRegularExpression::escape(locale().decimalPoint())));
+
+    connect(this, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] {
+        setSpecialValueText("");
+    });
 }
 
 void DoubleSpinBox::setValue(double val, bool spontaneous)
@@ -25,6 +34,16 @@ void DoubleSpinBox::setValue(double val, bool spontaneous)
 
     if (!spontaneous)
         blockSignals(b);
+}
+
+QValidator::State DoubleSpinBox::validate(QString &input, int &) const
+{
+    return re.match(input).hasMatch() ? QValidator::Acceptable : QValidator::Intermediate;
+}
+
+double DoubleSpinBox::valueFromText(const QString &text) const
+{
+    return locale().toDouble(re.match(text).captured());
 }
 
 #include <QStyle>
