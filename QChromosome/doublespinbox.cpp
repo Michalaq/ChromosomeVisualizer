@@ -44,18 +44,3 @@ void DoubleSpinBox::focusOutEvent(QFocusEvent *event)
 
     update();
 }
-
-#include <QMouseEvent>
-#include <QStyleOptionSpinBox>
-
-void DoubleSpinBox::mousePressEvent(QMouseEvent *event)
-{
-    QDoubleSpinBox::mousePressEvent(event);
-
-    QStyleOptionSpinBox opt;
-    initStyleOption(&opt);
-
-    if (style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxUp).contains(event->pos())
-            || style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxDown).contains(event->pos()))
-        emit editingFinished();
-}
