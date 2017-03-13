@@ -9,16 +9,20 @@ class SpinBox : public QSpinBox
 public:
     explicit SpinBox(QWidget *parent = 0);
 
+    QValidator::State validate(QString &input, int &pos) const;
+    int valueFromText(const QString &text) const;
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
-    void mousePressEvent(QMouseEvent *event);
-
 signals:
 
 public slots:
+    void setValue(int val, bool spontaneous = true);
 
+private:
+    QRegularExpression re;
 };
 
 #endif // SPINBOX_H

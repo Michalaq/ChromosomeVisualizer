@@ -1112,13 +1112,13 @@ QColor AtomSelection::getColor() const
 double AtomSelection::getAlpha() const
 {
     if (selectedIndices_.isEmpty())
-        return qSNaN();
+        return std::numeric_limits<double>::lowest();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].color >> 24;
 
     for (auto i : selectedIndices_)
         if ((widget_->frameState_[i].color >> 24) != ans)
-            return qSNaN();
+            return std::numeric_limits<double>::lowest();
 
     return (100. * (255 - ans) / 255);
 }
@@ -1140,13 +1140,13 @@ QColor AtomSelection::getSpecularColor() const
 double AtomSelection::getSpecularExponent() const
 {
     if (selectedIndices_.isEmpty())
-        return qSNaN();
+        return std::numeric_limits<double>::lowest();
 
     float ans = widget_->frameState_[selectedIndices_.front()].specularExponent;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].specularExponent != ans)
-            return qSNaN();
+            return std::numeric_limits<double>::lowest();
 
     return ans;
 }
@@ -1154,13 +1154,13 @@ double AtomSelection::getSpecularExponent() const
 double AtomSelection::getSize() const
 {
     if (selectedIndices_.isEmpty())
-        return qSNaN();
+        return std::numeric_limits<double>::lowest();
 
     float ans = widget_->frameState_[selectedIndices_.front()].size;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].size != ans)
-            return qSNaN();
+            return std::numeric_limits<double>::lowest();
 
     return ans;
 }

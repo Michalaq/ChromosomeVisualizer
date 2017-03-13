@@ -21,15 +21,15 @@ void DoubleSpinBox::setValue(double val, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    if (qIsNaN(val))
-    {
-        setSpecialValueText("<< multiple values >>");
-        QDoubleSpinBox::setValue(minimum());
-    }
-    else
+    if (val > std::numeric_limits<double>::lowest())
     {
         setSpecialValueText("");
         QDoubleSpinBox::setValue(val);
+    }
+    else
+    {
+        setSpecialValueText("<< multiple values >>");
+        QDoubleSpinBox::setValue(minimum());
     }
 
     if (!spontaneous)
