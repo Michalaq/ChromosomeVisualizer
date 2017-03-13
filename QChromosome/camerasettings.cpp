@@ -136,6 +136,72 @@ void CameraSettings::setRotationType(int rt)
     ui->comboBox->setCurrentIndex(rt);
 }
 
+#include <QJsonObject>
+
+void CameraSettings::read(const QJsonObject &json)
+{
+    const QJsonObject coordinates = json["Coordinates"].toObject();
+    ui->doubleSpinBox_7->setValue(coordinates["X"].toDouble());
+    ui->doubleSpinBox_8->setValue(coordinates["Y"].toDouble());
+    ui->doubleSpinBox_9->setValue(coordinates["Z"].toDouble());
+    ui->doubleSpinBox_10->setValue(coordinates["H"].toDouble());
+    ui->doubleSpinBox_11->setValue(coordinates["P"].toDouble());
+    ui->doubleSpinBox_12->setValue(coordinates["B"].toDouble());
+
+    const QJsonObject objectProperties = json["Object properties"].toObject();
+    ui->doubleSpinBox->setValue(objectProperties["Focal length"].toDouble());
+    ui->doubleSpinBox_2->setValue(objectProperties["Aperture width"].toDouble());
+    ui->comboBox->setCurrentText(objectProperties["Rotation type"].toString());
+
+    const QJsonObject depthOfField = json["Depth of field"].toObject();
+    ui->doubleSpinBox_5->setValue(depthOfField["Near clipping"].toDouble());
+    ui->doubleSpinBox_6->setValue(depthOfField["Far clipping"].toDouble());
+    /*const QJsonObject view = json["View"].toObject();
+    ui->checkBox->setChecked(view["Safe frames"].toBool());
+    ui->doubleSpinBox->setValue(view["Opacity"].toDouble());
+    ui->widget->setValue(view["Border color"].toString());
+
+    const QJsonObject editorAxis = json["Editor axis"].toObject();
+    ui->comboBox->setCurrentText(editorAxis["Position"].toString());
+    ui->doubleSpinBox_2->setValue(editorAxis["Scale"].toDouble());
+    ui->checkBox_2->setChecked(editorAxis["Text"].toBool());
+
+    const QJsonObject background = json["Background"].toObject();
+    ui->widget_2->setValue(background["Color"].toString());
+
+    const QJsonObject environment = json["Environment"].toObject();
+    ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
+    ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
+
+    const QJsonObject atomLabels = json["Atom labels"].toObject();
+    ui->widget_3->setValue(atomLabels["Background color"].toString());
+    ui->widget_4->setValue(atomLabels["Text color"].toString());*/
+}
+
+void CameraSettings::write(QJsonObject &json) const
+{
+    QJsonObject coordinates;
+    coordinates["X"] = ui->doubleSpinBox_7->value();
+    coordinates["Y"] = ui->doubleSpinBox_8->value();
+    coordinates["Z"] = ui->doubleSpinBox_9->value();
+    coordinates["H"] = ui->doubleSpinBox_10->value();
+    coordinates["P"] = ui->doubleSpinBox_11->value();
+    coordinates["B"] = ui->doubleSpinBox_12->value();
+    json["Coordinates"] = coordinates;
+
+    QJsonObject objectProperties;
+    objectProperties["Focal length"] = ui->doubleSpinBox->value();
+    objectProperties["Aperture width"] = ui->doubleSpinBox_2->value();
+    objectProperties["Field of view"] = ui->doubleSpinBox_3->value();
+    objectProperties["Rotation type"] = ui->comboBox->currentText();
+    json["Object properties"] = objectProperties;
+
+    QJsonObject depthOfField;
+    depthOfField["Near clipping"] = ui->doubleSpinBox_5->value();
+    depthOfField["Far clipping"] = ui->doubleSpinBox_6->value();
+    json["Depth of field"] = depthOfField;
+}
+
 void CameraSettings::updateModelView()
 {
     // coordinates

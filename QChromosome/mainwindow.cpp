@@ -275,6 +275,9 @@ void MainWindow::openProject()
 
         const QJsonObject viewport = project["Viewport"].toObject();
         ui->page_4->read(viewport);
+
+        const QJsonObject camera = project["Camera"].toObject();
+        ui->page_5->read(camera);
     }
 }
 
@@ -320,6 +323,10 @@ void MainWindow::saveProjectAs()
         QJsonObject viewport;
         ui->page_4->write(viewport);
         project["Viewport"] = viewport;
+
+        QJsonObject camera;
+        ui->page_5->write(camera);
+        project["Camera"] = camera;
 
         QFile file(path);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
