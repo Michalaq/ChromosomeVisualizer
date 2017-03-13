@@ -13,8 +13,8 @@ Keyframes::Keyframes(QWidget *parent) :
     ui->label_3->hide(); ui->formLayout_2->removeWidget(ui->label_3);
     ui->comboBox->hide(); ui->formLayout_2->removeWidget(ui->comboBox);
 
-    connect(ui->spinBox, &QSpinBox::editingFinished, [this] {
-        ip->changeKey(ui->spinBox->value());
+    connect(ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ip->changeKey(val);
     });
 
     connect(ui->checkBox, &QCheckBox::toggled, [this](bool b) {
