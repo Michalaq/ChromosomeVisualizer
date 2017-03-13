@@ -1179,42 +1179,36 @@ QVariant AtomSelection::getLabel() const
     return ans;
 }
 
-QList<QVariant> AtomSelection::getCoordinates() const
+std::tuple<int, int, int> AtomSelection::getCoordinates() const
 {
-    QList<QVariant> ans;
-
-    double x = widget_->frameState_[selectedIndices_.front()].position.x();
+    int x = widget_->frameState_[selectedIndices_.front()].position.x();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.x() != x)
         {
-            x = qSNaN();
+            x = std::numeric_limits<int>::lowest();
             break;
         }
 
-    double y = widget_->frameState_[selectedIndices_.front()].position.y();
+    int y = widget_->frameState_[selectedIndices_.front()].position.y();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.y() != y)
         {
-            y = qSNaN();
+            y = std::numeric_limits<int>::lowest();
             break;
         }
 
-    double z = widget_->frameState_[selectedIndices_.front()].position.z();
+    int z = widget_->frameState_[selectedIndices_.front()].position.z();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.z() != z)
         {
-            z = qSNaN();
+            z = std::numeric_limits<int>::lowest();
             break;
         }
 
-    ans.push_back(qIsNaN(x) ? QVariant() : x);
-    ans.push_back(qIsNaN(y) ? QVariant() : y);
-    ans.push_back(qIsNaN(z) ? QVariant() : z);
-
-    return ans;
+    return std::make_tuple(x, y, z);
 }
 
 int AtomSelection::getVisibility() const

@@ -64,7 +64,7 @@ public:
     double getSpecularExponent() const;
     double getSize() const;
     QVariant getLabel() const;
-    QList<QVariant> getCoordinates() const;
+    std::tuple<int, int, int> getCoordinates() const;
     int getVisibility() const;
 
     unsigned int atomCount() const;
