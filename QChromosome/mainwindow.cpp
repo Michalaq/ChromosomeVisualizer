@@ -278,6 +278,9 @@ void MainWindow::openProject()
 
         const QJsonObject camera = project["Camera"].toObject();
         ui->page_5->read(camera);
+
+        const QJsonArray keyframes = project["Key frames"].toArray();
+        ip.read(keyframes);
     }
 }
 
@@ -327,6 +330,10 @@ void MainWindow::saveProjectAs()
         QJsonObject camera;
         ui->page_5->write(camera);
         project["Camera"] = camera;
+
+        QJsonArray keyframes;
+        ip.write(keyframes);
+        project["Key frames"] = keyframes;
 
         QFile file(path);
         file.open(QIODevice::WriteOnly | QIODevice::Text);

@@ -177,3 +177,40 @@ void Interpolator::updateSplines()
 
     emit interpolationChanged();
 }
+
+#include <QJsonObject>
+#include <QJsonArray>
+
+void Interpolator::read(const QJsonArray &json)
+{
+    for (auto i : json)
+    {
+        QJsonObject keyProperties = i.toObject();
+
+        QVector<double> keyValues;
+        for (auto v : keyProperties["Key values"].toArray())
+            keyValues.append(v.toDouble());
+
+        values[keyProperties["Key time"].toDouble()] = { keyValues, { keyProperties["Lock time"].toBool(), keyProperties["Lock value"].toBool() } };
+    }
+
+    updateSplines();
+}
+
+void Interpolator::write(QJsonArray &json) const
+{
+    for (auto i = values.begin(); i != values.end(); i++)
+    {
+        QJsonObject keyProperties;
+        keyProperties["Key time"] = i.key();
+
+        QJsonArray keyValues;
+        for (auto v : i.value().first)
+            keyValues.append(v);
+        keyProperties["Key values"] = keyValues;
+
+        keyProperties["Lock time"] = i.value().second.first;
+        keyProperties["Lock value"] = i.value().second.second;
+        json.append(keyProperties);
+    }
+}
