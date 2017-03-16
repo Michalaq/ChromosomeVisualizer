@@ -287,6 +287,14 @@ void MainWindow::openProject()
 
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
+        const QJsonArray foo = project["foo"].toArray();
+        simulation->getFrame(foo[0].toInt());
+        ui->horizontalSlider->setValue(foo[1].toInt());
+        ui->spinBox_2->setValue(foo[2].toInt());
+        ui->spinBox_3->setValue(foo[3].toInt());
+        ui->horizontalSlider_2->setLowerBound(foo[4].toInt());
+        ui->horizontalSlider_2->setUpperBound(foo[5].toInt());
+
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
     }
@@ -330,6 +338,15 @@ void MainWindow::saveProjectAs()
     if (!path.isEmpty())
     {
         QJsonObject project;
+
+        QJsonArray foo;
+        foo.append(lastFrame);
+        foo.append(ui->horizontalSlider->value());
+        foo.append(ui->spinBox_2->value());
+        foo.append(ui->spinBox_3->value());
+        foo.append(ui->horizontalSlider_2->getLowerBound());
+        foo.append(ui->horizontalSlider_2->getUpperBound());
+        project["foo"] = foo;
 
         QJsonObject viewport;
         ui->page_4->write(viewport);
