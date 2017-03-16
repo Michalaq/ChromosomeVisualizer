@@ -295,7 +295,7 @@ void MainWindow::openProject()
 void MainWindow::addLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(0, "", ui->page->ui->lineEdit_2->text(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", QSettings().value("locallib").toString(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
 
         if (!path.isEmpty())
         {
