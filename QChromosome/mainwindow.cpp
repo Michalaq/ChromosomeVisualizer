@@ -279,6 +279,14 @@ void MainWindow::openProject()
         const QJsonObject camera = project["Camera"].toObject();
         ui->page_5->read(camera);
 
+        const QJsonArray objects = project["Objects"].toArray();
+        simulation->read(objects);
+
+        ui->scene->setSimulation(simulation);
+        ui->plot->updateSimulation();
+
+        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
     }
@@ -330,6 +338,10 @@ void MainWindow::saveProjectAs()
         QJsonObject camera;
         ui->page_5->write(camera);
         project["Camera"] = camera;
+
+        QJsonArray objects;
+        simulation->write(objects);
+        project["Objects"] = objects;
 
         QJsonArray keyframes;
         ip.write(keyframes);

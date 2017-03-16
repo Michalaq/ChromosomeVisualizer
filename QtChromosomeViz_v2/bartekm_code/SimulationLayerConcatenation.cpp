@@ -155,3 +155,30 @@ frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)
 
     return transform_.transformBack(oldTime - time - 1);
 }
+
+#include <QJsonArray>
+#include "PDBSimulationLayer.h"
+#include "ProtobufSimulationlayer.h"
+
+void SimulationLayerConcatenation::read(const QJsonArray &json)
+{
+    for (auto i : json)
+    {
+        QString path = i.toString();
+
+        std::shared_ptr<SimulationLayer> simulationLayer;
+
+        if (path.endsWith(".pdb"))
+            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+        else
+            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+
+        appendSimulationLayer(simulationLayer);
+    }
+}
+
+void SimulationLayerConcatenation::write(QJsonArray &json) const
+{
+    for (auto i : layers_)
+        json.append(QString::fromStdString(i->getSimulationLayerName()));
+}

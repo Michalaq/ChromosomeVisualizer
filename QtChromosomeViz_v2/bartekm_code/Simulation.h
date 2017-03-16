@@ -29,6 +29,10 @@ public:
     frameNumber_t getNextTime(frameNumber_t time);
     frameNumber_t getPreviousTime(frameNumber_t time);
     TreeModel* getModel();
+
+    void read(const QJsonArray& json);
+    void write(QJsonArray& json) const;
+
 signals:
     void frameCountChanged(int frameCount);
 };

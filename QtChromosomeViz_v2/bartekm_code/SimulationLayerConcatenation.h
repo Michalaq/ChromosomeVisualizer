@@ -40,6 +40,9 @@ public:
     // Returns 'time' if 'time' <= 0.
     frameNumber_t getPreviousTime(frameNumber_t time);
 
+    void read(const QJsonArray& json);
+    void write(QJsonArray& json) const;
+
 signals:
     void frameCountChanged(int frameCount);
 };
