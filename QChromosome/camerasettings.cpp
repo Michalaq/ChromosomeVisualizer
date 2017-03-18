@@ -109,7 +109,7 @@ void CameraSettings::setCamera(Camera *c)
     ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
 
     // rotation type
-    ui->comboBox->setCurrentIndex(camera->rotationType);
+    ui->comboBox->setCurrentIndex(camera->rotationType, false);
 
     // near clipping
     ui->doubleSpinBox_5->setValue(camera->nearClipping, false);
