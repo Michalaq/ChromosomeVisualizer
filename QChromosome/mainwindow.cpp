@@ -285,6 +285,9 @@ void MainWindow::openProject()
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
 
+        const QJsonObject bar = project["bar"].toObject();
+        ui->scene->read(bar);
+
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
         const QJsonArray foo = project["foo"].toArray();

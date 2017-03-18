@@ -900,7 +900,38 @@ const QVector<VizBallInstance> & VizWidget::getBallInstances() const
 
 void VizWidget::read(const QJsonObject& json)
 {
+    for (auto i = json.begin(); i != json.end(); i++)
+        changes[i.key().toInt()] = i.value().toObject().toVariantMap();
 
+    for (auto i = changes.begin(); i != changes.end(); i++)
+    {
+        unsigned int id = i.key();
+        QVariantMap& map = i.value();
+
+        auto j = map.find("Color");
+        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0xFF000000) | QColor((*j).toString()).rgb();
+
+        j = map.find("Transparency");
+        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0x00FFFFFF) | ((unsigned int)((*j).toFloat() * 255.f) << 24) & 0xFF000000U;
+
+        j = map.find("Specular color");
+        if (j != map.end()) frameState_[id].specularColor = (frameState_[id].specularColor & 0xFF000000) | QColor((*j).toString()).rgb();
+
+        j = map.find("Shininess exponent");
+        if (j != map.end()) frameState_[id].specularExponent = (*j).toFloat();
+
+        j = map.find("Radius");
+        if (j != map.end()) frameState_[id].size = (*j).toFloat();
+
+        j = map.find("Label");
+        if (j != map.end()) { labelRenderer_.addRef((*j).toString()); atomLabels_[id] = (*j).toString(); }
+
+        j = map.find("Visible in editor");
+        if (j != map.end()) visibleBitmap_[id] = (*j).toBool();
+    }
+
+    needVBOUpdate_ = true;
+    update();
 }
 
 void VizWidget::write(QJsonObject& json) const
