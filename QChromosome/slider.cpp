@@ -1,8 +1,21 @@
 #include "slider.h"
+#include <QPainter>
 
-Slider::Slider(QWidget *parent) : SoftSlider(parent), ip(nullptr), s(new QShortcut(QKeySequence(Qt::Key_Delete), this))
+Slider::Slider(QWidget *parent) :
+    SoftSlider(parent),
+    ip(nullptr),
+    s(new QShortcut(QKeySequence(Qt::Key_Delete), this)),
+    pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
 {
+    pin.fill("#0072bd");
 
+    QImage image(30, 30, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    QSvgRenderer(QString(":/location")).render(&painter);
+
+    pin.setAlphaChannel(image.alphaChannel());
 }
 
 Slider::~Slider()
@@ -61,7 +74,6 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
         ip->changeKey(sv);
 }
 
-#include <QPainter>
 #include <QtMath>
 
 void Slider::paintEvent(QPaintEvent *event)
@@ -140,17 +152,9 @@ void Slider::paintEvent(QPaintEvent *event)
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, value(), width() - 20) + 10;
 
         p.setPen("#0072bd");
-
-        p.fillRect(QRect(tick, -12, p.fontMetrics().width(QString::number(value())) + 10, 12), "#262626");
+        p.fillRect(QRect(tick - 10, -12, p.fontMetrics().width(QString::number(value())) + 20, 12), "#262626");
         p.drawText(QRect(tick + 10, -12, 0, 16), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
 
-        p.setPen(Qt::NoPen);
-        p.setBrush(QColor("#0072bd"));
-        p.setRenderHint(QPainter::Antialiasing);
-
-        p.translate(tick, (1. - qSqrt(2.)) * 5);
-        p.drawEllipse(QPoint(), 10, 10);
-        p.rotate(45);
-        p.drawRect(0, 0, 10, 10);
+        p.drawImage(tick - 15, -15, pin);
     }
 }
