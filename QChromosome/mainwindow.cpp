@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
-    renderSettings(new RenderSettings()),
+    renderSettings(new RenderSettings),
     rsw(new RenderSettingsWidget(renderSettings)),
     ignore(0)
 {
