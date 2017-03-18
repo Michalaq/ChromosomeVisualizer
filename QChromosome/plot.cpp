@@ -13,7 +13,7 @@ Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
     simulation_(std::make_shared<Simulation>()),
     lastBuffered(-1),
-    pin(QImage(QSize(24, 24), QImage::Format_ARGB32_Premultiplied))
+    pin(QImage(QSize(20, 20), QImage::Format_ARGB32_Premultiplied))
 {
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
 
@@ -22,7 +22,7 @@ Plot::Plot(QWidget *parent) :
 
     pin.fill(Qt::white);
 
-    QImage image(24, 24, QImage::Format_ARGB32);
+    QImage image(20, 20, QImage::Format_ARGB32);
     image.fill(Qt::transparent);
 
     QPainter painter(&image);
@@ -255,8 +255,8 @@ void Plot::paintEvent(QPaintEvent *event)
         pen3.setJoinStyle(Qt::MiterJoin);
 
         painter.setPen(pen3);
-        painter.drawLine(crs, padding_top, crs, height() - padding_bottom);
-        painter.drawImage(crs - 12, 0, pin);
+        painter.drawLine(crs, padding_top - 5, crs, height() - padding_bottom);
+        painter.drawImage(crs - 10, 0, pin);
     }
 }
 
