@@ -139,6 +139,9 @@ public slots:
 
     const QVector<VizBallInstance> & getBallInstances() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
                                  const QList<unsigned int> & deselected);
@@ -218,6 +221,8 @@ private:
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;
+
+    QMap<unsigned int, QVariantMap> changes;
 };
 
 #endif /* VIZWINDOW_HPP */

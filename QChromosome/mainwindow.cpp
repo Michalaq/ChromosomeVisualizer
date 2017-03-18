@@ -360,6 +360,10 @@ void MainWindow::saveProjectAs()
         simulation->write(objects);
         project["Objects"] = objects;
 
+        QJsonObject bar;
+        ui->scene->write(bar);
+        project["bar"] = bar;
+
         QJsonArray keyframes;
         ip.write(keyframes);
         project["Key frames"] = keyframes;

@@ -898,6 +898,17 @@ const QVector<VizBallInstance> & VizWidget::getBallInstances() const
     return frameState_;
 }
 
+void VizWidget::read(const QJsonObject& json)
+{
+
+}
+
+void VizWidget::write(QJsonObject& json) const
+{
+    for (auto i = changes.begin(); i != changes.end(); i++)
+        json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
+}
+
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
@@ -1015,6 +1026,7 @@ void AtomSelection::setColor(QColor color)
     {
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0xFF000000) | code;
+        widget_->changes[i]["Color"] = color;
     }
 
     widget_->needVBOUpdate_ = true;
@@ -1028,6 +1040,7 @@ void AtomSelection::setAlpha(float alpha)
     {
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0x00FFFFFF) | code;
+        widget_->changes[i]["Transparency"] = alpha;
     }
 
     widget_->needVBOUpdate_ = true;
@@ -1038,7 +1051,10 @@ void AtomSelection::setSpecularColor(QColor color)
 {
     unsigned int code = color.rgb();
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].specularColor = code;
+        widget_->changes[i]["Specular color"] = color;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1047,7 +1063,10 @@ void AtomSelection::setSpecularColor(QColor color)
 void AtomSelection::setSpecularExponent(float exponent)
 {
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].specularExponent = exponent;
+        widget_->changes[i]["Shininess exponent"] = exponent;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1056,7 +1075,10 @@ void AtomSelection::setSpecularExponent(float exponent)
 void AtomSelection::setSize(float size)
 {
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].size = size;
+        widget_->changes[i]["Radius"] = size;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1070,6 +1092,7 @@ void AtomSelection::setLabel(const QString & label)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_.remove(i);
+            widget_->changes[i].remove("Label");
         }
     }
     else
@@ -1080,6 +1103,7 @@ void AtomSelection::setLabel(const QString & label)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_[i] = label;
+            widget_->changes[i]["Label"] = label;
         }
     }
 
@@ -1089,7 +1113,10 @@ void AtomSelection::setLabel(const QString & label)
 void AtomSelection::setVisible(bool visible)
 {
     for (unsigned int i : selectedIndices_)
+    {
         widget_->visibleBitmap_[i] = visible;
+        widget_->changes[i]["Visible in editor"] = visible;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
