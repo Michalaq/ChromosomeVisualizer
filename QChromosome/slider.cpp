@@ -152,7 +152,7 @@ void Slider::paintEvent(QPaintEvent *event)
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, value(), width() - 20) + 10;
 
         p.setPen("#0072bd");
-        p.fillRect(QRect(tick - 10, -12, p.fontMetrics().width(QString::number(value())) + 20, 12), "#262626");
+        p.fillRect(QRect(tick -  8, -12, p.fontMetrics().width(QString::number(value())) + 18, 12), "#262626");
         p.drawText(QRect(tick + 10, -12, 0, 16), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
 
         p.drawImage(tick - 15, -15, pin);

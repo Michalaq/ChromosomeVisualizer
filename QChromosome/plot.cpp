@@ -3,6 +3,8 @@
 #include <QHBoxLayout>
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
+#include <QPainter>
+#include <QSvgRenderer>
 
 // MathWorks predefined colorOrder
 const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
@@ -10,12 +12,23 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
     simulation_(std::make_shared<Simulation>()),
-    lastBuffered(-1)
+    lastBuffered(-1),
+    pin(QImage(QSize(24, 24), QImage::Format_ARGB32_Premultiplied))
 {
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
 
     new QHBoxLayout(this);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+
+    pin.fill(Qt::white);
+
+    QImage image(24, 24, QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter painter(&image);
+    QSvgRenderer(QString(":/location")).render(&painter);
+
+    pin.setAlphaChannel(image.alphaChannel());
 }
 
 Plot::~Plot()
@@ -108,7 +121,6 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
         setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
 }
 
-#include <QPainter>
 #include <QtMath>
 
 void Plot::addLegend(const QString &fname)
@@ -138,7 +150,7 @@ void Plot::paintEvent(QPaintEvent *event)
     s.setHeight(height() - padding_top - padding_bottom);
 
     // TODO bug - wykres nie działa, jeśli wartości brzegowe nie są całkowite - problem z setWindow
-    double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
+    double minval = 0;//double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
     double maxval = qCeil(minimax.maximum(softMinimum, softMaximum));
 
     if (minval == maxval)
@@ -147,7 +159,7 @@ void Plot::paintEvent(QPaintEvent *event)
     double delta = tickSpan(minval, maxval, s.height(), 24);
     /* TODO do pewnej wysokości nie powinno się rozrzedzać podziałki, tylko ją zwyczajnie skalować */
 
-    double ut = qFloor(maxval / delta) * delta;
+    double ut = maxval = qCeil(maxval / delta) * delta;//double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
 
     label = painter.fontMetrics().width(QString::number(delta != qInf() ? ut : 0));
@@ -235,22 +247,16 @@ void Plot::paintEvent(QPaintEvent *event)
 
     if (softMinimum <= value() && value() <= softMaximum)
     {
-        QPen pen3(Qt::white, 2.);
-        pen3.setJoinStyle(Qt::MiterJoin);
-        pen3.setCosmetic(true);
-
-        painter.setPen(pen3);
-        painter.drawLine(value(), minval, value(), maxval);
-
         painter.setViewTransformEnabled(false);
 
-        auto crs = transform.map(QPoint(value(), maxval));
+        auto crs = transform.map(QPoint(value(), 0)).x();
 
-        painter.setBrush(QBrush(Qt::white));
-        painter.translate(crs.x(), crs.y() + (1. - qSqrt(2.)) * 2.5);
-        painter.drawEllipse(QPoint(), 5, 5);
-        painter.rotate(45);
-        painter.drawRect(0, 0, 5, 5);
+        QPen pen3(Qt::white, 2.);
+        pen3.setJoinStyle(Qt::MiterJoin);
+
+        painter.setPen(pen3);
+        painter.drawLine(crs, padding_top, crs, height() - padding_bottom);
+        painter.drawImage(crs - 12, 0, pin);
     }
 }
 
