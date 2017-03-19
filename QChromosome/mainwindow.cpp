@@ -6,6 +6,7 @@
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
+#include "visibilitydelegate.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -192,6 +193,8 @@ MainWindow::MainWindow(QWidget *parent) :
         if (checked)
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
+
+    ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
 
     newProject();
 }
