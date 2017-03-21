@@ -340,6 +340,9 @@ void MainWindow::saveProjectAs()
 {
     QString path = QFileDialog::getSaveFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.chs)");
 
+    QFileInfo file(path);
+    path = file.dir().filePath(file.completeBaseName().append(".chs"));
+
     if (!path.isEmpty())
     {
         QJsonObject project;
