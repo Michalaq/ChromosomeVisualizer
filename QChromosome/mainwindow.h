@@ -93,6 +93,8 @@ private:
 
     Interpolator ip;
     int ignore;
+
+    QString currentFile;
 };
 
 #endif // MAINWINDOW_H

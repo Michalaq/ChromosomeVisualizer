@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     rsw(new RenderSettingsWidget(renderSettings)),
     ignore(0)
 {
+    setWindowTitle("QChromosome 4D Studio - [Untitled]");
+
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -237,6 +239,9 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::newProject()
 {
+    currentFile.clear();
+    setWindowTitle("QChromosome 4D Studio - [Untitled]");
+
     simulation = std::make_shared<Simulation>();
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
@@ -269,6 +274,9 @@ void MainWindow::openProject()
     if (!path.isEmpty())
     {
         newProject();
+
+        currentFile = path;
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(path).fileName()));
 
         QFile file(path);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -333,17 +341,9 @@ void MainWindow::addLayer()
 
 void MainWindow::saveProject()
 {
-    saveProjectAs();//TODO tymczasowo...
-}
-
-void MainWindow::saveProjectAs()
-{
-    QString path = QFileDialog::getSaveFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.chs)");
-
-    QFileInfo file(path);
-    path = file.dir().filePath(file.completeBaseName().append(".chs"));
-
-    if (!path.isEmpty())
+    if (currentFile.isEmpty())
+        saveProjectAs();
+    else
     {
         QJsonObject project;
 
@@ -376,10 +376,26 @@ void MainWindow::saveProjectAs()
         ip.write(keyframes);
         project["Key frames"] = keyframes;
 
-        QFile file(path);
+        QFile file(currentFile);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         file.write(QJsonDocument(project).toJson());
         file.close();
+    }
+}
+
+void MainWindow::saveProjectAs()
+{
+    QString path = QFileDialog::getSaveFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.chs)");
+
+    if (!path.isEmpty())
+    {
+        QFileInfo info(path);
+        path = info.dir().filePath(info.completeBaseName().append(".chs"));
+
+        currentFile = path;
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(info.fileName()));
+
+        saveProject();
     }
 }
 

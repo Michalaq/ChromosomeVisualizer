@@ -10,9 +10,6 @@
     <height>497</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>QChromosome 4D Studio</string>
-  </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
 	background: #1a1a1a;
