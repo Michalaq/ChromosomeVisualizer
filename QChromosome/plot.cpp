@@ -12,23 +12,12 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
     simulation_(std::make_shared<Simulation>()),
-    lastBuffered(-1),
-    pin(QImage(QSize(20, 20), QImage::Format_ARGB32_Premultiplied))
+    lastBuffered(-1)
 {
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
 
     new QHBoxLayout(this);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
-
-    pin.fill(Qt::white);
-
-    QImage image(20, 20, QImage::Format_ARGB32);
-    image.fill(Qt::transparent);
-
-    QPainter painter(&image);
-    QSvgRenderer(QString(":/location")).render(&painter);
-
-    pin.setAlphaChannel(image.alphaChannel());
 }
 
 Plot::~Plot()
@@ -255,8 +244,9 @@ void Plot::paintEvent(QPaintEvent *event)
         pen3.setJoinStyle(Qt::MiterJoin);
 
         painter.setPen(pen3);
-        painter.drawLine(crs, padding_top - 5, crs, height() - padding_bottom);
-        painter.drawImage(crs - 10, 0, pin);
+        painter.setBrush(QBrush(Qt::white));
+        painter.drawLine(crs, padding_top - 10, crs, height() - padding_bottom);
+        painter.drawConvexPolygon(QPolygon({{crs, padding_top - 10}, {crs - 5, padding_top - 15}, {crs + 5, padding_top - 15}}));
     }
 }
 

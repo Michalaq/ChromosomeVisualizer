@@ -53,8 +53,6 @@ private:
     static QPointF sampleAtX(qreal x, const QVector<QPointF> &plot,
                              int *lowerIndex = nullptr, int *upperIndex = nullptr);
 
-    QImage pin;
-
 signals:
 
 public slots:
