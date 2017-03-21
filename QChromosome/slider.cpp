@@ -108,7 +108,7 @@ void Slider::paintEvent(QPaintEvent *event)
     for ( ; it != keys.constEnd() && *it <= softMaximum; it++)
         if (*it != frame)
         {
-            auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, softMinimum + *it, width() - 20) + 10;
+            auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, *it, width() - 20) + 10;
 
             p.drawRect(QRect(tick - dx/2, 4, dx, 8));
         }
