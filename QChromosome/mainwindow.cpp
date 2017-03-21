@@ -260,9 +260,11 @@ void MainWindow::newProject()
     ui->treeView->hideColumn(2);
 }
 
+#include <QStandardPaths>
+
 void MainWindow::openProject()
 {
-    QString path = QFileDialog::getOpenFileName(0, "", "/home", "QChromosome 4D Project File (*.chs)");
+    QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.chs)");
 
     if (!path.isEmpty())
     {
@@ -336,7 +338,7 @@ void MainWindow::saveProject()
 
 void MainWindow::saveProjectAs()
 {
-    QString path = QFileDialog::getSaveFileName(0, "", "/home", "QChromosome 4D Project File (*.chs)");
+    QString path = QFileDialog::getSaveFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.chs)");
 
     if (!path.isEmpty())
     {

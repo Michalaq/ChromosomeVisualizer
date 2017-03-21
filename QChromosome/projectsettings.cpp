@@ -2,6 +2,7 @@
 #include "ui_projectsettings.h"
 
 #include <QSettings>
+#include <QStandardPaths>
 
 ProjectSettings::ProjectSettings(QWidget *parent) :
     QWidget(parent),
@@ -19,7 +20,7 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
 
     QSettings settings;
     ui->lineEdit->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
-    ui->lineEdit_2->setText(settings.value("locallib", "/home").toString());
+    ui->lineEdit_2->setText(settings.value("locallib", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString());
 
     ui->lineEdit_2->setType(FileEdit::FE_Directory);
 }

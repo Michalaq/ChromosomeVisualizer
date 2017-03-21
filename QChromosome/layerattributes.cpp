@@ -148,11 +148,12 @@ void LayerAttributes::resizeEvent(QResizeEvent *event)
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QMessageBox>
+#include <QStandardPaths>
 
 void LayerAttributes::appendLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "Simulation file (*.pdb *.bin)");
 
         if (!path.isEmpty())
         {
