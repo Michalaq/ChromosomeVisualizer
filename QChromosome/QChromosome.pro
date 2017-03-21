@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     keyframe.cpp \
     interpolator.cpp \
     defaults.cpp \
-    selection.cpp
+    selection.cpp \
+    textedit.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -116,7 +117,8 @@ HEADERS  += mainwindow.h\
     keyframe.h \
     interpolator.h \
     defaults.h \
-    selection.h
+    selection.h \
+    textedit.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

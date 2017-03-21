@@ -279,7 +279,7 @@ QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
 }
 
-QLineEdit {
+QLineEdit, QTextEdit {
 	background: #2d2d2d;
 	border: 1px solid #2d2d2d;
 	border-radius: 2px;
@@ -289,7 +289,7 @@ QLineEdit {
 	padding-left: 10px;
 }
 
-QLineEdit[focus=&quot;true&quot;] {
+QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 	border-color: #205375;
 	color: lightgray;
 }

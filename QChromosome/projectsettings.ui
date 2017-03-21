@@ -267,8 +267,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>228</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -330,6 +330,9 @@
              </item>
              <item row="4" column="1">
               <widget class="FileEdit" name="lineEdit_6"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="TextEdit" name="textEdit"/>
              </item>
             </layout>
            </item>
@@ -501,6 +504,11 @@
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
    <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>textedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>
