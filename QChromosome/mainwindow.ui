@@ -929,7 +929,7 @@ Label {
   </action>
   <action name="actionAdd_Layer">
    <property name="text">
-    <string>Merge...</string>
+    <string>Import...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+O</string>
