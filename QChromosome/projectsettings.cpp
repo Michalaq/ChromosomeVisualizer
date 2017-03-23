@@ -10,6 +10,10 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+
+    /*TODO do usunięcia, kiedy znajdę lepsze miejsce*/
+
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this]() {
         QSettings().setValue("povraypath", ui->lineEdit->text());
     });

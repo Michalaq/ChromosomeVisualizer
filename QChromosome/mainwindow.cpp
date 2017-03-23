@@ -80,6 +80,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
     timer.setInterval(1000 / ui->page->ui->spinBox->value());
 
+    connect(ui->page->ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        //timer.setInterval(1000 / value);
+    });
+
+    connect(ui->page->ui->spinBox_4, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        //timer.setInterval(1000 / value);
+    });
+
+    connect(ui->page->ui->spinBox_5, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        setFrame(value);
+    });
+
+    connect(ui->page->ui->spinBox_6, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        //timer.setInterval(1000 / value);
+    });
+
+    connect(ui->page->ui->spinBox_7, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+        //timer.setInterval(1000 / value);
+    });
+
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
     t->setSeparator(true);
@@ -428,6 +448,7 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
     ip.setFrame(n);
+    ui->page->ui->spinBox_5->setValue(n);
 }
 
 void MainWindow::setSoftMinimum(int min)
