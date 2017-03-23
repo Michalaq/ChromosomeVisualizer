@@ -48,10 +48,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMaximum);
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_2, &SpinBox::setMaximum);
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->horizontalSlider_2->setMinimum(val);
+        ui->spinBox_3->setMinimum(val);
+        ui->page->ui->spinBox_6->setMinimum(val);
+        ui->page->ui->spinBox_4->setMinimum(val);
+        ui->page->ui->spinBox_3->setValue(val, false);
+    });
+
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->horizontalSlider_2->setMaximum(val);
+        ui->spinBox_2->setMaximum(val);
+        ui->page->ui->spinBox_3->setMaximum(val);
+        ui->page->ui->spinBox_7->setMaximum(val);
+        ui->page->ui->spinBox_6->setValue(val, false);
+    });
 
     /* connect actions */
     mappedSlot[ui->actionMove] = SLOT(move(int,int));
@@ -80,25 +91,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     timer.setInterval(1000 / ui->page->ui->spinBox->value());
 
-    connect(ui->page->ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        //timer.setInterval(1000 / value);
-    });
-
-    connect(ui->page->ui->spinBox_4, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        //timer.setInterval(1000 / value);
-    });
-
-    connect(ui->page->ui->spinBox_5, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        setFrame(value);
-    });
-
-    connect(ui->page->ui->spinBox_6, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        //timer.setInterval(1000 / value);
-    });
-
-    connect(ui->page->ui->spinBox_7, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        //timer.setInterval(1000 / value);
-    });
+    connect(ui->page->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
+    connect(ui->page->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
+    connect(ui->page->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
+    connect(ui->page->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
+    connect(ui->page->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -427,10 +424,11 @@ void MainWindow::updateFrameCount(int n)
     lastFrame = n - 1;
 
     ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
     ui->horizontalSlider->setMaximum(lastFrame);
     ui->plot->setMaximum(lastFrame);
+    ui->page->ui->spinBox_5->setMaximum(lastFrame);
+    ui->page->ui->spinBox_6->setMaximum(lastFrame);
 
     if (expandRange)
         ui->spinBox_3->setValue(lastFrame);
@@ -448,13 +446,16 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
     ip.setFrame(n);
-    ui->page->ui->spinBox_5->setValue(n);
+    ui->page->ui->spinBox_5->setValue(n, false);
 }
 
 void MainWindow::setSoftMinimum(int min)
 {
     ui->horizontalSlider->setSoftMinimum(min);
+    ui->horizontalSlider_2->setLowerBound(min, false);
     ui->plot->setSoftMinimum(min);
+    ui->page->ui->spinBox_7->setMinimum(min);
+    ui->page->ui->spinBox_4->setValue(min, false);
 
     softMinimum = min;
 }
@@ -462,7 +463,10 @@ void MainWindow::setSoftMinimum(int min)
 void MainWindow::setSoftMaximum(int max)
 {
     ui->horizontalSlider->setSoftMaximum(max);
+    ui->horizontalSlider_2->setUpperBound(max, false);
     ui->plot->setSoftMaximum(max);
+    ui->page->ui->spinBox_4->setMaximum(max);
+    ui->page->ui->spinBox_7->setValue(max, false);
 
     softMaximum = max;
 }
