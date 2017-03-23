@@ -289,6 +289,11 @@ QLineEdit, QTextEdit {
 	padding-left: 10px;
 }
 
+QTextEdit {
+    padding-top: 3px;
+    padding-left: 8px;
+}
+
 QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 	border-color: #205375;
 	color: lightgray;
@@ -297,6 +302,7 @@ QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 Label {
 	min-width: 125px;
 	min-height: 30px;
+    max-height: 30px;
 }
 
 .section {
@@ -628,6 +634,13 @@ Label {
           </property>
          </widget>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
         <item>
          <widget class="MediaControl" name="record">
           <property name="minimumSize">
@@ -642,6 +655,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -650,6 +666,9 @@ Label {
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/record</normaloff>:/media/record</iconset>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+F9</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -670,6 +689,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Record Position, Rotation and PLA of Active Camera [Shortcut F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -684,6 +706,9 @@ Label {
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="shortcut">
+           <string>F9</string>
           </property>
          </widget>
         </item>
@@ -1325,6 +1350,9 @@ Label {
    <property name="text">
     <string>Focus</string>
    </property>
+   <property name="statusTip">
+    <string>Target Object</string>
+   </property>
   </action>
   <action name="actionCustom">
    <property name="checkable">
@@ -1336,6 +1364,9 @@ Label {
    </property>
    <property name="text">
     <string>Custom</string>
+   </property>
+   <property name="statusTip">
+    <string>Lasso selection</string>
    </property>
   </action>
   <action name="actionSave">

@@ -71,6 +71,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>Project</string>
@@ -92,8 +95,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>208</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -108,122 +111,111 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="spacing">
-              <number>9</number>
-             </property>
-             <item>
-              <layout class="QFormLayout" name="formLayout_2">
-               <item row="0" column="0">
-                <widget class="Label" name="label_7">
-                 <property name="text">
-                  <string>FPS</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="Label" name="label_8">
-                 <property name="text">
-                  <string>Minimum Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="Label" name="label_9">
-                 <property name="text">
-                  <string>Preview Min. Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="SpinBox" name="spinBox_2">
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>500</number>
-                 </property>
-                 <property name="value">
-                  <number>30</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="SpinBox" name="spinBox_3">
-                 <property name="suffix">
-                  <string>F</string>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="SpinBox" name="spinBox_4">
-                 <property name="suffix">
-                  <string>F</string>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="0">
+              <widget class="Label" name="label_7">
+               <property name="text">
+                <string>FPS</string>
+               </property>
+              </widget>
              </item>
-             <item>
-              <layout class="QFormLayout" name="formLayout_3">
-               <item row="0" column="0">
-                <widget class="Label" name="label_10">
-                 <property name="text">
-                  <string>Document Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="Label" name="label_11">
-                 <property name="text">
-                  <string>Maximum Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="Label" name="label_12">
-                 <property name="text">
-                  <string>Preview Max. Time</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="SpinBox" name="spinBox_5">
-                 <property name="suffix">
-                  <string>F</string>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="SpinBox" name="spinBox_6">
-                 <property name="suffix">
-                  <string>F</string>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="SpinBox" name="spinBox_7">
-                 <property name="suffix">
-                  <string>F</string>
-                 </property>
-                 <property name="maximum">
-                  <number>0</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+             <item row="2" column="0">
+              <widget class="Label" name="label_8">
+               <property name="text">
+                <string>Minimum Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="Label" name="label_9">
+               <property name="text">
+                <string>Preview Min. Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="SpinBox" name="spinBox">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>500</number>
+               </property>
+               <property name="value">
+                <number>30</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="SpinBox" name="spinBox_3">
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="SpinBox" name="spinBox_4">
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="Label" name="label_10">
+               <property name="text">
+                <string>Document Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="SpinBox" name="spinBox_5">
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="Label" name="label_11">
+               <property name="text">
+                <string>Maximum Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="SpinBox" name="spinBox_6">
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="Label" name="label_12">
+               <property name="text">
+                <string>Preview Max. Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="SpinBox" name="spinBox_7">
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -377,7 +369,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>238</height>
+            <height>208</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -390,30 +382,6 @@
               <string>section</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="0" column="0">
-              <widget class="Label" name="label_2">
-               <property name="text">
-                <string>FPS</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="SpinBox" name="spinBox">
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>500</number>
-               </property>
-               <property name="value">
-                <number>30</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
            <item>
             <widget class="Label" name="label">
