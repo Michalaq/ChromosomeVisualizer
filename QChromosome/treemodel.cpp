@@ -60,17 +60,35 @@ int TreeModel::columnCount(const QModelIndex &parent) const
     return 5;
 }
 
+#include <QIcon>
+
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
-
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    return item->data(index.column());
+    switch (role)
+    {
+    case Qt::DisplayRole:
+        return item->data(index.column());
+    case Qt::DecorationRole:
+        if (index.column() == 0)
+            switch (item->data(1).toInt())
+            {
+            case NodeType::LayerObject:
+                return QIcon(":/objects/layer");
+            case NodeType::ChainObject:
+                return QIcon(":/lineedit/search");
+            case NodeType::ResidueObject:
+                return QIcon(":/lineedit/search");
+            case NodeType::AtomObject:
+                return QIcon(":/objects/atom");
+            }
+    }
+
+    return QVariant();
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
