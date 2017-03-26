@@ -838,7 +838,7 @@ Label {
       <widget class="QTreeView" name="treeView">
        <property name="styleSheet">
         <string notr="true">QTreeView {
-	color: white;
+	color: #808080;
 	border: none;
 	background: #1a1a1a;
 	outline: 0;
@@ -852,11 +852,8 @@ QTreeView::item, QTreeView::branch {
 }
 
 QTreeView::item:selected, QTreeView::branch:selected {
+	color: white;
 	background: #007acc;
-}
-
-QTreeView::item:selected:!active, QTreeView::branch:selected:!active {
-	background: #262626;
 }
 </string>
        </property>
