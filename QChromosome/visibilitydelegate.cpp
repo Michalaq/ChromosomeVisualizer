@@ -1,6 +1,6 @@
 #include "visibilitydelegate.h"
 
-VisibilityDelegate::VisibilityDelegate(QObject *parent) : QItemDelegate(parent)
+VisibilityDelegate::VisibilityDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
 
 }
@@ -10,7 +10,7 @@ VisibilityDelegate::VisibilityDelegate(QObject *parent) : QItemDelegate(parent)
 
 void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, painter);
+    option.widget->style()->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
     painter->setBrush(QBrush(index.data().toString() == "On" ? Qt::green : Qt::red));
     painter->drawEllipse(option.rect);
 }

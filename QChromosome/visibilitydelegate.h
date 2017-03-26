@@ -1,9 +1,9 @@
 #ifndef VISIBILITYDELEGATE_H
 #define VISIBILITYDELEGATE_H
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 
-class VisibilityDelegate : public QItemDelegate
+class VisibilityDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
