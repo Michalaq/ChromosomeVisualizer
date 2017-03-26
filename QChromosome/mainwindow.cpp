@@ -257,6 +257,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 void MainWindow::newProject()
 {
     currentFile.clear();
+    ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
     simulation = std::make_shared<Simulation>();
@@ -293,6 +294,7 @@ void MainWindow::openProject()
         newProject();
 
         currentFile = path;
+        ui->page->ui->lineEdit_6->setText(path);
         setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(path).fileName()));
 
         QFile file(path);
@@ -359,6 +361,9 @@ void MainWindow::saveProject()
     {
         QJsonObject project;
 
+        ui->page->ui->lineEdit_4->setText("QChromosome 4D File (.chs)");
+        ui->page->ui->lineEdit_5->setText("1.01");
+
         QJsonObject projectSettings;
         ui->page->write(projectSettings);
         project["Project Settings"] = projectSettings;
@@ -400,6 +405,7 @@ void MainWindow::saveProjectAs()
         path = info.dir().filePath(info.completeBaseName().append(".chs"));
 
         currentFile = path;
+        ui->page->ui->lineEdit_6->setText(path);
         setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(info.fileName()));
 
         saveProject();
