@@ -196,9 +196,6 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
-        painter.drawLine(QPoint(i, minval), QPoint(i, maxval));
-
     for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
         painter.drawLine(softMinimum, i, softMaximum, i);
 
