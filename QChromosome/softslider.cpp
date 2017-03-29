@@ -49,7 +49,12 @@ void SoftSlider::setSoftMaximum(int max)
 
 int SoftSlider::tickSpan(qreal minsep) const
 {
-    qreal jmp = minsep * (softMaximum - softMinimum) / width();
+    return tickSpan(minsep, width());
+}
+
+int SoftSlider::tickSpan(qreal minsep, int width) const
+{
+    qreal jmp = minsep * (softMaximum - softMinimum) / width;
 
     int b = 1;
 

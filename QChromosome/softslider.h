@@ -14,6 +14,7 @@ public:
     void setRange(int min, int max);
 
     int tickSpan(qreal minsep) const;
+    int tickSpan(qreal minsep, int width) const;
 
     static qreal tickSpan(qreal min, qreal max, qreal space, qreal minsep);
 

@@ -20,6 +20,7 @@ public:
     void updateSimulation();
 
     void setMaximum(int max);
+    void followSlider(QAbstractSlider *s);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -35,11 +36,10 @@ private:
 
     int lastBuffered;
 
-    int label;
-    int padding_left = 15;
-    int padding_right = 15;
     int padding_top = 20;
     int padding_bottom = 60;
+
+    QAbstractSlider *slider;
 
     QHash<QString, Legend*> legend;
 

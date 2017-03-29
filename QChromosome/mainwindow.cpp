@@ -196,6 +196,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
 
+    ui->plot->followSlider(ui->horizontalSlider);
+
     newProject();
 }
 

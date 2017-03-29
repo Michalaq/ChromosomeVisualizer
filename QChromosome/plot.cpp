@@ -36,7 +36,7 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
 
     minimax.clear();
 
-    setMinimumHeight(padding_top + 48 + padding_bottom);
+    setMinimumHeight(padding_top + 64 + padding_bottom);
 
     qDeleteAll(legend);
 
@@ -95,19 +95,25 @@ void Plot::setMaximum(int m)
     update();
 }
 
+void Plot::followSlider(QAbstractSlider *s)
+{
+    slider = s;
+    update();
+}
+
 #include <QMouseEvent>
 #include <QStyle>
 
 void Plot::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 10) + x(), slider->width() - 20));
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - padding_left - label, width() - padding_left - label - padding_right));
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 10) + x(), slider->width() - 20));
 }
 
 #include <QtMath>
@@ -151,11 +157,9 @@ void Plot::paintEvent(QPaintEvent *event)
     double ut = maxval = qCeil(maxval / delta) * delta;//double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
 
-    label = painter.fontMetrics().width(QString::number(delta != qInf() ? ut : 0));
+    s.setWidth(slider->width() - 20);
 
-    s.setWidth(width() - padding_left - label - padding_right);
-
-    painter.setViewport(padding_left + label, height() - padding_bottom, s.width(), -s.height());
+    painter.setViewport((slider->x() + 10) - x(), height() - padding_bottom, s.width(), -s.height());
     painter.setWindow(softMinimum, minval, softMaximum - softMinimum, maxval - minval);
 
     auto transform = painter.combinedTransform();
@@ -170,7 +174,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(softMinimum, minval, softMaximum, minval);
 
-    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20);
+    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, slider->width());
 
     painter.setViewTransformEnabled(false);
 
@@ -179,11 +183,11 @@ void Plot::paintEvent(QPaintEvent *event)
         auto tick = transform.map(QPoint(i, minval));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, padding_left / 2), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
+        painter.drawText(QRect(tick + QPoint(0, 8), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
     }
 
     for (qreal i = lt; i <= ut; i += delta)
-        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(padding_left / 2, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
+        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(8, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
