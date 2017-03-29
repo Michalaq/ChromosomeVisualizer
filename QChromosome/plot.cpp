@@ -17,7 +17,8 @@ Plot::Plot(QWidget *parent) :
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
 
     new QHBoxLayout(this);
-    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+    layout()->setMargin(0);
+    layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
 }
 
 Plot::~Plot()
@@ -123,8 +124,9 @@ void Plot::addLegend(const QString &fname)
     const auto color = colorOrder[legend.size() % colorOrder.size()];
 
     auto entry = new Legend(fname, color, this);
+
     connect(entry, &Legend::changed, [=] {
-        minimax.setVisible(fname.toStdString(), entry->pen().alpha() != 0);
+        minimax.setVisible(fname.toStdString(), entry->pen() != Qt::transparent);
         update();
     });
     layout()->addWidget(entry);
@@ -183,11 +185,11 @@ void Plot::paintEvent(QPaintEvent *event)
         auto tick = transform.map(QPoint(i, minval));
 
         painter.drawLine(tick, tick + QPoint(0, 5));
-        painter.drawText(QRect(tick + QPoint(0, 8), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
+        painter.drawText(QRect(tick + QPoint(0, 9), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
     }
 
     for (qreal i = lt; i <= ut; i += delta)
-        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(8, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
+        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(9, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
@@ -246,8 +248,8 @@ void Plot::paintEvent(QPaintEvent *event)
 
         painter.setPen(pen3);
         painter.setBrush(QBrush(Qt::white));
-        painter.drawLine(crs, padding_top - 10, crs, height() - padding_bottom);
-        painter.drawConvexPolygon(QPolygon({{crs, padding_top - 10}, {crs - 5, padding_top - 15}, {crs + 5, padding_top - 15}}));
+        painter.drawLine(crs, padding_top - 5, crs, height() - padding_bottom);
+        painter.drawConvexPolygon(QPolygon({{crs, padding_top}, {crs - 5, padding_top - 5}, {crs + 5, padding_top - 5}}));
     }
 }
 

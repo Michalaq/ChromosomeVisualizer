@@ -36,8 +36,8 @@ private:
 
     int lastBuffered;
 
-    int padding_top = 20;
-    int padding_bottom = 60;
+    int padding_top = 39;
+    int padding_bottom = 24;
 
     QAbstractSlider *slider;
 
