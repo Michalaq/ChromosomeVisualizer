@@ -551,14 +551,14 @@ Label {
          <widget class="MediaControl" name="play">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>24</width>
+            <height>24</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>24</width>
+            <height>24</height>
            </size>
           </property>
           <property name="statusTip">
@@ -573,12 +573,6 @@ Label {
            <iconset resource="icons.qrc">
             <normaloff>:/media/play</normaloff>
             <normalon>:/media/pause</normalon>:/media/play</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -1646,22 +1640,6 @@ QTreeView::item:selected, QTreeView::branch:selected {
    </hints>
   </connection>
   <connection>
-   <sender>reverse</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reverse(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>168</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>horizontalSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -2090,6 +2068,22 @@ QTreeView::item:selected, QTreeView::branch:selected {
     <hint type="destinationlabel">
      <x>286</x>
      <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reverse</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reverse(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>168</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
     </hint>
    </hints>
   </connection>
