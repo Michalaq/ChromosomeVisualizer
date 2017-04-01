@@ -950,6 +950,10 @@ Label {
    </property>
   </action>
   <action name="actionAdd_Layer">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/import</normaloff>:/dialogs/import</iconset>
+   </property>
    <property name="text">
     <string>Import...</string>
    </property>
@@ -1186,6 +1190,10 @@ Label {
    </property>
   </action>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
@@ -1373,6 +1381,10 @@ Label {
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/diskette</normaloff>:/dialogs/diskette</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
