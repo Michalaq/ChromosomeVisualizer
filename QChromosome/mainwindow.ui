@@ -838,24 +838,50 @@ Label {
 	outline: 0;
 }
 
+QHeaderView {
+	background: #2d2d2d;
+}
+
+QHeaderView::section {
+	height: 20px;
+	border: none;
+	border-right: 1px solid #1a1a1a;
+	background: #2d2d2d;
+}
+
+QHeaderView::section:last {
+	border-right: none;
+}
+
 QTreeView::item, QTreeView::branch {
 	height: 20px;
-	border: 1px solid transparent;
-	border-bottom-color: #2d2d2d;
+	border: none;
+	border-bottom: 1px solid #2d2d2d;
 	background: #1a1a1a;
 }
 
-QTreeView::item:selected, QTreeView::branch:selected {
+QTreeView::item:selected {
 	color: white;
 	background: #007acc;
+}
+
+QTreeView::branch:selected {
+	background: #1a1a1a;
+}
+
+QTreeView::item:first:selected {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+QTreeView::item:last:selected {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 </string>
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>
-       </property>
-       <property name="headerHidden">
-        <bool>true</bool>
        </property>
       </widget>
      </item>
