@@ -199,6 +199,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->followSlider(ui->horizontalSlider);
 
     newProject();
+
+    ui->treeView->header()->resizeSection(3, 25);
+    ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
 }
 
 MainWindow::~MainWindow()

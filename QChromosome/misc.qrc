@@ -12,6 +12,8 @@
         <file alias="right">misc/right_arrow.svg</file>
         <file alias="left">misc/left_arrow.svg</file>
         <file alias="down">misc/down_arrow.svg</file>
+        <file alias="bclosed">misc/branch_closed.svg</file>
+        <file alias="bopen">misc/branch_open.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>

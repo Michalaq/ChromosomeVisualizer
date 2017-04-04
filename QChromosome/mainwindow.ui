@@ -878,6 +878,18 @@ QTreeView::item:last:selected {
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
 }
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(:/arrows/bclosed);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(:/arrows/bopen);
+}
 </string>
        </property>
        <property name="selectionMode">
