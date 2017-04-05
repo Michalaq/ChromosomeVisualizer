@@ -839,6 +839,7 @@ Label {
 }
 
 QHeaderView {
+	color: white;
 	background: #2d2d2d;
 }
 
@@ -846,7 +847,9 @@ QHeaderView::section {
 	height: 20px;
 	border: none;
 	border-right: 1px solid #1a1a1a;
+	border-bottom: 1px solid #1a1a1a;
 	background: #2d2d2d;
+	padding-left: 10px;
 }
 
 QHeaderView::section:last {
@@ -856,13 +859,12 @@ QHeaderView::section:last {
 QTreeView::item, QTreeView::branch {
 	height: 20px;
 	border: none;
-	border-bottom: 1px solid #2d2d2d;
 	background: #1a1a1a;
 }
 
 QTreeView::item:selected {
 	color: white;
-	background: #007acc;
+	background: #2d2d2d;
 }
 
 QTreeView::branch:selected {
@@ -879,15 +881,11 @@ QTreeView::item:last:selected {
 	border-bottom-right-radius: 3px;
 }
 
-QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings {
-        border-image: none;
+QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
         image: url(:/arrows/bclosed);
 }
 
-QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings  {
-        border-image: none;
+QTreeView::branch:open:has-children  {
         image: url(:/arrows/bopen);
 }
 </string>

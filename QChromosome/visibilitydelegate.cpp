@@ -12,5 +12,5 @@ void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 {
     option.widget->style()->drawControl(QStyle::CE_ItemViewItem, &option, painter, option.widget);
     painter->setBrush(QBrush(index.data().toString() == "On" ? Qt::green : Qt::red));
-    painter->drawEllipse(option.rect);
+    painter->drawEllipse(option.rect.center(), 5, 5);
 }

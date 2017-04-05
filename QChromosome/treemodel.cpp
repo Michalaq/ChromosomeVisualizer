@@ -1,43 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "treeitem.h"
 #include "treemodel.h"
 
@@ -45,7 +5,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem)
+      header(new TreeItem({"Model", "", "", "", "Tags"}))
 {
 
 }
@@ -75,17 +35,31 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
         return item->data(index.column());
     case Qt::DecorationRole:
         if (index.column() == 0)
+        {
+            QIcon icon;
+
             switch (item->data(1).toInt())
             {
             case NodeType::LayerObject:
-                return QIcon(":/objects/layer");
+                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
+                break;
             case NodeType::ChainObject:
-                return QIcon(":/lineedit/search");
+                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                break;
             case NodeType::ResidueObject:
-                return QIcon(":/lineedit/search");
+                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                break;
             case NodeType::AtomObject:
-                return QIcon(":/objects/atom");
+                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
+                break;
             }
+
+            return icon;
+        }
     }
 
     return QVariant();
@@ -159,7 +133,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), "On", "Tags"}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), "On", "<<tu będą tagi>>"}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -168,9 +142,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "Tags"}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, "On", "Tags"}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
     }
 
     for (auto t : types)
@@ -185,7 +159,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, "On", "Tags"}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, "On", "<<tu będą tagi>>"}, header);
 
     unsigned int i = 0;
 
@@ -203,9 +177,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "Tags"}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, "On", "Tags"}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
         }
 
     for (auto t : types)
