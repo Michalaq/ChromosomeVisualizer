@@ -8,13 +8,19 @@ class TreeView : public QTreeView
     Q_OBJECT
 public:
     explicit TreeView(QWidget *parent = 0);
-
-protected:
-    void mousePressEvent(QMouseEvent *event);
+    ~TreeView();
 
 signals:
 
 public slots:
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+
+private:
+    QVariant state;
 };
 
 #endif // TREEVIEW_H
