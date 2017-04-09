@@ -55,7 +55,8 @@ SOURCES += main.cpp\
     interpolator.cpp \
     defaults.cpp \
     selection.cpp \
-    visibilitydelegate.cpp
+    visibilitydelegate.cpp \
+    treeview.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -118,7 +119,8 @@ HEADERS  += mainwindow.h\
     interpolator.h \
     defaults.h \
     selection.h \
-    visibilitydelegate.h
+    visibilitydelegate.h \
+    treeview.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

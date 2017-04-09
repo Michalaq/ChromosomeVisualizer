@@ -56,6 +56,7 @@ public:
     int childCount() const;
     int columnCount() const;
     QVariant data(int column) const;
+    bool setData(int column, const QVariant& data);
     int row() const;
     TreeItem *parentItem();
 

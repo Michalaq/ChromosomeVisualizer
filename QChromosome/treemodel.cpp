@@ -65,6 +65,16 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid())
+        return false;
+
+    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+    return item->setData(index.column(), value);
+}
+
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
