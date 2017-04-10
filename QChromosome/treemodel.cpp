@@ -139,6 +139,17 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QModelIndex>& id)
+{
+    auto v = root.sibling(root.row(), 2).data();
+
+    if (v.canConvert<uint>())
+        id[v.toUInt()] = root;
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
+}
+
 #include "defaults.h"
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
@@ -200,4 +211,12 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     header->appendChild(root);
 
     endInsertRows();
+
+    indices.resize(atoms.size() + 1);
+    dumpModel(this, index(0, 0), indices);
+}
+
+const QVector<QModelIndex>& TreeModel::getIndices() const
+{
+    return indices;
 }

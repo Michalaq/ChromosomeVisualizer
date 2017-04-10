@@ -10,6 +10,8 @@ public:
     explicit TreeView(QWidget *parent = 0);
     ~TreeView();
 
+    void setSelection(const QList<unsigned int>& indexes);
+
 signals:
 
 public slots:

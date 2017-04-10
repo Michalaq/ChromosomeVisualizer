@@ -78,9 +78,11 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
     void setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset);
+    const QVector<QModelIndex>& getIndices() const;
 
 private:
     TreeItem *header;
+    QVector<QModelIndex> indices;
 };
 
 #endif // TREEMODEL_H

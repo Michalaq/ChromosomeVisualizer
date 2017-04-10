@@ -488,6 +488,8 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     ui->page_2->handleSelection(selection);
 
     ui->camera->setOrigin(selection.weightCenter());
+
+    ui->treeView->setSelection(selection.selectedIndices());
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)

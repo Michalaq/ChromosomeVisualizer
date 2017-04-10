@@ -10,6 +10,23 @@ TreeView::~TreeView()
 
 }
 
+#include "treemodel.h"
+
+void TreeView::setSelection(const QList<unsigned int> &indexes)
+{
+    auto t = static_cast<TreeModel*>(model());
+    auto indices = t->getIndices();
+
+    QItemSelection m;
+
+    for (unsigned int i : indexes)
+        m.select(indices[i], indices[i]);
+
+    selectionModel()->select(m, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+
+    update();
+}
+
 #include <QMouseEvent>
 
 void TreeView::mousePressEvent(QMouseEvent *event)
