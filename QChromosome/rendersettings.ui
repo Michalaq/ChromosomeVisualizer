@@ -144,9 +144,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <widget class="QWidget" name="tabSave">
       <attribute name="title">
        <string>General</string>

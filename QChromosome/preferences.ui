@@ -6,14 +6,261 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Preferences</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">#Preferences {
+	background: #262626;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">#widget {
+	background: #333333;
+}</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="MediaControl" name="pushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background: #0066ff;</string>
+        </property>
+        <property name="icon">
+         <iconset resource="icons.qrc">
+          <normaloff>:/dialogs/equipment</normaloff>:/dialogs/equipment</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">color: white;</string>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PREFERENCES&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="TabWidget">
+     <property name="styleSheet">
+      <string notr="true">QTabBar {
+	background: #262626;
+}
+
+QWidget {
+    font-family: Droid Sans;
+}
+
+QTabBar::tab {
+	background: none;
+	border: none;
+	margin: 0px;
+	color: lightgray;
+	width: 180px;
+	height: 48px;
+}
+
+QTabBar::tab:hover {
+	background: #333333;
+}
+
+QTabBar::tab:selected {
+	background: #214478;
+	color: white;
+}
+
+QTabWidget::pane {
+	background: #1a1a1a;
+	border: none;
+}
+
+QLabel {
+	color: lightgray;
+	min-width: 120px;
+	min-height: 25px;
+}
+
+QScrollArea {
+	border: none;
+}
+
+QScrollArea &gt; QWidget &gt; QWidget {
+	background: #1a1a1a;
+}</string>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::West</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>General</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>602</width>
+            <height>534</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Project settings</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Label" name="label_2">
+             <property name="text">
+              <string>POV-Ray installation path</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="FileEdit" name="lineEdit"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Local library</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="FileEdit" name="lineEdit_2"/>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>TODO: Ten widget zyska sens, gdy będzie można zaisywać sesję do pliku. Nie będzie tak wyglądał.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Defaults" name="widget_2" native="true"/>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Defaults</class>
+   <extends>QWidget</extends>
+   <header>defaults.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
+ <slots>
+  <slot>updateOutput()</slot>
+ </slots>
 </ui>

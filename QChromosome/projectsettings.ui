@@ -370,96 +370,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab">
-      <attribute name="title">
-       <string>Dump</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>362</width>
-            <height>208</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Project settings</string>
-             </property>
-             <property name="class" stdset="0">
-              <string>section</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="Label" name="label">
-             <property name="text">
-              <string>POV-Ray installation path</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="FileEdit" name="lineEdit"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>Local library</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="FileEdit" name="lineEdit_2"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>TODO: Ten widget zyska sens, gdy będzie można zaisywać sesję do pliku. Nie będzie tak wyglądał.</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="Defaults" name="tab_3">
-      <attribute name="title">
-       <string>Defaults</string>
-      </attribute>
-     </widget>
     </widget>
    </item>
   </layout>
@@ -471,6 +381,11 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
@@ -479,17 +394,6 @@
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
-  </customwidget>
-  <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Defaults</class>
-   <extends>QWidget</extends>
-   <header>defaults.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>LineEdit</class>
