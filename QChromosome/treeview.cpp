@@ -22,9 +22,9 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
     for (unsigned int i : indexes)
         m.select(indices[i], indices[i]);
 
+    bool b = blockSignals(true);
     selectionModel()->select(m, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-
-    update();
+    blockSignals(b);
 }
 
 #include <QMouseEvent>

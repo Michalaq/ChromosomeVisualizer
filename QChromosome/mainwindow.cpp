@@ -479,7 +479,7 @@ void MainWindow::selectAll()
     ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
-void MainWindow::handleSelection(const AtomSelection &selection)
+void MainWindow::handleSelection(const AtomSelection &selection, bool b)
 {
     ui->dockWidget_2->show();
 
@@ -489,7 +489,7 @@ void MainWindow::handleSelection(const AtomSelection &selection)
 
     ui->camera->setOrigin(selection.weightCenter());
 
-    ui->treeView->setSelection(selection.selectedIndices());
+    if (b) ui->treeView->setSelection(selection.selectedIndices());
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
@@ -531,7 +531,7 @@ void MainWindow::handleModelSelection()
         ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
     }
     else
-        handleSelection(selection);
+        handleSelection(selection, false);
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)

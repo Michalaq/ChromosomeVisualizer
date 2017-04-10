@@ -893,6 +893,9 @@ QTreeView::branch:open:has-children  {
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
+       <property name="uniformRowHeights">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
