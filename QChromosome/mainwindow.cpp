@@ -8,6 +8,8 @@
 #include <QKeyEvent>
 #include "visibilitydelegate.h"
 
+static const char * ext = ".chs";
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -296,7 +298,7 @@ void MainWindow::newProject()
 
 void MainWindow::openProject()
 {
-    QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "QChromosome 4D Project File (*.qc4d)");
+    QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*%1)").arg(ext));
 
     if (!path.isEmpty())
     {
@@ -370,7 +372,7 @@ void MainWindow::saveProject()
     {
         QJsonObject project;
 
-        ui->page->ui->lineEdit_4->setText("QChromosome 4D File (*.qc4d)");
+        ui->page->ui->lineEdit_4->setText(QString("QChromosome 4D File (*%1)").arg(ext));
         ui->page->ui->lineEdit_5->setText("1.01");
 
         QJsonObject projectSettings;
@@ -406,12 +408,12 @@ void MainWindow::saveProject()
 
 void MainWindow::saveProjectAs()
 {
-    QString path = QFileDialog::getSaveFileName(0, "", currentFile.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation) : currentFile, "QChromosome 4D Project File (*.qc4d)");
+    QString path = QFileDialog::getSaveFileName(0, "", currentFile.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation) : currentFile, QString("QChromosome 4D Project File (*%1)").arg(ext));
 
     if (!path.isEmpty())
     {
         QFileInfo info(path);
-        path = info.dir().filePath(info.completeBaseName().append(".qc4d"));
+        path = info.dir().filePath(info.completeBaseName().append(ext));
 
         currentFile = path;
         ui->page->ui->lineEdit_6->setText(path);
