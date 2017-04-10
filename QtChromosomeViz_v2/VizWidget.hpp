@@ -58,13 +58,13 @@ public:
     void setLabel(const QString & label);
     void setVisible(bool visible = true);
 
-    QVariant getColor() const;
-    QVariant getAlpha() const;
-    QVariant getSpecularColor() const;
-    QVariant getSpecularExponent() const;
-    QVariant getSize() const;
+    QColor getColor() const;
+    double getAlpha() const;
+    QColor getSpecularColor() const;
+    double getSpecularExponent() const;
+    double getSize() const;
     QVariant getLabel() const;
-    QList<QVariant> getCoordinates() const;
+    std::tuple<int, int, int> getCoordinates() const;
     int getVisibility() const;
 
     unsigned int atomCount() const;
@@ -138,6 +138,9 @@ public slots:
     float fogContribution() const;
 
     const QVector<VizBallInstance> & getBallInstances() const;
+
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -218,6 +221,8 @@ private:
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;
+
+    QMap<unsigned int, QVariantMap> changes;
 };
 
 #endif /* VIZWINDOW_HPP */

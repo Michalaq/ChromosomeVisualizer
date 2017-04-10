@@ -238,7 +238,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         Picker *p = new Picker;
         p->showAlphaChannel();
         ui->tableWidget->setCellWidget(i, 2, p);
-        p->setValue(ui->tableWidget->item(i, 2)->data(Qt::DisplayRole));
+        p->setValue(ui->tableWidget->item(i, 2)->data(Qt::DisplayRole).value<QColor>());
 
         connect(p, &Picker::valueChanged, [=](QColor c) {
             ui->tableWidget->setCurrentCell(i, 2);
@@ -251,7 +251,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         Picker *p = new Picker;
         p->showAlphaChannel();
         ui->tableWidget_2->setCellWidget(i, 2, p);
-        p->setValue(ui->tableWidget_2->item(i, 2)->data(Qt::DisplayRole));
+        p->setValue(ui->tableWidget_2->item(i, 2)->data(Qt::DisplayRole).value<QColor>());
 
         connect(p, &Picker::valueChanged, [=](QColor c) {
             ui->tableWidget_2->setCurrentCell(i, 2);
@@ -264,7 +264,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         Picker *p = new Picker;
         p->showAlphaChannel();
         ui->tableWidget_3->setCellWidget(i, 1, p);
-        p->setValue(ui->tableWidget_3->item(i, 1)->data(Qt::DisplayRole));
+        p->setValue(ui->tableWidget_3->item(i, 1)->data(Qt::DisplayRole).value<QColor>());
 
         connect(p, &Picker::valueChanged, [=](QColor c) {
             ui->tableWidget_3->setCurrentCell(i, 1);

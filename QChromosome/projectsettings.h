@@ -15,6 +15,9 @@ public:
     explicit ProjectSettings(QWidget *parent = 0);
     ~ProjectSettings();
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     Ui::Form *ui;
 

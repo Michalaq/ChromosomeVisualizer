@@ -128,3 +128,27 @@ TreeModel* Simulation::getModel()
 {
     return model;
 }
+
+#include <QJsonArray>
+
+void Simulation::read(const QJsonArray &json)
+{
+    for (auto i : json)
+    {
+        auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
+        simulationLayer->read(i.toArray());
+
+        addSimulationLayerConcatenation(simulationLayer);
+    }
+}
+
+void Simulation::write(QJsonArray &json) const
+{
+    for (auto i : layerConcatenations_)
+    {
+        QJsonArray simulationLayer;
+        i->write(simulationLayer);
+
+        json.append(simulationLayer);
+    }
+}

@@ -5,11 +5,18 @@ Picker::Picker(QWidget *parent) : ComboBox(parent)
     addItem(QIcon(), "<< multiple values >>");
 }
 
-void Picker::setValue(const QVariant& c)
+QColor Picker::value() const
+{
+    return color;
+}
+
+void Picker::setValue(const QColor& c, bool spontaneous)
 {
     color = c;
+    setItemText(0, color.isValid() ? color.name() : "<< multiple values >>");
 
-    setItemText(0, color.isValid() ? color.value<QColor>().name() : "<< multiple values >>");
+    if (spontaneous)
+        emit valueChanged(color);
 
     update();
 }
@@ -40,7 +47,7 @@ void Picker::paintEvent(QPaintEvent *)
                 painter.fillRect(4 + 6 * i, 4 + 6 * j, 6, 6, (i + j) % 2 ? "#666666" : "#999999");
 
         painter.translate(28, 0);
-        QPainter(this).fillRect(4, 4, 24, 24, color.value<QColor>());
+        QPainter(this).fillRect(4, 4, 24, 24, color);
     }
 
     // draw the icon and text
@@ -53,11 +60,8 @@ void Picker::mousePressEvent(QMouseEvent *event)
 {
     QWidget::mousePressEvent(event);
 
-    QColor c = QColorDialog::getColor(color.value<QColor>(), Q_NULLPTR, QString(), alpha ? QColorDialog::ShowAlphaChannel : QColorDialog::ColorDialogOptions());
+    QColor c = QColorDialog::getColor(color, Q_NULLPTR, QString(), alpha ? QColorDialog::ShowAlphaChannel : QColorDialog::ColorDialogOptions());
 
     if (c.isValid() && c != color)
-    {
         setValue(c);
-        emit valueChanged(c);
-    }
 }

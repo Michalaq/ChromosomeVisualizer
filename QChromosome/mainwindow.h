@@ -27,6 +27,8 @@ public slots:
     void newProject();
     void openProject();
     void addLayer();
+    void saveProject();
+    void saveProjectAs();
 
     void setFrame(int n);
     void updateFrameCount(int n);
@@ -63,6 +65,7 @@ public slots:
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -91,6 +94,8 @@ private:
 
     Interpolator ip;
     int ignore;
+
+    QString currentFile;
 };
 
 #endif // MAINWINDOW_H

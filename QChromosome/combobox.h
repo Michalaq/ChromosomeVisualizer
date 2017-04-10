@@ -16,6 +16,7 @@ protected:
 signals:
 
 public slots:
+    void setCurrentIndex(int index, bool spontaneous = true);
 };
 
 #endif // COMBOBOX_H

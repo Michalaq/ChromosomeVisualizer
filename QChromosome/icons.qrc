@@ -17,13 +17,13 @@
     </qresource>
     <qresource prefix="/selection">
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
-        <file alias="focus">icons/focus_correction_icon.svg</file>
         <file alias="custom">icons/selection_custom_shape_icon.svg</file>
+        <file alias="focus">icons/target_icon.svg</file>
     </qresource>
     <qresource prefix="/dock">
         <file alias="float">icons/float_icon.svg</file>
         <file alias="dock">icons/dock_icon.svg</file>
-        <file alias="close">icons/close_icon.svg</file>
+        <file alias="close">icons/cross_icon.svg</file>
     </qresource>
     <qresource prefix="/render">
         <file alias="quick">icons/quick_render_icon.svg</file>
@@ -41,6 +41,8 @@
         <file alias="document">icons/document_icon.svg</file>
         <file alias="equipment">icons/equipment_icon.svg</file>
         <file alias="keyframe">icons/keyframe_icon.svg</file>
+        <file alias="import">icons/file_import_icon.svg</file>
+        <file alias="diskette">icons/diskette_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="splash">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>

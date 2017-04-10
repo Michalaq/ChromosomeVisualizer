@@ -32,7 +32,12 @@ void ToolBar::addAction(QAction *action)
     if (action->isCheckable())
     {
         connect(action, &QAction::toggled, widget, &MediaControl::setChecked);
-        connect(widget, &MediaControl::toggled, action, &QAction::setChecked);
+        connect(widget, &MediaControl::toggled, action, [=](bool b) {
+            if (!action->actionGroup() || action->actionGroup()->checkedAction() != action || b)
+                action->setChecked(b);
+            else
+                widget->setChecked(true);
+        });
     }
     else
     {

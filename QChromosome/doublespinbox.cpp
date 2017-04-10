@@ -1,8 +1,49 @@
 #include "doublespinbox.h"
+#include <QLineEdit>
 
 DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 {
+    setKeyboardTracking(false);
 
+    lineEdit()->setValidator(Q_NULLPTR);
+
+    re.setPattern(QString("[+-]?\\d+(%1\\d+)?").arg(QRegularExpression::escape(locale().decimalPoint())));
+
+    connect(this, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] {
+        setSpecialValueText("");
+    });
+}
+
+void DoubleSpinBox::setValue(double val, bool spontaneous)
+{
+    bool b;
+
+    if (!spontaneous)
+        b = blockSignals(true);
+
+    if (val > std::numeric_limits<double>::lowest())
+    {
+        setSpecialValueText("");
+        QDoubleSpinBox::setValue(val);
+    }
+    else
+    {
+        setSpecialValueText("<< multiple values >>");
+        QDoubleSpinBox::setValue(minimum());
+    }
+
+    if (!spontaneous)
+        blockSignals(b);
+}
+
+QValidator::State DoubleSpinBox::validate(QString &input, int &) const
+{
+    return re.match(input).hasMatch() ? QValidator::Acceptable : QValidator::Intermediate;
+}
+
+double DoubleSpinBox::valueFromText(const QString &text) const
+{
+    return locale().toDouble(re.match(text).captured());
 }
 
 #include <QStyle>
@@ -25,19 +66,4 @@ void DoubleSpinBox::focusOutEvent(QFocusEvent *event)
     style()->polish(this);
 
     update();
-}
-
-#include <QMouseEvent>
-#include <QStyleOptionSpinBox>
-
-void DoubleSpinBox::mousePressEvent(QMouseEvent *event)
-{
-    QDoubleSpinBox::mousePressEvent(event);
-
-    QStyleOptionSpinBox opt;
-    initStyleOption(&opt);
-
-    if (style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxUp).contains(event->pos())
-            || style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxDown).contains(event->pos()))
-        emit editingFinished();
 }

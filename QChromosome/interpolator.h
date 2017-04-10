@@ -36,6 +36,9 @@ public:
     void lockValue(bool c = true);
     bool isValueLocked(int frame) const;
 
+    void read(const QJsonArray& json);
+    void write(QJsonArray &json) const;
+
 signals:
     void selectionChanged();
     void interpolationChanged();

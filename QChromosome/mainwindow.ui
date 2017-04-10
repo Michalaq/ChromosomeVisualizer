@@ -10,9 +10,6 @@
     <height>497</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>QChromosome 4D Studio</string>
-  </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
 	background: #1a1a1a;
@@ -282,7 +279,7 @@ QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
 }
 
-QLineEdit {
+QLineEdit, QTextEdit {
 	background: #2d2d2d;
 	border: 1px solid #2d2d2d;
 	border-radius: 2px;
@@ -292,7 +289,12 @@ QLineEdit {
 	padding-left: 10px;
 }
 
-QLineEdit[focus=&quot;true&quot;] {
+QTextEdit {
+    padding-top: 3px;
+    padding-left: 8px;
+}
+
+QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 	border-color: #205375;
 	color: lightgray;
 }
@@ -300,6 +302,7 @@ QLineEdit[focus=&quot;true&quot;] {
 Label {
 	min-width: 125px;
 	min-height: 30px;
+    max-height: 30px;
 }
 
 .section {
@@ -625,6 +628,13 @@ Label {
           </property>
          </widget>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
         <item>
          <widget class="MediaControl" name="record">
           <property name="minimumSize">
@@ -639,6 +649,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -647,6 +660,9 @@ Label {
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/record</normaloff>:/media/record</iconset>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+F9</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -667,6 +683,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Record Position, Rotation and PLA of Active Camera [Shortcut F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -681,6 +700,9 @@ Label {
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="shortcut">
+           <string>F9</string>
           </property>
          </widget>
         </item>
@@ -707,6 +729,9 @@ Label {
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionAdd_Layer"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -979,6 +1004,10 @@ QTreeView::branch:open:has-children  {
    </property>
   </action>
   <action name="actionAdd_Layer">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/import</normaloff>:/dialogs/import</iconset>
+   </property>
    <property name="text">
     <string>Import...</string>
    </property>
@@ -1215,6 +1244,10 @@ QTreeView::branch:open:has-children  {
    </property>
   </action>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
@@ -1379,6 +1412,9 @@ QTreeView::branch:open:has-children  {
    <property name="text">
     <string>Focus</string>
    </property>
+   <property name="statusTip">
+    <string>Target Object</string>
+   </property>
   </action>
   <action name="actionCustom">
    <property name="checkable">
@@ -1390,6 +1426,32 @@ QTreeView::branch:open:has-children  {
    </property>
    <property name="text">
     <string>Custom</string>
+   </property>
+   <property name="statusTip">
+    <string>Lasso selection</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Lasso Selection: Click and drag to lasso-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/diskette</normaloff>:/dialogs/diskette</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>
@@ -2131,6 +2193,38 @@ QTreeView::branch:open:has-children  {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSave</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveProject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSaveAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveProjectAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openProject()</slot>
@@ -2152,5 +2246,7 @@ QTreeView::branch:open:has-children  {
   <slot>handleModelSelection()</slot>
   <slot>newProject()</slot>
   <slot>updateLocks()</slot>
+  <slot>saveProject()</slot>
+  <slot>saveProjectAs()</slot>
  </slots>
 </ui>

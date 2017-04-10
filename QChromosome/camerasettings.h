@@ -19,6 +19,9 @@ public:
     void setCamera(Camera *c);
     void setRotationType(int rt);
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 signals:
 
 public slots:

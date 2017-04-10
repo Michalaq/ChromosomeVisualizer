@@ -30,15 +30,15 @@ private:
 
     enum { Normal, LeftHandleMoving, RightHandleMoving, IntervalMoving } state;
 
-    void setBounds(int min, int max);
+    void setBounds(int min, int max, bool spontaneous = true);
 
 signals:
     void lowerBoundChanged(int);
     void upperBoundChanged(int);
 
 public slots:
-    void setLowerBound(int);
-    void setUpperBound(int);
+    void setLowerBound(int value, bool spontaneous = true);
+    void setUpperBound(int value, bool spontaneous = true);
 
     void setMinimum(int min);
     void setMaximum(int max);
