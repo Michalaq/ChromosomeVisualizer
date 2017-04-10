@@ -369,7 +369,7 @@ void MainWindow::saveProject()
     {
         QJsonObject project;
 
-        ui->page->ui->lineEdit_4->setText("QChromosome 4D File (.qc4d)");
+        ui->page->ui->lineEdit_4->setText("QChromosome 4D File (*.qc4d)");
         ui->page->ui->lineEdit_5->setText("1.01");
 
         QJsonObject projectSettings;

@@ -746,6 +746,7 @@ Label {
      <string>Edit</string>
     </property>
     <addaction name="actionProject_Settings"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuAnimation">
     <property name="title">
@@ -1125,7 +1126,7 @@ QTreeView::branch:open:has-children  {
      <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
    </property>
    <property name="text">
-    <string>Project Settings</string>
+    <string>Project Settings...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -1452,6 +1453,18 @@ QTreeView::branch:open:has-children  {
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/equipment</normaloff>:/dialogs/equipment</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>
