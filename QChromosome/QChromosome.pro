@@ -57,7 +57,8 @@ SOURCES += main.cpp\
     selection.cpp \
     visibilitydelegate.cpp \
     treeview.cpp \
-    textedit.cpp
+    textedit.cpp \
+    preferences.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -122,7 +123,8 @@ HEADERS  += mainwindow.h\
     selection.h \
     visibilitydelegate.h \
     treeview.h \
-    textedit.h
+    textedit.h \
+    preferences.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -133,7 +135,8 @@ FORMS    += mainwindow.ui \
     viewport.ui \
     camerasettings.ui \
     keyframe.ui \
-    defaults.ui
+    defaults.ui \
+    preferences.ui
 
 CONFIG += c++14
 

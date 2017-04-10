@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
     renderSettings(new RenderSettings),
+    preferences(new Preferences),
     ignore(0)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
@@ -73,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+
+    connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
         ui->stackedWidget->setCurrentIndex(0);

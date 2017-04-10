@@ -7,6 +7,7 @@
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
 #include "interpolator.h"
+#include "preferences.h"
 
 namespace Ui
 {
@@ -87,6 +88,7 @@ private:
     QHash<QObject*, const char*> mappedSlot;
 
     RenderSettings *renderSettings;
+    Preferences *preferences;
 
     int softMinimum;
     int softMaximum;
