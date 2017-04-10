@@ -1,15 +1,14 @@
 #ifndef RENDERSETTINGS_H
 #define RENDERSETTINGS_H
 
-#include <QTabWidget>
+#include <QWidget>
 
 namespace Ui
 {
-    class TabWidget;
-    class RenderSettingsWidget;
+    class RenderSettings;
 }
 
-class RenderSettings : public QTabWidget
+class RenderSettings : public QWidget
 {
     Q_OBJECT
 public:
@@ -80,7 +79,7 @@ protected:
     void connectNotify(const QMetaMethod& signal);
 
 private:
-    Ui::TabWidget *ui;
+    Ui::RenderSettings *ui;
 
     qreal aspectRatio;
     QString currentUnit;
@@ -98,17 +97,6 @@ signals:
 
 public slots:
 
-};
-
-class RenderSettingsWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit RenderSettingsWidget(RenderSettings *rs, QWidget *parent = 0);
-    ~RenderSettingsWidget();
-
-private:
-    Ui::RenderSettingsWidget *ui;
 };
 
 #endif // RENDERSETTINGS_H

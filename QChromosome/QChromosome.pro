@@ -131,7 +131,6 @@ FORMS    += mainwindow.ui \
     attributes.ui \
     layerattributes.ui \
     viewport.ui \
-    rswidget.ui \
     camerasettings.ui \
     keyframe.ui \
     defaults.ui

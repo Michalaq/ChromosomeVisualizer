@@ -24,12 +24,12 @@ public:
 };
 
 RenderSettings::RenderSettings(QWidget *parent) :
-    QTabWidget(parent),
-    ui(new Ui::TabWidget)
+    QWidget(parent),
+    ui(new Ui::RenderSettings)
 {
     ui->setupUi(this);
 
-    tabBar()->setStyle(new MyProxyStyle);
+    ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 
     units = { {"px", 72}, {"cm", 2.54}, {"mm", 25.4}, {"in", 1}, {"pt", 72}, {"pc", 6} };
 
@@ -211,20 +211,4 @@ void RenderSettings::updateOutputSize()
     outSize = QSize(ui->doubleSpinBox->value() * multiplier + .5, ui->doubleSpinBox_2->value() * multiplier + .5);
 
     ui->label_7->setText(QString("%1 x %2 px").arg(QString::number(outSize.width()), QString::number(outSize.height())));
-}
-
-#include "ui_rswidget.h"
-
-RenderSettingsWidget::RenderSettingsWidget(RenderSettings *rs, QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::RenderSettingsWidget)
-{
-    ui->setupUi(this);
-
-    layout()->addWidget(rs);
-}
-
-RenderSettingsWidget::~RenderSettingsWidget()
-{
-    delete ui;
 }

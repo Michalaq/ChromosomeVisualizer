@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
     renderSettings(new RenderSettings),
-    rsw(new RenderSettingsWidget(renderSettings)),
     ignore(0)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
@@ -72,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), rsw, SLOT(show()));
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
@@ -226,7 +225,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete rsw;
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
