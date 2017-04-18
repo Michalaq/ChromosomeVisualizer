@@ -22,7 +22,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    QVariant state;
+    int state;
+    QMap<unsigned int, bool> vie;
 };
 
 #endif // TREEVIEW_H

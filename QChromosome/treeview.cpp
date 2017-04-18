@@ -1,6 +1,8 @@
 #include "treeview.h"
 
-TreeView::TreeView(QWidget *parent) : QTreeView(parent)
+TreeView::TreeView(QWidget *parent) :
+    QTreeView(parent),
+    state(-1)
 {
 
 }
@@ -35,7 +37,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
 
     if (index.column() == 3)
     {
-        state = model()->data(index) == "On" ? "Off" : "On";
+        state = (model()->data(index).toInt() + 1) % 3;
         model()->setData(index, state, Qt::DisplayRole);
         update();
     }
@@ -45,7 +47,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
 
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (state.isValid())
+    if (state != -1)
     {
         setCursor(Qt::DragCopyCursor);
 
@@ -65,9 +67,9 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
 {
     QTreeView::mouseReleaseEvent(event);
 
-    if (state.isValid())
+    if (state != -1)
     {
         unsetCursor();
-        state.clear();
+        state = -1;
     }
 }

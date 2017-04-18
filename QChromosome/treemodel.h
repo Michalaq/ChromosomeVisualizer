@@ -56,6 +56,13 @@ enum NodeType
     AtomObject
 };
 
+enum Visibility
+{
+    Default,
+    On,
+    Off
+};
+
 class TreeItem;
 
 class TreeModel : public QAbstractItemModel

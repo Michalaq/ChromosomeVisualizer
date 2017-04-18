@@ -154,7 +154,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), "On", "<<tu będą tagi>>"}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, "<<tu będą tagi>>"}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -163,9 +163,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, "<<tu będą tagi>>"}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
     }
 
     for (auto t : types)
@@ -180,7 +180,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, "On", "<<tu będą tagi>>"}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, Visibility::Default, "<<tu będą tagi>>"}, header);
 
     unsigned int i = 0;
 
@@ -198,9 +198,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, "<<tu będą tagi>>"}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
         }
 
     for (auto t : types)
