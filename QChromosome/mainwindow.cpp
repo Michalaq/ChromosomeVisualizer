@@ -225,6 +225,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->header()->resizeSection(3, 25);
     ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->treeView->setScene(ui->scene);
 }
 
 MainWindow::~MainWindow()

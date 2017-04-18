@@ -2,6 +2,8 @@
 #define TREEVIEW_H
 
 #include <QTreeView>
+#include "treemodel.h"
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 class TreeView : public QTreeView
 {
@@ -11,6 +13,8 @@ public:
     ~TreeView();
 
     void setSelection(const QList<unsigned int>& indexes);
+    void setScene(VizWidget* s);
+    void setVisibility(const QList<unsigned int>& indexes, Visibility v);
 
 signals:
 
@@ -23,7 +27,11 @@ protected:
 
 private:
     int state;
-    QMap<unsigned int, bool> vie;
+    QMap<QModelIndex, bool> vie;
+    VizWidget* scene;
+
+    void dumpModel(const QModelIndex& root, QList<unsigned int>& id);
+    void setVisibility(QModelIndex root, Visibility v);
 };
 
 #endif // TREEVIEW_H
