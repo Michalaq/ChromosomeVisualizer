@@ -45,12 +45,12 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
                 icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
                 break;
             case NodeType::ChainObject:
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
                 break;
             case NodeType::ResidueObject:
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
                 break;
             case NodeType::AtomObject:
                 icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
