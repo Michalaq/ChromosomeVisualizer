@@ -5,6 +5,8 @@
 #include "treemodel.h"
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 
+class VizWidget;
+
 class TreeView : public QTreeView
 {
     Q_OBJECT
@@ -14,9 +16,12 @@ public:
 
     void setSelection(const QList<unsigned int>& indexes);
     void setScene(VizWidget* s);
+
+    Visibility getVisibility(const QList<unsigned int>& indexes) const;
     void setVisibility(const QList<unsigned int>& indexes, Visibility v);
 
 signals:
+    void vieChanged();
 
 public slots:
 
@@ -31,7 +36,9 @@ private:
     VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id);
-    void setVisibility(QModelIndex root, Visibility v);
+
+    Visibility getVisibility(const QModelIndex& root) const;
+    void setVisibility(const QModelIndex& root, Visibility v);
 };
 
 #endif // TREEVIEW_H

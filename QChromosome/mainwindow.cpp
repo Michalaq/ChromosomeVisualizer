@@ -221,6 +221,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->plot->followSlider(ui->horizontalSlider);
 
+    connect(ui->treeView, SIGNAL(vieChanged()), ui->page_2, SLOT(updateVie()));
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 25);

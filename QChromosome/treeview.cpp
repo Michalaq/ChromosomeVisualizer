@@ -29,6 +29,20 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
 void TreeView::setScene(VizWidget *s)
 {
     scene = s;
+    scene->setTreeView(this);
+}
+
+Visibility TreeView::getVisibility(const QList<unsigned int> &indexes) const
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    auto ans = getVisibility(indices[indexes.first()]);
+
+    for (unsigned int i : indexes)
+        if (getVisibility(indices[i]) != ans)
+            return Default;
+
+    return ans;
 }
 
 void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v)
@@ -37,6 +51,8 @@ void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v)
 
     for (unsigned int i : indexes)
         setVisibility(indices[i], v);
+
+    update();
 }
 
 void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id)
@@ -56,7 +72,13 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id)
     }
 }
 
-void TreeView::setVisibility(QModelIndex root, Visibility v)
+Visibility TreeView::getVisibility(const QModelIndex &root) const
+{
+    auto i = vie.find(root);
+    return i != vie.end() ? *i ? On : Off : Default;
+}
+
+void TreeView::setVisibility(const QModelIndex &root, Visibility v)
 {
     model()->setData(root.sibling(root.row(), 3), v, Qt::DisplayRole);
 
@@ -65,15 +87,17 @@ void TreeView::setVisibility(QModelIndex root, Visibility v)
     QList<unsigned int> id;
     dumpModel(root, id);
 
+    auto root_ = root;
+
     if (v != Default)
-        vie[root] = (v == On);
+        vie[root_] = (v == On);
     else
     {
-        while (!vie.contains(root))
-            root = root.parent();
+        while (!vie.contains(root_))
+            root_ = root_.parent();
     }
 
-    scene->customSelection(id).setVisible(vie[root]);
+    scene->customSelection(id).setVisible_(vie[root_]);
 }
 
 #include <QMouseEvent>
@@ -86,6 +110,8 @@ void TreeView::mousePressEvent(QMouseEvent *event)
     {
         state = (model()->data(index).toInt() + 1) % 3;
         setVisibility(index.sibling(index.row(), 0), Visibility(state));
+        if (selectionModel()->isSelected(index))
+            emit vieChanged();
         update();
     }
     else
@@ -103,6 +129,8 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
         if (index.column() == 3)
         {
             setVisibility(index.sibling(index.row(), 0), Visibility(state));
+            if (selectionModel()->isSelected(index))
+                emit vieChanged();
             update();
         }
     }

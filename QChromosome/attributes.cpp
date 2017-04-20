@@ -17,16 +17,7 @@ Attributes::Attributes(QWidget *parent) :
 
     // set vie
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        switch (i) {
-        case 0: // default
-            break;
-        case 1: // on
-            vizWidget_->selectedSpheresObject().setVisible(true);
-            break;
-        case 2: // off
-            vizWidget_->selectedSpheresObject().setVisible(false);
-            break;
-        }
+        vizWidget_->selectedSpheresObject().setVisible(Visibility(i));
     });
 
     // set vir
@@ -131,4 +122,9 @@ void Attributes::resizeEvent(QResizeEvent *event)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     QWidget::resizeEvent(event);
+}
+
+void Attributes::updateVie()
+{
+    ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(), false);
 }

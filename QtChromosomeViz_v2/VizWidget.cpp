@@ -450,6 +450,11 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
     setFirstFrame();
 }
 
+void VizWidget::setTreeView(TreeView *tv)
+{
+    treeView = tv;
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
@@ -1141,13 +1146,15 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
-void AtomSelection::setVisible(bool visible)
+void AtomSelection::setVisible(Visibility visible)
+{
+    widget_->treeView->setVisibility(selectedIndices_, visible);
+}
+
+void AtomSelection::setVisible_(bool visible)
 {
     for (unsigned int i : selectedIndices_)
-    {
         widget_->visibleBitmap_[i] = visible;
-        widget_->changes[i]["Visible in editor"] = visible;
-    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1269,23 +1276,9 @@ std::tuple<int, int, int> AtomSelection::getCoordinates() const
     return std::make_tuple(x, y, z);
 }
 
-int AtomSelection::getVisibility() const
+Visibility AtomSelection::getVisibility() const
 {
-    int a = 0, b = 0;
-
-    for (auto i : selectedIndices_)
-    {
-        if (widget_->frameState_[i].flags & VISIBLE_FLAG)
-            a++;
-        else
-            b++;
-    }
-
-    if (a == 0)
-        return 2;
-    if (b == 0)
-        return 1;
-    return 0;
+    return widget_->treeView->getVisibility(selectedIndices_);
 }
 
 unsigned int AtomSelection::atomCount() const

@@ -26,6 +26,7 @@ protected:
 signals:
 
 public slots:
+    void updateVie();
 
 private:
     Ui::Attributes *ui;

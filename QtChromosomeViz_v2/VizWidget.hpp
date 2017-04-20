@@ -9,6 +9,7 @@
 
 #include "bartekm_code/Simulation.h"
 #include "LabelRenderer.hpp"
+#include "treeview.h"
 
 struct VizVertex
 {
@@ -56,7 +57,8 @@ public:
     void setSpecularExponent(float exponent);
     void setSize(float size);
     void setLabel(const QString & label);
-    void setVisible(bool visible = true);
+    void setVisible(Visibility visible);
+    void setVisible_(bool visible = true);
 
     QColor getColor() const;
     double getAlpha() const;
@@ -65,7 +67,7 @@ public:
     double getSize() const;
     QVariant getLabel() const;
     std::tuple<int, int, int> getCoordinates() const;
-    int getVisibility() const;
+    Visibility getVisibility() const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -78,6 +80,8 @@ private:
     QList<unsigned int> selectedIndices_;
     VizWidget * widget_;
 };
+
+class TreeView;
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
@@ -96,6 +100,7 @@ public:
     virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void setTreeView(TreeView* tv);
 
 public slots:
     void advanceFrame();
@@ -223,6 +228,8 @@ private:
     QColor labelTextColor_, labelBackgroundColor_;
 
     QMap<unsigned int, QVariantMap> changes;
+
+    TreeView* treeView;
 };
 
 #endif /* VIZWINDOW_HPP */

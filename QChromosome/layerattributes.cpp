@@ -21,10 +21,10 @@ LayerAttributes::LayerAttributes(QWidget *parent) :
         case 0: // default
             break;
         case 1: // on
-            vizWidget_->selectedSpheresObject().setVisible(true);
+            vizWidget_->selectedSpheresObject().setVisible_(true);
             break;
         case 2: // off
-            vizWidget_->selectedSpheresObject().setVisible(false);
+            vizWidget_->selectedSpheresObject().setVisible_(false);
             break;
         }
     });
