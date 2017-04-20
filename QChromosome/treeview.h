@@ -31,14 +31,23 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    int state;
+    Visibility cv;
     QMap<QModelIndex, bool> vie;
+
     VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id);
 
     Visibility getVisibility(const QModelIndex& root) const;
     void setVisibility(const QModelIndex& root, Visibility v);
+
+    enum TreeViewState
+    {
+        NoState,
+        ResizeSection,
+        ChangeVisibility
+    } state;
+    int cw, cp;
 };
 
 #endif // TREEVIEW_H

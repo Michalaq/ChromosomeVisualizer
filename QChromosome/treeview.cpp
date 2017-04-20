@@ -2,8 +2,9 @@
 
 TreeView::TreeView(QWidget *parent) :
     QTreeView(parent),
-    state(-1)
+    state(NoState)
 {
+    setMouseTracking(true);
     vie[QModelIndex()] = true;
 }
 
@@ -104,47 +105,85 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v)
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-    auto index = indexAt(event->pos());
-
-    if (index.column() == 3)
+    if (qAbs(event->pos().x() - columnWidth(0)) < 4)
     {
-        state = (model()->data(index).toInt() + 1) % 3;
-        setVisibility(index.sibling(index.row(), 0), Visibility(state));
-        if (selectionModel()->isSelected(index))
-            emit vieChanged();
-        update();
+        state = ResizeSection;
+        cp = event->pos().x();
+        cw = columnWidth(0);
     }
     else
-        QTreeView::mousePressEvent(event);
+    {
+        auto index = indexAt(event->pos());
+
+        if (index.column() == 3)
+        {
+            state = ChangeVisibility;
+            cv = Visibility((model()->data(index).toInt() + 1) % 3);
+
+            setVisibility(index.sibling(index.row(), 0), cv);
+
+            if (selectionModel()->isSelected(index))
+                emit vieChanged();
+
+            update();
+        }
+        else
+            QTreeView::mousePressEvent(event);
+    }
 }
 
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (state != -1)
+    switch (state)
     {
-        setCursor(Qt::DragCopyCursor);
+    case NoState:
+        if (qAbs(event->pos().x() - columnWidth(0)) < 4)
+            setCursor(Qt::SplitHCursor);
+        else
+            if (testAttribute(Qt::WA_SetCursor))
+                unsetCursor();
+
+        QTreeView::mouseMoveEvent(event);
+        break;
+
+    case ResizeSection:
+        setColumnWidth(0, qMax(cw + event->pos().x() - cp, header()->minimumSectionSize()));
+        break;
+
+    case ChangeVisibility:
+        if (!testAttribute(Qt::WA_SetCursor))
+            setCursor(Qt::DragCopyCursor);
 
         auto index = indexAt(event->pos());
 
         if (index.column() == 3)
         {
-            setVisibility(index.sibling(index.row(), 0), Visibility(state));
+            setVisibility(index.sibling(index.row(), 0), cv);
+
             if (selectionModel()->isSelected(index))
                 emit vieChanged();
+
             update();
         }
     }
-    else
-        QTreeView::mouseMoveEvent(event);
 }
 
 void TreeView::mouseReleaseEvent(QMouseEvent *event)
 {
-    QTreeView::mouseReleaseEvent(event);
-
-    if (state != -1)
+    switch (state)
     {
+    case NoState:
+        QTreeView::mouseReleaseEvent(event);
+        break;
+
+    case ResizeSection:
+        state = NoState;
         unsetCursor();
-        state = -1;
+        break;
+
+    case ChangeVisibility:
+        state = NoState;
+        unsetCursor();
+        break;
     }
 }
