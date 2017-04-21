@@ -5,7 +5,6 @@ TreeView::TreeView(QWidget *parent) :
     state(NoState)
 {
     setMouseTracking(true);
-    vie[QModelIndex()] = true;
 }
 
 TreeView::~TreeView()
@@ -68,37 +67,29 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id)
     {
         auto c = root.child(r, 0);
 
-        if (!vie.contains(c))
+        if (getVisibility(c) == Default)
             dumpModel(c, id);
     }
 }
 
 Visibility TreeView::getVisibility(const QModelIndex &root) const
 {
-    auto i = vie.find(root);
-    return i != vie.end() ? *i ? On : Off : Default;
+    return root.isValid() ? Visibility(model()->data(root.sibling(root.row(), 3)).toInt()) : On;
 }
 
 void TreeView::setVisibility(const QModelIndex &root, Visibility v)
 {
     model()->setData(root.sibling(root.row(), 3), v, Qt::DisplayRole);
 
-    vie.remove(root);
-
     QList<unsigned int> id;
-    dumpModel(root, id);
+    dumpModel(root.sibling(root.row(), 0), id);
 
     auto root_ = root;
 
-    if (v != Default)
-        vie[root_] = (v == On);
-    else
-    {
-        while (!vie.contains(root_))
-            root_ = root_.parent();
-    }
+    while (getVisibility(root_) == Default)
+        root_ = root_.parent();
 
-    scene->customSelection(id).setVisible_(vie[root_]);
+    scene->customSelection(id).setVisible_(getVisibility(root_) == On);
 }
 
 #include <QMouseEvent>
@@ -120,7 +111,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             state = ChangeVisibility;
             cv = Visibility((model()->data(index).toInt() + 1) % 3);
 
-            setVisibility(index.sibling(index.row(), 0), cv);
+            setVisibility(index, cv);
 
             if (selectionModel()->isSelected(index))
                 emit vieChanged();
@@ -158,7 +149,7 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
 
         if (index.column() == 3)
         {
-            setVisibility(index.sibling(index.row(), 0), cv);
+            setVisibility(index, cv);
 
             if (selectionModel()->isSelected(index))
                 emit vieChanged();

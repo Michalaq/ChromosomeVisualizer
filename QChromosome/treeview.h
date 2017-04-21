@@ -32,7 +32,6 @@ protected:
 
 private:
     Visibility cv;
-    QMap<QModelIndex, bool> vie;
 
     VizWidget* scene;
 
