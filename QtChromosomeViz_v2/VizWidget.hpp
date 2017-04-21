@@ -57,7 +57,7 @@ public:
     void setSpecularExponent(float exponent);
     void setSize(float size);
     void setLabel(const QString & label);
-    void setVisible(Visibility visible);
+    void setVisible(Visibility visible, VisibilityMode m);
     void setVisible_(bool visible = true);
 
     QColor getColor() const;
@@ -67,7 +67,7 @@ public:
     double getSize() const;
     QVariant getLabel() const;
     std::tuple<int, int, int> getCoordinates() const;
-    Visibility getVisibility() const;
+    Visibility getVisibility(VisibilityMode m) const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -80,8 +80,6 @@ private:
     QList<unsigned int> selectedIndices_;
     VizWidget * widget_;
 };
-
-class TreeView;
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 

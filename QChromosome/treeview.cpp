@@ -1,4 +1,5 @@
 #include "treeview.h"
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 TreeView::TreeView(QWidget *parent) :
     QTreeView(parent),
@@ -116,7 +117,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             setVisibility(index, cv, vm);
 
             if (selectionModel()->isSelected(index))
-                emit vieChanged();
+                emit visibilityChanged(vm);
 
             update();
         }
@@ -154,7 +155,7 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
             setVisibility(index, cv, vm);
 
             if (selectionModel()->isSelected(index))
-                emit vieChanged();
+                emit visibilityChanged(vm);
 
             update();
         }

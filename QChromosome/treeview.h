@@ -3,7 +3,6 @@
 
 #include <QTreeView>
 #include "treemodel.h"
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 class VizWidget;
 
@@ -27,7 +26,7 @@ public:
     void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
 
 signals:
-    void vieChanged();
+    void visibilityChanged(VisibilityMode);
 
 public slots:
 

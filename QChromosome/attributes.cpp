@@ -17,10 +17,13 @@ Attributes::Attributes(QWidget *parent) :
 
     // set vie
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        vizWidget_->selectedSpheresObject().setVisible(Visibility(i));
+        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Editor);
     });
 
     // set vir
+    connect(ui->comboBox_2, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
+        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Renderer);
+    });
 
     // set radius
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
@@ -88,7 +91,10 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set vie
-    ui->comboBox->setCurrentIndex(selection.getVisibility(), false);
+    ui->comboBox->setCurrentIndex(selection.getVisibility(Editor), false);
+
+    // set vir
+    ui->comboBox->setCurrentIndex(selection.getVisibility(Renderer), false);
 
     // set coordinates
     auto c = selection.getCoordinates();
@@ -124,7 +130,10 @@ void Attributes::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 }
 
-void Attributes::updateVie()
+void Attributes::updateVisibility(VisibilityMode m)
 {
-    ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(), false);
+    if (m == Editor)
+        ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Editor), false);
+    else
+        ui->comboBox_2->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Renderer), false);
 }

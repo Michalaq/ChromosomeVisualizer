@@ -104,7 +104,10 @@ void LayerAttributes::handleSelection(const AtomSelection &selection, const QLis
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set vie
-    ui->comboBox->setCurrentIndex(selection.getVisibility(), false);
+    ui->comboBox->setCurrentIndex(selection.getVisibility(Editor), false);
+
+    // set vir
+    ui->comboBox_2->setCurrentIndex(selection.getVisibility(Renderer), false);
 
     // set coordinates
     auto c = selection.getCoordinates();

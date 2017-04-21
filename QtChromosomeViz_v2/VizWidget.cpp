@@ -1146,9 +1146,9 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
-void AtomSelection::setVisible(Visibility visible)
+void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
 {
-    widget_->treeView->setVisibility(selectedIndices_, visible, Editor);
+    widget_->treeView->setVisibility(selectedIndices_, visible, m);
 }
 
 void AtomSelection::setVisible_(bool visible)
@@ -1276,9 +1276,9 @@ std::tuple<int, int, int> AtomSelection::getCoordinates() const
     return std::make_tuple(x, y, z);
 }
 
-Visibility AtomSelection::getVisibility() const
+Visibility AtomSelection::getVisibility(VisibilityMode m) const
 {
-    return widget_->treeView->getVisibility(selectedIndices_, Editor);
+    return widget_->treeView->getVisibility(selectedIndices_, m);
 }
 
 unsigned int AtomSelection::atomCount() const

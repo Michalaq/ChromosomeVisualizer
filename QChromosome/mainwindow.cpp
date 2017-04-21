@@ -221,7 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->plot->followSlider(ui->horizontalSlider);
 
-    connect(ui->treeView, SIGNAL(vieChanged()), ui->page_2, SLOT(updateVie()));
+    connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
 
     newProject();
 
