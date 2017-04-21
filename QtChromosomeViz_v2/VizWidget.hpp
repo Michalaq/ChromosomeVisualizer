@@ -56,6 +56,7 @@ public:
     void setSpecularColor(QColor color);
     void setSpecularExponent(float exponent);
     void setSize(float size);
+    void setName(const QString & name);
     void setLabel(const QString & label);
     void setVisible(Visibility visible, VisibilityMode m);
     void setVisible_(bool visible = true);
@@ -65,6 +66,7 @@ public:
     QColor getSpecularColor() const;
     double getSpecularExponent() const;
     double getSize() const;
+    QVariant getName() const;
     QVariant getLabel() const;
     std::tuple<int, int, int> getCoordinates() const;
     Visibility getVisibility(VisibilityMode m) const;

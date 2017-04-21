@@ -33,6 +33,29 @@ void TreeView::setScene(VizWidget *s)
     scene->setTreeView(this);
 }
 
+QVariant TreeView::getName(const QList<unsigned int> &indexes) const
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    auto ans = model()->data(indices[indexes.first()]).toString();
+
+    for (unsigned int i : indexes)
+        if (model()->data(indices[i]).toString() != ans)
+            return QVariant();
+
+    return ans;
+}
+
+void TreeView::setName(const QList<unsigned int> &indexes, const QString &name)
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    for (unsigned int i : indexes)
+        model()->setData(indices[i], name);
+
+    update();
+}
+
 Visibility TreeView::getVisibility(const QList<unsigned int> &indexes, VisibilityMode m) const
 {
     auto indices = static_cast<TreeModel*>(model())->getIndices();

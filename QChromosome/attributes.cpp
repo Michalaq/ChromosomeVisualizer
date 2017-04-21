@@ -8,6 +8,10 @@ Attributes::Attributes(QWidget *parent) :
     ui->setupUi(this);
 
     // set name
+    connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
+        if (ui->lineEdit->isModified())
+            vizWidget_->selectedSpheresObject().setName(ui->lineEdit->text());
+    });
 
     // set label
     connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
@@ -84,10 +88,11 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     // set name
+    auto l = selection.getName();
+    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set label
-    auto l = selection.getLabel();
-
+    l = selection.getLabel();
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set vie
@@ -128,6 +133,12 @@ void Attributes::resizeEvent(QResizeEvent *event)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     QWidget::resizeEvent(event);
+}
+
+void Attributes::updateName()
+{
+    auto l = vizWidget_->selectedSpheresObject().getName();
+    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 }
 
 void Attributes::updateVisibility(VisibilityMode m)

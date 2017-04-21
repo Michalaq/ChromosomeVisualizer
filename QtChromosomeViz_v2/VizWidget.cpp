@@ -1120,6 +1120,11 @@ void AtomSelection::setSize(float size)
     widget_->update();
 }
 
+void AtomSelection::setName(const QString &name)
+{
+    widget_->treeView->setName(selectedIndices_, name);
+}
+
 void AtomSelection::setLabel(const QString & label)
 {
     if (label == "")
@@ -1228,6 +1233,11 @@ double AtomSelection::getSize() const
             return std::numeric_limits<double>::lowest();
 
     return ans;
+}
+
+QVariant AtomSelection::getName() const
+{
+    return widget_->treeView->getName(selectedIndices_);
 }
 
 QVariant AtomSelection::getLabel() const

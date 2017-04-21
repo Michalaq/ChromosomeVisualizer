@@ -22,6 +22,9 @@ public:
     void setSelection(const QList<unsigned int>& indexes);
     void setScene(VizWidget* s);
 
+    QVariant getName(const QList<unsigned int>& indexes) const;
+    void setName(const QList<unsigned int>& indexes, const QString& name);
+
     Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
     void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
 

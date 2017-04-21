@@ -218,7 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
-    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(this));
+    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
 
     ui->plot->followSlider(ui->horizontalSlider);
