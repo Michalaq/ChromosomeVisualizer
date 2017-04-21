@@ -32,30 +32,30 @@ void TreeView::setScene(VizWidget *s)
     scene->setTreeView(this);
 }
 
-Visibility TreeView::getVisibility(const QList<unsigned int> &indexes) const
+Visibility TreeView::getVisibility(const QList<unsigned int> &indexes, VisibilityMode m) const
 {
     auto indices = static_cast<TreeModel*>(model())->getIndices();
 
-    auto ans = getVisibility(indices[indexes.first()]);
+    auto ans = getVisibility(indices[indexes.first()], m);
 
     for (unsigned int i : indexes)
-        if (getVisibility(indices[i]) != ans)
+        if (getVisibility(indices[i], m) != ans)
             return Default;
 
     return ans;
 }
 
-void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v)
+void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, VisibilityMode m)
 {
     auto indices = static_cast<TreeModel*>(model())->getIndices();
 
     for (unsigned int i : indexes)
-        setVisibility(indices[i], v);
+        setVisibility(indices[i], v, m);
 
     update();
 }
 
-void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id)
+void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, VisibilityMode m)
 {
     bool ok;
     unsigned int i = root.sibling(root.row(), 2).data().toUInt(&ok);
@@ -67,29 +67,30 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id)
     {
         auto c = root.child(r, 0);
 
-        if (getVisibility(c) == Default)
-            dumpModel(c, id);
+        if (getVisibility(c, m) == Default)
+            dumpModel(c, id, m);
     }
 }
 
-Visibility TreeView::getVisibility(const QModelIndex &root) const
+Visibility TreeView::getVisibility(const QModelIndex &root, VisibilityMode m) const
 {
-    return root.isValid() ? Visibility(model()->data(root.sibling(root.row(), 3)).toInt()) : On;
+    return root.isValid() ? Visibility(model()->data(root.sibling(root.row(), m)).toInt()) : On;
 }
 
-void TreeView::setVisibility(const QModelIndex &root, Visibility v)
+void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMode m)
 {
-    model()->setData(root.sibling(root.row(), 3), v, Qt::DisplayRole);
+    model()->setData(root.sibling(root.row(), m), v, Qt::DisplayRole);
 
     QList<unsigned int> id;
-    dumpModel(root.sibling(root.row(), 0), id);
+    dumpModel(root.sibling(root.row(), 0), id, m);
 
     auto root_ = root;
 
-    while (getVisibility(root_) == Default)
+    while (getVisibility(root_, m) == Default)
         root_ = root_.parent();
 
-    scene->customSelection(id).setVisible_(getVisibility(root_) == On);
+    if (m == Editor)
+        scene->customSelection(id).setVisible_(getVisibility(root_, m) == On);
 }
 
 #include <QMouseEvent>
@@ -109,9 +110,10 @@ void TreeView::mousePressEvent(QMouseEvent *event)
         if (index.column() == 3)
         {
             state = ChangeVisibility;
-            cv = Visibility((model()->data(index).toInt() + 1) % 3);
+            vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
+            cv = Visibility((getVisibility(index, vm) + 1) % 3);
 
-            setVisibility(index, cv);
+            setVisibility(index, cv, vm);
 
             if (selectionModel()->isSelected(index))
                 emit vieChanged();
@@ -149,7 +151,7 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
 
         if (index.column() == 3)
         {
-            setVisibility(index, cv);
+            setVisibility(index, cv, vm);
 
             if (selectionModel()->isSelected(index))
                 emit vieChanged();

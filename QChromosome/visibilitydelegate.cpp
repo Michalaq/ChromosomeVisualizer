@@ -6,7 +6,7 @@ VisibilityDelegate::VisibilityDelegate(QObject *parent) : QStyledItemDelegate(pa
 }
 
 #include <QPainter>
-#include <QApplication>
+#include "treemodel.h"
 
 void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -15,9 +15,13 @@ void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setPen(Qt::NoPen);
 
-    painter->setBrush(index.data().toInt() == 0 ? Qt::gray : index.data().toInt() == 1 ? Qt::green : Qt::red);
+    Visibility v;
+
+    v = Visibility(index.data().toInt());
+    painter->setBrush(v == Default ? Qt::gray : v == On ? Qt::green : Qt::red);
     painter->drawEllipse(option.rect.center() - QPoint(0, 4), 3, 3);
 
-    painter->setBrush(true ? Qt::gray : index.data().toInt() == 1 ? Qt::green : Qt::red);
+    v = Visibility(index.sibling(index.row(), index.column() + 1).data().toInt());
+    painter->setBrush(v == Default ? Qt::gray : v == On ? Qt::green : Qt::red);
     painter->drawEllipse(option.rect.center() + QPoint(0, 4), 3, 3);
 }

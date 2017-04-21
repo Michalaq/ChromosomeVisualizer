@@ -295,6 +295,7 @@ void MainWindow::newProject()
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
+    ui->treeView->hideColumn(4);
 }
 
 #include <QStandardPaths>
