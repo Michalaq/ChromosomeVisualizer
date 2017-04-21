@@ -890,11 +890,16 @@ QTreeView::item:last:selected {
 }
 
 QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
-        image: url(:/arrows/bclosed);
+	image: url(:/arrows/bclosed);
 }
 
 QTreeView::branch:open:has-children  {
-        image: url(:/arrows/bopen);
+	image: url(:/arrows/bopen);
+}
+
+QLineEdit {
+	color: white;
+	padding: 0px;
 }
 </string>
        </property>

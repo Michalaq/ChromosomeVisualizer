@@ -7,6 +7,7 @@
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
 #include "visibilitydelegate.h"
+#include "namedelegate.h"
 
 static const char * ext = ".chs";
 
@@ -217,6 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
+    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(this));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
 
     ui->plot->followSlider(ui->horizontalSlider);
