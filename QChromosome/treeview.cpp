@@ -5,10 +5,17 @@ TreeView::TreeView(QWidget *parent) :
     QTreeView(parent),
     state(NoState)
 {
+    setHeader(hv = new HeaderView(header()->orientation(), this));
+    hv->setStretchLastSection(true);
     setMouseTracking(true);
 }
 
 TreeView::~TreeView()
+{
+
+}
+
+HeaderView::HeaderView(Qt::Orientation orientation, QWidget *parent) : QHeaderView(orientation, parent)
 {
 
 }
@@ -121,12 +128,10 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-    if (qAbs(event->pos().x() - (columnViewportPosition(0) + columnWidth(0))) < 4)
-    {
+    hv->mousePressEvent(event);
+
+    if (viewport()->cursor().shape() == Qt::SplitHCursor)
         state = ResizeSection;
-        cp = event->pos().x();
-        cw = columnWidth(0);
-    }
     else
     {
         auto index = indexAt(event->pos());
@@ -154,17 +159,17 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
-        if (qAbs(event->pos().x() - (columnViewportPosition(0) + columnWidth(0))) < 4)
-            setCursor(Qt::SplitHCursor);
-        else
-            if (testAttribute(Qt::WA_SetCursor))
-                unsetCursor();
-
-        QTreeView::mouseMoveEvent(event);
-        break;
-
     case ResizeSection:
-        setColumnWidth(0, qMax(cw + event->pos().x() - cp, header()->minimumSectionSize()));
+        hv->mouseMoveEvent(event);
+
+        if (hv->cursor().shape() != viewport()->cursor().shape())
+        {
+            if (viewport()->testAttribute(Qt::WA_SetCursor))
+                viewport()->unsetCursor();
+            else
+                viewport()->setCursor(hv->cursor());
+        }
+
         break;
 
     case ChangeVisibility:
@@ -187,12 +192,9 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
-        QTreeView::mouseReleaseEvent(event);
-        break;
-
     case ResizeSection:
+        hv->mouseReleaseEvent(event);
         state = NoState;
-        unsetCursor();
         break;
 
     case ChangeVisibility:

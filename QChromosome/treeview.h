@@ -2,6 +2,7 @@
 #define TREEVIEW_H
 
 #include <QTreeView>
+#include <QHeaderView>
 #include "treemodel.h"
 
 class VizWidget;
@@ -11,6 +12,8 @@ enum VisibilityMode
     Editor = 3,
     Renderer = 4
 };
+
+class HeaderView;
 
 class TreeView : public QTreeView
 {
@@ -55,7 +58,16 @@ private:
         ResizeSection,
         ChangeVisibility
     } state;
-    int cw, cp;
+
+    HeaderView *hv;
+};
+
+class HeaderView : public QHeaderView
+{
+    Q_OBJECT
+    friend class TreeView;
+public:
+    explicit HeaderView(Qt::Orientation orientation, QWidget *parent = 0);
 };
 
 #endif // TREEVIEW_H
