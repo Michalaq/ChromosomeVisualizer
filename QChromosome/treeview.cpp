@@ -121,7 +121,7 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-    if (qAbs(event->pos().x() - columnWidth(0)) < 4)
+    if (qAbs(event->pos().x() - (columnViewportPosition(0) + columnWidth(0))) < 4)
     {
         state = ResizeSection;
         cp = event->pos().x();
@@ -154,7 +154,7 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
-        if (qAbs(event->pos().x() - columnWidth(0)) < 4)
+        if (qAbs(event->pos().x() - (columnViewportPosition(0) + columnWidth(0))) < 4)
             setCursor(Qt::SplitHCursor);
         else
             if (testAttribute(Qt::WA_SetCursor))
@@ -173,15 +173,12 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
 
         auto index = indexAt(event->pos());
 
-        if (index.column() == 3)
-        {
-            setVisibility(index, cv, vm);
+        setVisibility(index, cv, vm);
 
-            if (selectionModel()->isSelected(index))
-                emit visibilityChanged(vm);
+        if (selectionModel()->isSelected(index))
+            emit visibilityChanged(vm);
 
-            update();
-        }
+        update();
     }
 }
 

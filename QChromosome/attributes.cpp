@@ -10,7 +10,12 @@ Attributes::Attributes(QWidget *parent) :
     // set name
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
         if (ui->lineEdit->isModified())
-            vizWidget_->selectedSpheresObject().setName(ui->lineEdit->text());
+        {
+            if (ui->lineEdit->text().isEmpty())
+                updateName();
+            else
+                vizWidget_->selectedSpheresObject().setName(ui->lineEdit->text());
+        }
     });
 
     // set label
