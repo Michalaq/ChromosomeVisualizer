@@ -26,6 +26,8 @@ protected:
 signals:
 
 public slots:
+    void updateName();
+    void updateVisibility(VisibilityMode m);
 
 private:
     Ui::Attributes *ui;

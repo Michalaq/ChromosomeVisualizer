@@ -7,6 +7,7 @@
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
 #include "visibilitydelegate.h"
+#include "namedelegate.h"
 
 static const char * ext = ".chs";
 
@@ -217,14 +218,19 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
+    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
 
     ui->plot->followSlider(ui->horizontalSlider);
+
+    connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
 
     newProject();
 
     ui->treeView->header()->resizeSection(3, 25);
     ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->treeView->setScene(ui->scene);
 }
 
 MainWindow::~MainWindow()
@@ -292,6 +298,7 @@ void MainWindow::newProject()
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
+    ui->treeView->hideColumn(4);
 }
 
 #include <QStandardPaths>

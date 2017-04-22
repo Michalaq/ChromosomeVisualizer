@@ -34,6 +34,8 @@
     <qresource prefix="/objects">
         <file alias="atom">icons/atom_icon.svg</file>
         <file alias="layer">icons/layers_icon.svg</file>
+        <file alias="chain">icons/chain_icon.svg</file>
+        <file alias="residue">icons/residue_icon.svg</file>
     </qresource>
     <qresource prefix="/dialogs">
         <file alias="view">icons/view_icon.svg</file>

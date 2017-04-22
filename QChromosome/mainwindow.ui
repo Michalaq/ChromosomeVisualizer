@@ -864,24 +864,6 @@ Label {
 	outline: 0;
 }
 
-QHeaderView {
-	color: white;
-	background: #2d2d2d;
-}
-
-QHeaderView::section {
-	height: 20px;
-	border: none;
-	border-right: 1px solid #1a1a1a;
-	border-bottom: 1px solid #1a1a1a;
-	background: #2d2d2d;
-	padding-left: 10px;
-}
-
-QHeaderView::section:last {
-	border-right: none;
-}
-
 QTreeView::item, QTreeView::branch {
 	height: 20px;
 	border: none;
@@ -908,11 +890,16 @@ QTreeView::item:last:selected {
 }
 
 QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
-        image: url(:/arrows/bclosed);
+	image: url(:/arrows/bclosed);
 }
 
 QTreeView::branch:open:has-children  {
-        image: url(:/arrows/bopen);
+	image: url(:/arrows/bopen);
+}
+
+QLineEdit {
+	color: white;
+	padding: 0px;
 }
 </string>
        </property>
@@ -922,6 +909,9 @@ QTreeView::branch:open:has-children  {
        <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
     </layout>

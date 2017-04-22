@@ -1,8 +1,13 @@
 #include "treeview.h"
+#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
-TreeView::TreeView(QWidget *parent) : QTreeView(parent)
+TreeView::TreeView(QWidget *parent) :
+    QTreeView(parent),
+    state(NoState)
 {
-
+    setHeader(hv = new HeaderView(header()->orientation(), this));
+    hv->setStretchLastSection(true);
+    setMouseTracking(true);
 }
 
 TreeView::~TreeView()
@@ -10,12 +15,14 @@ TreeView::~TreeView()
 
 }
 
-#include "treemodel.h"
+HeaderView::HeaderView(Qt::Orientation orientation, QWidget *parent) : QHeaderView(orientation, parent)
+{
+
+}
 
 void TreeView::setSelection(const QList<unsigned int> &indexes)
 {
-    auto t = static_cast<TreeModel*>(model());
-    auto indices = t->getIndices();
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
 
     QItemSelection m;
 
@@ -27,47 +34,183 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
     blockSignals(b);
 }
 
+void TreeView::setScene(VizWidget *s)
+{
+    scene = s;
+    scene->setTreeView(this);
+}
+
+QVariant TreeView::getName(const QList<unsigned int> &indexes) const
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    auto ans = model()->data(indices[indexes.first()]).toString();
+
+    for (unsigned int i : indexes)
+        if (model()->data(indices[i]).toString() != ans)
+            return QVariant();
+
+    return ans;
+}
+
+void TreeView::setName(const QList<unsigned int> &indexes, const QString &name)
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    for (unsigned int i : indexes)
+        model()->setData(indices[i], name);
+
+    update();
+}
+
+Visibility TreeView::getVisibility(const QList<unsigned int> &indexes, VisibilityMode m) const
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    auto ans = getVisibility(indices[indexes.first()], m);
+
+    for (unsigned int i : indexes)
+        if (getVisibility(indices[i], m) != ans)
+            return Default;
+
+    return ans;
+}
+
+void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, VisibilityMode m)
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    for (unsigned int i : indexes)
+        setVisibility(indices[i], v, m);
+
+    update();
+}
+
+void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, VisibilityMode m)
+{
+    bool ok;
+    unsigned int i = root.sibling(root.row(), 2).data().toUInt(&ok);
+
+    if (ok)
+        id.append(i);
+
+    for (int r = 0; r < model()->rowCount(root); r++)
+    {
+        auto c = root.child(r, 0);
+
+        if (getVisibility(c, m) == Default)
+            dumpModel(c, id, m);
+    }
+}
+
+Visibility TreeView::getVisibility(const QModelIndex &root, VisibilityMode m) const
+{
+    return root.isValid() ? Visibility(model()->data(root.sibling(root.row(), m)).toInt()) : On;
+}
+
+void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMode m)
+{
+    model()->setData(root.sibling(root.row(), m), v, Qt::DisplayRole);
+
+    QList<unsigned int> id;
+    dumpModel(root.sibling(root.row(), 0), id, m);
+
+    auto root_ = root;
+
+    while (getVisibility(root_, m) == Default)
+        root_ = root_.parent();
+
+    if (m == Editor)
+        scene->customSelection(id).setVisible_(getVisibility(root_, m) == On);
+}
+
 #include <QMouseEvent>
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
-    auto index = indexAt(event->pos());
+    hv->mousePressEvent(event);
 
-    if (index.column() == 3)
-    {
-        state = model()->data(index) == "On" ? "Off" : "On";
-        model()->setData(index, state, Qt::DisplayRole);
-        update();
-    }
+    if (viewport()->cursor().shape() == Qt::SplitHCursor)
+        state = ResizeSection;
     else
-        QTreeView::mousePressEvent(event);
-}
-
-void TreeView::mouseMoveEvent(QMouseEvent *event)
-{
-    if (state.isValid())
     {
-        setCursor(Qt::DragCopyCursor);
-
         auto index = indexAt(event->pos());
 
         if (index.column() == 3)
         {
-            model()->setData(index, state, Qt::DisplayRole);
+            state = ChangeVisibility;
+            vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
+            cv = Visibility((getVisibility(index, vm) + 1) % 3);
+
+            setVisibility(index, cv, vm);
+
+            if (selectionModel()->isSelected(index))
+                emit visibilityChanged(vm);
+
             update();
         }
+        else
+            QTreeView::mousePressEvent(event);
     }
-    else
-        QTreeView::mouseMoveEvent(event);
+}
+
+void TreeView::mouseMoveEvent(QMouseEvent *event)
+{
+    switch (state)
+    {
+    case NoState:
+    case ResizeSection:
+        hv->mouseMoveEvent(event);
+
+        if (hv->cursor().shape() != viewport()->cursor().shape())
+        {
+            if (viewport()->testAttribute(Qt::WA_SetCursor))
+                viewport()->unsetCursor();
+            else
+                viewport()->setCursor(hv->cursor());
+        }
+
+        break;
+
+    case ChangeVisibility:
+        if (!testAttribute(Qt::WA_SetCursor))
+            setCursor(Qt::DragCopyCursor);
+
+        auto index = indexAt(event->pos());
+
+        setVisibility(index, cv, vm);
+
+        if (selectionModel()->isSelected(index))
+            emit visibilityChanged(vm);
+
+        update();
+    }
 }
 
 void TreeView::mouseReleaseEvent(QMouseEvent *event)
 {
-    QTreeView::mouseReleaseEvent(event);
-
-    if (state.isValid())
+    switch (state)
     {
+    case NoState:
+    case ResizeSection:
+        hv->mouseReleaseEvent(event);
+        state = NoState;
+        break;
+
+    case ChangeVisibility:
+        state = NoState;
         unsetCursor();
-        state.clear();
+        break;
     }
+}
+
+void TreeView::paintEvent(QPaintEvent *event)
+{
+    QTreeView::paintEvent(event);
+
+    QPainter p(viewport());
+    p.setPen("#2d2d2d");
+
+    int x = hv->sectionViewportPosition(3);
+    p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }

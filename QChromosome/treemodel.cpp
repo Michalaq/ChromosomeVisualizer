@@ -5,7 +5,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"Model", "", "", "", "Tags"}))
+      header(new TreeItem({"Model", "", "", "", "", "Tags"}))
 {
 
 }
@@ -17,7 +17,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 5;
+    return 6;
 }
 
 #include <QIcon>
@@ -45,12 +45,12 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
                 icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
                 break;
             case NodeType::ChainObject:
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
                 break;
             case NodeType::ResidueObject:
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/search"), QIcon::Selected);
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
                 break;
             case NodeType::AtomObject:
                 icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
@@ -78,9 +78,9 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index) | (index.column() == 0 ? Qt::ItemIsEditable : Qt::NoItemFlags);
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
@@ -154,7 +154,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), "On", "<<tu będą tagi>>"}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -163,9 +163,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
     }
 
     for (auto t : types)
@@ -180,7 +180,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, "On", "<<tu będą tagi>>"}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, header);
 
     unsigned int i = 0;
 
@@ -198,9 +198,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), "On", "<<tu będą tagi>>"}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, "On", "<<tu będą tagi>>"}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
         }
 
     for (auto t : types)
