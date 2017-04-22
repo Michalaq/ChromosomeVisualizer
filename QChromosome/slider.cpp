@@ -7,7 +7,7 @@ Slider::Slider(QWidget *parent) :
     s(new QShortcut(QKeySequence(Qt::Key_Delete), this)),
     pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
 {
-    pin.fill("#0072bd");
+    pin.fill("#0066ff");
 
     QImage image(30, 30, QImage::Format_ARGB32);
     image.fill(Qt::transparent);
