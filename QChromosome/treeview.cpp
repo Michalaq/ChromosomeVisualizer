@@ -203,3 +203,14 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
         break;
     }
 }
+
+void TreeView::paintEvent(QPaintEvent *event)
+{
+    QTreeView::paintEvent(event);
+
+    QPainter p(viewport());
+    p.setPen("#2d2d2d");
+
+    int x = hv->sectionViewportPosition(3);
+    p.drawLine(QPoint(x, 0), QPoint(x, height()));
+}
