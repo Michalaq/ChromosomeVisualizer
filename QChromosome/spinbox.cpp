@@ -1,8 +1,49 @@
 #include "spinbox.h"
+#include <QLineEdit>
 
 SpinBox::SpinBox(QWidget *parent) : QSpinBox(parent)
 {
+    setKeyboardTracking(false);
 
+    lineEdit()->setValidator(Q_NULLPTR);
+
+    re.setPattern("[+-]?\\d+");
+
+    connect(this, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] {
+        setSpecialValueText("");
+    });
+}
+
+void SpinBox::setValue(int val, bool spontaneous)
+{
+    bool b;
+
+    if (!spontaneous)
+        b = blockSignals(true);
+
+    if (val > std::numeric_limits<int>::lowest())
+    {
+        setSpecialValueText("");
+        QSpinBox::setValue(val);
+    }
+    else
+    {
+        setSpecialValueText("<< multiple values >>");
+        QSpinBox::setValue(minimum());
+    }
+
+    if (!spontaneous)
+        blockSignals(b);
+}
+
+QValidator::State SpinBox::validate(QString &input, int &) const
+{
+    return re.match(input).hasMatch() ? QValidator::Acceptable : QValidator::Intermediate;
+}
+
+int SpinBox::valueFromText(const QString &text) const
+{
+    return locale().toInt(re.match(text).captured());
 }
 
 #include <QStyle>
@@ -25,19 +66,4 @@ void SpinBox::focusOutEvent(QFocusEvent *event)
     style()->polish(this);
 
     update();
-}
-
-#include <QMouseEvent>
-#include <QStyleOptionSpinBox>
-
-void SpinBox::mousePressEvent(QMouseEvent *event)
-{
-    QSpinBox::mousePressEvent(event);
-
-    QStyleOptionSpinBox opt;
-    initStyleOption(&opt);
-
-    if (style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxUp).contains(event->pos())
-            || style()->subControlRect(QStyle::CC_SpinBox, &opt, QStyle::SC_SpinBoxDown).contains(event->pos()))
-        emit editingFinished();
 }

@@ -51,9 +51,16 @@ enum NodeType
 {
     HeaderObject,
     LayerObject,
-    ChromosomeObject,
-    BinderObject,
+    ChainObject,
+    ResidueObject,
     AtomObject
+};
+
+enum Visibility
+{
+    Default,
+    On,
+    Off
 };
 
 class TreeItem;
@@ -66,7 +73,8 @@ public:
     explicit TreeModel(QObject *parent = 0);
     ~TreeModel();
 
-    QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
     Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
@@ -77,9 +85,11 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
     void setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset);
+    const QVector<QModelIndex>& getIndices() const;
 
 private:
     TreeItem *header;
+    QVector<QModelIndex> indices;
 };
 
 #endif // TREEMODEL_H

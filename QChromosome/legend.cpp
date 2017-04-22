@@ -21,7 +21,7 @@ QColor Legend::pen() const
 
 QColor Legend::brush() const
 {
-    return undergraph.isChecked() && visible.isChecked() ? QColor(color.red(), color.green(), color.blue(), 0x80) : Qt::transparent;
+    return undergraph.isChecked() && visible.isChecked() ? QColor(color.red(), color.green(), color.blue(), 0x10) : Qt::transparent;
 }
 
 #include <QPainter>
@@ -29,6 +29,9 @@ QColor Legend::brush() const
 void Legend::paintEvent(QPaintEvent *event)
 {
     QLabel::paintEvent(event);
+
+    if (!visible.isChecked())
+        return;
 
     QPainter painter(this);
 
@@ -42,6 +45,7 @@ void Legend::paintEvent(QPaintEvent *event)
     if (hover)
     {
         painter.setPen(Qt::NoPen);
+        painter.setBrush(QBrush(color));
         painter.setOpacity(.25);
         painter.drawEllipse(3, 3, 19, 19);
     }

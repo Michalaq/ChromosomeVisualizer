@@ -1,43 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "treeitem.h"
 #include "treemodel.h"
 
@@ -45,7 +5,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"name", NodeType::HeaderObject}))
+      header(new TreeItem({"Model", "", "", "", "", "Tags"}))
 {
 
 }
@@ -57,28 +17,70 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 3;
+    return 6;
 }
+
+#include <QIcon>
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
+    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+
+    switch (role)
+    {
+    case Qt::DisplayRole:
+        return item->data(index.column());
+    case Qt::DecorationRole:
+        if (index.column() == 0)
+        {
+            QIcon icon;
+
+            switch (item->data(1).toInt())
+            {
+            case NodeType::LayerObject:
+                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
+                break;
+            case NodeType::ChainObject:
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
+                break;
+            case NodeType::ResidueObject:
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
+                break;
+            case NodeType::AtomObject:
+                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
+                break;
+            }
+
+            return icon;
+        }
+    }
+
+    return QVariant();
+}
+
+bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid())
+        return false;
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    return item->data(index.column());
+    return item->setData(index.column(), value);
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return Qt::NoItemFlags;
 
-    return QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index) | (index.column() == 0 ? Qt::ItemIsEditable : Qt::NoItemFlags);
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
@@ -90,8 +92,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
-QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
@@ -138,11 +139,22 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QModelIndex>& id)
+{
+    auto v = root.sibling(root.row(), 2).data();
+
+    if (v.canConvert<uint>())
+        id[v.toUInt()] = root;
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel(model, root.child(r, 0), id);
+}
+
 #include "defaults.h"
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chromosome") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChromosomeObject}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -151,9 +163,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
     }
 
     for (auto t : types)
@@ -168,7 +180,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, header);
 
     unsigned int i = 0;
 
@@ -186,9 +198,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::BinderObject}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
         }
 
     for (auto t : types)
@@ -199,4 +211,12 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     header->appendChild(root);
 
     endInsertRows();
+
+    indices.resize(atoms.size() + 1);
+    dumpModel(this, index(0, 0), indices);
+}
+
+const QVector<QModelIndex>& TreeModel::getIndices() const
+{
+    return indices;
 }

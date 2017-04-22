@@ -7,6 +7,7 @@
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
 #include "interpolator.h"
+#include "preferences.h"
 
 namespace Ui
 {
@@ -27,6 +28,8 @@ public slots:
     void newProject();
     void openProject();
     void addLayer();
+    void saveProject();
+    void saveProjectAs();
 
     void setFrame(int n);
     void updateFrameCount(int n);
@@ -47,7 +50,7 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomSelection &selection);
+    void handleSelection(const AtomSelection &selection, bool b = true);
     void handleModelSelection();
     void focusSelection(const AtomSelection &s);
 
@@ -63,6 +66,7 @@ public slots:
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -84,13 +88,15 @@ private:
     QHash<QObject*, const char*> mappedSlot;
 
     RenderSettings *renderSettings;
-    RenderSettingsWidget *rsw;
+    Preferences *preferences;
 
     int softMinimum;
     int softMaximum;
 
     Interpolator ip;
     int ignore;
+
+    QString currentFile;
 };
 
 #endif // MAINWINDOW_H

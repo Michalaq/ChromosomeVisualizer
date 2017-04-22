@@ -4,6 +4,7 @@
 #include "softslider.h"
 #include "interpolator.h"
 #include <QShortcut>
+#include <QSvgRenderer>
 
 class Slider : public SoftSlider
 {
@@ -29,6 +30,7 @@ private:
     Interpolator *ip;
     bool movemarker;
     QShortcut *s;
+    QImage pin;
 };
 
 #endif // SLIDER_H

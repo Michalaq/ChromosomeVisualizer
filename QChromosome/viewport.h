@@ -22,6 +22,9 @@ public:
     void setBlind(Blind *blind);
     void setAxis(Axis *axis);
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 signals:
 
 public slots:

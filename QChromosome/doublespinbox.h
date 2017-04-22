@@ -9,15 +9,20 @@ class DoubleSpinBox : public QDoubleSpinBox
 public:
     explicit DoubleSpinBox(QWidget *parent = 0);
 
+    QValidator::State validate(QString &input, int &pos) const;
+    double valueFromText(const QString &text) const;
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
-    void mousePressEvent(QMouseEvent *event);
-
 signals:
 
 public slots:
+    void setValue(double val, bool spontaneous = true);
+
+private:
+    QRegularExpression re;
 };
 
 #endif // DOUBLESPINBOX_H

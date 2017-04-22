@@ -123,28 +123,38 @@ void RangeSlider::paintEvent(QPaintEvent *event)
         p.drawText(rightHandle - 10 - width(), -10, width(), 20, Qt::AlignVCenter | Qt::AlignRight, rightLabel);
 }
 
-void RangeSlider::setBounds(int min, int max)
+void RangeSlider::setBounds(int min, int max, bool spontaneous)
 {
     if (minimum() <= min && min <= max && max <= maximum())
     {
         if (lowerBound != min)
-            emit lowerBoundChanged(lowerBound = min);
+        {
+            lowerBound = min;
+
+            if (spontaneous)
+                emit lowerBoundChanged(lowerBound);
+        }
 
         if (upperBound != max)
-            emit upperBoundChanged(upperBound = max);
+        {
+            upperBound = max;
+
+            if (spontaneous)
+                emit upperBoundChanged(upperBound);
+        }
 
         update();
     }
 }
 
-void RangeSlider::setLowerBound(int value)
+void RangeSlider::setLowerBound(int value, bool spontaneous)
 {
-    setBounds(value, upperBound);
+    setBounds(value, upperBound, spontaneous);
 }
 
-void RangeSlider::setUpperBound(int value)
+void RangeSlider::setUpperBound(int value, bool spontaneous)
 {
-    setBounds(lowerBound, value);
+    setBounds(lowerBound, value, spontaneous);
 }
 
 void RangeSlider::setMinimum(int min)

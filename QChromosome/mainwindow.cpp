@@ -6,15 +6,21 @@
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include <QKeyEvent>
+#include "visibilitydelegate.h"
+#include "namedelegate.h"
+
+static const char * ext = ".chs";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
-    renderSettings(new RenderSettings()),
-    rsw(new RenderSettingsWidget(renderSettings)),
+    renderSettings(new RenderSettings),
+    preferences(new Preferences),
     ignore(0)
 {
+    setWindowTitle("QChromosome 4D Studio - [Untitled]");
+
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -46,10 +52,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMinimum);
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_3, &SpinBox::setMinimum);
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->horizontalSlider_2, &RangeSlider::setMaximum);
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui->spinBox_2, &SpinBox::setMaximum);
+    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->horizontalSlider_2->setMinimum(val);
+        ui->spinBox_3->setMinimum(val);
+        ui->page->ui->spinBox_6->setMinimum(val);
+        ui->page->ui->spinBox_4->setMinimum(val);
+        ui->page->ui->spinBox_3->setValue(val, false);
+    });
+
+    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->horizontalSlider_2->setMaximum(val);
+        ui->spinBox_2->setMaximum(val);
+        ui->page->ui->spinBox_3->setMaximum(val);
+        ui->page->ui->spinBox_7->setMaximum(val);
+        ui->page->ui->spinBox_6->setValue(val, false);
+    });
 
     /* connect actions */
     mappedSlot[ui->actionMove] = SLOT(move(int,int));
@@ -58,8 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), rsw, SLOT(show()));
+    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
     connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
+
+    connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
         ui->stackedWidget->setCurrentIndex(0);
@@ -77,6 +96,12 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     timer.setInterval(1000 / ui->page->ui->spinBox->value());
+
+    connect(ui->page->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
+    connect(ui->page->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
+    connect(ui->page->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
+    connect(ui->page->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
+    connect(ui->page->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -193,13 +218,24 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
+    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
+    ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
+
+    ui->plot->followSlider(ui->horizontalSlider);
+
+    connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
+
     newProject();
+
+    ui->treeView->header()->resizeSection(3, 25);
+    ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
+    ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
+    ui->treeView->setScene(ui->scene);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete rsw;
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -237,6 +273,10 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 void MainWindow::newProject()
 {
+    currentFile.clear();
+    ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
+    setWindowTitle("QChromosome 4D Studio - [Untitled]");
+
     simulation = std::make_shared<Simulation>();
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
@@ -258,17 +298,57 @@ void MainWindow::newProject()
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
+    ui->treeView->hideColumn(4);
 }
+
+#include <QStandardPaths>
 
 void MainWindow::openProject()
 {
-    addLayer();//TODO tymczasowo
+    QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*%1)").arg(ext));
+
+    if (!path.isEmpty())
+    {
+        newProject();
+
+        currentFile = path;
+        ui->page->ui->lineEdit_6->setText(path);
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(path).fileName()));
+
+        QFile file(path);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        const QJsonObject project = QJsonDocument::fromJson(file.readAll()).object();
+        file.close();
+
+        const QJsonObject viewport = project["Viewport"].toObject();
+        ui->page_4->read(viewport);
+
+        const QJsonObject camera = project["Camera"].toObject();
+        ui->page_5->read(camera);
+
+        const QJsonArray objects = project["Objects"].toArray();
+        simulation->read(objects);
+
+        ui->scene->setSimulation(simulation);
+        ui->plot->updateSimulation();
+
+        const QJsonObject bar = project["bar"].toObject();
+        ui->scene->read(bar);
+
+        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+
+        const QJsonObject projectSettings = project["Project Settings"].toObject();
+        ui->page->read(projectSettings);
+
+        const QJsonArray keyframes = project["Key frames"].toArray();
+        ip.read(keyframes);
+    }
 }
 
 void MainWindow::addLayer()
 {
     try {
-        QString path = QFileDialog::getOpenFileName(0, "", "/home", "Simulation file (*.pdb *.bin)");
+        QString path = QFileDialog::getOpenFileName(0, "", QSettings().value("locallib").toString(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
 
         if (!path.isEmpty())
         {
@@ -291,6 +371,65 @@ void MainWindow::addLayer()
     }
 }
 
+void MainWindow::saveProject()
+{
+    if (currentFile.isEmpty())
+        saveProjectAs();
+    else
+    {
+        QJsonObject project;
+
+        ui->page->ui->lineEdit_4->setText(QString("QChromosome 4D File (*%1)").arg(ext));
+        ui->page->ui->lineEdit_5->setText("1.01");
+
+        QJsonObject projectSettings;
+        ui->page->write(projectSettings);
+        project["Project Settings"] = projectSettings;
+
+        QJsonObject viewport;
+        ui->page_4->write(viewport);
+        project["Viewport"] = viewport;
+
+        QJsonObject camera;
+        ui->page_5->write(camera);
+        project["Camera"] = camera;
+
+        QJsonArray objects;
+        simulation->write(objects);
+        project["Objects"] = objects;
+
+        QJsonObject bar;
+        ui->scene->write(bar);
+        project["bar"] = bar;
+
+        QJsonArray keyframes;
+        ip.write(keyframes);
+        project["Key frames"] = keyframes;
+
+        QFile file(currentFile);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.write(QJsonDocument(project).toJson());
+        file.close();
+    }
+}
+
+void MainWindow::saveProjectAs()
+{
+    QString path = QFileDialog::getSaveFileName(0, "", currentFile.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation) : currentFile, QString("QChromosome 4D Project File (*%1)").arg(ext));
+
+    if (!path.isEmpty())
+    {
+        QFileInfo info(path);
+        path = info.dir().filePath(info.completeBaseName().append(ext));
+
+        currentFile = path;
+        ui->page->ui->lineEdit_6->setText(path);
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(info.fileName()));
+
+        saveProject();
+    }
+}
+
 void MainWindow::updateFrameCount(int n)
 {
     bool expandRange = ui->spinBox_3->value() == lastFrame;
@@ -299,10 +438,11 @@ void MainWindow::updateFrameCount(int n)
     lastFrame = n - 1;
 
     ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_2->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
     ui->horizontalSlider->setMaximum(lastFrame);
     ui->plot->setMaximum(lastFrame);
+    ui->page->ui->spinBox_5->setMaximum(lastFrame);
+    ui->page->ui->spinBox_6->setMaximum(lastFrame);
 
     if (expandRange)
         ui->spinBox_3->setValue(lastFrame);
@@ -320,12 +460,16 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
     ip.setFrame(n);
+    ui->page->ui->spinBox_5->setValue(n, false);
 }
 
 void MainWindow::setSoftMinimum(int min)
 {
     ui->horizontalSlider->setSoftMinimum(min);
+    ui->horizontalSlider_2->setLowerBound(min, false);
     ui->plot->setSoftMinimum(min);
+    ui->page->ui->spinBox_7->setMinimum(min);
+    ui->page->ui->spinBox_4->setValue(min, false);
 
     softMinimum = min;
 }
@@ -333,7 +477,10 @@ void MainWindow::setSoftMinimum(int min)
 void MainWindow::setSoftMaximum(int max)
 {
     ui->horizontalSlider->setSoftMaximum(max);
+    ui->horizontalSlider_2->setUpperBound(max, false);
     ui->plot->setSoftMaximum(max);
+    ui->page->ui->spinBox_4->setMaximum(max);
+    ui->page->ui->spinBox_7->setValue(max, false);
 
     softMaximum = max;
 }
@@ -471,7 +618,7 @@ void MainWindow::selectAll()
     ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
-void MainWindow::handleSelection(const AtomSelection &selection)
+void MainWindow::handleSelection(const AtomSelection &selection, bool b)
 {
     ui->dockWidget_2->show();
 
@@ -480,6 +627,8 @@ void MainWindow::handleSelection(const AtomSelection &selection)
     ui->page_2->handleSelection(selection);
 
     ui->camera->setOrigin(selection.weightCenter());
+
+    if (b) ui->treeView->setSelection(selection.selectedIndices());
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
@@ -521,7 +670,7 @@ void MainWindow::handleModelSelection()
         ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
     }
     else
-        handleSelection(selection);
+        handleSelection(selection, false);
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)
@@ -622,4 +771,19 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     }
 
     QMainWindow::keyReleaseEvent(event);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(currentFile.isEmpty() ? "Untitled" : QFileInfo(currentFile).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
+    {
+    case QMessageBox::Yes:
+        saveProject();
+    case QMessageBox::No:
+        event->accept();
+        break;
+    case QMessageBox::Cancel:
+        event->ignore();
+        break;
+    }
 }

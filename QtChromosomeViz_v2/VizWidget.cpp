@@ -450,6 +450,11 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
     setFirstFrame();
 }
 
+void VizWidget::setTreeView(TreeView *tv)
+{
+    treeView = tv;
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
@@ -898,6 +903,48 @@ const QVector<VizBallInstance> & VizWidget::getBallInstances() const
     return frameState_;
 }
 
+void VizWidget::read(const QJsonObject& json)
+{
+    for (auto i = json.begin(); i != json.end(); i++)
+        changes[i.key().toInt()] = i.value().toObject().toVariantMap();
+
+    for (auto i = changes.begin(); i != changes.end(); i++)
+    {
+        unsigned int id = i.key();
+        QVariantMap& map = i.value();
+
+        auto j = map.find("Color");
+        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0xFF000000) | QColor((*j).toString()).rgb();
+
+        j = map.find("Transparency");
+        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0x00FFFFFF) | ((unsigned int)((*j).toFloat() * 255.f) << 24) & 0xFF000000U;
+
+        j = map.find("Specular color");
+        if (j != map.end()) frameState_[id].specularColor = (frameState_[id].specularColor & 0xFF000000) | QColor((*j).toString()).rgb();
+
+        j = map.find("Shininess exponent");
+        if (j != map.end()) frameState_[id].specularExponent = (*j).toFloat();
+
+        j = map.find("Radius");
+        if (j != map.end()) frameState_[id].size = (*j).toFloat();
+
+        j = map.find("Label");
+        if (j != map.end()) { labelRenderer_.addRef((*j).toString()); atomLabels_[id] = (*j).toString(); }
+
+        j = map.find("Visible in editor");
+        if (j != map.end()) visibleBitmap_[id] = (*j).toBool();
+    }
+
+    needVBOUpdate_ = true;
+    update();
+}
+
+void VizWidget::write(QJsonObject& json) const
+{
+    for (auto i = changes.begin(); i != changes.end(); i++)
+        json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
+}
+
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
@@ -1015,6 +1062,7 @@ void AtomSelection::setColor(QColor color)
     {
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0xFF000000) | code;
+        widget_->changes[i]["Color"] = color;
     }
 
     widget_->needVBOUpdate_ = true;
@@ -1028,6 +1076,7 @@ void AtomSelection::setAlpha(float alpha)
     {
         auto & loc = widget_->frameState_[i].color;
         loc = (loc & 0x00FFFFFF) | code;
+        widget_->changes[i]["Transparency"] = alpha;
     }
 
     widget_->needVBOUpdate_ = true;
@@ -1038,7 +1087,10 @@ void AtomSelection::setSpecularColor(QColor color)
 {
     unsigned int code = color.rgb();
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].specularColor = code;
+        widget_->changes[i]["Specular color"] = color;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1047,7 +1099,10 @@ void AtomSelection::setSpecularColor(QColor color)
 void AtomSelection::setSpecularExponent(float exponent)
 {
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].specularExponent = exponent;
+        widget_->changes[i]["Shininess exponent"] = exponent;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1056,10 +1111,18 @@ void AtomSelection::setSpecularExponent(float exponent)
 void AtomSelection::setSize(float size)
 {
     for (unsigned int i : selectedIndices_)
+    {
         widget_->frameState_[i].size = size;
+        widget_->changes[i]["Radius"] = size;
+    }
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
+}
+
+void AtomSelection::setName(const QString &name)
+{
+    widget_->treeView->setName(selectedIndices_, name);
 }
 
 void AtomSelection::setLabel(const QString & label)
@@ -1070,6 +1133,7 @@ void AtomSelection::setLabel(const QString & label)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_.remove(i);
+            widget_->changes[i].remove("Label");
         }
     }
     else
@@ -1080,13 +1144,19 @@ void AtomSelection::setLabel(const QString & label)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_[i] = label;
+            widget_->changes[i]["Label"] = label;
         }
     }
 
     widget_->update();
 }
 
-void AtomSelection::setVisible(bool visible)
+void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
+{
+    widget_->treeView->setVisibility(selectedIndices_, visible, m);
+}
+
+void AtomSelection::setVisible_(bool visible)
 {
     for (unsigned int i : selectedIndices_)
         widget_->visibleBitmap_[i] = visible;
@@ -1095,74 +1165,79 @@ void AtomSelection::setVisible(bool visible)
     widget_->update();
 }
 
-QVariant AtomSelection::getColor() const
+QColor AtomSelection::getColor() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return QColor();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].color & 0x00FFFFFF;
 
     for (auto i : selectedIndices_)
         if ((widget_->frameState_[i].color & 0x00FFFFFF) != ans)
-            return QVariant();
+            return QColor();
 
     return QColor(ans);
 }
 
-QVariant AtomSelection::getAlpha() const
+double AtomSelection::getAlpha() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return std::numeric_limits<double>::lowest();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].color >> 24;
 
     for (auto i : selectedIndices_)
         if ((widget_->frameState_[i].color >> 24) != ans)
-            return QVariant();
+            return std::numeric_limits<double>::lowest();
 
     return (100. * (255 - ans) / 255);
 }
 
-QVariant AtomSelection::getSpecularColor() const
+QColor AtomSelection::getSpecularColor() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return QColor();
 
     unsigned int ans = widget_->frameState_[selectedIndices_.front()].specularColor;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].specularColor != ans)
-            return QVariant();
+            return QColor();
 
     return QColor(ans);
 }
 
-QVariant AtomSelection::getSpecularExponent() const
+double AtomSelection::getSpecularExponent() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return std::numeric_limits<double>::lowest();
 
     float ans = widget_->frameState_[selectedIndices_.front()].specularExponent;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].specularExponent != ans)
-            return QVariant();
+            return std::numeric_limits<double>::lowest();
 
     return ans;
 }
 
-QVariant AtomSelection::getSize() const
+double AtomSelection::getSize() const
 {
     if (selectedIndices_.isEmpty())
-        return QVariant();
+        return std::numeric_limits<double>::lowest();
 
     float ans = widget_->frameState_[selectedIndices_.front()].size;
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].size != ans)
-            return QVariant();
+            return std::numeric_limits<double>::lowest();
 
     return ans;
+}
+
+QVariant AtomSelection::getName() const
+{
+    return widget_->treeView->getName(selectedIndices_);
 }
 
 QVariant AtomSelection::getLabel() const
@@ -1179,61 +1254,41 @@ QVariant AtomSelection::getLabel() const
     return ans;
 }
 
-QList<QVariant> AtomSelection::getCoordinates() const
+std::tuple<int, int, int> AtomSelection::getCoordinates() const
 {
-    QList<QVariant> ans;
-
-    double x = widget_->frameState_[selectedIndices_.front()].position.x();
+    int x = widget_->frameState_[selectedIndices_.front()].position.x();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.x() != x)
         {
-            x = qSNaN();
+            x = std::numeric_limits<int>::lowest();
             break;
         }
 
-    double y = widget_->frameState_[selectedIndices_.front()].position.y();
+    int y = widget_->frameState_[selectedIndices_.front()].position.y();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.y() != y)
         {
-            y = qSNaN();
+            y = std::numeric_limits<int>::lowest();
             break;
         }
 
-    double z = widget_->frameState_[selectedIndices_.front()].position.z();
+    int z = widget_->frameState_[selectedIndices_.front()].position.z();
 
     for (auto i : selectedIndices_)
         if (widget_->frameState_[i].position.z() != z)
         {
-            z = qSNaN();
+            z = std::numeric_limits<int>::lowest();
             break;
         }
 
-    ans.push_back(qIsNaN(x) ? QVariant() : x);
-    ans.push_back(qIsNaN(y) ? QVariant() : y);
-    ans.push_back(qIsNaN(z) ? QVariant() : z);
-
-    return ans;
+    return std::make_tuple(x, y, z);
 }
 
-int AtomSelection::getVisibility() const
+Visibility AtomSelection::getVisibility(VisibilityMode m) const
 {
-    int a = 0, b = 0;
-
-    for (auto i : selectedIndices_)
-    {
-        if (widget_->frameState_[i].flags & VISIBLE_FLAG)
-            a++;
-        else
-            b++;
-    }
-
-    if (a == 0)
-        return 2;
-    if (b == 0)
-        return 1;
-    return 0;
+    return widget_->treeView->getVisibility(selectedIndices_, m);
 }
 
 unsigned int AtomSelection::atomCount() const

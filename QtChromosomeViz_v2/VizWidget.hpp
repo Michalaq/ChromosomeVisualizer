@@ -9,6 +9,7 @@
 
 #include "bartekm_code/Simulation.h"
 #include "LabelRenderer.hpp"
+#include "treeview.h"
 
 struct VizVertex
 {
@@ -55,17 +56,20 @@ public:
     void setSpecularColor(QColor color);
     void setSpecularExponent(float exponent);
     void setSize(float size);
+    void setName(const QString & name);
     void setLabel(const QString & label);
-    void setVisible(bool visible = true);
+    void setVisible(Visibility visible, VisibilityMode m);
+    void setVisible_(bool visible = true);
 
-    QVariant getColor() const;
-    QVariant getAlpha() const;
-    QVariant getSpecularColor() const;
-    QVariant getSpecularExponent() const;
-    QVariant getSize() const;
+    QColor getColor() const;
+    double getAlpha() const;
+    QColor getSpecularColor() const;
+    double getSpecularExponent() const;
+    double getSize() const;
+    QVariant getName() const;
     QVariant getLabel() const;
-    QList<QVariant> getCoordinates() const;
-    int getVisibility() const;
+    std::tuple<int, int, int> getCoordinates() const;
+    Visibility getVisibility(VisibilityMode m) const;
 
     unsigned int atomCount() const;
     QVector3D weightCenter() const;
@@ -96,6 +100,7 @@ public:
     virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void setTreeView(TreeView* tv);
 
 public slots:
     void advanceFrame();
@@ -138,6 +143,9 @@ public slots:
     float fogContribution() const;
 
     const QVector<VizBallInstance> & getBallInstances() const;
+
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -218,6 +226,10 @@ private:
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;
+
+    QMap<unsigned int, QVariantMap> changes;
+
+    TreeView* treeView;
 };
 
 #endif /* VIZWINDOW_HPP */

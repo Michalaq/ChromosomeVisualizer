@@ -54,7 +54,12 @@ SOURCES += main.cpp\
     keyframe.cpp \
     interpolator.cpp \
     defaults.cpp \
-    selection.cpp
+    selection.cpp \
+    visibilitydelegate.cpp \
+    treeview.cpp \
+    textedit.cpp \
+    preferences.cpp \
+    namedelegate.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -116,7 +121,12 @@ HEADERS  += mainwindow.h\
     keyframe.h \
     interpolator.h \
     defaults.h \
-    selection.h
+    selection.h \
+    visibilitydelegate.h \
+    treeview.h \
+    textedit.h \
+    preferences.h \
+    namedelegate.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -125,10 +135,10 @@ FORMS    += mainwindow.ui \
     attributes.ui \
     layerattributes.ui \
     viewport.ui \
-    rswidget.ui \
     camerasettings.ui \
     keyframe.ui \
-    defaults.ui
+    defaults.ui \
+    preferences.ui
 
 CONFIG += c++14
 

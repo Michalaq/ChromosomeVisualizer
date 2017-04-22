@@ -8,6 +8,15 @@ Attributes::Attributes(QWidget *parent) :
     ui->setupUi(this);
 
     // set name
+    connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
+        if (ui->lineEdit->isModified())
+        {
+            if (ui->lineEdit->text().isEmpty())
+                updateName();
+            else
+                vizWidget_->selectedSpheresObject().setName(ui->lineEdit->text());
+        }
+    });
 
     // set label
     connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
@@ -17,28 +26,17 @@ Attributes::Attributes(QWidget *parent) :
 
     // set vie
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        switch (i) {
-        case 0: // default
-            break;
-        case 1: // on
-            vizWidget_->selectedSpheresObject().setVisible(true);
-            break;
-        case 2: // off
-            vizWidget_->selectedSpheresObject().setVisible(false);
-            break;
-        }
+        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Editor);
     });
 
     // set vir
-
-    // set radius
-    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox->setSpecialValueText("");
+    connect(ui->comboBox_2, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
+        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Renderer);
     });
 
-    connect(ui->doubleSpinBox, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setSize(ui->doubleSpinBox->value());
+    // set radius
+    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setSize(val);
     });
 
     // set segments
@@ -49,23 +47,13 @@ Attributes::Attributes(QWidget *parent) :
     });
 
     // set transparency
-    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox_2->setSpecialValueText("");
-    });
-
-    connect(ui->doubleSpinBox_2, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox_2->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setAlpha((100. - ui->doubleSpinBox_2->value()) / 100);
+    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setAlpha((100. - val) / 100);
     });
 
     // set specular width
-    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] () {
-        ui->doubleSpinBox_3->setSpecialValueText("");
-    });
-
-    connect(ui->doubleSpinBox_3, &QDoubleSpinBox::editingFinished, [this] {
-        if (ui->doubleSpinBox_3->specialValueText().isEmpty())
-            vizWidget_->selectedSpheresObject().setSpecularExponent(ui->doubleSpinBox_3->value());
+    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
+        vizWidget_->selectedSpheresObject().setSpecularExponent(val);
     });
 
     // set specular color
@@ -105,106 +93,42 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     // set name
+    auto l = selection.getName();
+    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set label
-    auto l = selection.getLabel();
-
+    l = selection.getLabel();
     ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 
     // set vie
-    ui->comboBox->setCurrentIndex(selection.getVisibility());
+    ui->comboBox->setCurrentIndex(selection.getVisibility(Editor), false);
+
+    // set vir
+    ui->comboBox->setCurrentIndex(selection.getVisibility(Renderer), false);
 
     // set coordinates
     auto c = selection.getCoordinates();
 
-    auto x = c.at(0);
-
-    if (x.isValid())
-    {
-        ui->spinBox->setValue(x.toFloat());
-        ui->spinBox->setSpecialValueText("");
-    }
-    else
-    {
-        ui->spinBox->setValue(ui->spinBox->minimum());
-        ui->spinBox->setSpecialValueText("<< multiple values >>");
-    }
-
-    auto y = c.at(1);
-
-    if (x.isValid())
-    {
-        ui->spinBox_2->setValue(y.toFloat());
-        ui->spinBox_2->setSpecialValueText("");
-    }
-    else
-    {
-        ui->spinBox_2->setValue(ui->spinBox_2->minimum());
-        ui->spinBox_2->setSpecialValueText("<< multiple values >>");
-    }
-
-    auto z = c.at(2);
-
-    if (x.isValid())
-    {
-        ui->spinBox_3->setValue(z.toFloat());
-        ui->spinBox_3->setSpecialValueText("");
-    }
-    else
-    {
-        ui->spinBox_3->setValue(ui->spinBox_3->minimum());
-        ui->spinBox_3->setSpecialValueText("<< multiple values >>");
-    }
+    ui->spinBox->setValue(std::get<0>(c), false);
+    ui->spinBox_2->setValue(std::get<1>(c), false);
+    ui->spinBox_3->setValue(std::get<2>(c), false);
 
     // set radius
-    auto r = selection.getSize();
-
-    if (r.isValid())
-    {
-        ui->doubleSpinBox->setValue(r.toFloat());
-        ui->doubleSpinBox->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox->setValue(ui->doubleSpinBox->minimum());
-        ui->doubleSpinBox->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox->setValue(selection.getSize(), false);
 
     // set segments
 
     // set color
-    ui->widget->setValue(selection.getColor());
+    ui->widget->setValue(selection.getColor(), false);
 
     // set transparency
-    auto a = selection.getAlpha();
-
-    if (a.isValid())
-    {
-        ui->doubleSpinBox_2->setValue(a.toFloat());
-        ui->doubleSpinBox_2->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox_2->setValue(ui->doubleSpinBox_2->minimum());
-        ui->doubleSpinBox_2->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox_2->setValue(selection.getAlpha(), false);
 
     // set specular width
-    auto w = selection.getSpecularExponent();
-
-    if (w.isValid())
-    {
-        ui->doubleSpinBox_3->setValue(w.toFloat());
-        ui->doubleSpinBox_3->setSpecialValueText("");
-    }
-    else
-    {
-        ui->doubleSpinBox_3->setValue(ui->doubleSpinBox_3->minimum());
-        ui->doubleSpinBox_3->setSpecialValueText("<< multiple values >>");
-    }
+    ui->doubleSpinBox_3->setValue(selection.getSpecularExponent(), false);
 
     // set specular color
-    ui->widget_2->setValue(selection.getSpecularColor());
+    ui->widget_2->setValue(selection.getSpecularColor(), false);
 
     show();
 }
@@ -214,4 +138,18 @@ void Attributes::resizeEvent(QResizeEvent *event)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     QWidget::resizeEvent(event);
+}
+
+void Attributes::updateName()
+{
+    auto l = vizWidget_->selectedSpheresObject().getName();
+    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
+}
+
+void Attributes::updateVisibility(VisibilityMode m)
+{
+    if (m == Editor)
+        ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Editor), false);
+    else
+        ui->comboBox_2->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Renderer), false);
 }

@@ -71,11 +71,11 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>Project</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
+      <layout class="QGridLayout" name="gridLayout">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -83,24 +83,24 @@
         <number>0</number>
        </property>
        <item row="0" column="0">
-        <widget class="QScrollArea" name="scrollArea">
+        <widget class="QScrollArea" name="scrollArea_2">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
           <property name="geometry">
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>208</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Project settings</string>
+              <string>Project Settings</string>
              </property>
              <property name="class" stdset="0">
               <string>section</string>
@@ -108,16 +108,33 @@
             </widget>
            </item>
            <item>
-            <layout class="QFormLayout" name="formLayout">
+            <layout class="QFormLayout" name="formLayout_2">
              <item row="0" column="0">
-              <widget class="Label" name="label_2">
+              <widget class="Label" name="label_7">
                <property name="text">
                 <string>FPS</string>
                </property>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="Label" name="label_8">
+               <property name="text">
+                <string>Minimum Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="Label" name="label_9">
+               <property name="text">
+                <string>Preview Min. Time</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="1">
               <widget class="SpinBox" name="spinBox">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="minimum">
                 <number>1</number>
                </property>
@@ -129,30 +146,96 @@
                </property>
               </widget>
              </item>
+             <item row="2" column="1">
+              <widget class="SpinBox" name="spinBox_3">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="SpinBox" name="spinBox_4">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="Label" name="label_10">
+               <property name="text">
+                <string>Document Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="SpinBox" name="spinBox_5">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="Label" name="label_11">
+               <property name="text">
+                <string>Maximum Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="SpinBox" name="spinBox_6">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="Label" name="label_12">
+               <property name="text">
+                <string>Preview Max. Time</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="SpinBox" name="spinBox_7">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string>F</string>
+               </property>
+               <property name="maximum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
-            <widget class="Label" name="label">
-             <property name="text">
-              <string>POV-Ray installation path</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="FileEdit" name="lineEdit"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>TODO: Ten widget zyska sens, gdy będzie można zaisywać sesję do pliku. Nie będzie tak wyglądał.</string>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
+            <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -170,12 +253,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="Defaults" name="tab_3">
-      <attribute name="title">
-       <string>Defaults</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tab_4">
       <attribute name="title">
        <string>Info</string>
       </attribute>
@@ -187,19 +265,106 @@
         <number>0</number>
        </property>
        <item row="0" column="0">
-        <widget class="QScrollArea" name="scrollArea_2">
+        <widget class="QScrollArea" name="scrollArea_3">
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <widget class="QWidget" name="scrollAreaWidgetContents_3">
           <property name="geometry">
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>228</height>
            </rect>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Info</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_4">
+             <item row="0" column="0">
+              <widget class="Label" name="label_15">
+               <property name="text">
+                <string>Author</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="Label" name="label_16">
+               <property name="text">
+                <string>Info</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="Label" name="label_17">
+               <property name="text">
+                <string>File Format</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="Label" name="label_18">
+               <property name="text">
+                <string>File Version</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="Label" name="label_19">
+               <property name="text">
+                <string>File Path</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="LineEdit" name="lineEdit_3"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="LineEdit" name="lineEdit_4">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="LineEdit" name="lineEdit_5">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="FileEdit" name="lineEdit_6"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="TextEdit" name="textEdit"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>37</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -216,9 +381,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
   </customwidget>
   <customwidget>
    <class>SpinBox</class>
@@ -226,15 +391,19 @@
    <header>spinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
   <customwidget>
-   <class>Defaults</class>
-   <extends>QWidget</extends>
-   <header>defaults.h</header>
-   <container>1</container>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>textedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

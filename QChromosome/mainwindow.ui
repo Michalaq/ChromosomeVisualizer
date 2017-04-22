@@ -10,9 +10,6 @@
     <height>497</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>QChromosome 4D Studio</string>
-  </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
 	background: #1a1a1a;
@@ -282,7 +279,7 @@ QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
 }
 
-QLineEdit {
+QLineEdit, QTextEdit {
 	background: #2d2d2d;
 	border: 1px solid #2d2d2d;
 	border-radius: 2px;
@@ -292,7 +289,12 @@ QLineEdit {
 	padding-left: 10px;
 }
 
-QLineEdit[focus=&quot;true&quot;] {
+QTextEdit {
+    padding-top: 3px;
+    padding-left: 8px;
+}
+
+QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 	border-color: #205375;
 	color: lightgray;
 }
@@ -300,6 +302,7 @@ QLineEdit[focus=&quot;true&quot;] {
 Label {
 	min-width: 125px;
 	min-height: 30px;
+    max-height: 30px;
 }
 
 .section {
@@ -386,16 +389,6 @@ Label {
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="Slider" name="horizontalSlider">
-        <property name="maximum">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="SpinBox" name="spinBox">
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -408,6 +401,16 @@ Label {
         </property>
         <property name="maximum">
          <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Slider" name="horizontalSlider">
+        <property name="maximum">
+         <number>0</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -551,14 +554,14 @@ Label {
          <widget class="MediaControl" name="play">
           <property name="minimumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>24</width>
+            <height>24</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>32</width>
-            <height>32</height>
+            <width>24</width>
+            <height>24</height>
            </size>
           </property>
           <property name="statusTip">
@@ -573,12 +576,6 @@ Label {
            <iconset resource="icons.qrc">
             <normaloff>:/media/play</normaloff>
             <normalon>:/media/pause</normalon>:/media/play</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -631,6 +628,13 @@ Label {
           </property>
          </widget>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>12</number>
+        </property>
         <item>
          <widget class="MediaControl" name="record">
           <property name="minimumSize">
@@ -645,6 +649,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -653,6 +660,9 @@ Label {
           <property name="icon">
            <iconset resource="icons.qrc">
             <normaloff>:/media/record</normaloff>:/media/record</iconset>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+F9</string>
           </property>
           <property name="checkable">
            <bool>true</bool>
@@ -673,6 +683,9 @@ Label {
             <height>24</height>
            </size>
           </property>
+          <property name="statusTip">
+           <string>Record Position, Rotation and PLA of Active Camera [Shortcut F9]</string>
+          </property>
           <property name="styleSheet">
            <string notr="true">:!hover:!checked {
 	background: #d40000;
@@ -687,6 +700,9 @@ Label {
             <width>24</width>
             <height>24</height>
            </size>
+          </property>
+          <property name="shortcut">
+           <string>F9</string>
           </property>
          </widget>
         </item>
@@ -714,6 +730,9 @@ Label {
     <addaction name="actionOpen"/>
     <addaction name="actionAdd_Layer"/>
     <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuSelection">
@@ -727,6 +746,7 @@ Label {
      <string>Edit</string>
     </property>
     <addaction name="actionProject_Settings"/>
+    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuAnimation">
     <property name="title">
@@ -835,13 +855,63 @@ Label {
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_6">
      <item row="0" column="0">
-      <widget class="QTreeView" name="treeView">
+      <widget class="TreeView" name="treeView">
+       <property name="styleSheet">
+        <string notr="true">QTreeView {
+	color: #808080;
+	border: none;
+	background: #1a1a1a;
+	outline: 0;
+}
+
+QTreeView::item, QTreeView::branch {
+	height: 20px;
+	border: none;
+	background: #1a1a1a;
+}
+
+QTreeView::item:selected {
+	color: white;
+	background: #2d2d2d;
+}
+
+QTreeView::branch:selected {
+	background: #1a1a1a;
+}
+
+QTreeView::item:first:selected {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+QTreeView::item:last:selected {
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
+	image: url(:/arrows/bclosed);
+}
+
+QTreeView::branch:open:has-children  {
+	image: url(:/arrows/bopen);
+}
+
+QLineEdit {
+	color: white;
+	padding: 0px;
+}
+</string>
+       </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
-       <property name="headerHidden">
+       <property name="uniformRowHeights">
         <bool>true</bool>
        </property>
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
       </widget>
      </item>
     </layout>
@@ -925,6 +995,10 @@ Label {
    </property>
   </action>
   <action name="actionAdd_Layer">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/import</normaloff>:/dialogs/import</iconset>
+   </property>
    <property name="text">
     <string>Import...</string>
    </property>
@@ -1042,7 +1116,7 @@ Label {
      <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
    </property>
    <property name="text">
-    <string>Project Settings</string>
+    <string>Project Settings...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -1161,6 +1235,10 @@ Label {
    </property>
   </action>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+   </property>
    <property name="text">
     <string>New</string>
    </property>
@@ -1325,6 +1403,9 @@ Label {
    <property name="text">
     <string>Focus</string>
    </property>
+   <property name="statusTip">
+    <string>Target Object</string>
+   </property>
   </action>
   <action name="actionCustom">
    <property name="checkable">
@@ -1336,6 +1417,44 @@ Label {
    </property>
    <property name="text">
     <string>Custom</string>
+   </property>
+   <property name="statusTip">
+    <string>Lasso selection</string>
+   </property>
+   <property name="cameraStatusTip" stdset="0">
+    <string>Lasso Selection: Click and drag to lasso-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/diskette</normaloff>:/dialogs/diskette</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/equipment</normaloff>:/dialogs/equipment</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>
@@ -1474,6 +1593,11 @@ Label {
     <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
     <slot>enableSelecting(bool)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>TreeView</class>
+   <extends>QTreeView</extends>
+   <header>treeview.h</header>
   </customwidget>
  </customwidgets>
  <resources>
@@ -1616,22 +1740,6 @@ Label {
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>reverse</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reverse(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>168</x>
      <y>155</y>
     </hint>
     <hint type="destinationlabel">
@@ -2072,6 +2180,54 @@ Label {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>reverse</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reverse(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>168</x>
+     <y>155</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSave</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveProject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSaveAs</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveProjectAs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openProject()</slot>
@@ -2093,5 +2249,7 @@ Label {
   <slot>handleModelSelection()</slot>
   <slot>newProject()</slot>
   <slot>updateLocks()</slot>
+  <slot>saveProject()</slot>
+  <slot>saveProjectAs()</slot>
  </slots>
 </ui>
