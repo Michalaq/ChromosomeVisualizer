@@ -60,7 +60,8 @@ SOURCES += main.cpp\
     textedit.cpp \
     preferences.cpp \
     namedelegate.cpp \
-    commondata.cpp
+    commondata.cpp \
+    material.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -128,7 +129,8 @@ HEADERS  += mainwindow.h\
     textedit.h \
     preferences.h \
     namedelegate.h \
-    commondata.h
+    commondata.h \
+    material.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
