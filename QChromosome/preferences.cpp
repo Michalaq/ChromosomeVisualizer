@@ -49,6 +49,10 @@ Preferences::Preferences(QWidget *parent) :
     ui->lineEdit_2->setText(settings.value("locallib", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString());
 
     ui->lineEdit_2->setType(FileEdit::FE_Directory);
+
+    ui->mat_1->setColor(Qt::red);
+    ui->mat_2->setColor(Qt::green);
+    ui->mat_3->setColor(Qt::blue);
 }
 
 Preferences::~Preferences()
