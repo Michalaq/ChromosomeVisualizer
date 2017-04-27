@@ -858,11 +858,10 @@ Label {
       <widget class="TreeView" name="treeView">
        <property name="styleSheet">
         <string notr="true">QTreeView {
-	color: #808080;
+	color: gray;
 	border: none;
 	background: #1a1a1a;
-	alternate-background-color: #1f1f1f;
-	selection-background-color: #2d2d2d;
+	selection-background-color: #1a1a1a;
 	selection-color: white;
 	outline: 0;
 }
@@ -870,10 +869,6 @@ Label {
 QTreeView::item {
 	height: 20px;
 	border: none;
-}
-
-QTreeView::item:selected {
-	background: #2d2d2d;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
@@ -890,9 +885,6 @@ QLineEdit {
 	padding: 1px;
 }
 </string>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>

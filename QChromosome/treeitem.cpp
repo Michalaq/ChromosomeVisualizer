@@ -46,6 +46,7 @@ TreeItem::TreeItem(const QVariantList &data, TreeItem *parent)
 {
     m_parentItem = parent;
     m_itemData = data;
+    selected_children_count = 0;
 }
 
 TreeItem::~TreeItem()

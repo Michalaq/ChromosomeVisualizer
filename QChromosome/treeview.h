@@ -42,6 +42,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
 
+    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
 private:
     Visibility cv;
     VisibilityMode vm;

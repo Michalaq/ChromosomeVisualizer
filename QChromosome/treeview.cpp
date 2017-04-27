@@ -227,3 +227,34 @@ void TreeView::paintEvent(QPaintEvent *event)
     x = hv->sectionViewportPosition(5);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }
+
+void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QTreeView::selectionChanged(selected, deselected);
+
+    for (auto i : selected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c + 1, Qt::UserRole);
+        } while (c == 0 && (j = j.parent()).isValid());
+    }
+
+    for (auto i : deselected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c - 1, Qt::UserRole);
+        } while (c == 1 && (j = j.parent()).isValid());
+    }
+
+    update();
+}
