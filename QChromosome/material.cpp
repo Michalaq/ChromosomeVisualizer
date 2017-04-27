@@ -1,6 +1,6 @@
 #include "material.h"
 
-Material::Material(QWidget *parent) : QWidget(parent)
+Material::Material(QWidget *parent) : QWidget(parent), clicked(false)
 {
     setFixedSize(75, 75);
 }
@@ -16,16 +16,28 @@ void Material::setColor(QColor c)
     update();
 }
 
+void Material::mousePressEvent(QMouseEvent *event)
+{
+    clicked = true;
+
+    QWidget::mousePressEvent(event);
+}
+
 #include <QMimeData>
 #include <QDrag>
 
-void Material::mousePressEvent(QMouseEvent *event)
+void Material::mouseMoveEvent(QMouseEvent *event)
 {
-    QWidget::mousePressEvent(event);
+    if (clicked)
+    {
+        clicked = false;
 
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(new QMimeData);
-    drag->exec(Qt::CopyAction | Qt::MoveAction);
+        QDrag *drag = new QDrag(this);
+        drag->setMimeData(new QMimeData);
+        drag->exec(Qt::CopyAction | Qt::MoveAction);
+    }
+    else
+        QWidget::mouseMoveEvent(event);
 }
 
 #include <QPainter>

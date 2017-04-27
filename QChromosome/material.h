@@ -14,9 +14,11 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
 
 private:
+    bool clicked;
     QColor color;
 
 signals:
