@@ -13,8 +13,8 @@ public:
     void setColor(QColor c);
 
 protected:
+    void mousePressEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
 
 private:
     QColor color;

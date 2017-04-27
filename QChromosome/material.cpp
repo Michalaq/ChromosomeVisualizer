@@ -16,11 +16,16 @@ void Material::setColor(QColor c)
     update();
 }
 
-#include <QDragEnterEvent>
+#include <QMimeData>
+#include <QDrag>
 
-void Material::dragEnterEvent(QDragEnterEvent *event)
+void Material::mousePressEvent(QMouseEvent *event)
 {
-    event->accept();
+    QWidget::mousePressEvent(event);
+
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(new QMimeData);
+    drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
 
 #include <QPainter>
