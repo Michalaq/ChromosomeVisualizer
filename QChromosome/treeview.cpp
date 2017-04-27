@@ -8,6 +8,7 @@ TreeView::TreeView(QWidget *parent) :
     setHeader(hv = new HeaderView(header()->orientation(), this));
     hv->setStretchLastSection(true);
     setMouseTracking(true);
+    setAcceptDrops(true);
 }
 
 TreeView::~TreeView()
@@ -213,4 +214,30 @@ void TreeView::paintEvent(QPaintEvent *event)
 
     int x = hv->sectionViewportPosition(3);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
+}
+
+#include "material.h"
+
+void TreeView::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (qobject_cast<Material*>(event->source()))
+        event->acceptProposedAction();
+}
+
+void TreeView::dragMoveEvent(QDragMoveEvent *event)
+{
+    auto index = indexAt(event->pos());
+
+    if (index.isValid() && index.column() != 5)
+        event->acceptProposedAction();
+    else
+        event->ignore();
+}
+
+void TreeView::dropEvent(QDropEvent *event)
+{
+    auto index = indexAt(event->pos());
+
+    model()->setData(index.sibling(index.row(), 5), "qwerty");
+    update();
 }
