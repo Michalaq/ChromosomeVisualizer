@@ -150,7 +150,12 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             update();
         }
         else
+        {
+            if (!index.isValid())
+                clearSelection();
+
             QTreeView::mousePressEvent(event);
+        }
     }
 }
 
@@ -211,6 +216,9 @@ void TreeView::paintEvent(QPaintEvent *event)
     QPainter p(viewport());
     p.setPen("#2d2d2d");
 
-    int x = hv->sectionViewportPosition(3);
+    int x;
+    x = hv->sectionViewportPosition(3);
+    p.drawLine(QPoint(x, 0), QPoint(x, height()));
+    x = hv->sectionViewportPosition(5);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }

@@ -861,32 +861,18 @@ Label {
 	color: #808080;
 	border: none;
 	background: #1a1a1a;
+	alternate-background-color: #1f1f1f;
 	outline: 0;
 }
 
 QTreeView::item, QTreeView::branch {
 	height: 20px;
 	border: none;
-	background: #1a1a1a;
 }
 
-QTreeView::item:selected {
+QTreeView::item:selected:!last, QTreeView::branch:selected  {
 	color: white;
 	background: #2d2d2d;
-}
-
-QTreeView::branch:selected {
-	background: #1a1a1a;
-}
-
-QTreeView::item:first:selected {
-	border-top-left-radius: 3px;
-	border-bottom-left-radius: 3px;
-}
-
-QTreeView::item:last:selected {
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
@@ -902,6 +888,9 @@ QLineEdit {
 	padding: 0px;
 }
 </string>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>
