@@ -862,16 +862,17 @@ Label {
 	border: none;
 	background: #1a1a1a;
 	alternate-background-color: #1f1f1f;
+	selection-background-color: #2d2d2d;
+	selection-color: white;
 	outline: 0;
 }
 
-QTreeView::item, QTreeView::branch {
+QTreeView::item {
 	height: 20px;
 	border: none;
 }
 
-QTreeView::item:selected:!last, QTreeView::branch:selected  {
-	color: white;
+QTreeView::item:selected {
 	background: #2d2d2d;
 }
 
@@ -885,7 +886,8 @@ QTreeView::branch:open:has-children  {
 
 QLineEdit {
 	color: white;
-	padding: 0px;
+	border: none;
+	padding: 1px;
 }
 </string>
        </property>

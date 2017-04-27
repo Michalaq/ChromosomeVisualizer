@@ -164,6 +164,8 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseMoveEvent(event);
+
     case ResizeSection:
         hv->mouseMoveEvent(event);
 
@@ -197,6 +199,9 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseReleaseEvent(event);
+        break;
+
     case ResizeSection:
         hv->mouseReleaseEvent(event);
         state = NoState;
