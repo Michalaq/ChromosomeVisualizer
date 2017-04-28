@@ -12,6 +12,8 @@ public:
     QColor getColor() const;
     void setColor(QColor c);
 
+    void paint(QPainter *painter, QRect rect);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

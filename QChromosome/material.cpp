@@ -16,6 +16,14 @@ void Material::setColor(QColor c)
     update();
 }
 
+#include <QPainter>
+
+void Material::paint(QPainter *painter, QRect rect)
+{
+    painter->setBrush(color);
+    painter->drawEllipse(rect);
+}
+
 void Material::mousePressEvent(QMouseEvent *event)
 {
     clicked = true;
@@ -47,6 +55,5 @@ void Material::paintEvent(QPaintEvent *event)
     QWidget::paintEvent(event);
 
     QPainter p(this);
-    p.setBrush(color);
-    p.drawEllipse(rect());
+    paint(&p, rect());
 }

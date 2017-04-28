@@ -237,7 +237,11 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 void TreeView::dropEvent(QDropEvent *event)
 {
     auto index = indexAt(event->pos());
+    index = index.sibling(index.row(), 5);
 
-    model()->setData(index.sibling(index.row(), 5), "qwerty");
+    auto list = index.data().toList();
+    list.append(QVariant::fromValue(event->source()));
+
+    model()->setData(index, list);
     update();
 }

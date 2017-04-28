@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
+#include "tagsdelegate.h"
 
 static const char * ext = ".chs";
 
@@ -220,6 +221,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
+    ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
 
     ui->plot->followSlider(ui->horizontalSlider);
 
