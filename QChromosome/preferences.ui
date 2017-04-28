@@ -230,17 +230,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
       <attribute name="title">
        <string>Material library</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="Material" name="mat_1" native="true"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="Material" name="mat_2" native="true"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="Material" name="mat_3" native="true"/>
-       </item>
-      </layout>
      </widget>
     </widget>
    </item>
@@ -266,12 +255,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
    <class>Defaults</class>
    <extends>QWidget</extends>
    <header>defaults.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Material</class>
-   <extends>QWidget</extends>
-   <header>material.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

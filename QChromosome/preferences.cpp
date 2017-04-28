@@ -25,6 +25,8 @@ public:
 
 #include <QSettings>
 #include <QStandardPaths>
+#include "flowlayout.h"
+#include "material.h"
 
 Preferences::Preferences(QWidget *parent) :
     QWidget(parent),
@@ -50,9 +52,26 @@ Preferences::Preferences(QWidget *parent) :
 
     ui->lineEdit_2->setType(FileEdit::FE_Directory);
 
-    ui->mat_1->setColor(Qt::red);
-    ui->mat_2->setColor(Qt::green);
-    ui->mat_3->setColor(Qt::blue);
+    Material* mat;
+
+    FlowLayout *flowLayout = new FlowLayout;
+
+    mat = new Material(this);
+    mat->setColor(Qt::red);
+
+    flowLayout->addWidget(mat);
+
+    mat = new Material(this);
+    mat->setColor(Qt::green);
+
+    flowLayout->addWidget(mat);
+
+    mat = new Material(this);
+    mat->setColor(Qt::blue);
+
+    flowLayout->addWidget(mat);
+
+    ui->tab_2->setLayout(flowLayout);
 }
 
 Preferences::~Preferences()
