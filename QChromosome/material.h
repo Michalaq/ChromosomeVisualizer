@@ -12,7 +12,7 @@ public:
     QColor getColor() const;
     void setColor(QColor c);
 
-    void paint(QPainter *painter, QRect rect);
+    void paint(QPainter *painter, QRect bounds);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -22,6 +22,11 @@ protected:
 private:
     bool clicked;
     QColor color;
+
+    QByteArray svg;
+
+    int specular_color_index;
+    int color_index;
 
 signals:
 
