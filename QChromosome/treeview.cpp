@@ -87,7 +87,7 @@ void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, V
     update();
 }
 
-void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, VisibilityMode m)
+void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
 {
     bool ok;
     unsigned int i = root.sibling(root.row(), 2).data().toUInt(&ok);
@@ -99,8 +99,8 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, Visib
     {
         auto c = root.child(r, 0);
 
-        if (getVisibility(c, m) == Default)
-            dumpModel(c, id, m);
+        if (functor(c))
+            dumpModel(c, id, functor);
     }
 }
 
@@ -114,7 +114,7 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
     model()->setData(root.sibling(root.row(), m), v, Qt::DisplayRole);
 
     QList<unsigned int> id;
-    dumpModel(root.sibling(root.row(), 0), id, m);
+    dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getVisibility(c, m) == Default; });
 
     auto root_ = root;
 
@@ -123,6 +123,35 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
 
     if (m == Editor)
         scene->customSelection(id).setVisible_(getVisibility(root_, m) == On);
+}
+
+Material* TreeView::getMaterial(const QModelIndex &root) const
+{
+    if (root.isValid())
+    {
+        auto list = model()->data(root.sibling(root.row(), 5)).toList();
+        if (list.isEmpty())
+            return nullptr;
+        else
+            return qobject_cast<Material*>(list.last().value<QObject*>());
+    }
+    else
+        return nullptr;
+}
+
+void TreeView::setMaterial(const QModelIndex &root, Material *m)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    list.append(QVariant::fromValue(m));
+
+    model()->setData(index, list);
+
+    QList<unsigned int> id;
+    dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+    scene->customSelection(id).setColor(m->getColor());
 }
 
 #include <QMouseEvent>
@@ -216,8 +245,6 @@ void TreeView::paintEvent(QPaintEvent *event)
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }
 
-#include "material.h"
-
 void TreeView::dragEnterEvent(QDragEnterEvent *event)
 {
     if (qobject_cast<Material*>(event->source()))
@@ -236,12 +263,6 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 
 void TreeView::dropEvent(QDropEvent *event)
 {
-    auto index = indexAt(event->pos());
-    index = index.sibling(index.row(), 5);
-
-    auto list = index.data().toList();
-    list.append(QVariant::fromValue(event->source()));
-
-    model()->setData(index, list);
+    setMaterial(indexAt(event->pos()), qobject_cast<Material*>(event->source()));
     update();
 }
