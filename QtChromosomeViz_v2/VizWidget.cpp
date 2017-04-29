@@ -47,7 +47,7 @@ VizWidget::VizWidget(QWidget *parent)
     , labelBackgroundColor_(0, 0, 0, 255)
     , image(nullptr)
 {
-
+    setAcceptDrops(true);
 }
 
 VizWidget::~VizWidget()
@@ -1041,6 +1041,35 @@ void VizWidget::pickSpheres()
     delete image;
     image = new QImage(fboImage.constBits(), fboImage.width(), fboImage.height(),
                  QImage::Format_ARGB32);
+}
+
+void VizWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (qobject_cast<Material*>(event->source()))
+    {
+        event->acceptProposedAction();
+        pickSpheres();
+    }
+}
+
+void VizWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (image->pixel(event->pos()) != 0xFFFFFFFF)
+        event->acceptProposedAction();
+    else
+        event->ignore();
+}
+
+void VizWidget::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+
+    auto index = image->pixel(event->pos());
+
+    if (currentSelection_.selectedIndices_.contains(index))
+        treeView->setMaterial(currentSelection_.selectedIndices_, qobject_cast<Material*>(event->source()));
+    else
+        treeView->setMaterial({index}, qobject_cast<Material*>(event->source()));
 }
 
 AtomSelection::AtomSelection(VizWidget * widget)

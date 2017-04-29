@@ -87,6 +87,16 @@ void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, V
     update();
 }
 
+void TreeView::setMaterial(const QList<unsigned int> &indexes, Material *m)
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    for (unsigned int i : indexes)
+        setMaterial(indices[i], m);
+
+    update();
+}
+
 void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
 {
     bool ok;
@@ -263,6 +273,7 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 
 void TreeView::dropEvent(QDropEvent *event)
 {
+    event->acceptProposedAction();
     setMaterial(indexAt(event->pos()), qobject_cast<Material*>(event->source()));
     update();
 }

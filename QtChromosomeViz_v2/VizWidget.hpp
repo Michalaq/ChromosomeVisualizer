@@ -174,6 +174,10 @@ protected:
     void setFirstFrame();
     void updateWholeFrameData();
 
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
+
 private:
     QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
