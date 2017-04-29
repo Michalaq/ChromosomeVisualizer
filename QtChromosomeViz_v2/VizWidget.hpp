@@ -215,8 +215,8 @@ private:
     QVector<bool> selectedBitmap_;
     QVector<bool> visibleBitmap_;
 
-    QPainterPath selectionPath;
-    QList<unsigned int> pickSpheres();
+    QImage *image;
+    void pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;
 

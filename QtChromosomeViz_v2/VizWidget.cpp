@@ -45,6 +45,7 @@ VizWidget::VizWidget(QWidget *parent)
     , backgroundColor_(0, 0, 0)
     , labelTextColor_(255, 255, 255)
     , labelBackgroundColor_(0, 0, 0, 255)
+    , image(nullptr)
 {
 
 }
@@ -720,8 +721,6 @@ void VizWidget::updateWholeFrameData()
 
 void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
 {
-    selectionPath = p;
-
     const bool ctrl = m & Qt::ControlModifier;
     const bool shift = m & Qt::ShiftModifier;
 
@@ -734,7 +733,29 @@ void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
 
     auto oldAtoms = selectedSpheres();
     auto oldIndices = selectedSphereIndices();
-    auto pickedIndices = pickSpheres();
+
+    pickSpheres();
+
+    auto mask = QPainterPath();
+    mask.addRect(image->rect());
+    mask = mask.subtracted(p);
+
+    QPainter(image).fillPath(mask, QColor(0xFFFFFFFFU));
+
+    QSet<unsigned int> ballIDs;
+
+    const auto r = p.boundingRect();
+    for (int y = r.top(); y <= r.bottom(); y++)
+    {
+        for (int x = r.left(); x <= r.right(); x++)
+        {
+            auto color = image->pixel(x, y);
+            if (color != 0xFFFFFFFFU)
+                ballIDs.insert(color);
+        }
+    }
+
+    auto pickedIndices = ballIDs.toList();
 
     // New selection
     for (const auto & id : pickedIndices)
@@ -959,7 +980,7 @@ void VizWidget::generateSortedState()
     qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
 }
 
-QList<unsigned int> VizWidget::pickSpheres()
+void VizWidget::pickSpheres()
 {
     makeCurrent();
 
@@ -1016,30 +1037,10 @@ QList<unsigned int> VizWidget::pickSpheres()
     // Get rendered content
     // Stupid workaround for avoiding premultiplied alpha
     auto fboImage = pickingFramebuffer_->toImage();
-    QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(),
+
+    delete image;
+    image = new QImage(fboImage.constBits(), fboImage.width(), fboImage.height(),
                  QImage::Format_ARGB32);
-
-    auto mask = QPainterPath();
-    mask.addRect(image.rect());
-    mask = mask.subtracted(selectionPath);
-
-    QPainter p(&image);
-    p.fillPath(mask, QColor(0xFFFFFFFFU));
-
-    QSet<unsigned int> ballIDs;
-
-    const auto r = selectionPath.boundingRect();
-    for (int y = r.top(); y <= r.bottom(); y++)
-    {
-        for (int x = r.left(); x <= r.right(); x++)
-        {
-            auto color = image.pixel(x, y);
-            if (color != 0xFFFFFFFFU)
-                ballIDs.insert(color);
-        }
-    }
-
-    return ballIDs.toList();
 }
 
 AtomSelection::AtomSelection(VizWidget * widget)
