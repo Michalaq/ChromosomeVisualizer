@@ -367,16 +367,31 @@ Label {
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="VizWidget" name="scene"/>
+             <widget class="VizWidget" name="scene">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="Selection" name="widget_3" native="true"/>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item row="0" column="0">
              <widget class="Blind" name="widget_2" native="true"/>
             </item>
             <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
-            </item>
-            <item row="0" column="0">
-             <widget class="Selection" name="widget_3" native="true"/>
             </item>
            </layout>
           </widget>
