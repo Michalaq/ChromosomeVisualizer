@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class MaterialRenderer;
+
 class Material : public QWidget
 {
     Q_OBJECT
@@ -21,12 +23,11 @@ protected:
 
 private:
     bool clicked;
+
     QColor color;
+    //...
 
-    QByteArray svg;
-
-    int specular_color_index;
-    int color_index;
+    MaterialRenderer *renderer;
 
 signals:
 

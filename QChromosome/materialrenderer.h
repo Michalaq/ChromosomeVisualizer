@@ -1,0 +1,22 @@
+#ifndef MATERIALRENDERER_H
+#define MATERIALRENDERER_H
+
+#include <QtOpenGL>
+#include <QOpenGLFunctions_3_3_Core>
+
+class MaterialRenderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
+{
+    Q_OBJECT
+public:
+    explicit MaterialRenderer(QWidget *parent = 0);
+
+    void initializeGL();
+
+    void paint(QPainter *painter, QRect bounds);
+
+signals:
+
+public slots:
+};
+
+#endif // MATERIALRENDERER_H

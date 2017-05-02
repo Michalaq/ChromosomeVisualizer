@@ -63,7 +63,8 @@ SOURCES += main.cpp\
     commondata.cpp \
     material.cpp \
     tagsdelegate.cpp \
-    flowlayout.cpp
+    flowlayout.cpp \
+    materialrenderer.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -134,7 +135,8 @@ HEADERS  += mainwindow.h\
     commondata.h \
     material.h \
     tagsdelegate.h \
-    flowlayout.h
+    flowlayout.h \
+    materialrenderer.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

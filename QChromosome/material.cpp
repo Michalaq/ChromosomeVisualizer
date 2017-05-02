@@ -1,19 +1,9 @@
 #include "material.h"
-#include <QFile>
+#include "materialrenderer.h"
 
-Material::Material(QWidget *parent) : QWidget(parent), clicked(false)
+Material::Material(QWidget *parent) : QWidget(parent), clicked(false), renderer(new MaterialRenderer(this))
 {
     setFixedSize(75, 75);
-
-    QFile file(":/sphere");
-    file.open(QFile::ReadOnly | QFile::Text);
-
-    svg = file.readAll();
-
-    file.close();
-
-    specular_color_index = svg.indexOf("#ffffff");
-    color_index = svg.indexOf("#000000");
 }
 
 QColor Material::getColor() const
@@ -24,15 +14,12 @@ QColor Material::getColor() const
 void Material::setColor(QColor c)
 {
     color = c;
-    svg.replace(color_index, 7, color.name().toUtf8());
     update();
 }
 
-#include <QSvgRenderer>
-
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    QSvgRenderer(svg).render(painter, bounds);
+    renderer->paint(painter, bounds);
 }
 
 void Material::mousePressEvent(QMouseEvent *event)
