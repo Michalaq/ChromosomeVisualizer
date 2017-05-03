@@ -228,3 +228,69 @@ const QVector<QModelIndex>& TreeModel::getIndices() const
 {
     return indices;
 }
+
+#include <QJsonArray>
+#include <QJsonObject>
+
+void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonObject &json)
+{
+    const QJsonObject object = json["Object"].toObject();
+
+    auto vie = object.find("Visible in editor");
+
+    if (vie != object.end())
+        model->setData(root.sibling(root.row(), 3), vie.value().toBool() ? On : Off);
+
+    auto vir = object.find("Visible in renderer");
+
+    if (vir != object.end())
+        model->setData(root.sibling(root.row(), 4), vir.value().toBool() ? On : Off);
+
+    const QJsonObject children = json["Children"].toObject();
+
+    for (auto child = children.begin(); child != children.end(); child++)
+        dumpModel3(model, root.child(child.key().toInt(), 0), child.value().toObject());
+}
+
+void TreeModel::read(const QJsonObject &json)
+{
+    dumpModel3(this, index(0, 0), json);
+}
+
+void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
+{
+    QJsonObject object;
+
+    auto vie = (Visibility)root.sibling(root.row(), 3).data().toInt();
+
+    if (vie != Default)
+        object["Visible in editor"] = vie == On;
+
+    auto vir = (Visibility)root.sibling(root.row(), 4).data().toInt();
+
+    if (vir != Default)
+        object["Visible in renderer"] = vir == On;
+
+    if (!object.empty())
+        json["Object"] = object;
+
+    QJsonObject children;
+
+    for (int r = 0; r < model->rowCount(root); r++)
+    {
+        QJsonObject child;
+
+        dumpModel2(model, root.child(r, 0), child);
+
+        if (!child.empty())
+            children[QString::number(r)] = child;
+    }
+
+    if (!children.empty())
+        json["Children"] = children;
+}
+
+void TreeModel::write(QJsonObject &json) const
+{
+    dumpModel2(this, index(0, 0), json);
+}
