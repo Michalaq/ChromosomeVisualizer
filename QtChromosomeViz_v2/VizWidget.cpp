@@ -930,9 +930,6 @@ void VizWidget::read(const QJsonObject& json)
 
         j = map.find("Label");
         if (j != map.end()) { labelRenderer_.addRef((*j).toString()); atomLabels_[id] = (*j).toString(); }
-
-        j = map.find("Visible in editor");
-        if (j != map.end()) visibleBitmap_[id] = (*j).toBool();
     }
 
     needVBOUpdate_ = true;
