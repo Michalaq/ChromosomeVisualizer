@@ -9,7 +9,7 @@
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
 
-static const char * ext = ".chs";
+static const char * ext = ".qcs";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
