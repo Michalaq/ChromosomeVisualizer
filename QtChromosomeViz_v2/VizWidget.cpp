@@ -294,7 +294,7 @@ void VizWidget::initializeGL()
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere.vert");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere.geom");
-    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
+    sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/sphere.frag");
     assert(sphereProgram_.link());
 
     assert(cylinderProgram_.create());

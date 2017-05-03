@@ -7,5 +7,6 @@
         <file>label.vert</file>
         <file>label.frag</file>
         <file>sphere.geom</file>
+        <file>sphere.frag</file>
     </qresource>
 </RCC>
