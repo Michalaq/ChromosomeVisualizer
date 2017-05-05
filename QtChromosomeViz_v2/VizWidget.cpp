@@ -299,7 +299,7 @@ void VizWidget::initializeGL()
 
     assert(cylinderProgram_.create());
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/cylinder.vert");
-    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fragment.frag");
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/cylinder.frag");
     assert(cylinderProgram_.link());
 
     assert(pickingProgram_.create());

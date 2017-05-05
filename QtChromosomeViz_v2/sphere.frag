@@ -31,12 +31,11 @@ void main() {
     vec3 c = cross(a.xyz, b.xyz);
     vec3 d = cross(a.xyw, b.xyw);
     
-    c = vec3(c.xy / c.z, 1.);
-    d = vec3(d.xy / d.z, 0.) - vInstancePosition;
+    d = vec3(d.xy, 0.) - c.z * vInstancePosition;
     
     float p = dot(c, c);
     float q = dot(c, d);
-    float r = dot(d, d) - fInstanceSize * fInstanceSize;
+    float r = dot(d, d) - (c.z * fInstanceSize) * (c.z * fInstanceSize);
     
     float z = (sqrt(q * q - p * r) - q) / p;
     
