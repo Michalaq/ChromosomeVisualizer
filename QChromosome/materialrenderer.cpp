@@ -14,9 +14,9 @@ void MaterialRenderer::initializeGL()
     vao.bind();
 
     assert(shader.create());
-    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/material/material/material.vert");
-    shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/material/material/material.geom");
-    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/material/material/material.frag");
+    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/material/vertex.glsl");
+    shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/material/geometry.glsl");
+    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/material/fragment.glsl");
     assert(shader.link());
 
     shader.bind();

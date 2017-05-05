@@ -1,17 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>sphere.vert</file>
         <file>picking.frag</file>
-        <file>cylinder.vert</file>
         <file>label.vert</file>
         <file>label.frag</file>
-        <file>sphere.geom</file>
-        <file>sphere.frag</file>
-        <file>cylinder.frag</file>
-    </qresource>
-    <qresource prefix="/material">
-        <file>material/material.frag</file>
-        <file>material/material.geom</file>
-        <file>material/material.vert</file>
+        <file>cylinder/fragment.glsl</file>
+        <file>cylinder/vertex.glsl</file>
+        <file>material/fragment.glsl</file>
+        <file>material/geometry.glsl</file>
+        <file>material/vertex.glsl</file>
+        <file>sphere/fragment.glsl</file>
+        <file>sphere/geometry.glsl</file>
+        <file>sphere/vertex.glsl</file>
     </qresource>
 </RCC>
