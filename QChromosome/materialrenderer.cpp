@@ -9,6 +9,17 @@ MaterialRenderer::MaterialRenderer(QWidget *parent) : QOpenGLWidget(parent)
 void MaterialRenderer::initializeGL()
 {
     initializeOpenGLFunctions();
+
+    vao.create();
+    vao.bind();
+
+    assert(shader.create());
+    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/material/material/material.vert");
+    shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/material/material/material.geom");
+    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/material/material/material.frag");
+    assert(shader.link());
+
+    shader.bind();
 }
 
 void MaterialRenderer::paint(QPainter *painter, QRect bounds)
@@ -21,10 +32,9 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds)
 
     assert(fbo.bind());
 
-    //glViewport(0, 0, s, s);
+    glViewport(0, 0, s, s);
 
-    glClearColor(1.f, 0.f, 0.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDrawArrays(GL_POINTS, 0, 1);
 
     assert(fbo.release());
 

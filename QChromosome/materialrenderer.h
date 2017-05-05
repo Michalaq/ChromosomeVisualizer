@@ -17,6 +17,10 @@ public:
 signals:
 
 public slots:
+
+private:
+    QOpenGLVertexArrayObject vao;
+    QOpenGLShaderProgram shader;
 };
 
 #endif // MATERIALRENDERER_H

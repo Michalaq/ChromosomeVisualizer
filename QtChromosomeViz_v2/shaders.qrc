@@ -9,4 +9,9 @@
         <file>sphere.frag</file>
         <file>cylinder.frag</file>
     </qresource>
+    <qresource prefix="/material">
+        <file>material/material.frag</file>
+        <file>material/material.geom</file>
+        <file>material/material.vert</file>
+    </qresource>
 </RCC>
