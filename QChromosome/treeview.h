@@ -51,6 +51,8 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
+    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
 private:
     Visibility cv;
     VisibilityMode vm;

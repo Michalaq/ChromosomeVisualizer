@@ -24,3 +24,17 @@ void NameDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
         qobject_cast<Attributes*>(parent())->updateName();
     }
 }
+
+void NameDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem opt = option;
+
+    if (index.data(Qt::UserRole).toInt())
+    {
+        auto pal = option.palette;
+        pal.setColor(QPalette::Text, Qt::lightGray);
+        opt.palette = pal;
+    }
+
+    QStyledItemDelegate::paint(painter, opt, index);
+}

@@ -194,6 +194,9 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             update();
             break;
         default:
+            if (!index.isValid())
+                clearSelection();
+
             QTreeView::mousePressEvent(event);
         }
     }
@@ -204,6 +207,8 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseMoveEvent(event);
+
     case ResizeSection:
         hv->mouseMoveEvent(event);
 
@@ -237,6 +242,9 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseReleaseEvent(event);
+        break;
+
     case ResizeSection:
         hv->mouseReleaseEvent(event);
         state = NoState;
@@ -256,8 +264,42 @@ void TreeView::paintEvent(QPaintEvent *event)
     QPainter p(viewport());
     p.setPen("#2d2d2d");
 
-    int x = hv->sectionViewportPosition(3);
+    int x;
+    x = hv->sectionViewportPosition(3);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
+    x = hv->sectionViewportPosition(5);
+    p.drawLine(QPoint(x, 0), QPoint(x, height()));
+}
+
+void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QTreeView::selectionChanged(selected, deselected);
+
+    for (auto i : selected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c + 1, Qt::UserRole);
+        } while (c == 0 && (j = j.parent()).isValid());
+    }
+
+    for (auto i : deselected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c - 1, Qt::UserRole);
+        } while (c == 1 && (j = j.parent()).isValid());
+    }
+
+    update();
 }
 
 void TreeView::dragEnterEvent(QDragEnterEvent *event)

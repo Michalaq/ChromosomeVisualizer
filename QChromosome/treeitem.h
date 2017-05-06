@@ -60,6 +60,8 @@ public:
     int row() const;
     TreeItem *parentItem();
 
+    int selected_children_count;
+
 private:
     QList<TreeItem*> m_childItems;
     QList<QVariant> m_itemData;

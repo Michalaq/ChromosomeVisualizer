@@ -87,6 +87,9 @@ public:
     void setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset);
     const QVector<QModelIndex>& getIndices() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     TreeItem *header;
     QVector<QModelIndex> indices;
