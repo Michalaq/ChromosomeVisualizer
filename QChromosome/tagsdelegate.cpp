@@ -13,7 +13,7 @@ void TagsDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     int delta = option.rect.height();
 
-    QRect rect(option.rect.left(), option.rect.top(), delta - 2, delta - 2);
+    QRect rect(option.rect.left() + 2, option.rect.top(), delta - 2, delta - 2);
 
     for (auto i : index.data().toList())
     {
