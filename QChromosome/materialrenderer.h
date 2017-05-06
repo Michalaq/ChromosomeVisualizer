@@ -4,6 +4,8 @@
 #include <QtOpenGL>
 #include <QOpenGLFunctions_3_3_Core>
 
+class Material;
+
 class MaterialRenderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
@@ -12,7 +14,7 @@ public:
 
     void initializeGL();
 
-    void paint(QPainter *painter, QRect bounds);
+    void paint(QPainter *painter, QRect bounds, const Material* material);
 
 signals:
 

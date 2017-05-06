@@ -1,4 +1,5 @@
 #include "materialrenderer.h"
+#include "material.h"
 #include <cassert>
 
 MaterialRenderer::MaterialRenderer(QWidget *parent) : QOpenGLWidget(parent)
@@ -22,7 +23,7 @@ void MaterialRenderer::initializeGL()
     shader.bind();
 }
 
-void MaterialRenderer::paint(QPainter *painter, QRect bounds)
+void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *material)
 {
     makeCurrent();
 
@@ -32,8 +33,14 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds)
 
     assert(fbo.bind());
 
-    glViewport(0, 0, s, s);
+    QColor c;
+    c = material->getColor();
+    shader.setUniformValue("cColor", c.redF(), c.greenF(), c.blueF(), c.alphaF());
+    c = material->getSpecularColor();
+    shader.setUniformValue("cSpecularColor", c.redF(), c.greenF(), c.blueF());
+    shader.setUniformValue("fSpecularExponent", material->getSpecularExponent());
 
+    glViewport(0, 0, s, s);
     glDrawArrays(GL_POINTS, 0, 1);
 
     assert(fbo.release());

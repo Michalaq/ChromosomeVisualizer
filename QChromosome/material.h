@@ -14,6 +14,12 @@ public:
     QColor getColor() const;
     void setColor(QColor c);
 
+    QColor getSpecularColor() const;
+    void setSpecularColor(QColor c);
+
+    float getSpecularExponent() const;
+    void setSpecularExponent(qreal e);
+
     void paint(QPainter *painter, QRect bounds);
 
 protected:

@@ -17,9 +17,29 @@ void Material::setColor(QColor c)
     update();
 }
 
+QColor Material::getSpecularColor() const
+{
+    return Qt::white;
+}
+
+void Material::setSpecularColor(QColor c)
+{
+    ;
+}
+
+float Material::getSpecularExponent() const
+{
+    return 10.;
+}
+
+void Material::setSpecularExponent(qreal e)
+{
+
+}
+
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    renderer->paint(painter, bounds);
+    renderer->paint(painter, bounds, this);
 }
 
 void Material::mousePressEvent(QMouseEvent *event)
