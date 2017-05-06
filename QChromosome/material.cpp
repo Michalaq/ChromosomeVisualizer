@@ -41,6 +41,7 @@ void Material::paint(QPainter *painter, QRect bounds)
 {
     painter->save();
 
+    painter->setClipRect(bounds);
     painter->fillRect(bounds, "#999999");
 
     painter->setRenderHint(QPainter::Antialiasing);

@@ -176,8 +176,9 @@ void TreeView::mousePressEvent(QMouseEvent *event)
     {
         auto index = indexAt(event->pos());
 
-        if (index.column() == 3)
+        switch (index.column())
         {
+        case 3:
             state = ChangeVisibility;
             vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
             cv = Visibility((getVisibility(index, vm) + 1) % 3);
@@ -188,9 +189,13 @@ void TreeView::mousePressEvent(QMouseEvent *event)
                 emit visibilityChanged(vm);
 
             update();
-        }
-        else
+            break;
+        case 5:
+            update();
+            break;
+        default:
             QTreeView::mousePressEvent(event);
+        }
     }
 }
 
