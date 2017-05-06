@@ -2,6 +2,8 @@
 #include "material.h"
 #include <cassert>
 
+MaterialRenderer* MaterialRenderer::instance = Q_NULLPTR;
+
 MaterialRenderer::MaterialRenderer(QScreen *targetScreen) : QOffscreenSurface(targetScreen)
 {
     setFormat(QSurfaceFormat::defaultFormat());
@@ -11,6 +13,11 @@ MaterialRenderer::MaterialRenderer(QScreen *targetScreen) : QOffscreenSurface(ta
     context.create();
 
     initializeGL();
+}
+
+MaterialRenderer* MaterialRenderer::getInstance()
+{
+    return instance ? instance : (instance = new MaterialRenderer);
 }
 
 void MaterialRenderer::initializeGL()

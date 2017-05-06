@@ -9,7 +9,7 @@ class MaterialRenderer : public QOffscreenSurface
 {
     Q_OBJECT
 public:
-    explicit MaterialRenderer(QScreen *targetScreen = Q_NULLPTR);
+    static MaterialRenderer* getInstance();
 
     void initializeGL();
 
@@ -20,9 +20,13 @@ signals:
 public slots:
 
 private:
+    explicit MaterialRenderer(QScreen *targetScreen = Q_NULLPTR);
+
     QOpenGLVertexArrayObject vao;
     QOpenGLShaderProgram shader;
     QOpenGLContext context;
+
+    static MaterialRenderer* instance;
 };
 
 #endif // MATERIALRENDERER_H

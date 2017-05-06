@@ -1,7 +1,7 @@
 #include "material.h"
 #include "materialrenderer.h"
 
-Material::Material(QWidget *parent) : QWidget(parent), clicked(false), renderer(new MaterialRenderer)
+Material::Material(QWidget *parent) : QWidget(parent), clicked(false)
 {
     setFixedSize(75, 75);
 }
@@ -39,7 +39,7 @@ void Material::setSpecularExponent(qreal e)
 
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    renderer->paint(painter, bounds, this);
+    MaterialRenderer::getInstance()->paint(painter, bounds, this);
 }
 
 void Material::mousePressEvent(QMouseEvent *event)

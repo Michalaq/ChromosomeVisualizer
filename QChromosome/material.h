@@ -3,8 +3,6 @@
 
 #include <QWidget>
 
-class MaterialRenderer;
-
 class Material : public QWidget
 {
     Q_OBJECT
@@ -32,8 +30,6 @@ private:
 
     QColor color;
     //...
-
-    MaterialRenderer *renderer;
 
 signals:
 
