@@ -2,14 +2,20 @@
 #include "material.h"
 #include <cassert>
 
-MaterialRenderer::MaterialRenderer(QWidget *parent) : QOpenGLWidget(parent)
+MaterialRenderer::MaterialRenderer(QScreen *targetScreen) : QOffscreenSurface(targetScreen)
 {
+    setFormat(QSurfaceFormat::defaultFormat());
+    create();
 
+    context.setFormat(format());
+    context.create();
+
+    initializeGL();
 }
 
 void MaterialRenderer::initializeGL()
 {
-    initializeOpenGLFunctions();
+    context.makeCurrent(this);
 
     vao.create();
     vao.bind();
@@ -21,11 +27,13 @@ void MaterialRenderer::initializeGL()
     assert(shader.link());
 
     shader.bind();
+
+    context.doneCurrent();
 }
 
 void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *material)
 {
-    makeCurrent();
+    context.makeCurrent(this);
 
     int s = std::min(bounds.width(), bounds.height());
 
@@ -46,4 +54,6 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
     assert(fbo.release());
 
     painter->drawImage(bounds.x() + (bounds.width() - s)/2, bounds.y() + (bounds.height() - s)/2, fbo.toImage());
+
+    context.doneCurrent();
 }

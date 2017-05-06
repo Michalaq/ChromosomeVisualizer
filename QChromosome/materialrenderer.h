@@ -2,15 +2,14 @@
 #define MATERIALRENDERER_H
 
 #include <QtOpenGL>
-#include <QOpenGLFunctions_3_3_Core>
 
 class Material;
 
-class MaterialRenderer : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
+class MaterialRenderer : public QOffscreenSurface
 {
     Q_OBJECT
 public:
-    explicit MaterialRenderer(QWidget *parent = 0);
+    explicit MaterialRenderer(QScreen *targetScreen = Q_NULLPTR);
 
     void initializeGL();
 
@@ -23,6 +22,7 @@ public slots:
 private:
     QOpenGLVertexArrayObject vao;
     QOpenGLShaderProgram shader;
+    QOpenGLContext context;
 };
 
 #endif // MATERIALRENDERER_H

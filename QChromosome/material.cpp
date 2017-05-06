@@ -1,7 +1,7 @@
 #include "material.h"
 #include "materialrenderer.h"
 
-Material::Material(QWidget *parent) : QWidget(parent), clicked(false), renderer(new MaterialRenderer(this))
+Material::Material(QWidget *parent) : QWidget(parent), clicked(false), renderer(new MaterialRenderer)
 {
     setFixedSize(75, 75);
 }
