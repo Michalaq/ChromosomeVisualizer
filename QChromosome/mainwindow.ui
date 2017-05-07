@@ -944,6 +944,7 @@ QLineEdit {
        <widget class="Viewport" name="page_4"/>
        <widget class="CameraSettings" name="page_5"/>
        <widget class="Keyframes" name="page_6"/>
+       <widget class="MaterialAttributes" name="page_7"/>
       </widget>
      </item>
     </layout>
@@ -1596,6 +1597,12 @@ QLineEdit {
    <class>TreeView</class>
    <extends>QTreeView</extends>
    <header>treeview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaterialAttributes</class>
+   <extends>QWidget</extends>
+   <header>materialattributes.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

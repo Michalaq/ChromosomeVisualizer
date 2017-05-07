@@ -227,6 +227,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
 
+    connect(preferences, &Preferences::materialsSelected, [this](const QList<Material*>& selected) {
+        ui->page_7->handleSelection(selected);
+        ui->stackedWidget->setCurrentIndex(6);
+    });
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);

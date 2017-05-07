@@ -64,3 +64,16 @@ Preferences::~Preferences()
 {
     delete ui;
 }
+
+#include <QMouseEvent>
+
+void Preferences::mousePressEvent(QMouseEvent *event)
+{
+    auto* m = qobject_cast<Material*>(childAt(event->pos()));
+
+    if (m)
+        emit materialsSelected(QList<Material*>({m}));
+    else
+        if (childAt(event->pos())->objectName() == "tab_2")
+            emit materialsSelected(QList<Material*>());
+}
