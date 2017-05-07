@@ -24,7 +24,9 @@ protected:
 
 private:
     Ui::MaterialAttributes *ui;
-    QList<Material*> selection;
+    Material* selection;
+
+    QString title;
 };
 
 #endif // MATERIALATTRIBUTES_H

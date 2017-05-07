@@ -1,6 +1,6 @@
 #include "picker.h">
 
-Picker::Picker(QWidget *parent) : ComboBox(parent)
+Picker::Picker(QWidget *parent) : ComboBox(parent), alpha(true)
 {
     addItem(QIcon(), "<< multiple values >>");
 }
