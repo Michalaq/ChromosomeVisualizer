@@ -162,7 +162,7 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m)
     QList<unsigned int> id;
     dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
-    scene->customSelection(id).setColor(m->getColor());
+    scene->customSelection(id).setMaterial(m);
 }
 
 #include <QMouseEvent>
@@ -358,7 +358,7 @@ bool TreeView::event(QEvent *event)
         QList<unsigned int> id;
         dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
-        scene->customSelection(id).setColor(getMaterial(root)->getColor());
+        scene->customSelection(id).setMaterial(getMaterial(root));
     }
 
     return QTreeView::event(event);

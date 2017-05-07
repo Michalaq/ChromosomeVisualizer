@@ -1082,53 +1082,16 @@ AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
 
 }
 
-void AtomSelection::setColor(QColor color)
+void AtomSelection::setMaterial(Material* material)
 {
-    unsigned int code = color.rgb();
+    unsigned int code1 = material->getColor().rgba();
+    unsigned int code2 = material->getSpecularColor().rgba();
+    float exponent = material->getSpecularExponent();
     for (unsigned int i : selectedIndices_)
     {
-        auto & loc = widget_->frameState_[i].color;
-        loc = (loc & 0xFF000000) | code;
-        widget_->changes[i]["Color"] = color;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setAlpha(float alpha)
-{
-    unsigned int code = ((unsigned int)(alpha * 255.f) << 24) & 0xFF000000U;
-    for (unsigned int i : selectedIndices_)
-    {
-        auto & loc = widget_->frameState_[i].color;
-        loc = (loc & 0x00FFFFFF) | code;
-        widget_->changes[i]["Transparency"] = alpha;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setSpecularColor(QColor color)
-{
-    unsigned int code = color.rgb();
-    for (unsigned int i : selectedIndices_)
-    {
-        widget_->frameState_[i].specularColor = code;
-        widget_->changes[i]["Specular color"] = color;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setSpecularExponent(float exponent)
-{
-    for (unsigned int i : selectedIndices_)
-    {
+        widget_->frameState_[i].color = code1;
+        widget_->frameState_[i].specularColor = code2;
         widget_->frameState_[i].specularExponent = exponent;
-        widget_->changes[i]["Shininess exponent"] = exponent;
     }
 
     widget_->needVBOUpdate_ = true;
@@ -1190,62 +1153,6 @@ void AtomSelection::setVisible_(bool visible)
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
-}
-
-QColor AtomSelection::getColor() const
-{
-    if (selectedIndices_.isEmpty())
-        return QColor();
-
-    unsigned int ans = widget_->frameState_[selectedIndices_.front()].color & 0x00FFFFFF;
-
-    for (auto i : selectedIndices_)
-        if ((widget_->frameState_[i].color & 0x00FFFFFF) != ans)
-            return QColor();
-
-    return QColor(ans);
-}
-
-double AtomSelection::getAlpha() const
-{
-    if (selectedIndices_.isEmpty())
-        return std::numeric_limits<double>::lowest();
-
-    unsigned int ans = widget_->frameState_[selectedIndices_.front()].color >> 24;
-
-    for (auto i : selectedIndices_)
-        if ((widget_->frameState_[i].color >> 24) != ans)
-            return std::numeric_limits<double>::lowest();
-
-    return (100. * (255 - ans) / 255);
-}
-
-QColor AtomSelection::getSpecularColor() const
-{
-    if (selectedIndices_.isEmpty())
-        return QColor();
-
-    unsigned int ans = widget_->frameState_[selectedIndices_.front()].specularColor;
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].specularColor != ans)
-            return QColor();
-
-    return QColor(ans);
-}
-
-double AtomSelection::getSpecularExponent() const
-{
-    if (selectedIndices_.isEmpty())
-        return std::numeric_limits<double>::lowest();
-
-    float ans = widget_->frameState_[selectedIndices_.front()].specularExponent;
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].specularExponent != ans)
-            return std::numeric_limits<double>::lowest();
-
-    return ans;
 }
 
 double AtomSelection::getSize() const

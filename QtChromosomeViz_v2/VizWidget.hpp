@@ -51,20 +51,13 @@ class AtomSelection
 public:
     AtomSelection(const AtomSelection &) = default;
 
-    void setColor(QColor color);
-    void setAlpha(float alpha);
-    void setSpecularColor(QColor color);
-    void setSpecularExponent(float exponent);
+    void setMaterial(Material* material);
     void setSize(float size);
     void setName(const QString & name);
     void setLabel(const QString & label);
     void setVisible(Visibility visible, VisibilityMode m);
     void setVisible_(bool visible = true);
 
-    QColor getColor() const;
-    double getAlpha() const;
-    QColor getSpecularColor() const;
-    double getSpecularExponent() const;
     double getSize() const;
     QVariant getName() const;
     QVariant getLabel() const;

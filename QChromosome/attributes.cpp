@@ -41,7 +41,7 @@ Attributes::Attributes(QWidget *parent) :
 
     // set segments
 
-    // set color
+    /*// set color
     connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
         vizWidget_->selectedSpheresObject().setColor(color);
     });
@@ -59,7 +59,7 @@ Attributes::Attributes(QWidget *parent) :
     // set specular color
     connect(ui->widget_2, &Picker::valueChanged, [this] (QColor color) {
         vizWidget_->selectedSpheresObject().setSpecularColor(color);
-    });
+    });*/
 }
 
 Attributes::~Attributes()
@@ -118,7 +118,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
 
     // set segments
 
-    // set color
+    /*// set color
     ui->widget->setValue(selection.getColor(), false);
 
     // set transparency
@@ -128,7 +128,7 @@ void Attributes::handleSelection(const AtomSelection &selection)
     ui->doubleSpinBox_3->setValue(selection.getSpecularExponent(), false);
 
     // set specular color
-    ui->widget_2->setValue(selection.getSpecularColor(), false);
+    ui->widget_2->setValue(selection.getSpecularColor(), false);*/
 
     show();
 }
