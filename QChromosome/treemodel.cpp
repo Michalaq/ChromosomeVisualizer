@@ -60,6 +60,10 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 
             return icon;
         }
+    case Qt::UserRole:
+        return item->selected_children_count;
+    case Qt::UserRole + 1:
+        return item->selected_tag_index;
     }
 
     return QVariant();
@@ -72,7 +76,17 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    return item->setData(index.column(), value);
+    switch (role)
+    {
+    case Qt::UserRole:
+        item->selected_children_count = value.toInt();
+        return true;
+    case Qt::UserRole + 1:
+        item->selected_tag_index = value.toInt();
+        return true;
+    default:
+        return item->setData(index.column(), value);
+    }
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -154,7 +168,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, parent);
+    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -163,9 +177,9 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
+        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
     }
 
     for (auto t : types)
@@ -180,7 +194,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, n, Visibility::Default, Visibility::Default, QVariant()}, header);
 
     unsigned int i = 0;
 
@@ -198,9 +212,9 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, "<<tu będą tagi>>"}, types[t]));
+            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
         }
 
     for (auto t : types)
@@ -219,4 +233,70 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 const QVector<QModelIndex>& TreeModel::getIndices() const
 {
     return indices;
+}
+
+#include <QJsonArray>
+#include <QJsonObject>
+
+void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonObject &json)
+{
+    const QJsonObject object = json["Object"].toObject();
+
+    auto vie = object.find("Visible in editor");
+
+    if (vie != object.end())
+        model->setData(root.sibling(root.row(), 3), vie.value().toBool() ? On : Off);
+
+    auto vir = object.find("Visible in renderer");
+
+    if (vir != object.end())
+        model->setData(root.sibling(root.row(), 4), vir.value().toBool() ? On : Off);
+
+    const QJsonObject children = json["Children"].toObject();
+
+    for (auto child = children.begin(); child != children.end(); child++)
+        dumpModel3(model, root.child(child.key().toInt(), 0), child.value().toObject());
+}
+
+void TreeModel::read(const QJsonObject &json)
+{
+    dumpModel3(this, index(0, 0), json);
+}
+
+void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
+{
+    QJsonObject object;
+
+    auto vie = (Visibility)root.sibling(root.row(), 3).data().toInt();
+
+    if (vie != Default)
+        object["Visible in editor"] = vie == On;
+
+    auto vir = (Visibility)root.sibling(root.row(), 4).data().toInt();
+
+    if (vir != Default)
+        object["Visible in renderer"] = vir == On;
+
+    if (!object.empty())
+        json["Object"] = object;
+
+    QJsonObject children;
+
+    for (int r = 0; r < model->rowCount(root); r++)
+    {
+        QJsonObject child;
+
+        dumpModel2(model, root.child(r, 0), child);
+
+        if (!child.empty())
+            children[QString::number(r)] = child;
+    }
+
+    if (!children.empty())
+        json["Children"] = children;
+}
+
+void TreeModel::write(QJsonObject &json) const
+{
+    dumpModel2(this, index(0, 0), json);
 }

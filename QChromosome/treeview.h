@@ -4,6 +4,8 @@
 #include <QTreeView>
 #include <QHeaderView>
 #include "treemodel.h"
+#include "material.h"
+#include <functional>
 
 class VizWidget;
 
@@ -31,6 +33,9 @@ public:
     Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
     void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
 
+    Material* getMaterial(const QList<unsigned int>& indexes) const;
+    void setMaterial(const QList<unsigned int>& indexes, Material* m);
+
 signals:
     void visibilityChanged(VisibilityMode);
 
@@ -42,25 +47,39 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
 
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
+
+    bool event(QEvent *event);
+
+    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
 private:
     Visibility cv;
     VisibilityMode vm;
 
     VizWidget* scene;
 
-    void dumpModel(const QModelIndex& root, QList<unsigned int>& id, VisibilityMode m);
+    void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
 
     Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
+
+    Material* getMaterial(const QModelIndex& root) const;
+    void setMaterial(const QModelIndex& root, Material* m);
 
     enum TreeViewState
     {
         NoState,
         ResizeSection,
-        ChangeVisibility
+        ChangeVisibility,
+        DragTag
     } state;
 
     HeaderView *hv;
+
+    QModelIndex selectedTag;
 };
 
 class HeaderView : public QHeaderView

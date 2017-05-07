@@ -8,8 +8,9 @@
 #include <QKeyEvent>
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
+#include "tagsdelegate.h"
 
-static const char * ext = ".chs";
+static const char * ext = ".qcs";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -220,14 +221,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
+    ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
 
     ui->plot->followSlider(ui->horizontalSlider);
 
     connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
 
+    connect(preferences, &Preferences::materialsSelected, [this](const QList<Material*>& selected) {
+        ui->page_7->handleSelection(selected);
+        ui->stackedWidget->setCurrentIndex(6);
+    });
+
     newProject();
 
-    ui->treeView->header()->resizeSection(3, 25);
+    ui->treeView->header()->resizeSection(3, 40);
     ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
     ui->treeView->setScene(ui->scene);
@@ -326,8 +333,11 @@ void MainWindow::openProject()
         const QJsonObject camera = project["Camera"].toObject();
         ui->page_5->read(camera);
 
-        const QJsonArray objects = project["Objects"].toArray();
-        simulation->read(objects);
+        const QJsonArray layers = project["Layers"].toArray();
+        simulation->read(layers);
+
+        const QJsonObject structure = project["Structure"].toObject();
+        simulation->getModel()->read(structure);
 
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
@@ -335,13 +345,13 @@ void MainWindow::openProject()
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
 
-        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
-
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         ui->page->read(projectSettings);
 
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
+
+        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
 }
 
@@ -394,9 +404,13 @@ void MainWindow::saveProject()
         ui->page_5->write(camera);
         project["Camera"] = camera;
 
-        QJsonArray objects;
-        simulation->write(objects);
-        project["Objects"] = objects;
+        QJsonArray layers;
+        simulation->write(layers);
+        project["Layers"] = layers;
+
+        QJsonObject structure;
+        simulation->getModel()->write(structure);
+        project["Structure"] = structure;
 
         QJsonObject bar;
         ui->scene->write(bar);

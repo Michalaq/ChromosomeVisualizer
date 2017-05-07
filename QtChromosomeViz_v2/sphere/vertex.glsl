@@ -12,14 +12,14 @@ layout(location = 8) in float fInstanceSize;
 
 uniform mat4 mvp;
 uniform mat4 mv;
-uniform mat3 mvNormal;
 out vec4 gvViewPosition;
-out vec3 gvNormal;
+flat out vec3 gvInstancePosition;
 flat out uint giInstanceID;
 flat out uint giFlags;
-out vec4 gcColor;
-out vec3 gcSpecularColor;
-out float gfSpecularExponent;
+flat out vec4 gcColor;
+flat out vec3 gcSpecularColor;
+flat out float gfSpecularExponent;
+flat out float gfInstanceSize;
 
 vec4 colorFromARGB8(uint color) {
     vec4 ret;
@@ -32,13 +32,13 @@ vec4 colorFromARGB8(uint color) {
 
 void main() {
     vec4 objectSpacePos = vec4(vVertexPosition * fInstanceSize + vInstancePosition.xyz, 1);
-    vec4 pos = mvp * objectSpacePos;
-    gl_Position = pos;
+    gl_Position = mvp * objectSpacePos;
     gvViewPosition = mv * objectSpacePos;
-    gvNormal = normalize(mvNormal * vVertexNormal);
+    gvInstancePosition = vInstancePosition;
     giInstanceID = iAtomID;
     giFlags = iInstanceFlags;
     gcColor = colorFromARGB8(cInstanceColor);
     gcSpecularColor = colorFromARGB8(cInstanceSpecularColor).rgb;
     gfSpecularExponent = fInstanceSpecularExponent;
+    gfInstanceSize = fInstanceSize;
 }

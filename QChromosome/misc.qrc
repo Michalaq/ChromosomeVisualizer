@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file alias="bar">misc/tab_bar.svg</file>
         <file alias="location">icons/location_icon.svg</file>
+        <file alias="sphere">misc/sphere.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
         <file alias="unchecked">misc/checkbox_unchecked.svg</file>

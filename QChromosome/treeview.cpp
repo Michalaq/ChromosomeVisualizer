@@ -8,6 +8,8 @@ TreeView::TreeView(QWidget *parent) :
     setHeader(hv = new HeaderView(header()->orientation(), this));
     hv->setStretchLastSection(true);
     setMouseTracking(true);
+    setAcceptDrops(true);
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 TreeView::~TreeView()
@@ -86,7 +88,17 @@ void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, V
     update();
 }
 
-void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, VisibilityMode m)
+void TreeView::setMaterial(const QList<unsigned int> &indexes, Material *m)
+{
+    auto indices = static_cast<TreeModel*>(model())->getIndices();
+
+    for (unsigned int i : indexes)
+        setMaterial(indices[i], m);
+
+    update();
+}
+
+void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
 {
     bool ok;
     unsigned int i = root.sibling(root.row(), 2).data().toUInt(&ok);
@@ -98,8 +110,8 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, Visib
     {
         auto c = root.child(r, 0);
 
-        if (getVisibility(c, m) == Default)
-            dumpModel(c, id, m);
+        if (functor(c))
+            dumpModel(c, id, functor);
     }
 }
 
@@ -113,7 +125,7 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
     model()->setData(root.sibling(root.row(), m), v, Qt::DisplayRole);
 
     QList<unsigned int> id;
-    dumpModel(root.sibling(root.row(), 0), id, m);
+    dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getVisibility(c, m) == Default; });
 
     auto root_ = root;
 
@@ -122,6 +134,35 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
 
     if (m == Editor)
         scene->customSelection(id).setVisible_(getVisibility(root_, m) == On);
+}
+
+Material* TreeView::getMaterial(const QModelIndex &root) const
+{
+    if (root.isValid())
+    {
+        auto list = model()->data(root.sibling(root.row(), 5)).toList();
+        if (list.isEmpty())
+            return nullptr;
+        else
+            return qobject_cast<Material*>(list.last().value<QObject*>());
+    }
+    else
+        return Material::getDefault();
+}
+
+void TreeView::setMaterial(const QModelIndex &root, Material *m)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    list.append(QVariant::fromValue(m));
+
+    model()->setData(index, list);
+
+    QList<unsigned int> id;
+    dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+    scene->customSelection(id).setMaterial(m);
 }
 
 #include <QMouseEvent>
@@ -135,9 +176,11 @@ void TreeView::mousePressEvent(QMouseEvent *event)
     else
     {
         auto index = indexAt(event->pos());
+        int n;
 
-        if (index.column() == 3)
+        switch (index.column())
         {
+        case 3:
             state = ChangeVisibility;
             vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
             cv = Visibility((getVisibility(index, vm) + 1) % 3);
@@ -148,9 +191,27 @@ void TreeView::mousePressEvent(QMouseEvent *event)
                 emit visibilityChanged(vm);
 
             update();
-        }
-        else
+            break;
+        case 5:
+            state = DragTag;
+
+            n = (event->x() - visualRect(index).x()) / 20;
+
+            model()->setData(selectedTag, -1, Qt::UserRole + 1);
+            model()->setData(selectedTag = index, n < index.data().toList().length() ? n : -1, Qt::UserRole + 1);
+
+            update();
+            break;
+        default:
+            if (!index.isValid())
+            {
+                model()->setData(selectedTag, -1, Qt::UserRole + 1);
+                clearSelection();
+                update();
+            }
+
             QTreeView::mousePressEvent(event);
+        }
     }
 }
 
@@ -159,6 +220,8 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseMoveEvent(event);
+
     case ResizeSection:
         hv->mouseMoveEvent(event);
 
@@ -192,16 +255,19 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
     switch (state)
     {
     case NoState:
+        QTreeView::mouseReleaseEvent(event);
+        break;
+
     case ResizeSection:
         hv->mouseReleaseEvent(event);
-        state = NoState;
         break;
 
     case ChangeVisibility:
-        state = NoState;
         unsetCursor();
         break;
     }
+
+    state = NoState;
 }
 
 void TreeView::paintEvent(QPaintEvent *event)
@@ -211,6 +277,89 @@ void TreeView::paintEvent(QPaintEvent *event)
     QPainter p(viewport());
     p.setPen("#2d2d2d");
 
-    int x = hv->sectionViewportPosition(3);
+    int x;
+    x = hv->sectionViewportPosition(3);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
+    x = hv->sectionViewportPosition(5) - 1;
+    p.drawLine(QPoint(x, 0), QPoint(x, height()));
+}
+
+void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    QTreeView::selectionChanged(selected, deselected);
+
+    for (auto i : selected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c + 1, Qt::UserRole);
+        } while (c == 0 && (j = j.parent()).isValid());
+    }
+
+    for (auto i : deselected.indexes())
+    {
+        auto j = i.parent();
+        int c;
+
+        do
+        {
+            c = j.data(Qt::UserRole).toInt();
+            model()->setData(j, c - 1, Qt::UserRole);
+        } while (c == 1 && (j = j.parent()).isValid());
+    }
+
+    update();
+}
+
+void TreeView::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (qobject_cast<Material*>(event->source()))
+        event->acceptProposedAction();
+}
+
+void TreeView::dragMoveEvent(QDragMoveEvent *event)
+{
+    auto index = indexAt(event->pos());
+
+    if (index.isValid() && index.column() != 5)
+        event->acceptProposedAction();
+    else
+        event->ignore();
+}
+
+void TreeView::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+    setMaterial(indexAt(event->pos()), qobject_cast<Material*>(event->source()));
+    update();
+}
+
+bool TreeView::event(QEvent *event)
+{
+    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
+    {
+        auto list = selectedTag.data().toList();
+        list.removeAt(selectedTag.data(Qt::UserRole + 1).toInt());
+
+        model()->setData(selectedTag, list, Qt::DisplayRole);
+        model()->setData(selectedTag, -1, Qt::UserRole + 1);
+
+        update();
+
+        QModelIndex root = selectedTag;
+
+        while (!getMaterial(root))
+            root = root.parent();
+
+        QList<unsigned int> id;
+        dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+        scene->customSelection(id).setMaterial(getMaterial(root));
+    }
+
+    return QTreeView::event(event);
 }

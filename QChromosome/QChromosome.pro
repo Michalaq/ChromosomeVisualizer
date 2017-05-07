@@ -59,7 +59,13 @@ SOURCES += main.cpp\
     treeview.cpp \
     textedit.cpp \
     preferences.cpp \
-    namedelegate.cpp
+    namedelegate.cpp \
+    commondata.cpp \
+    material.cpp \
+    tagsdelegate.cpp \
+    flowlayout.cpp \
+    materialrenderer.cpp \
+    materialattributes.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -126,7 +132,13 @@ HEADERS  += mainwindow.h\
     treeview.h \
     textedit.h \
     preferences.h \
-    namedelegate.h
+    namedelegate.h \
+    commondata.h \
+    material.h \
+    tagsdelegate.h \
+    flowlayout.h \
+    materialrenderer.h \
+    materialattributes.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -138,7 +150,8 @@ FORMS    += mainwindow.ui \
     camerasettings.ui \
     keyframe.ui \
     defaults.ui \
-    preferences.ui
+    preferences.ui \
+    materialattributes.ui
 
 CONFIG += c++14
 

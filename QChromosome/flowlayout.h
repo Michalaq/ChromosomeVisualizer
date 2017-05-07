@@ -1,12 +1,22 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the examples of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:BSD$
-** You may use this file under the terms of the BSD license as follows:
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** BSD License Usage
+** Alternatively, you may use this file under the terms of the BSD license
+** as follows:
 **
 ** "Redistribution and use in source and binary forms, with or without
 ** modification, are permitted provided that the following conditions are
@@ -38,35 +48,39 @@
 **
 ****************************************************************************/
 
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef FLOWLAYOUT_H
+#define FLOWLAYOUT_H
 
-
-#include <QVariant>
-
-class TreeItem
+#include <QLayout>
+#include <QRect>
+#include <QStyle>
+class FlowLayout : public QLayout
 {
 public:
-    explicit TreeItem(const QVariantList &data = QVariantList(), TreeItem *parentItem = 0);
-    ~TreeItem();
+    explicit FlowLayout(QWidget *parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
+    explicit FlowLayout(int margin = -1, int hSpacing = -1, int vSpacing = -1);
+    ~FlowLayout();
 
-    void appendChild(TreeItem *child);
-
-    TreeItem *child(int row);
-    int childCount() const;
-    int columnCount() const;
-    QVariant data(int column) const;
-    bool setData(int column, const QVariant& data);
-    int row() const;
-    TreeItem *parentItem();
-
-    int selected_children_count = 0;
-    int selected_tag_index = -1;
+    void addItem(QLayoutItem *item) override;
+    int horizontalSpacing() const;
+    int verticalSpacing() const;
+    Qt::Orientations expandingDirections() const override;
+    bool hasHeightForWidth() const override;
+    int heightForWidth(int) const override;
+    int count() const override;
+    QLayoutItem *itemAt(int index) const override;
+    QSize minimumSize() const override;
+    void setGeometry(const QRect &rect) override;
+    QSize sizeHint() const override;
+    QLayoutItem *takeAt(int index) override;
 
 private:
-    QList<TreeItem*> m_childItems;
-    QList<QVariant> m_itemData;
-    TreeItem *m_parentItem;
+    int doLayout(const QRect &rect, bool testOnly) const;
+    int smartSpacing(QStyle::PixelMetric pm) const;
+
+    QList<QLayoutItem *> itemList;
+    int m_hSpace;
+    int m_vSpace;
 };
 
-#endif // TREEITEM_H
+#endif // FLOWLAYOUT_H

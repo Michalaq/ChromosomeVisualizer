@@ -367,16 +367,31 @@ Label {
              <number>0</number>
             </property>
             <item row="0" column="0">
-             <widget class="VizWidget" name="scene"/>
+             <widget class="VizWidget" name="scene">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="Selection" name="widget_3" native="true"/>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item row="0" column="0">
              <widget class="Blind" name="widget_2" native="true"/>
             </item>
             <item row="0" column="0">
              <widget class="Axis" name="widget" native="true"/>
-            </item>
-            <item row="0" column="0">
-             <widget class="Selection" name="widget_3" native="true"/>
             </item>
            </layout>
           </widget>
@@ -858,35 +873,17 @@ Label {
       <widget class="TreeView" name="treeView">
        <property name="styleSheet">
         <string notr="true">QTreeView {
-	color: #808080;
+	color: gray;
 	border: none;
 	background: #1a1a1a;
+	selection-background-color: #1a1a1a;
+	selection-color: white;
 	outline: 0;
 }
 
-QTreeView::item, QTreeView::branch {
+QTreeView::item {
 	height: 20px;
 	border: none;
-	background: #1a1a1a;
-}
-
-QTreeView::item:selected {
-	color: white;
-	background: #2d2d2d;
-}
-
-QTreeView::branch:selected {
-	background: #1a1a1a;
-}
-
-QTreeView::item:first:selected {
-	border-top-left-radius: 3px;
-	border-bottom-left-radius: 3px;
-}
-
-QTreeView::item:last:selected {
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
@@ -899,7 +896,8 @@ QTreeView::branch:open:has-children  {
 
 QLineEdit {
 	color: white;
-	padding: 0px;
+	border: none;
+	padding: 1px;
 }
 </string>
        </property>
@@ -946,6 +944,7 @@ QLineEdit {
        <widget class="Viewport" name="page_4"/>
        <widget class="CameraSettings" name="page_5"/>
        <widget class="Keyframes" name="page_6"/>
+       <widget class="MaterialAttributes" name="page_7"/>
       </widget>
      </item>
     </layout>
@@ -1598,6 +1597,12 @@ QLineEdit {
    <class>TreeView</class>
    <extends>QTreeView</extends>
    <header>treeview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MaterialAttributes</class>
+   <extends>QWidget</extends>
+   <header>materialattributes.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

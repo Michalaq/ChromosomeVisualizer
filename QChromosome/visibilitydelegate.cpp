@@ -18,10 +18,12 @@ void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     Visibility v;
 
     v = Visibility(index.data().toInt());
-    painter->setBrush(v == Default ? Qt::gray : v == On ? Qt::green : Qt::red);
-    painter->drawEllipse(option.rect.center() - QPoint(0, 4), 3, 3);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor(v == Default ? "#767676" : v == On ? "#6df1af" : "#e65b5b"));
+    painter->drawEllipse(QPointF(option.rect.center() - QPoint(0, 4)), 2.5, 2.5);
 
     v = Visibility(index.sibling(index.row(), index.column() + 1).data().toInt());
-    painter->setBrush(v == Default ? Qt::gray : v == On ? Qt::green : Qt::red);
-    painter->drawEllipse(option.rect.center() + QPoint(0, 4), 3, 3);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor(v == Default ? "#767676" : v == On ? "#6df1af" : "#e65b5b"));
+    painter->drawEllipse(QPointF(option.rect.center() + QPoint(0, 4)), 2.5, 2.5);
 }

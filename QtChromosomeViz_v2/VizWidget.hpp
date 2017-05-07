@@ -51,20 +51,13 @@ class AtomSelection
 public:
     AtomSelection(const AtomSelection &) = default;
 
-    void setColor(QColor color);
-    void setAlpha(float alpha);
-    void setSpecularColor(QColor color);
-    void setSpecularExponent(float exponent);
+    void setMaterial(Material* material);
     void setSize(float size);
     void setName(const QString & name);
     void setLabel(const QString & label);
     void setVisible(Visibility visible, VisibilityMode m);
     void setVisible_(bool visible = true);
 
-    QColor getColor() const;
-    double getAlpha() const;
-    QColor getSpecularColor() const;
-    double getSpecularExponent() const;
     double getSize() const;
     QVariant getName() const;
     QVariant getLabel() const;
@@ -174,6 +167,10 @@ protected:
     void setFirstFrame();
     void updateWholeFrameData();
 
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dropEvent(QDropEvent *event);
+
 private:
     QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
@@ -215,8 +212,8 @@ private:
     QVector<bool> selectedBitmap_;
     QVector<bool> visibleBitmap_;
 
-    QPainterPath selectionPath;
-    QList<unsigned int> pickSpheres();
+    QImage *image;
+    void pickSpheres();
 
     QPair<unsigned int, unsigned int> ballQualityParameters_;
 

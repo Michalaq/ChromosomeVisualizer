@@ -144,9 +144,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>General</string>
@@ -228,6 +225,11 @@ QScrollArea &gt; QWidget &gt; QWidget {
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Material library</string>
+      </attribute>
      </widget>
     </widget>
    </item>

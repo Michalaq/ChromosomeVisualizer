@@ -25,6 +25,8 @@ public:
 
 #include <QSettings>
 #include <QStandardPaths>
+#include "flowlayout.h"
+#include "material.h"
 
 Preferences::Preferences(QWidget *parent) :
     QWidget(parent),
@@ -49,9 +51,29 @@ Preferences::Preferences(QWidget *parent) :
     ui->lineEdit_2->setText(settings.value("locallib", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString());
 
     ui->lineEdit_2->setType(FileEdit::FE_Directory);
+
+    FlowLayout *flowLayout = new FlowLayout;
+    flowLayout->addWidget(new Material(Qt::red));
+    flowLayout->addWidget(new Material(Qt::green));
+    flowLayout->addWidget(new Material(Qt::blue));
+
+    ui->tab_2->setLayout(flowLayout);
 }
 
 Preferences::~Preferences()
 {
     delete ui;
+}
+
+#include <QMouseEvent>
+
+void Preferences::mousePressEvent(QMouseEvent *event)
+{
+    auto* m = qobject_cast<Material*>(childAt(event->pos()));
+
+    if (m)
+        emit materialsSelected(QList<Material*>({m}));
+    else
+        if (childAt(event->pos())->objectName() == "tab_2")
+            emit materialsSelected(QList<Material*>());
 }
