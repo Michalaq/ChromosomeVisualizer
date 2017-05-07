@@ -55,13 +55,11 @@ void Material::paint(QPainter *painter, QRect bounds)
     for (int i = -2; i < 3; i++)
         painter->fillRect(QRectF(-size, 2 * i * step, 2 * size, step), "#666666");
 
-    painter->rotate(45.);
+    painter->restore();
 
     size = size * 5 / 6;
 
-    MaterialRenderer::getInstance()->paint(painter, QRect(-size / 2, -size / 2, size, size), this);
-
-    painter->restore();
+    MaterialRenderer::getInstance()->paint(painter, QRect(bounds.x() + (bounds.width() - size) / 2, bounds.y() + (bounds.height() - size) / 2, size, size), this);
 }
 
 void Material::mousePressEvent(QMouseEvent *event)

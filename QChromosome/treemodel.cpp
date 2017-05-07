@@ -62,6 +62,8 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
         }
     case Qt::UserRole:
         return item->selected_children_count;
+    case Qt::UserRole + 1:
+        return item->selected_tag_index;
     }
 
     return QVariant();
@@ -74,13 +76,17 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    if (role == Qt::UserRole)
+    switch (role)
     {
+    case Qt::UserRole:
         item->selected_children_count = value.toInt();
         return true;
+    case Qt::UserRole + 1:
+        item->selected_tag_index = value.toInt();
+        return true;
+    default:
+        return item->setData(index.column(), value);
     }
-
-    return item->setData(index.column(), value);
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const

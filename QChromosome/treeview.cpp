@@ -168,6 +168,8 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m)
 
 void TreeView::mousePressEvent(QMouseEvent *event)
 {
+    int i;
+
     hv->mousePressEvent(event);
 
     if (viewport()->cursor().shape() == Qt::SplitHCursor)
@@ -191,6 +193,9 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             update();
             break;
         case 5:
+            i = (event->x() - visualRect(index).x()) / 22;
+            model()->setData(index, i < index.data().toList().length() ? i : -1, Qt::UserRole + 1);
+
             update();
             break;
         default:
@@ -267,7 +272,7 @@ void TreeView::paintEvent(QPaintEvent *event)
     int x;
     x = hv->sectionViewportPosition(3);
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
-    x = hv->sectionViewportPosition(5);
+    x = hv->sectionViewportPosition(5) - 1;
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }
 

@@ -60,7 +60,8 @@ public:
     int row() const;
     TreeItem *parentItem();
 
-    int selected_children_count;
+    int selected_children_count = 0;
+    int selected_tag_index = -1;
 
 private:
     QList<TreeItem*> m_childItems;
