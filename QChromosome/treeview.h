@@ -71,10 +71,13 @@ private:
     {
         NoState,
         ResizeSection,
-        ChangeVisibility
+        ChangeVisibility,
+        DragTag
     } state;
 
     HeaderView *hv;
+
+    QModelIndex selectedTag;
 };
 
 class HeaderView : public QHeaderView
