@@ -9,6 +9,7 @@ TreeView::TreeView(QWidget *parent) :
     hv->setStretchLastSection(true);
     setMouseTracking(true);
     setAcceptDrops(true);
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 TreeView::~TreeView()
@@ -331,4 +332,27 @@ void TreeView::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
     setMaterial(indexAt(event->pos()), qobject_cast<Material*>(event->source()));
     update();
+}
+
+bool TreeView::event(QEvent *event)
+{
+    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
+    {
+        auto list = selectedTag.data().toList();
+        list.removeAt(selectedTag.data(Qt::UserRole + 1).toInt());
+        model()->setData(selectedTag, list, Qt::DisplayRole);
+        update();
+
+        QModelIndex root = selectedTag;
+
+        while (!getMaterial(root))
+            root = root.parent();
+
+        QList<unsigned int> id;
+        dumpModel(root.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+        scene->customSelection(id).setColor(getMaterial(root)->getColor());
+    }
+
+    return QTreeView::event(event);
 }
