@@ -7,7 +7,7 @@ class Material : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Material(QWidget *parent = 0);
+    explicit Material(QColor c = "#cbcbcb", QColor sc = Qt::white, float se = 20., QWidget *parent = 0);
 
     QColor getColor() const;
     void setColor(QColor c);
@@ -17,6 +17,8 @@ public:
 
     float getSpecularExponent() const;
     void setSpecularExponent(qreal e);
+
+    static Material* getDefault();
 
     void paint(QPainter *painter, QRect bounds);
 
@@ -29,7 +31,10 @@ private:
     bool clicked;
 
     QColor color;
-    //...
+    QColor specularColor;
+    float specularExponent;
+
+    static Material* dm;
 
 signals:
 

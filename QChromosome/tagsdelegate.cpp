@@ -16,7 +16,7 @@ void TagsDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     int i = index.data(Qt::UserRole + 1).toInt();
 
-    if (i != -1 && i < index.data().toList().length())
+    if (i != -1)
     {
         painter->save();
         painter->setRenderHint(QPainter::Antialiasing, false);

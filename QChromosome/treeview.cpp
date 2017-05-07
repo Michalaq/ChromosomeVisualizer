@@ -147,7 +147,7 @@ Material* TreeView::getMaterial(const QModelIndex &root) const
             return qobject_cast<Material*>(list.last().value<QObject*>());
     }
     else
-        return nullptr;
+        return Material::getDefault();
 }
 
 void TreeView::setMaterial(const QModelIndex &root, Material *m)
@@ -176,6 +176,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
     else
     {
         auto index = indexAt(event->pos());
+        int n;
 
         switch (index.column())
         {
@@ -193,8 +194,11 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             break;
         case 5:
             state = DragTag;
+
+            n = (event->x() - visualRect(index).x()) / 20;
+
             model()->setData(selectedTag, -1, Qt::UserRole + 1);
-            model()->setData(selectedTag = index, (event->x() - visualRect(index).x()) / 20, Qt::UserRole + 1);
+            model()->setData(selectedTag = index, n < index.data().toList().length() ? n : -1, Qt::UserRole + 1);
 
             update();
             break;
@@ -340,7 +344,10 @@ bool TreeView::event(QEvent *event)
     {
         auto list = selectedTag.data().toList();
         list.removeAt(selectedTag.data(Qt::UserRole + 1).toInt());
+
         model()->setData(selectedTag, list, Qt::DisplayRole);
+        model()->setData(selectedTag, -1, Qt::UserRole + 1);
+
         update();
 
         QModelIndex root = selectedTag;
@@ -349,7 +356,7 @@ bool TreeView::event(QEvent *event)
             root = root.parent();
 
         QList<unsigned int> id;
-        dumpModel(root.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+        dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
         scene->customSelection(id).setColor(getMaterial(root)->getColor());
     }

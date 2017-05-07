@@ -1,7 +1,14 @@
 #include "material.h"
 #include "materialrenderer.h"
 
-Material::Material(QWidget *parent) : QWidget(parent), clicked(false)
+Material* Material::dm = nullptr;
+
+Material::Material(QColor c, QColor sc, float se, QWidget *parent) :
+    QWidget(parent),
+    clicked(false),
+    color(c),
+    specularColor(sc),
+    specularExponent(se)
 {
     setFixedSize(45, 45);
 }
@@ -19,22 +26,29 @@ void Material::setColor(QColor c)
 
 QColor Material::getSpecularColor() const
 {
-    return Qt::white;
+    return specularColor;
 }
 
 void Material::setSpecularColor(QColor c)
 {
-    ;
+    specularColor = c;
+    update();
 }
 
 float Material::getSpecularExponent() const
 {
-    return 10.;
+    return specularExponent;
 }
 
 void Material::setSpecularExponent(qreal e)
 {
+    specularExponent = e;
+    update();
+}
 
+Material* Material::getDefault()
+{
+    return dm ? dm : (dm = new Material);
 }
 
 void Material::paint(QPainter *painter, QRect bounds)
