@@ -45,6 +45,7 @@
         <file alias="keyframe">icons/keyframe_icon.svg</file>
         <file alias="import">icons/file_import_icon.svg</file>
         <file alias="diskette">icons/diskette_icon.svg</file>
+        <file alias="material">icons/material_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="splash">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>

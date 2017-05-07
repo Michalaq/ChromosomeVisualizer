@@ -17,10 +17,14 @@ public:
     explicit MaterialAttributes(QWidget *parent = 0);
     ~MaterialAttributes();
 
-    void handleSelection(const QList<Material*>& selected);
+    void handleSelection(const QList<Material*> &selected);
+
+protected:
+    void paintEvent(QPaintEvent *event);
 
 private:
     Ui::MaterialAttributes *ui;
+    QList<Material*> selection;
 };
 
 #endif // MATERIALATTRIBUTES_H
