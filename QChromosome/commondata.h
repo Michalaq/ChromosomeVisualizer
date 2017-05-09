@@ -2,6 +2,7 @@
 #define COMMONDATA_H
 
 #include <QtCore>
+#include <functional>
 
 enum Record
 {
