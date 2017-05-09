@@ -67,7 +67,7 @@ private:
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
 
     Material* getMaterial(const QModelIndex& root) const;
-    void setMaterial(const QModelIndex& root, Material* m);
+    void setMaterial(const QModelIndex& root, Material* m, int pos = INT_MAX);
 
     Material* takeSelectedMaterial();
 

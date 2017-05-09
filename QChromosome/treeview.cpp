@@ -150,12 +150,12 @@ Material* TreeView::getMaterial(const QModelIndex &root) const
         return Material::getDefault();
 }
 
-void TreeView::setMaterial(const QModelIndex &root, Material *m)
+void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
 {
     auto index = root.sibling(root.row(), 5);
 
     auto list = index.data().toList();
-    list.append(QVariant::fromValue(m));
+    list.insert(pos, QVariant::fromValue(m));
 
     model()->setData(index, list);
 
@@ -360,7 +360,7 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 {
     auto index = indexAt(event->pos());
 
-    if (index.isValid() && index.column() != 5)
+    if (index.isValid() && (index.column() != 5 || event->source() == this))
         event->acceptProposedAction();
     else
         event->ignore();
@@ -369,7 +369,12 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 void TreeView::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
-    setMaterial(indexAt(event->pos()), event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source()));
+
+    auto index = indexAt(event->pos());
+    int n = (event->pos().x() - visualRect(index).x()) / 20;
+
+    setMaterial(index, event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source()), n);
+
     update();
 }
 
