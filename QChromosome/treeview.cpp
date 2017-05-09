@@ -159,10 +159,13 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
 
     model()->setData(index, list);
 
-    QList<unsigned int> id;
-    dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+    if (pos >= list.length() - 1)
+    {
+        QList<unsigned int> id;
+        dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
-    scene->customSelection(id).setMaterial(m);
+        scene->customSelection(id).setMaterial(m);
+    }
 }
 
 Material* TreeView::takeSelectedMaterial()
@@ -371,9 +374,20 @@ void TreeView::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 
     auto index = indexAt(event->pos());
-    int n = (event->pos().x() - visualRect(index).x()) / 20;
+    index = index.sibling(index.row(), 5);
 
-    setMaterial(index, event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source()), n);
+    auto mat = event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source());
+
+    int n = (event->pos().x() - visualRect(index).x()) / 20;
+    int l = index.data().toList().length();
+
+    if (n < 0) n = 0;
+    if (n > l || event->source() != this) n = l;
+
+    setMaterial(index, mat, n);
+
+    model()->setData(selectedTag, -1, Qt::UserRole + 1);
+    model()->setData(selectedTag = index, n, Qt::UserRole + 1);
 
     update();
 }
