@@ -69,6 +69,8 @@ private:
     Material* getMaterial(const QModelIndex& root) const;
     void setMaterial(const QModelIndex& root, Material* m);
 
+    Material* takeSelectedMaterial();
+
     enum TreeViewState
     {
         NoState,
@@ -80,6 +82,8 @@ private:
     HeaderView *hv;
 
     QModelIndex selectedTag;
+
+    bool clicked = false;
 };
 
 class HeaderView : public QHeaderView

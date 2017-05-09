@@ -165,6 +165,29 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m)
     scene->customSelection(id).setMaterial(m);
 }
 
+Material* TreeView::takeSelectedMaterial()
+{
+    auto list = selectedTag.data().toList();
+    auto ans = (Material*)list.takeAt(selectedTag.data(Qt::UserRole + 1).toInt()).value<QObject*>();
+
+    model()->setData(selectedTag, list, Qt::DisplayRole);
+    model()->setData(selectedTag, -1, Qt::UserRole + 1);
+
+    update();
+
+    QModelIndex root = selectedTag;
+
+    while (!getMaterial(root))
+        root = root.parent();
+
+    QList<unsigned int> id;
+    dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+    scene->customSelection(id).setMaterial(getMaterial(root));
+
+    return ans;
+}
+
 #include <QMouseEvent>
 
 void TreeView::mousePressEvent(QMouseEvent *event)
@@ -194,6 +217,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             break;
         case 5:
             state = DragTag;
+            clicked = true;
 
             n = (event->x() - visualRect(index).x()) / 20;
 
@@ -217,6 +241,8 @@ void TreeView::mousePressEvent(QMouseEvent *event)
 
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
+    auto index = indexAt(event->pos());
+
     switch (state)
     {
     case NoState:
@@ -239,14 +265,23 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
         if (!testAttribute(Qt::WA_SetCursor))
             setCursor(Qt::DragCopyCursor);
 
-        auto index = indexAt(event->pos());
-
         setVisibility(index, cv, vm);
 
         if (selectionModel()->isSelected(index))
             emit visibilityChanged(vm);
 
         update();
+        break;
+
+    case DragTag:
+        if (clicked)
+        {
+            clicked = false;
+
+            QDrag *drag = new QDrag(this);
+            drag->setMimeData(new QMimeData);
+            drag->exec(Qt::MoveAction);
+        }
     }
 }
 
@@ -317,7 +352,7 @@ void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelec
 
 void TreeView::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (qobject_cast<Material*>(event->source()))
+    if (qobject_cast<Material*>(event->source()) || event->source() == this)
         event->acceptProposedAction();
 }
 
@@ -334,32 +369,14 @@ void TreeView::dragMoveEvent(QDragMoveEvent *event)
 void TreeView::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
-    setMaterial(indexAt(event->pos()), qobject_cast<Material*>(event->source()));
+    setMaterial(indexAt(event->pos()), event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source()));
     update();
 }
 
 bool TreeView::event(QEvent *event)
 {
     if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
-    {
-        auto list = selectedTag.data().toList();
-        list.removeAt(selectedTag.data(Qt::UserRole + 1).toInt());
-
-        model()->setData(selectedTag, list, Qt::DisplayRole);
-        model()->setData(selectedTag, -1, Qt::UserRole + 1);
-
-        update();
-
-        QModelIndex root = selectedTag;
-
-        while (!getMaterial(root))
-            root = root.parent();
-
-        QList<unsigned int> id;
-        dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
-
-        scene->customSelection(id).setMaterial(getMaterial(root));
-    }
+        takeSelectedMaterial();
 
     return QTreeView::event(event);
 }
