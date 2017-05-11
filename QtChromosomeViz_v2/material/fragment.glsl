@@ -27,5 +27,5 @@ void main() {
         gl_FragColor = vec4(cDiffuse.rgb + cSpecular.rgb, baseColor.a);
     }
     else
-        gl_FragColor = vec4(0);
+        discard;
 }

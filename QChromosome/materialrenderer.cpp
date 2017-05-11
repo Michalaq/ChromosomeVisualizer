@@ -48,6 +48,9 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
 
     assert(fbo.bind());
 
+    glEnable(GL_BLEND);
+    //by default glBlendFunc(GL_ONE, GL_ZERO);
+
     QColor c;
     c = material->getColor();
     shader.setUniformValue("cColor", c.redF(), c.greenF(), c.blueF(), c.alphaF());
@@ -60,7 +63,10 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
 
     assert(fbo.release());
 
-    painter->drawImage(bounds.x() + (bounds.width() - s)/2, bounds.y() + (bounds.height() - s)/2, fbo.toImage());
+    QImage fboImage(fbo.toImage());
+    QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
+
+    painter->drawImage(bounds.x() + (bounds.width() - s)/2, bounds.y() + (bounds.height() - s)/2, image);
 
     context.doneCurrent();
 }
