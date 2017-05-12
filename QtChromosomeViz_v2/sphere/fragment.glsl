@@ -19,7 +19,7 @@ flat in float fInstanceSize;
 out vec4 ocColor;
 
 void main() {
-    const vec3 cvLightDirection = vec3(0.7, 0.0, 0.7);
+    const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;
     
     // Normal
