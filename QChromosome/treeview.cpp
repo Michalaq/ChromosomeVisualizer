@@ -220,12 +220,16 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             break;
         case 5:
             state = DragTag;
-            clicked = true;
 
             n = (event->x() - visualRect(index).x()) / 20;
 
             model()->setData(selectedTag, -1, Qt::UserRole + 1);
-            model()->setData(selectedTag = index, n < index.data().toList().length() ? n : -1, Qt::UserRole + 1);
+
+            if (n < index.data().toList().length())
+            {
+                clicked = true;
+                model()->setData(selectedTag = index, n, Qt::UserRole + 1);
+            }
 
             update();
             break;
@@ -302,6 +306,10 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
 
     case ChangeVisibility:
         unsetCursor();
+        break;
+
+    case DragTag:
+        clicked = false;
         break;
     }
 
