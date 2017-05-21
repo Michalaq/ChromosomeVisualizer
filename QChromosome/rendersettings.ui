@@ -19,9 +19,261 @@
 }
 
 QWidget {
+	color: lightgrey;
 	font-family: Droid Sans;
 }
-</string>
+
+QTabWidget::pane {
+	background: #1a1a1a;
+	border: none;
+}
+
+QTabBar::tab {
+	background: none;
+	border: none;
+	margin: 0px;
+	color: lightgray;
+	width: 168px;
+	height: 48px;
+	padding-left: 12px;
+}
+
+QTabBar::tab:hover {
+	background: #333333;
+}
+
+QTabBar::tab:selected {
+	background: #214478;
+	color: white;
+}
+
+QPushButton {
+	background: #0044aa;
+	border: none;
+	width: 85px;
+	height: 27px;
+	color: white;
+	icon-size: 24px;
+}
+
+QPushButton:hover {
+	background: #0055d4;
+}
+
+QPushButton:pressed {
+	background: #003380;
+}
+
+MediaControl {
+	background: #b2b2b2;
+}
+
+MediaControl:hover {
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
+}
+
+QAbstractSpinBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QAbstractSpinBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {
+	border: none;
+}
+
+QAbstractSpinBox::up-arrow {
+	image: url(:/arrows/up);
+}
+
+QAbstractSpinBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QScrollArea {
+	border: none;
+}
+
+QScrollArea::corner {
+	background: #1a1a1a;
+}
+
+QScrollArea &gt; QWidget &gt; QWidget {
+	background: #1a1a1a;
+}
+
+QScrollBar:vertical {
+	background: #262626;
+	border: none;
+	width: 12px;
+	margin-top: 12px;
+	margin-bottom: 12px;
+}
+
+QScrollBar::handle:vertical {
+	background: #4d4d4d;
+	width: 12px;
+	min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical {
+	image: url(:/arrows/up);
+}
+
+QScrollBar::down-arrow:vertical {
+	image: url(:/arrows/down);
+}
+
+QScrollBar:horizontal {
+	background: #262626;
+	border: none;
+	height: 12px;
+	margin-left: 12px;
+	margin-right: 12px;
+}
+
+QScrollBar::handle:horizontal {
+	background: #4d4d4d;
+	height: 12px;
+	min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: right;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: left;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal {
+	image: url(:/arrows/left);
+}
+
+QScrollBar::right-arrow:horizontal {
+	image: url(:/arrows/right);
+}
+
+QScrollBar::handle:hover {
+	background: #666666;
+}
+
+QComboBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QComboBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QComboBox QAbstractItemView {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #808080;
+}
+
+QComboBox QAbstractItemView::item {
+	border: none;
+	min-height: 30px;
+	padding-left: 7px;
+}
+
+QComboBox QAbstractItemView::item:selected {
+	background: #0044aa;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/checkbox/unchecked);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/checkbox/checked);
+}
+
+QLineEdit, QTextEdit {
+	background: #2d2d2d;
+	border: 1px solid #2d2d2d;
+	border-radius: 2px;
+	color: gray;
+	height: 28px;
+	selection-background-color: #0066ff;
+	padding-left: 10px;
+}
+
+QTextEdit {
+    padding-top: 3px;
+    padding-left: 8px;
+}
+
+QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
+	border-color: #205375;
+	color: lightgray;
+}
+
+Label {
+	min-width: 125px;
+	min-height: 30px;
+    max-height: 30px;
+}
+
+.section {
+	font: bold;
+	color: #4080d0;
+}
+
+.label {
+	min-height: 30px;
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -112,54 +364,27 @@ padding-left: 10px;
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="FileEdit" name="lineEdit_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">width: 300px;</string>
+        </property>
+        <property name="placeholderText">
+         <string>Find a setting</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QTabWidget" name="TabWidget">
-     <property name="styleSheet">
-      <string notr="true">QTabBar {
-	background: #262626;
-}
-
-QTabBar::tab {
-	background: none;
-	border: none;
-	margin: 0px;
-	color: lightgray;
-	width: 180px;
-	height: 48px;
-	padding: 0 -12px 0 12px;
-}
-
-QTabBar::tab:hover {
-	background: #333333;
-}
-
-QTabBar::tab:selected {
-	background: #214478;
-	color: white;
-}
-
-QTabWidget::pane {
-	background: #1a1a1a;
-	border: none;
-}
-
-QLabel {
-	color: lightgray;
-	min-width: 120px;
-	min-height: 25px;
-}
-
-QScrollArea {
-	border: none;
-}
-
-QScrollArea &gt; QWidget &gt; QWidget {
-	background: #1a1a1a;
-}</string>
-     </property>
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
@@ -673,8 +898,8 @@ QScrollArea &gt; QWidget &gt; QWidget {
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>412</width>
-          <height>282</height>
+          <width>400</width>
+          <height>322</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
