@@ -802,4 +802,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         break;
     }
+
+    QApplication::quit();
 }
