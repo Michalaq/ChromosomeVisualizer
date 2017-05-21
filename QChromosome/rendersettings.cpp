@@ -17,7 +17,7 @@ public:
         painter->rotate(90);
         painter->translate(-_rect.center());
 
-        QProxyStyle::drawItemText(painter, _rect, flags, pal, enabled, text, textRole);
+        QProxyStyle::drawItemText(painter, _rect, Qt::AlignLeft | (flags & ~Qt::AlignHorizontal_Mask), pal, enabled, text, textRole);
 
         painter->restore();
     }

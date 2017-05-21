@@ -16,7 +16,12 @@
   <property name="styleSheet">
    <string notr="true">#RenderSettings {
 	background: #262626;
-}</string>
+}
+
+QWidget {
+	font-family: Droid Sans;
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -65,8 +70,20 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
         <property name="styleSheet">
-         <string notr="true">background: #0066ff;</string>
+         <string notr="true">background: #0063b1;</string>
         </property>
         <property name="icon">
          <iconset resource="icons.qrc">
@@ -74,8 +91,8 @@
         </property>
         <property name="iconSize">
          <size>
-          <width>24</width>
-          <height>24</height>
+          <width>26</width>
+          <height>26</height>
          </size>
         </property>
        </widget>
@@ -83,10 +100,15 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="styleSheet">
-         <string notr="true">color: white;</string>
+         <string notr="true">color: white;
+padding-left: 10px;
+</string>
         </property>
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;RENDER SETTINGS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
         </property>
        </widget>
       </item>
@@ -100,10 +122,6 @@
 	background: #262626;
 }
 
-QWidget {
-    font-family: Droid Sans;
-}
-
 QTabBar::tab {
 	background: none;
 	border: none;
@@ -111,6 +129,7 @@ QTabBar::tab {
 	color: lightgray;
 	width: 180px;
 	height: 48px;
+	padding: 0 -12px 0 12px;
 }
 
 QTabBar::tab:hover {
