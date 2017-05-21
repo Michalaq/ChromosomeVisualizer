@@ -53,7 +53,7 @@ Material* Material::getDefault()
 
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    /*painter->save();
+    painter->save();
 
     painter->setClipRect(bounds);
     painter->fillRect(bounds, "#999999");
@@ -69,9 +69,9 @@ void Material::paint(QPainter *painter, QRect bounds)
     for (int i = -2; i < 3; i++)
         painter->fillRect(QRectF(-size, 2 * i * step, 2 * size, step), "#666666");
 
-    painter->restore();*/
+    painter->restore();
 
-    int size = std::min(bounds.width(), bounds.height()) * 5 / 6;
+    size = size * 5 / 6;
 
     MaterialRenderer::getInstance()->paint(painter, QRect(bounds.x() + (bounds.width() - size) / 2, bounds.y() + (bounds.height() - size) / 2, size, size), this);
 }
