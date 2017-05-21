@@ -51,7 +51,7 @@ class AtomSelection
 public:
     AtomSelection(const AtomSelection &) = default;
 
-    void setMaterial(Material* material);
+    void setMaterial(const Material* material);
     void setSize(float size);
     void setName(const QString & name);
     void setLabel(const QString & label);

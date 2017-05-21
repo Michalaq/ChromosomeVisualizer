@@ -40,6 +40,7 @@ signals:
     void visibilityChanged(VisibilityMode);
 
 public slots:
+    void updateAttributes(const Material* m);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

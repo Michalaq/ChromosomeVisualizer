@@ -14,7 +14,7 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
     connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
         color.setAlpha(selection->getColor().alpha());
         selection->setColor(color);
-        update();
+        emit attributesChanged(selection);
     });
 
     // set transparency
@@ -22,13 +22,13 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
         auto color = selection->getColor();
         color.setAlphaF(1. - val / 100);
         selection->setColor(color);
-        update();
+        emit attributesChanged(selection);
     });
 
     // set specular width
     connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
         selection->setSpecularExponent(val);
-        update();
+        emit attributesChanged(selection);
     });
 
     // set specular color
@@ -36,8 +36,10 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
 
     connect(ui->widget_2, &Picker::valueChanged, [this] (QColor color) {
         selection->setSpecularColor(color);
-        update();
+        emit attributesChanged(selection);
     });
+
+    connect(this, SIGNAL(attributesChanged(const Material*)), this, SLOT(update()));
 }
 
 MaterialAttributes::~MaterialAttributes()

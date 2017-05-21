@@ -22,6 +22,9 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
+signals:
+    void attributesChanged(const Material*);
+
 private:
     Ui::MaterialAttributes *ui;
     Material* selection;

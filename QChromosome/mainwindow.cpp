@@ -232,6 +232,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget->setCurrentIndex(6);
     });
 
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->treeView, SLOT(updateAttributes(const Material*)));
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);

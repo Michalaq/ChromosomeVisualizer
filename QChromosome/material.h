@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include <QWidget>
+#include <QModelIndex>
 
 class Material : public QWidget
 {
@@ -22,6 +23,9 @@ public:
 
     void paint(QPainter *painter, QRect bounds);
 
+    void assign(const QModelIndex& ix, bool b = true);
+    QModelIndexList getAssigned() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -35,6 +39,8 @@ private:
     float specularExponent;
 
     static Material* dm;
+
+    QMap<QModelIndex, int> assignment;
 
 signals:
 

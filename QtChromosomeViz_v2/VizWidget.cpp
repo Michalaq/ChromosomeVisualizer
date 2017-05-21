@@ -1082,7 +1082,7 @@ AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
 
 }
 
-void AtomSelection::setMaterial(Material* material)
+void AtomSelection::setMaterial(const Material *material)
 {
     unsigned int code1 = material->getColor().rgba();
     unsigned int code2 = material->getSpecularColor().rgba();

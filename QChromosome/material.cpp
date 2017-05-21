@@ -76,6 +76,29 @@ void Material::paint(QPainter *painter, QRect bounds)
     MaterialRenderer::getInstance()->paint(painter, QRect(bounds.x() + (bounds.width() - size) / 2, bounds.y() + (bounds.height() - size) / 2, size, size), this);
 }
 
+void Material::assign(const QModelIndex &ix, bool b)
+{
+    auto it = assignment.find(ix);
+
+    if (b)
+    {
+        if (it != assignment.end())
+            it.value()++;
+        else
+            assignment.insert(ix, 1);
+    }
+    else
+    {
+        if (--it.value() == 0)
+            assignment.erase(it);
+    }
+}
+
+QModelIndexList Material::getAssigned() const
+{
+    return assignment.keys();
+}
+
 void Material::mousePressEvent(QMouseEvent *event)
 {
     clicked = true;

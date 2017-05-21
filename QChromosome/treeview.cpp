@@ -166,12 +166,29 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
 
         scene->customSelection(id).setMaterial(m);
     }
+
+    m->assign(index);
+}
+
+void TreeView::updateAttributes(const Material *m)
+{
+    QList<unsigned int> id;
+
+    for (auto root : m->getAssigned())
+        if (root.data().toList().last().value<QObject*>() == m)
+            dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+    scene->customSelection(id).setMaterial(m);
+
+    update();
 }
 
 Material* TreeView::takeSelectedMaterial()
 {
     auto list = selectedTag.data().toList();
     auto ans = (Material*)list.takeAt(selectedTag.data(Qt::UserRole + 1).toInt()).value<QObject*>();
+
+    ans->assign(selectedTag, false);
 
     model()->setData(selectedTag, list, Qt::DisplayRole);
     model()->setData(selectedTag, -1, Qt::UserRole + 1);
