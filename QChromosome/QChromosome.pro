@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     tagsdelegate.cpp \
     flowlayout.cpp \
     materialrenderer.cpp \
-    materialattributes.cpp
+    materialattributes.cpp \
+    materialbrowser.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -138,7 +139,8 @@ HEADERS  += mainwindow.h\
     tagsdelegate.h \
     flowlayout.h \
     materialrenderer.h \
-    materialattributes.h
+    materialattributes.h \
+    materialbrowser.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -151,7 +153,8 @@ FORMS    += mainwindow.ui \
     keyframe.ui \
     defaults.ui \
     preferences.ui \
-    materialattributes.ui
+    materialattributes.ui \
+    materialbrowser.ui
 
 CONFIG += c++14
 

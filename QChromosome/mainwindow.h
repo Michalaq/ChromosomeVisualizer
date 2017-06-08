@@ -8,6 +8,7 @@
 #include "rendersettings.h"
 #include "interpolator.h"
 #include "preferences.h"
+#include "materialbrowser.h"
 
 namespace Ui
 {
@@ -89,6 +90,7 @@ private:
 
     RenderSettings *renderSettings;
     Preferences *preferences;
+    MaterialBrowser *materialBrowser;
 
     int softMinimum;
     int softMaximum;

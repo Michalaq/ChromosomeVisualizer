@@ -794,6 +794,8 @@ Label {
     </widget>
     <addaction name="menuRecently_closed_docks"/>
     <addaction name="menuDockable_dialogs"/>
+    <addaction name="separator"/>
+    <addaction name="actionMaterial_Browser"/>
    </widget>
    <widget class="QMenu" name="menuScene">
     <property name="title">
@@ -1445,6 +1447,11 @@ QLineEdit {
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionMaterial_Browser">
+   <property name="text">
+    <string>Material Browser</string>
    </property>
   </action>
  </widget>

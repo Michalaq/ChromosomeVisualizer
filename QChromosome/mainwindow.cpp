@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup(new QActionGroup(this)),
     renderSettings(new RenderSettings),
     preferences(new Preferences),
+    materialBrowser(new MaterialBrowser),
     ignore(0)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
@@ -87,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
+
+    connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
 
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
