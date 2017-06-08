@@ -17,6 +17,9 @@ public:
     explicit MaterialBrowser(QWidget *parent = 0);
     ~MaterialBrowser();
 
+protected:
+    void paintEvent(QPaintEvent *event);
+
 private:
     Ui::MaterialBrowser *ui;
 

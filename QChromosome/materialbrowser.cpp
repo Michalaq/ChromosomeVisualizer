@@ -34,11 +34,25 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     m->setData(m->index(2), QVariant::fromValue(mat), Qt::DecorationRole);
 
     lv->setModel(m);
+
+    connect(lv, SIGNAL(clicked(QModelIndex)), this, SLOT(update()));
 }
 
 MaterialBrowser::~MaterialBrowser()
 {
     delete ui;
+}
+
+#include <QPainter>
+
+void MaterialBrowser::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    QPainter p(this);
+
+    if (lv->selectionModel()->hasSelection())
+        lv->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, w->geometry().translated(s->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
 }
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const
@@ -136,8 +150,6 @@ MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent
 {
 
 }
-
-#include <QPainter>
 
 void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
