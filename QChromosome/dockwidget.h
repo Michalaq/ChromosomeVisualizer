@@ -17,13 +17,8 @@ public:
 
     QAction* recentlyClosedAction();
 
-    static QAction* noneClosedAction();
-
 private:
     QAction *recclo;
-
-    static QAction* none;
-    static int n;
 
 signals:
 

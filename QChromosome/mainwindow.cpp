@@ -118,10 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                 s
                                             });
 
-    DockWidget::noneClosedAction()->setDisabled(true);
-
     ui->menuRecently_closed_docks->insertActions(0, {
-                                                     DockWidget::noneClosedAction(),
                                                      ui->dockWidget->recentlyClosedAction(),
                                                      ui->dockWidget_2->recentlyClosedAction(),
                                                      ui->dockWidget_3->recentlyClosedAction()
