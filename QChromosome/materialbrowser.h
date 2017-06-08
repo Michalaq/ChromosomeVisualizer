@@ -26,14 +26,15 @@ private:
 };
 
 #include <QAbstractListModel>
+#include "material.h"
 
 class MaterialListModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    MaterialListModel(const QStringList &strings, QObject *parent = 0)
-        : QAbstractListModel(parent), stringList(strings) {}
+    MaterialListModel(QObject *parent = 0)
+        : QAbstractListModel(parent) {}
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
@@ -46,7 +47,23 @@ public:
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
 
 private:
-    QStringList stringList;
+    QStringList names;
+    QList<Material*> materials;
+};
+
+#include <QStyledItemDelegate>
+
+class MaterialDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit MaterialDelegate(QObject *parent = 0);
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+signals:
+
+public slots:
 };
 
 #endif // MATERIALBROWSER_H

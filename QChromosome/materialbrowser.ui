@@ -35,6 +35,7 @@ QListView {
 QListView::item {
 	height: 32px;
 	border: none;
+	padding-left: 17px;
 }
 
 QListView::item:selected {
