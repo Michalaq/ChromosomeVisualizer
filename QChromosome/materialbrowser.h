@@ -2,6 +2,8 @@
 #define MATERIALBROWSER_H
 
 #include <QWidget>
+#include <QSplitter>
+#include <QListView>
 
 namespace Ui {
 class MaterialBrowser;
@@ -17,6 +19,10 @@ public:
 
 private:
     Ui::MaterialBrowser *ui;
+
+    QSplitter *s;
+    QListView *lv;
+    QWidget * w;
 };
 
 #endif // MATERIALBROWSER_H
