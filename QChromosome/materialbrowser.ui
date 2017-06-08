@@ -15,12 +15,31 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#MaterialBrowser {
-	background: #262626;
+	background: #1a1a1a;
 }
 
 QWidget {
 	color: lightgrey;
 	font-family: Droid Sans;
+}
+
+QListView {
+	color: gray;
+	border: none;
+	background: transparent;
+	selection-background-color: #1a1a1a;
+	selection-color: white;
+	outline: 0;
+}
+
+QListView::item {
+	height: 32px;
+	border: none;
+}
+
+QListView::item:selected {
+	background: #007acc;
+	border-radius: 2px;
 }
 
 MediaControl {
@@ -241,7 +260,8 @@ padding-left: 10px;
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">width: 300px;</string>
+         <string notr="true">width: 300px;
+</string>
         </property>
         <property name="placeholderText">
          <string>Find a material</string>
