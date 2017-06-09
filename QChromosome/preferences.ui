@@ -226,11 +226,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Material library</string>
-      </attribute>
-     </widget>
     </widget>
    </item>
   </layout>

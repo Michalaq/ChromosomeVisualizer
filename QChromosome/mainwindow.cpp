@@ -233,6 +233,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->treeView, SLOT(updateAttributes(const Material*)));
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     newProject();
 

@@ -5,7 +5,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MaterialBrowser),
     s(new QSplitter),
-    lv(new QListView),
+    lv(new ListView),
     w(new QWidget)
 {
     ui->setupUi(this);
@@ -57,6 +57,41 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
 
     if (lv->selectionModel()->hasSelection())
         lv->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, w->geometry().translated(s->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
+}
+
+ListView::ListView(QWidget *parent) : QListView(parent)
+{
+
+}
+
+void ListView::mousePressEvent(QMouseEvent *event)
+{
+    clicked = true;
+
+    QListView::mousePressEvent(event);
+}
+
+#include <QMouseEvent>
+#include <QMimeData>
+#include <QDrag>
+
+void ListView::mouseMoveEvent(QMouseEvent *event)
+{
+    if (clicked)
+    {
+        clicked = false;
+
+        auto index = indexAt(event->pos());
+
+        if (index.isValid())
+        {
+            QDrag *drag = new QDrag(index.data(Qt::DecorationRole).value<Material*>());
+            drag->setMimeData(new QMimeData);
+            drag->exec(Qt::CopyAction | Qt::MoveAction);
+        }
+    }
+    else
+        QListView::mouseMoveEvent(event);
 }
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const

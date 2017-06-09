@@ -1084,7 +1084,8 @@ AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
 
 void AtomSelection::setMaterial(const Material *material)
 {
-    unsigned int code1 = material->getColor().rgba();
+    unsigned int alpha = 255 * (1. - material->getTransparency());
+    unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);
     unsigned int code2 = material->getSpecularColor().rgba();
     float exponent = material->getSpecularExponent();
     for (unsigned int i : selectedIndices_)

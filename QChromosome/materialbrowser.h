@@ -11,6 +11,24 @@ namespace Ui {
 class MaterialBrowser;
 }
 
+class ListView : public QListView
+{
+    Q_OBJECT
+public:
+    explicit ListView(QWidget *parent = 0);
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
+private:
+    bool clicked;
+
+signals:
+
+public slots:
+};
+
 class MaterialBrowser : public QWidget
 {
     Q_OBJECT
@@ -29,7 +47,7 @@ private:
     Ui::MaterialBrowser *ui;
 
     QSplitter *s;
-    QListView *lv;
+    ListView *lv;
     QWidget * w;
 };
 
