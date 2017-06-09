@@ -35,7 +35,8 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     lv->setModel(m);
 
     connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
-        emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
+        if (index.isValid())
+            emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
         update();
     });
 
@@ -92,6 +93,14 @@ void ListView::mouseMoveEvent(QMouseEvent *event)
     }
     else
         QListView::mouseMoveEvent(event);
+}
+
+void ListView::keyPressEvent(QKeyEvent *event)
+{
+    QListView::keyPressEvent(event);
+
+    if (event->key() == Qt::Key_Delete)
+        model()->removeRow(currentIndex().row());
 }
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const
