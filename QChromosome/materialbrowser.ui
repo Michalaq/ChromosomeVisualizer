@@ -27,8 +27,6 @@ QListView {
 	color: gray;
 	border: none;
 	background: transparent;
-	selection-background-color: #1a1a1a;
-	selection-color: white;
 	outline: 0;
 }
 
@@ -39,7 +37,8 @@ QListView::item {
 }
 
 QListView::item:selected {
-	background: #007acc;
+	color: white;
+	background: #262626;
 	border-radius: 2px;
 }
 

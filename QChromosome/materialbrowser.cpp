@@ -10,11 +10,12 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    lv->setFocusPolicy(Qt::ClickFocus);
     lv->setStyleSheet("QLineEdit {\
                       color: white;\
                       border: none;\
                       padding: 1px;\
-                      background: #007acc;\
+                      background: #262626;\
                   }");
 
     lv->setItemDelegate(new MaterialDelegate(this));
@@ -149,6 +150,22 @@ bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &pa
 MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
 
+}
+
+#include <QLineEdit>
+
+void MaterialDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+{
+    qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
+    editor->setFocus();
+}
+
+void MaterialDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+{
+    QString name = qobject_cast<QLineEdit*>(editor)->text();
+
+    if (!name.isEmpty())
+        model->setData(index, name);
 }
 
 void MaterialDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
