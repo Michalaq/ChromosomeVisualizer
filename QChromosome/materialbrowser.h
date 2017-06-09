@@ -54,7 +54,6 @@ public:
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
 
 private:
-    QStringList names;
     QList<Material*> materials;
 };
 

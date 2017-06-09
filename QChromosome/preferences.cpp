@@ -53,9 +53,9 @@ Preferences::Preferences(QWidget *parent) :
     ui->lineEdit_2->setType(FileEdit::FE_Directory);
 
     FlowLayout *flowLayout = new FlowLayout;
-    flowLayout->addWidget(new Material(Qt::red));
-    flowLayout->addWidget(new Material(Qt::green));
-    flowLayout->addWidget(new Material(Qt::blue));
+    flowLayout->addWidget(new Material("", Qt::red));
+    flowLayout->addWidget(new Material("", Qt::green));
+    flowLayout->addWidget(new Material("", Qt::blue));
 
     ui->tab_2->setLayout(flowLayout);
 }

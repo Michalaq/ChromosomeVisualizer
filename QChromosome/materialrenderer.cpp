@@ -54,7 +54,7 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
 
     QColor c;
     c = material->getColor();
-    shader.setUniformValue("cColor", c.redF(), c.greenF(), c.blueF(), c.alphaF());
+    shader.setUniformValue("cColor", c.redF(), c.greenF(), c.blueF(), 1. - material->getTransparency());
     c = material->getSpecularColor();
     shader.setUniformValue("cSpecularColor", c.redF(), c.greenF(), c.blueF());
     shader.setUniformValue("fSpecularExponent", material->getSpecularExponent());

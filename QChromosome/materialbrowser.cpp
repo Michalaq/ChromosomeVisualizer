@@ -22,24 +22,24 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 
     s->addWidget(w);
     s->addWidget(lv);
+
     layout()->addWidget(s);
 
     MaterialListModel * m = new MaterialListModel;
-    m->insertRows(0,3);
-    auto * mat = new Material;
-    m->setData(m->index(0), "addf");
-    m->setData(m->index(1), "addf");
-    m->setData(m->index(2), "addf");
-    m->setData(m->index(0), QVariant::fromValue(mat), Qt::DecorationRole);
-    m->setData(m->index(1), QVariant::fromValue(mat), Qt::DecorationRole);
-    m->setData(m->index(2), QVariant::fromValue(mat), Qt::DecorationRole);
+    m->insertRows(0,4);
+    m->setData(m->index(0), QVariant::fromValue(new Material("", Qt::red)), Qt::DecorationRole);
+    m->setData(m->index(1), QVariant::fromValue(new Material("", Qt::green)), Qt::DecorationRole);
+    m->setData(m->index(2), QVariant::fromValue(new Material("", Qt::blue)), Qt::DecorationRole);
+    m->setData(m->index(3), QVariant::fromValue(new Material("", Qt::white, .5)), Qt::DecorationRole);
 
     lv->setModel(m);
 
-    connect(lv, &QListView::clicked, [this](const QModelIndex& index) {
+    connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
         emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
         update();
     });
+
+    lv->setCurrentIndex(m->index(0));
 }
 
 MaterialBrowser::~MaterialBrowser()
@@ -61,7 +61,7 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const
 {
-    return names.count();
+    return materials.count();
 }
 
 QVariant MaterialListModel::data(const QModelIndex &index, int role) const
@@ -69,13 +69,13 @@ QVariant MaterialListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= names.size())
+    if (index.row() >= materials.size())
         return QVariant();
 
     switch (role)
     {
     case Qt::DisplayRole:
-        return names.at(index.row());
+        return materials.at(index.row())->getName();
     case Qt::DecorationRole:
         return QVariant::fromValue(materials.at(index.row()));
     default:
@@ -111,11 +111,11 @@ bool MaterialListModel::setData(const QModelIndex &index,
         switch (role)
         {
         case Qt::EditRole:
-            names.replace(index.row(), value.toString());
+            materials.at(index.row())->setName(value.toString());
             emit dataChanged(index, index);
             return true;
         case Qt::DecorationRole:
-            materials.replace(index.row(), (Material*)value.value<QObject*>());
+            materials.replace(index.row(), value.value<Material*>());
             emit dataChanged(index, index);
             return true;
         default:
@@ -128,10 +128,8 @@ bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &pa
 {
     beginInsertRows(QModelIndex(), position, position+rows-1);
 
-    for (int row = 0; row < rows; ++row) {
-        names.insert(position, "");
+    for (int row = 0; row < rows; ++row)
         materials.insert(position, 0);
-    }
 
     endInsertRows();
     return true;
@@ -141,10 +139,8 @@ bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &pa
 {
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
-    for (int row = 0; row < rows; ++row) {
-        names.removeAt(position);
+    for (int row = 0; row < rows; ++row)
         materials.removeAt(position);
-    }
 
     endRemoveRows();
     return true;

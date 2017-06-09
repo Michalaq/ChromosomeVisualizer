@@ -12,16 +12,13 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
     ui->widget->showAlphaChannel(false);
 
     connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
-        color.setAlpha(selection->getColor().alpha());
         selection->setColor(color);
         emit attributesChanged(selection);
     });
 
     // set transparency
     connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
-        auto color = selection->getColor();
-        color.setAlphaF(1. - val / 100);
-        selection->setColor(color);
+        selection->setTransparency(val / 100);
         emit attributesChanged(selection);
     });
 
@@ -57,13 +54,13 @@ void MaterialAttributes::handleSelection(const QList<Material*> &selected)
     // set title
     title = "Material ";
 
-    ui->label_14->setText(title + "[Mat]");
+    ui->label_14->setText(title + "[" + selection->getName() + "]");
 
     // set color
     ui->widget->setValue(selection->getColor().rgb(), false);
 
     // set transparency
-    ui->doubleSpinBox_2->setValue((1. - selection->getColor().alphaF()) * 100, false);
+    ui->doubleSpinBox_2->setValue(selection->getTransparency() * 100, false);
 
     // set specular width
     ui->doubleSpinBox_3->setValue(selection->getSpecularExponent(), false);
