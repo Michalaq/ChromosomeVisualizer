@@ -42,9 +42,7 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
 {
     context.makeCurrent(this);
 
-    int s = std::min(bounds.width(), bounds.height());
-
-    QOpenGLFramebufferObject fbo(s, s);
+    QOpenGLFramebufferObject fbo(bounds.width(), bounds.height());
 
     assert(fbo.bind());
 
@@ -58,7 +56,7 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
     shader.setUniformValue("cSpecularColor", c.redF(), c.greenF(), c.blueF());
     shader.setUniformValue("fSpecularExponent", material->getSpecularExponent());
 
-    glViewport(0, 0, s, s);
+    glViewport(0, 0, bounds.width(), bounds.height());
     glDrawArrays(GL_POINTS, 0, 1);
 
     assert(fbo.release());
@@ -66,7 +64,7 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
     QImage fboImage(fbo.toImage());
     QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
 
-    painter->drawImage(bounds.x() + (bounds.width() - s)/2, bounds.y() + (bounds.height() - s)/2, image);
+    painter->drawImage(bounds.topLeft(), image);
 
     context.doneCurrent();
 }
