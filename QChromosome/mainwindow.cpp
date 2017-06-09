@@ -797,11 +797,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
         saveProject();
     case QMessageBox::No:
         event->accept();
-        break;
+        QApplication::quit();;
     case QMessageBox::Cancel:
         event->ignore();
         break;
     }
-
-    QApplication::quit();
 }
