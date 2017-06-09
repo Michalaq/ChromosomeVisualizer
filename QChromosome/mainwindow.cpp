@@ -227,7 +227,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
 
-    connect(preferences, &Preferences::materialsSelected, [this](const QList<Material*>& selected) {
+    connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
         ui->stackedWidget->setCurrentIndex(6);
     });

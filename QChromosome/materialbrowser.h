@@ -5,6 +5,8 @@
 #include <QSplitter>
 #include <QListView>
 
+#include "material.h"
+
 namespace Ui {
 class MaterialBrowser;
 }
@@ -20,6 +22,9 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
+signals:
+    void materialsSelected(const QList<Material*>&);
+
 private:
     Ui::MaterialBrowser *ui;
 
@@ -29,7 +34,6 @@ private:
 };
 
 #include <QAbstractListModel>
-#include "material.h"
 
 class MaterialListModel : public QAbstractListModel
 {

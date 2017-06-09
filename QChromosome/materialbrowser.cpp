@@ -36,7 +36,10 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 
     lv->setModel(m);
 
-    connect(lv, SIGNAL(clicked(QModelIndex)), this, SLOT(update()));
+    connect(lv, &QListView::clicked, [this](const QModelIndex& index) {
+        emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
+        update();
+    });
 }
 
 MaterialBrowser::~MaterialBrowser()
