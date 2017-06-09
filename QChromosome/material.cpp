@@ -53,6 +53,9 @@ Material* Material::getDefault()
 
 void Material::paint(QPainter *painter, QRect bounds)
 {
+    if (!(bounds.width() > 0 && bounds.height() > 0))
+        return;
+
     painter->save();
 
     int size = std::min(bounds.width(), bounds.height());

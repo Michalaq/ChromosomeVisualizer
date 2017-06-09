@@ -40,6 +40,9 @@ void MaterialRenderer::initializeGL()
 
 void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *material)
 {
+    if (!(bounds.width() > 0 && bounds.height() > 0))
+        return;
+
     context.makeCurrent(this);
 
     QOpenGLFramebufferObject fbo(bounds.width(), bounds.height());
