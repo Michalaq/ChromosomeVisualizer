@@ -3,7 +3,7 @@
 #include "material.h"
 
 MaterialBrowser::MaterialBrowser(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::MaterialBrowser)
 {
     ui->setupUi(this);

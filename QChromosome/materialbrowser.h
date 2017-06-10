@@ -26,11 +26,11 @@ signals:
 public slots:
 };
 
-#include <QWidget>
+#include <QMainWindow>
 
 class Material;
 
-class MaterialBrowser : public QWidget
+class MaterialBrowser : public QMainWindow
 {
     Q_OBJECT
 
