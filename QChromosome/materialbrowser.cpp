@@ -53,14 +53,18 @@ ListView::ListView(QWidget *parent) : QListView(parent)
 
 }
 
+#include <QMouseEvent>
+
 void ListView::mousePressEvent(QMouseEvent *event)
 {
-    clicked = true;
+    if (indexAt(event->pos()).isValid())
+        clicked = true;
+    else
+        setCurrentIndex(QModelIndex());
 
     QListView::mousePressEvent(event);
 }
 
-#include <QMouseEvent>
 #include <QMimeData>
 #include <QDrag>
 
