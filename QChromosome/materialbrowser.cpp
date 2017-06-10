@@ -37,6 +37,8 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
         if (index.isValid())
             emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
+        else
+            emit materialsSelected({});
         update();
     });
 
@@ -100,7 +102,10 @@ void ListView::keyPressEvent(QKeyEvent *event)
     QListView::keyPressEvent(event);
 
     if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
+    {
+        currentIndex().data(Qt::DecorationRole).value<Material*>()->deleteLater();
         model()->removeRow(currentIndex().row());
+    }
 }
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const
