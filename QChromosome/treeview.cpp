@@ -7,9 +7,6 @@ TreeView::TreeView(QWidget *parent) :
 {
     setHeader(hv = new HeaderView(header()->orientation(), this));
     hv->setStretchLastSection(true);
-    setMouseTracking(true);
-    setAcceptDrops(true);
-    setFocusPolicy(Qt::ClickFocus);
 }
 
 TreeView::~TreeView()

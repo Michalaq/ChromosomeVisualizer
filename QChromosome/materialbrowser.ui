@@ -23,25 +23,6 @@ QWidget {
 	font-family: Droid Sans;
 }
 
-QListView {
-	color: gray;
-	border: none;
-	background: transparent;
-	outline: 0;
-}
-
-QListView::item {
-	height: 32px;
-	border: none;
-	padding-left: 17px;
-}
-
-QListView::item:selected {
-	color: white;
-	background: #262626;
-	border-radius: 2px;
-}
-
 MediaControl {
 	background: #b2b2b2;
 }
@@ -271,6 +252,47 @@ padding-left: 10px;
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="widget_3" native="true"/>
+     <widget class="ListView" name="listView">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QListView {
+	color: gray;
+	border: none;
+	background: transparent;
+	outline: 0;
+}
+
+QListView::item {
+	height: 32px;
+	border: none;
+	padding-left: 17px;
+}
+
+QListView::item:selected {
+	color: white;
+	background: #262626;
+	border-radius: 2px;
+}
+
+QLineEdit {
+	background: #262626;
+	color: white;
+	border: none;
+	padding: 1px;
+}
+</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -283,6 +305,11 @@ padding-left: 10px;
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ListView</class>
+   <extends>QListView</extends>
+   <header>materialbrowser.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -1,29 +1,14 @@
 #include "materialbrowser.h"
 #include "ui_materialbrowser.h"
+#include "material.h"
 
 MaterialBrowser::MaterialBrowser(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MaterialBrowser),
-    s(new QSplitter),
-    lv(new ListView),
-    w(new QWidget)
+    ui(new Ui::MaterialBrowser)
 {
     ui->setupUi(this);
 
-    lv->setFocusPolicy(Qt::ClickFocus);
-    lv->setStyleSheet("QLineEdit {\
-                      color: white;\
-                      border: none;\
-                      padding: 1px;\
-                      background: #262626;\
-                  }");
-
-    lv->setItemDelegate(new MaterialDelegate(this));
-
-    s->addWidget(w);
-    s->addWidget(lv);
-
-    layout()->addWidget(s);
+    ui->listView->setItemDelegate(new MaterialDelegate(this));
 
     MaterialListModel * m = new MaterialListModel;
     m->insertRows(0,4);
@@ -32,17 +17,15 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     m->setData(m->index(2), QVariant::fromValue(new Material("", Qt::blue)), Qt::DecorationRole);
     m->setData(m->index(3), QVariant::fromValue(new Material("", Qt::white, .5)), Qt::DecorationRole);
 
-    lv->setModel(m);
+    ui->listView->setModel(m);
 
-    connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
+    connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
         if (index.isValid())
             emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
         else
             emit materialsSelected({});
         update();
     });
-
-    lv->setCurrentIndex(m->index(0));
 }
 
 MaterialBrowser::~MaterialBrowser()
@@ -58,8 +41,8 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
 
     QPainter p(this);
 
-    if (lv->selectionModel()->hasSelection())
-        lv->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, w->geometry().translated(s->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
+    if (ui->listView->selectionModel()->hasSelection())
+        ui->listView->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, ui->widget_3->geometry().translated(ui->splitter->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
 }
 
 ListView::ListView(QWidget *parent) : QListView(parent)

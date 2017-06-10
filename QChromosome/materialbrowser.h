@@ -1,11 +1,7 @@
 #ifndef MATERIALBROWSER_H
 #define MATERIALBROWSER_H
 
-#include <QWidget>
-#include <QSplitter>
 #include <QListView>
-
-#include "material.h"
 
 namespace Ui {
 class MaterialBrowser;
@@ -30,6 +26,10 @@ signals:
 public slots:
 };
 
+#include <QWidget>
+
+class Material;
+
 class MaterialBrowser : public QWidget
 {
     Q_OBJECT
@@ -46,10 +46,6 @@ signals:
 
 private:
     Ui::MaterialBrowser *ui;
-
-    QSplitter *s;
-    ListView *lv;
-    QWidget * w;
 };
 
 #include <QAbstractListModel>
