@@ -22,6 +22,13 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
             emit materialsSelected({});
         update();
     });
+
+    connect(ui->actionNew_Material, &QAction::triggered, [=]() {
+        m->prepend(new Material);
+        ui->listView->setCurrentIndex(m->index(0));
+    });
+
+    connect(ui->actionClose_Manager, SIGNAL(triggered(bool)), this, SLOT(close()));
 }
 
 MaterialBrowser::~MaterialBrowser()
