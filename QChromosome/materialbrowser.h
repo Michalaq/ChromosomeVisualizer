@@ -55,8 +55,8 @@ class MaterialListModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-    MaterialListModel(QObject *parent = 0)
-        : QAbstractListModel(parent) {}
+    explicit MaterialListModel(QObject *parent = 0);
+    ~MaterialListModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
@@ -67,6 +67,9 @@ public:
 
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
+
+    void prepend(Material *m);
+    void prepend(const QList<Material*>& m);
 
 private:
     QList<Material*> materials;

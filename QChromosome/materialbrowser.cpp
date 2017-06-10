@@ -10,12 +10,8 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 
     ui->listView->setItemDelegate(new MaterialDelegate(this));
 
-    MaterialListModel * m = new MaterialListModel;
-    m->insertRows(0,4);
-    m->setData(m->index(0), QVariant::fromValue(new Material("", Qt::red)), Qt::DecorationRole);
-    m->setData(m->index(1), QVariant::fromValue(new Material("", Qt::green)), Qt::DecorationRole);
-    m->setData(m->index(2), QVariant::fromValue(new Material("", Qt::blue)), Qt::DecorationRole);
-    m->setData(m->index(3), QVariant::fromValue(new Material("", Qt::white, .5)), Qt::DecorationRole);
+    auto * m = new MaterialListModel;
+    m->prepend({new Material("", Qt::red), new Material("", Qt::green), new Material("", Qt::blue), new Material("", Qt::white, .5)});
 
     ui->listView->setModel(m);
 
@@ -85,10 +81,18 @@ void ListView::keyPressEvent(QKeyEvent *event)
     QListView::keyPressEvent(event);
 
     if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
-    {
-        currentIndex().data(Qt::DecorationRole).value<Material*>()->deleteLater();
         model()->removeRow(currentIndex().row());
-    }
+}
+
+MaterialListModel::MaterialListModel(QObject *parent) : QAbstractListModel(parent)
+{
+
+}
+
+MaterialListModel::~MaterialListModel()
+{
+    for (auto i : materials)
+        delete i;
 }
 
 int MaterialListModel::rowCount(const QModelIndex &parent) const
@@ -172,10 +176,29 @@ bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &pa
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
     for (int row = 0; row < rows; ++row)
-        materials.removeAt(position);
+        materials.takeAt(position)->deleteLater();
 
     endRemoveRows();
     return true;
+}
+
+void MaterialListModel::prepend(Material *m)
+{
+    beginInsertRows(QModelIndex(), 0, 0);
+
+    materials.prepend(m);
+
+    endInsertRows();
+}
+
+void MaterialListModel::prepend(const QList<Material *> &m)
+{
+    beginInsertRows(QModelIndex(), 0, m.count() - 1);
+
+    for (auto i : m)
+        materials.prepend(i);
+
+    endInsertRows();
 }
 
 MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent)
