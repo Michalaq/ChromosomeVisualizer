@@ -50,7 +50,6 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
     assert(fbo.bind());
 
     glEnable(GL_BLEND);
-    //by default glBlendFunc(GL_ONE, GL_ZERO);
 
     QColor c;
     c = material->getColor();
@@ -64,10 +63,7 @@ void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *ma
 
     assert(fbo.release());
 
-    QImage fboImage(fbo.toImage());
-    QImage image(fboImage.constBits(), fboImage.width(), fboImage.height(), QImage::Format_ARGB32);
-
-    painter->drawImage(bounds.topLeft(), image);
+    painter->drawImage(bounds.topLeft(), fbo.toImage());
 
     context.doneCurrent();
 }

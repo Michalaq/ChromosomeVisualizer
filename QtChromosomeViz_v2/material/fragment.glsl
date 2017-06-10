@@ -6,8 +6,14 @@ uniform float fSpecularExponent;
 
 in vec2 position;
 
+const float r = 5. / 6.;
+const float r2 = r * r;
+
 void main() {
-    if (dot(position, position) < 1.)
+    float stripePhase = floor((position.x - position.y) * 2.5);
+    vec3 background = (int(stripePhase) & 1) == 0 ? vec3(.4, .4, .4) : vec3(.6, .6, .6);
+    
+    if (dot(position, position) < r2)
     {
         const vec3 cvLightDirection = normalize(vec3(-1., 1., -2.));
         vec4 baseColor = cColor;
@@ -17,7 +23,7 @@ void main() {
         for (int i = 0; i < 2; i++)
         {
             // Normal
-            vec3 vFixedNormal = vec3(position.xy, sqrt(1. - dot(position.xy, position.xy)) * (2 * i - 1));
+            vec3 vFixedNormal = vec3(position.xy, sqrt(r2 - dot(position.xy, position.xy)) * (2 * i - 1)) * (1 - 2 * i) / r;
 
             // Diffuse
             float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
@@ -31,8 +37,8 @@ void main() {
             ocColor[i] = cDiffuse.rgb + cSpecular.rgb;
         }
         
-        gl_FragColor = vec4((ocColor[0] + (1. - baseColor.a) * ocColor[1]) / (2. - baseColor.a), baseColor.a * (2. - baseColor.a));
+        gl_FragColor = vec4(mix(mix(ocColor[0], ocColor[1], (1. - baseColor.a) / (2. - baseColor.a)), background, (1. - baseColor.a) * (1. - baseColor.a)), 1);
     }
     else
-        discard;
+        gl_FragColor = vec4(background, 1);
 }

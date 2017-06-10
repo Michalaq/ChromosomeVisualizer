@@ -99,7 +99,7 @@ void ListView::keyPressEvent(QKeyEvent *event)
 {
     QListView::keyPressEvent(event);
 
-    if (event->key() == Qt::Key_Delete)
+    if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
         model()->removeRow(currentIndex().row());
 }
 

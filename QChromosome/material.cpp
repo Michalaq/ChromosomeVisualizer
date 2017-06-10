@@ -86,35 +86,12 @@ void Material::paint(QPainter *painter, QRect bounds)
     if (!(bounds.width() > 0 && bounds.height() > 0))
         return;
 
-    painter->save();
-
     int size = std::min(bounds.width(), bounds.height());
-    QPoint p = bounds.center();
 
-    bounds = QRect(0, 0, size, size);
-    bounds.moveCenter(p);
+    QRect b(0, 0, size, size);
+    b.moveCenter(bounds.center());
 
-    painter->setClipRect(bounds);
-    painter->fillRect(bounds, "#999999");
-
-    painter->setRenderHint(QPainter::Antialiasing);
-
-    painter->translate(bounds.center());
-    painter->rotate(-45.);
-
-    qreal step = (qreal)size / 5 / sqrt(2);
-
-    for (int i = -2; i < 3; i++)
-        painter->fillRect(QRectF(-size, 2 * i * step, 2 * size, step), "#666666");
-
-    painter->restore();
-
-    size = size * 5 / 6;
-
-    bounds = QRect(0, 0, size, size);
-    bounds.moveCenter(p);
-
-    MaterialRenderer::getInstance()->paint(painter, bounds, this);
+    MaterialRenderer::getInstance()->paint(painter, b, this);
 }
 
 void Material::assign(const QModelIndex &ix, bool b)
