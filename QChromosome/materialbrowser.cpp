@@ -66,7 +66,7 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
     QPainter p(this);
 
     if (ui->listView->selectionModel()->hasSelection())
-        ui->listView->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, ui->widget_3->geometry().translated(ui->splitter->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
+        ui->listView->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, ui->widget_3->geometry().translated(ui->splitter->pos() + ui->centralwidget->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
 }
 
 ListView::ListView(QWidget *parent) : QListView(parent)
