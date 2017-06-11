@@ -207,30 +207,12 @@ bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &pa
     return true;
 }
 
-#include <QRegularExpression>
-
 bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &parent)
 {
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
     for (int row = 0; row < rows; ++row)
-    {
-        auto * m = materials.takeAt(position);
-
-        QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
-        QRegularExpressionMatch match = re.match(m->getName());
-
-        if (match.hasMatch())
-        {
-            auto n = match.captured("label").toInt();
-            auto i = used.find(n);
-
-            if (--i.value() == 0)
-                used.erase(i);
-        }
-
-        m->deleteLater();
-    }
+        materials.takeAt(position)->deleteLater();
 
     endRemoveRows();
     return true;
@@ -241,20 +223,6 @@ void MaterialListModel::prepend(Material *m)
     beginInsertRows(QModelIndex(), 0, 0);
 
     materials.prepend(m);
-
-    QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
-    QRegularExpressionMatch match = re.match(m->getName());
-
-    if (match.hasMatch())
-    {
-        auto n = match.captured("label").toInt();
-        auto i = used.find(n);
-
-        if (i != used.end())
-            i.value()++;
-        else
-            used.insert(n, 1);
-    }
 
     endInsertRows();
 }
@@ -282,11 +250,26 @@ void MaterialListModel::write(QJsonArray &json) const
     }
 }
 
+#include <QRegularExpression>
+#include <set>
+
 QString MaterialListModel::next_name()
 {
+    static const QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
+
+    std::set<int> used;
+
+    for (auto * m : materials)
+    {
+        QRegularExpressionMatch match = re.match(m->getName());
+
+        if (match.hasMatch())
+            used.insert(match.captured("label").toInt());
+    }
+
     int i = 0;
 
-    for (auto j = used.keyBegin(); j != used.keyEnd() && i == *j; i++, j++);
+    for (auto j = used.begin(); j != used.end() && i == *j; i++, j++);
 
     return i ? QString("Mat.") + QString::number(i) : "Mat";
 }

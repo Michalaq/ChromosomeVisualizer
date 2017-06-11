@@ -80,7 +80,6 @@ public:
 
 private:
     QList<Material*> materials;
-    QMap<int, int> used;
 };
 
 #include <QStyledItemDelegate>
