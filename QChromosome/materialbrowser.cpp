@@ -42,6 +42,7 @@ void MaterialBrowser::read(const QJsonArray& json)
     m->read(json);
 
     ui->listView->setModel(m);
+    ui->listView->setCurrentIndex(QModelIndex());
 
     connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
         if (index.isValid())

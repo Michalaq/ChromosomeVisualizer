@@ -309,6 +309,8 @@ void MainWindow::newProject()
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
+
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 #include <QStandardPaths>
