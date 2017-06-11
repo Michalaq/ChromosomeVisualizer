@@ -1,25 +1,18 @@
 #include "material.h"
 #include "materialrenderer.h"
 
-int Material::id = 0;
-
 Material* Material::dm = nullptr;
 
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
     QWidget(parent),
     clicked(false),
+    name(n),
     color(c),
     transparency(t),
     specularColor(sc),
     specularExponent(se)
 {
     setFixedSize(45, 45);
-
-    if (n.isEmpty())
-        n = id ? QString("Mat.%1").arg(QString::number(id)) : "Mat";
-
-    name = n;
-    id++;
 }
 
 QString Material::getName() const

@@ -72,13 +72,15 @@ public:
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex());
 
     void prepend(Material *m);
-    void prepend(const QList<Material*>& m);
 
     void read(const QJsonArray &json);
     void write(QJsonArray &json) const;
 
+    QString next_name();
+
 private:
     QList<Material*> materials;
+    QMap<int, int> used;
 };
 
 #include <QStyledItemDelegate>

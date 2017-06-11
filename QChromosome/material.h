@@ -8,7 +8,7 @@ class Material : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Material(QString n = "", QColor c = "#cbcbcb", float t = 0., QColor sc = Qt::white, float se = 10., QWidget *parent = 0);
+    explicit Material(QString n = "Mat", QColor c = "#cbcbcb", float t = 0., QColor sc = Qt::white, float se = 10., QWidget *parent = 0);
 
     QString getName() const;
     void setName(QString n);
@@ -42,8 +42,6 @@ protected:
 
 private:
     bool clicked;
-
-    static int id;
 
     QString name;
     QColor color;

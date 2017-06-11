@@ -11,7 +11,10 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     ui->listView->setItemDelegate(new MaterialDelegate(this));
 
     auto * m = new MaterialListModel;
-    m->prepend({new Material("", Qt::red), new Material("", Qt::green), new Material("", Qt::blue), new Material("", Qt::white, .5)});
+    m->prepend(new Material(m->next_name(), Qt::red));
+    m->prepend(new Material(m->next_name(), Qt::green));
+    m->prepend(new Material(m->next_name(), Qt::blue));
+    m->prepend(new Material(m->next_name(), Qt::white, .5));
 
     ui->listView->setModel(m);
 
@@ -24,7 +27,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     });
 
     connect(ui->actionNew_Material, &QAction::triggered, [=]() {
-        m->prepend(new Material);
+        m->prepend(new Material(m->next_name()));
         ui->listView->setCurrentIndex(m->index(0));
     });
 
@@ -204,12 +207,30 @@ bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &pa
     return true;
 }
 
+#include <QRegularExpression>
+
 bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &parent)
 {
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
     for (int row = 0; row < rows; ++row)
-        materials.takeAt(position)->deleteLater();
+    {
+        auto * m = materials.takeAt(position);
+
+        QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
+        QRegularExpressionMatch match = re.match(m->getName());
+
+        if (match.hasMatch())
+        {
+            auto n = match.captured("label").toInt();
+            auto i = used.find(n);
+
+            if (--i.value() == 0)
+                used.erase(i);
+        }
+
+        m->deleteLater();
+    }
 
     endRemoveRows();
     return true;
@@ -221,15 +242,19 @@ void MaterialListModel::prepend(Material *m)
 
     materials.prepend(m);
 
-    endInsertRows();
-}
+    QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
+    QRegularExpressionMatch match = re.match(m->getName());
 
-void MaterialListModel::prepend(const QList<Material *> &m)
-{
-    beginInsertRows(QModelIndex(), 0, m.count() - 1);
+    if (match.hasMatch())
+    {
+        auto n = match.captured("label").toInt();
+        auto i = used.find(n);
 
-    for (auto i : m)
-        materials.prepend(i);
+        if (i != used.end())
+            i.value()++;
+        else
+            used.insert(n, 1);
+    }
 
     endInsertRows();
 }
@@ -255,6 +280,15 @@ void MaterialListModel::write(QJsonArray &json) const
         (*i)->write(m);
         json.prepend(m);
     }
+}
+
+QString MaterialListModel::next_name()
+{
+    int i = 0;
+
+    for (auto j = used.keyBegin(); j != used.keyEnd() && i == *j; i++, j++);
+
+    return i ? QString("Mat.") + QString::number(i) : "Mat";
 }
 
 MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent)
