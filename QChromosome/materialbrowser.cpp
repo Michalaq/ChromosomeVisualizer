@@ -39,10 +39,10 @@ MaterialBrowser::~MaterialBrowser()
     delete ui;
 }
 
-void MaterialBrowser::read(const QJsonArray& json)
+void MaterialBrowser::read(const QJsonArray& json, QMap<int, Material*>& tags)
 {
     auto * m = new MaterialListModel;
-    m->read(json);
+    m->read(json, tags);
 
     ui->listView->setModel(m);
     ui->listView->setCurrentIndex(QModelIndex());
@@ -56,9 +56,9 @@ void MaterialBrowser::read(const QJsonArray& json)
     });
 }
 
-void MaterialBrowser::write(QJsonArray& json) const
+void MaterialBrowser::write(QJsonArray& json, QMap<Material*, int> &tags) const
 {
-    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json);
+    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json, tags);
 }
 
 #include <QPainter>
@@ -230,23 +230,29 @@ void MaterialListModel::prepend(Material *m)
 #include <QJsonObject>
 #include <QJsonArray>
 
-void MaterialListModel::read(const QJsonArray &json)
+void MaterialListModel::read(const QJsonArray &json, QMap<int, Material *> &tags)
 {
+    int n = 0;
+
     for (auto i = json.begin(); i != json.end(); i++)
     {
         auto * m = new Material;
         m->read((*i).toObject());
         materials.prepend(m);
+        tags.insert(n++, m);
     }
 }
 
-void MaterialListModel::write(QJsonArray &json) const
+void MaterialListModel::write(QJsonArray &json, QMap<Material*, int> &tags) const
 {
+    int n = materials.count();
+
     for (auto i = materials.begin(); i != materials.end(); i++)
     {
         QJsonObject m;
         (*i)->write(m);
         json.prepend(m);
+        tags.insert(*i, --n);
     }
 }
 

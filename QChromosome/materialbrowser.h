@@ -38,8 +38,8 @@ public:
     explicit MaterialBrowser(QWidget *parent = 0);
     ~MaterialBrowser();
 
-    void read(const QJsonArray &json);
-    void write(QJsonArray &json) const;
+    void read(const QJsonArray &json, QMap<int, Material*> &tags);
+    void write(QJsonArray &json, QMap<Material*, int> &tags) const;
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -73,8 +73,8 @@ public:
 
     void prepend(Material *m);
 
-    void read(const QJsonArray &json);
-    void write(QJsonArray &json) const;
+    void read(const QJsonArray &json, QMap<int, Material*> &tags);
+    void write(QJsonArray &json, QMap<Material*, int> &tags) const;
 
     QString next_name();
 

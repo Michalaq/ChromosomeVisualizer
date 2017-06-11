@@ -36,6 +36,8 @@ public:
     Material* getMaterial(const QList<unsigned int>& indexes) const;
     void setMaterial(const QList<unsigned int>& indexes, Material* m);
 
+    void read(const QJsonObject& json, const QMap<int, Material*>& tags);
+
 signals:
     void visibilityChanged(VisibilityMode);
 
@@ -63,6 +65,7 @@ private:
     VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
+    void dumpModel3(const QModelIndex& root, const QJsonObject &json, const QMap<int, Material *> &tags);
 
     Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);

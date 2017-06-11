@@ -64,6 +64,7 @@ enum Visibility
 };
 
 class TreeItem;
+class Material;
 
 class TreeModel : public QAbstractItemModel
 {
@@ -88,7 +89,7 @@ public:
     const QVector<QModelIndex>& getIndices() const;
 
     void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
+    void write(QJsonObject& json, const QMap<Material*, int>& tags) const;
 
 private:
     TreeItem *header;

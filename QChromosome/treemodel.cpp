@@ -252,7 +252,7 @@ void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonO
     if (vir != object.end())
         model->setData(root.sibling(root.row(), 4), vir.value().toBool() ? On : Off);
 
-    const QJsonObject children = json["Children"].toObject();
+    const QJsonObject children = json["Descendants"].toObject();
 
     for (auto child = children.begin(); child != children.end(); child++)
         dumpModel3(model, root.child(child.key().toInt(), 0), child.value().toObject());
@@ -263,7 +263,9 @@ void TreeModel::read(const QJsonObject &json)
     dumpModel3(this, index(0, 0), json);
 }
 
-void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
+#include "material.h"
+
+void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json, const QMap<Material *, int> &tags)
 {
     QJsonObject object;
 
@@ -277,6 +279,18 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
     if (vir != Default)
         object["Visible in renderer"] = vir == On;
 
+    auto t = root.sibling(root.row(), 5).data().toList();
+
+    if (!t.empty())
+    {
+        QJsonArray u;
+
+        for (auto i : t)
+            u.append(tags[i.value<Material*>()]);
+
+        object["Tags"] = u;
+    }
+
     if (!object.empty())
         json["Object"] = object;
 
@@ -286,17 +300,17 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
     {
         QJsonObject child;
 
-        dumpModel2(model, root.child(r, 0), child);
+        dumpModel2(model, root.child(r, 0), child, tags);
 
         if (!child.empty())
             children[QString::number(r)] = child;
     }
 
     if (!children.empty())
-        json["Children"] = children;
+        json["Descendants"] = children;
 }
 
-void TreeModel::write(QJsonObject &json) const
+void TreeModel::write(QJsonObject &json, const QMap<Material *, int> &tags) const
 {
-    dumpModel2(this, index(0, 0), json);
+    dumpModel2(this, index(0, 0), json, tags);
 }

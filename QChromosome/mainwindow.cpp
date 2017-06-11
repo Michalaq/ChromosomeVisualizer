@@ -341,11 +341,15 @@ void MainWindow::openProject()
         const QJsonArray layers = project["Layers"].toArray();
         simulation->read(layers);
 
-        const QJsonObject structure = project["Structure"].toObject();
-        simulation->getModel()->read(structure);
-
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
+
+        const QJsonArray materials = project["Materials"].toArray();
+        QMap<int, Material*> tags;
+        materialBrowser->read(materials, tags);
+
+        const QJsonObject structure = project["Structure"].toObject();
+        ui->treeView->read(structure, tags);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
@@ -355,9 +359,6 @@ void MainWindow::openProject()
 
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
-
-        const QJsonArray materials = project["Material library"].toArray();
-        materialBrowser->read(materials);
 
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
@@ -416,8 +417,13 @@ void MainWindow::saveProject()
         simulation->write(layers);
         project["Layers"] = layers;
 
+        QJsonArray materials;
+        QMap<Material*, int> tags;
+        materialBrowser->write(materials, tags);
+        project["Materials"] = materials;
+
         QJsonObject structure;
-        simulation->getModel()->write(structure);
+        simulation->getModel()->write(structure, tags);
         project["Structure"] = structure;
 
         QJsonObject bar;
@@ -427,10 +433,6 @@ void MainWindow::saveProject()
         QJsonArray keyframes;
         ip.write(keyframes);
         project["Key frames"] = keyframes;
-
-        QJsonArray materials;
-        materialBrowser->write(materials);
-        project["Material library"] = materials;
 
         QFile file(currentFile);
         file.open(QIODevice::WriteOnly | QIODevice::Text);

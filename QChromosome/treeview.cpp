@@ -167,6 +167,37 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
     m->assign(index);
 }
 
+void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json, const QMap<int, Material *> &tags)
+{
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.begin(); child != children.end(); child++)
+        dumpModel3(root.child(child.key().toInt(), 0), child.value().toObject(), tags);
+
+    const QJsonArray t = json["Object"].toObject()["Tags"].toArray();
+
+    if (!t.isEmpty())
+    {
+        QVariantList u;
+
+        for (auto i : t)
+            u.push_back(QVariant::fromValue(tags[i.toInt()]));
+
+        model()->setData(root.sibling(root.row(), 5), u);
+
+        QList<unsigned int> id;
+        dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
+
+        scene->customSelection(id).setMaterial(u.last().value<Material*>());
+    }
+}
+
+void TreeView::read(const QJsonObject &json, const QMap<int, Material *> &tags)
+{
+    qobject_cast<TreeModel*>(model())->read(json);
+    dumpModel3(model()->index(0, 0), json, tags);
+}
+
 void TreeView::updateAttributes(const Material *m)
 {
     QList<unsigned int> id;
