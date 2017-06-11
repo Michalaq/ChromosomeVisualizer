@@ -32,6 +32,9 @@ public:
     void assign(const QModelIndex& ix, bool b = true);
     QModelIndexList getAssigned() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

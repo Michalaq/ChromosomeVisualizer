@@ -117,6 +117,34 @@ QModelIndexList Material::getAssigned() const
     return assignment.keys();
 }
 
+void Material::read(const QJsonObject& json)
+{
+    name = json["Name"].toString();
+
+    const QJsonObject color_ = json["Color"].toObject();
+    color = color_["Color"].toString();
+    transparency = color_["Transparency"].toDouble();
+
+    const QJsonObject specular = json["Specular"].toObject();
+    specularExponent = specular["Shininess exponent"].toDouble();
+    specularColor = specular["Specular color"].toString();
+}
+
+void Material::write(QJsonObject& json) const
+{
+    json["Name"] = name;
+
+    QJsonObject color_;
+    color_["Color"] = color.name();
+    color_["Transparency"] = transparency;
+    json["Color"] = color_;
+
+    QJsonObject specular;
+    specular["Shininess exponent"] = specularExponent;
+    specular["Specular color"] = specularColor.name();
+    json["Specular"] = specular;
+}
+
 void Material::mousePressEvent(QMouseEvent *event)
 {
     clicked = true;

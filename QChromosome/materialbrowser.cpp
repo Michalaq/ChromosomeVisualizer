@@ -36,6 +36,27 @@ MaterialBrowser::~MaterialBrowser()
     delete ui;
 }
 
+void MaterialBrowser::read(const QJsonArray& json)
+{
+    auto * m = new MaterialListModel;
+    m->read(json);
+
+    ui->listView->setModel(m);
+
+    connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
+        if (index.isValid())
+            emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
+        else
+            emit materialsSelected({});
+        update();
+    });
+}
+
+void MaterialBrowser::write(QJsonArray& json) const
+{
+    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json);
+}
+
 #include <QPainter>
 
 void MaterialBrowser::paintEvent(QPaintEvent *event)
@@ -210,6 +231,29 @@ void MaterialListModel::prepend(const QList<Material *> &m)
         materials.prepend(i);
 
     endInsertRows();
+}
+
+#include <QJsonObject>
+#include <QJsonArray>
+
+void MaterialListModel::read(const QJsonArray &json)
+{
+    for (auto i = json.begin(); i != json.end(); i++)
+    {
+        auto * m = new Material;
+        m->read((*i).toObject());
+        materials.prepend(m);
+    }
+}
+
+void MaterialListModel::write(QJsonArray &json) const
+{
+    for (auto i = materials.begin(); i != materials.end(); i++)
+    {
+        QJsonObject m;
+        (*i)->write(m);
+        json.prepend(m);
+    }
 }
 
 MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent)

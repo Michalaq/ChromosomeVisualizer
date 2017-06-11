@@ -38,6 +38,9 @@ public:
     explicit MaterialBrowser(QWidget *parent = 0);
     ~MaterialBrowser();
 
+    void read(const QJsonArray &json);
+    void write(QJsonArray &json) const;
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -70,6 +73,9 @@ public:
 
     void prepend(Material *m);
     void prepend(const QList<Material*>& m);
+
+    void read(const QJsonArray &json);
+    void write(QJsonArray &json) const;
 
 private:
     QList<Material*> materials;

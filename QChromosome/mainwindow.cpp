@@ -354,6 +354,9 @@ void MainWindow::openProject()
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
 
+        const QJsonArray materials = project["Material library"].toArray();
+        materialBrowser->read(materials);
+
         connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
 }
@@ -422,6 +425,10 @@ void MainWindow::saveProject()
         QJsonArray keyframes;
         ip.write(keyframes);
         project["Key frames"] = keyframes;
+
+        QJsonArray materials;
+        materialBrowser->write(materials);
+        project["Material library"] = materials;
 
         QFile file(currentFile);
         file.open(QIODevice::WriteOnly | QIODevice::Text);
