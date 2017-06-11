@@ -54,6 +54,11 @@ void MaterialBrowser::read(const QJsonArray& json, QMap<int, Material*>& tags)
             emit materialsSelected({});
         update();
     });
+
+    connect(ui->actionNew_Material, &QAction::triggered, [=]() {
+        m->prepend(new Material(m->next_name()));
+        ui->listView->setCurrentIndex(m->index(0));
+    });
 }
 
 void MaterialBrowser::write(QJsonArray& json, QMap<Material*, int> &tags) const
