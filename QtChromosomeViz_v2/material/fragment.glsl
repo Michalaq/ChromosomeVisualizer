@@ -6,11 +6,13 @@ uniform float fSpecularExponent;
 
 in vec2 position;
 
+const float epsilon = 1e-6;
+
 const float r = 5. / 6.;
 const float r2 = r * r;
 
 void main() {
-    float stripePhase = floor((position.x - position.y) * 2.5 + 1e-6);
+    float stripePhase = floor((position.x - position.y) * 2.5 + epsilon);
     vec3 background = (int(stripePhase) & 1) == 0 ? vec3(.4, .4, .4) : vec3(.6, .6, .6);
     
     if (dot(position, position) < r2)
