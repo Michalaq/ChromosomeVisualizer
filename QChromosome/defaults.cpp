@@ -74,7 +74,7 @@ std::vector<int> parseJsonArray(QByteArray stream, bool *ok = Q_NULLPTR)
     return ans;
 }
 
-#include "picker.h"
+#include "tagsdelegate.h"
 
 Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
@@ -232,45 +232,10 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });
-    //TODO this should be implemented using QAbstractItemDelegate
-    for (int i = 0; i < 2; i++)
-    {
-        Picker *p = new Picker;
-        p->showAlphaChannel();
-        ui->tableWidget->setCellWidget(i, 2, p);
-        p->setValue(ui->tableWidget->item(i, 2)->data(Qt::DisplayRole).value<QColor>());
 
-        connect(p, &Picker::valueChanged, [=](QColor c) {
-            ui->tableWidget->setCurrentCell(i, 2);
-            ui->tableWidget->currentItem()->setData(Qt::DisplayRole, c.name());
-        });
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        Picker *p = new Picker;
-        p->showAlphaChannel();
-        ui->tableWidget_2->setCellWidget(i, 2, p);
-        p->setValue(ui->tableWidget_2->item(i, 2)->data(Qt::DisplayRole).value<QColor>());
-
-        connect(p, &Picker::valueChanged, [=](QColor c) {
-            ui->tableWidget_2->setCurrentCell(i, 2);
-            ui->tableWidget_2->currentItem()->setData(Qt::DisplayRole, c.name());
-        });
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        Picker *p = new Picker;
-        p->showAlphaChannel();
-        ui->tableWidget_3->setCellWidget(i, 1, p);
-        p->setValue(ui->tableWidget_3->item(i, 1)->data(Qt::DisplayRole).value<QColor>());
-
-        connect(p, &Picker::valueChanged, [=](QColor c) {
-            ui->tableWidget_3->setCurrentCell(i, 1);
-            ui->tableWidget_3->currentItem()->setData(Qt::DisplayRole, c.name());
-        });
-    }
+    ui->tableWidget->setItemDelegateForColumn(2, new TagsDelegate(this));
+    ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
+    ui->tableWidget_3->setItemDelegateForColumn(1, new TagsDelegate(this));
 }
 
 Defaults::~Defaults()
