@@ -16,7 +16,28 @@
   <property name="styleSheet">
    <string notr="true">#Preferences {
 	background: #262626;
-}</string>
+}
+
+QLineEdit, QTextEdit {
+	background: #2d2d2d;
+	border: 1px solid #2d2d2d;
+	border-radius: 2px;
+	color: gray;
+	height: 28px;
+	selection-background-color: #0066ff;
+	padding-left: 10px;
+}
+
+QTextEdit {
+    padding-top: 3px;
+    padding-left: 8px;
+}
+
+QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
+	border-color: #205375;
+	color: lightgray;
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
