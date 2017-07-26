@@ -27,6 +27,7 @@ QHeaderView::section {
 }
 
 QTableView {
+	font-family: RobotoMono;
 	color: gray;
 	border: none;
 	background: transparent;
@@ -41,6 +42,7 @@ QTableView::item {
 }
 
 QLineEdit {
+	font-family: RobotoMono;
 	color: white;
 	border: none;
 	padding: 1px;

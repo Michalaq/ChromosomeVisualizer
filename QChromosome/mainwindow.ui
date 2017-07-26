@@ -17,7 +17,7 @@
 }
 
 QWidget {
-	font-family: Droid Sans;
+	font-family: Roboto;
 }
 
 QStatusBar {

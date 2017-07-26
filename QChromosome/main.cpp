@@ -21,8 +21,9 @@ int main(int argc, char *argv[])
     format.setProfile(QSurfaceFormat::CompatibilityProfile);
     QSurfaceFormat::setDefaultFormat(format);
 
-    QFontDatabase::addApplicationFont(":/fonts/DroidSans");
-    QFontDatabase::addApplicationFont(":/fonts/DroidSans-Bold");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold");
+    QFontDatabase::addApplicationFont(":/fonts/RobotoMono-Regular");
 
     MainWindow w;
 

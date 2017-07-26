@@ -20,7 +20,8 @@
         <file alias="search">icons/search_icon.svg</file>
     </qresource>
     <qresource prefix="/fonts">
-        <file alias="DroidSans">fonts/DroidSans.ttf</file>
-        <file alias="DroidSans-Bold">fonts/DroidSans-Bold.ttf</file>
+        <file alias="Roboto-Regular">fonts/Roboto-Regular.ttf</file>
+        <file alias="RobotoMono-Regular">fonts/RobotoMono-Regular.ttf</file>
+        <file alias="Roboto-Bold">fonts/Roboto-Bold.ttf</file>
     </qresource>
 </RCC>
