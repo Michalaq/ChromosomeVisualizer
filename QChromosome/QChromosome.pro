@@ -66,7 +66,8 @@ SOURCES += main.cpp\
     flowlayout.cpp \
     materialrenderer.cpp \
     materialattributes.cpp \
-    materialbrowser.cpp
+    materialbrowser.cpp \
+    tablewidget.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -140,7 +141,8 @@ HEADERS  += mainwindow.h\
     flowlayout.h \
     materialrenderer.h \
     materialattributes.h \
-    materialbrowser.h
+    materialbrowser.h \
+    tablewidget.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
