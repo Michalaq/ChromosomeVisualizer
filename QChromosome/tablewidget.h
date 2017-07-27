@@ -2,12 +2,14 @@
 #define TABLEWIDGET_H
 
 #include <QTableWidget>
+#include "material.h"
 
 class TableWidget : public QTableWidget
 {
     Q_OBJECT
 public:
     explicit TableWidget(QWidget *parent = 0);
+    ~TableWidget();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -19,6 +21,11 @@ protected:
     void dropEvent(QDropEvent *event);
 
     bool event(QEvent *event);
+
+private:
+    Material* takeSelectedMaterial();
+
+    QModelIndex selectedTag;
 
 signals:
 
