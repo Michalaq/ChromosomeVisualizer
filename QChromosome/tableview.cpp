@@ -88,7 +88,7 @@ void TableView::dropEvent(QDropEvent *event)
 
 bool TableView::event(QEvent *event)
 {
-    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
+    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete && selectedTag.isValid())
         takeSelectedMaterial();
 
     return QTableView::event(event);

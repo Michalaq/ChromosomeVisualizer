@@ -447,7 +447,7 @@ void TreeView::dropEvent(QDropEvent *event)
 
 bool TreeView::event(QEvent *event)
 {
-    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
+    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete && selectedTag.isValid())
         takeSelectedMaterial();
 
     return QTreeView::event(event);
