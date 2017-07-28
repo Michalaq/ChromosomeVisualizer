@@ -237,6 +237,7 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawPolyline(&interval[1], interval.size() - 2);
     }
 
+    // draw handle
     if (softMinimum <= value() && value() <= softMaximum)
     {
         painter.setViewTransformEnabled(false);
