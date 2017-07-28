@@ -10,6 +10,11 @@ TableModel::~TableModel()
 
 }
 
+Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
+{
+    return QAbstractTableModel::flags(index) | (index.column() == 2 ? Qt::NoItemFlags : Qt::ItemIsEditable);
+}
+
 int TableModel::rowCount(const QModelIndex &parent) const
 {
     return 5;

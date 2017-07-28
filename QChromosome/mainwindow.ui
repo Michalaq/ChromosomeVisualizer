@@ -878,6 +878,7 @@ Label {
 	color: gray;
 	border: none;
 	background: #1a1a1a;
+	alternate-background-color: #1f1f1f;
 	selection-background-color: #1a1a1a;
 	selection-color: white;
 	outline: 0;
@@ -902,6 +903,9 @@ QLineEdit {
 	padding: 1px;
 }
 </string>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
        </property>
        <property name="selectionMode">
         <enum>QAbstractItemView::ExtendedSelection</enum>

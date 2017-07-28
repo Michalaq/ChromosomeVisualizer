@@ -30,7 +30,8 @@ QTableView {
 	font-family: RobotoMono;
 	color: gray;
 	border: none;
-	background: transparent;
+	background: #1a1a1a;
+	alternate-background-color: #1f1f1f;
 	selection-background-color: #1a1a1a;
 	selection-color: white;
 	outline: 0;
@@ -65,6 +66,9 @@ QLineEdit {
      <property name="acceptDrops">
       <bool>true</bool>
      </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
@@ -94,6 +98,9 @@ QLineEdit {
       <enum>Qt::ClickFocus</enum>
      </property>
      <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
      <property name="selectionBehavior">
@@ -227,6 +234,9 @@ QLineEdit {
       <enum>Qt::ClickFocus</enum>
      </property>
      <property name="acceptDrops">
+      <bool>true</bool>
+     </property>
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
      <property name="selectionBehavior">
