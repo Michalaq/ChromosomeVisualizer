@@ -74,13 +74,16 @@ std::vector<int> parseJsonArray(QByteArray stream, bool *ok = Q_NULLPTR)
     return ans;
 }
 
+#include "tablemodel.h"
 #include "tagsdelegate.h"
 
 Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
-    connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+    ui->tableView->setModel(new TableModel(this));
+
+    /*connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
         key1 = ui->tableWidget->item(i->row(), 0)->data(Qt::DisplayRole).toInt();
         key = bt2tn[key1];
@@ -133,7 +136,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         }
 
         previous = i->data(Qt::DisplayRole);
-    });
+    });*/
 
     connect(ui->tableWidget_2, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
@@ -233,7 +236,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         previous = i->data(Qt::DisplayRole);
     });
 
-    ui->tableWidget->setItemDelegateForColumn(2, new TagsDelegate(this));
+    ui->tableView->setItemDelegateForColumn(2, new TagsDelegate(this));
     ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
     ui->tableWidget_3->setItemDelegateForColumn(1, new TagsDelegate(this));
 }
