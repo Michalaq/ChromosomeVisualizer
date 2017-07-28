@@ -1,8 +1,10 @@
 #include "tablemodel.h"
 
-TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
+TableModel::TableModel(const QStringList &h, QObject *parent) : header(h), QAbstractTableModel(parent)
 {
-
+    //TODO usunąć
+    database.push_back({"0", "LAM", QVariantList()});
+    database.push_back({"1", "BIN", QVariantList()});
 }
 
 TableModel::~TableModel()
@@ -17,24 +19,26 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 int TableModel::rowCount(const QModelIndex &parent) const
 {
-    return 5;
+    return database.size();
 }
 
 int TableModel::columnCount(const QModelIndex &parent) const
 {
-    return 3;
+    return header.size();
 }
 
 QVariant TableModel::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole)
-        return "QVariant()";
+        return database[index.row()][index.column()];
+
+    if (role == Qt::UserRole + 1)
+        return -1;
+
     return QVariant();
 }
 
 QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role == Qt::DisplayRole)
-        return "QVariant()";
-    return QVariant();
+    return role == Qt::DisplayRole ? header[section] : QVariant();
 }

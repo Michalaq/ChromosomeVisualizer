@@ -81,7 +81,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
-    ui->tableView->setModel(new TableModel(this));
+    ui->tableView->setModel(new TableModel({"Binder Type", "Binder Name", "Default Tags"}, this));
 
     /*connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);

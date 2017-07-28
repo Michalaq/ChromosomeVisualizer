@@ -7,7 +7,7 @@ class TableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit TableModel(QObject *parent = 0);
+    explicit TableModel(const QStringList& h, QObject *parent = 0);
     ~TableModel();
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -17,6 +17,10 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+private:
+    QStringList header;
+    QVector<QVariantList> database;
 
 signals:
 
