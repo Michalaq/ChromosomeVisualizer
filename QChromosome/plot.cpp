@@ -243,13 +243,11 @@ void Plot::paintEvent(QPaintEvent *event)
 
         auto crs = transform.map(QPoint(value(), 0)).x();
 
-        QPen pen3(Qt::white, 2.);
+        QPen pen3(QColor("#0072bd"), 2.);
         pen3.setJoinStyle(Qt::MiterJoin);
 
         painter.setPen(pen3);
-        painter.setBrush(QBrush(Qt::white));
-        painter.drawLine(crs, padding_top - 5, crs, height() - padding_bottom);
-        painter.drawConvexPolygon(QPolygon({{crs, padding_top - 2}, {crs - 3, padding_top - 5}, {crs + 3, padding_top - 5}}));
+        painter.drawLine(crs, 0, crs, height() - padding_bottom);
     }
 }
 
