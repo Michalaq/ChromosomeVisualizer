@@ -62,6 +62,8 @@ void TableView::mousePressEvent(QMouseEvent *event)
 
         QTableView::mousePressEvent(event);
     }
+
+    tagsFocused = columnAt(event->x()) == model()->columnCount() - 1;
 }
 
 #include <QDrag>
@@ -140,8 +142,17 @@ void TableView::dropEvent(QDropEvent *event)
 
 bool TableView::event(QEvent *event)
 {
-    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete && selectedTag.isValid())
-        takeSelectedMaterial();
+    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete)
+    {
+        if (tagsFocused)
+        {
+            if (selectedTag.isValid())
+                takeSelectedMaterial();
+        }
+        else
+            for (auto i : selectionModel()->selectedRows())
+                model()->removeRow(i.row());
+    }
 
     return QTableView::event(event);
 }

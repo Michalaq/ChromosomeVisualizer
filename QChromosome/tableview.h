@@ -34,6 +34,7 @@ private:
     QModelIndex selectedTag;
 
     bool clicked = false;
+    bool tagsFocused;
 
 signals:
 

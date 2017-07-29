@@ -67,7 +67,12 @@ bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    row += parent.row();
+    if (parent.isValid())
+        row += parent.row();
+
+    beginRemoveRows(parent, row, row + count - 1);
     database.erase(database.begin() + row, database.begin() + row + count);
+    endRemoveRows();
+
     return true;
 }
