@@ -220,6 +220,7 @@ Material* TreeView::takeSelectedMaterial()
 
     model()->setData(selectedTag, list, Qt::DisplayRole);
     model()->setData(selectedTag, -1, Qt::UserRole + 1);
+    selectedTag = QModelIndex();
 
     update();
 
@@ -269,6 +270,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             n = (event->x() - visualRect(index).x()) / 20;
 
             model()->setData(selectedTag, -1, Qt::UserRole + 1);
+            selectedTag = QModelIndex();
 
             if (n < index.data().toList().length())
             {
@@ -282,6 +284,8 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             if (!index.isValid())
             {
                 model()->setData(selectedTag, -1, Qt::UserRole + 1);
+                selectedTag = QModelIndex();
+
                 clearSelection();
                 update();
             }
