@@ -24,6 +24,9 @@ int TableModel::columnCount(const QModelIndex &parent) const
 
 QVariant TableModel::data(const QModelIndex &index, int role) const
 {
+    if (!index.isValid())
+        return QVariant();
+
     if (role == Qt::DisplayRole)
         return database[index.row()][index.column()];
 
@@ -40,8 +43,14 @@ QVariant TableModel::headerData(int section, Qt::Orientation orientation, int ro
 
 bool TableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    if (!index.isValid())
+        return false;
+
     if (role == Qt::EditRole)
         database[index.row()][index.column()] = value;
+
+    if (role == Qt::UserRole + 1)
+        database[index.row()].last() = value;
 
     emit dataChanged(index, index);
     return true;
@@ -54,7 +63,7 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 {
-    return true;
+    return false;
 }
 
 bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
