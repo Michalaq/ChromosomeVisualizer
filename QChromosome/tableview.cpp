@@ -93,3 +93,59 @@ bool TableView::event(QEvent *event)
 
     return QTableView::event(event);
 }
+
+#include <QLineEdit>
+
+TableNameDelegate::TableNameDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+
+}
+
+void TableNameDelegate::setEditorData(QWidget * editor, const QModelIndex & index) const
+{
+    qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
+}
+
+void TableNameDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+{
+    QString str = qobject_cast<QLineEdit*>(editor)->text();
+
+    if (!str.isEmpty())
+        model->setData(index, str);
+}
+
+TableIntDelegate::TableIntDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+
+}
+
+void TableIntDelegate::setEditorData(QWidget * editor, const QModelIndex & index) const
+{
+    qobject_cast<QLineEdit*>(editor)->setText(QString::number(index.data().toInt()));
+}
+
+void TableIntDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+{
+    QString str = qobject_cast<QLineEdit*>(editor)->text();
+
+    bool ok;
+    unsigned value = str.toUInt(&ok);
+
+    if (ok)
+        model->setData(index, value);
+}
+
+TableVectDelegate::TableVectDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+
+}
+
+void TableVectDelegate::setEditorData(QWidget * editor, const QModelIndex & index) const
+{
+    qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
+}
+
+void TableVectDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
+{
+
+}

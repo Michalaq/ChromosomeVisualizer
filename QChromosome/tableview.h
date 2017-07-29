@@ -32,4 +32,36 @@ signals:
 public slots:
 };
 
+#include <QStyledItemDelegate>
+
+class TableNameDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit TableNameDelegate(QObject *parent = 0);
+
+    void setEditorData(QWidget * editor, const QModelIndex & index) const;
+    void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const;
+};
+
+class TableIntDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit TableIntDelegate(QObject *parent = 0);
+
+    void setEditorData(QWidget * editor, const QModelIndex & index) const;
+    void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const;
+};
+
+class TableVectDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit TableVectDelegate(QObject *parent = 0);
+
+    void setEditorData(QWidget * editor, const QModelIndex & index) const;
+    void setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const;
+};
+
 #endif // TABLEVIEW_H

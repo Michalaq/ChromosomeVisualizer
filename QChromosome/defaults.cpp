@@ -236,7 +236,10 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         previous = i->data(Qt::DisplayRole);
     });
 
+    ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
+    ui->tableView->setItemDelegateForColumn(1, new TableNameDelegate(this));
     ui->tableView->setItemDelegateForColumn(2, new TagsDelegate(this));
+
     ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
     ui->tableWidget_3->setItemDelegateForColumn(1, new TagsDelegate(this));
 }
