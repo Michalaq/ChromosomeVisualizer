@@ -1,6 +1,6 @@
 #include "tableview.h"
 
-TableView::TableView(QWidget *parent) : QTableView(parent)
+TableView::TableView(QWidget *parent) : QTableView(parent), state(NoState)
 {
 
 }
@@ -29,17 +29,65 @@ Material* TableView::takeSelectedMaterial()
 
 void TableView::mousePressEvent(QMouseEvent *event)
 {
-    QTableView::mousePressEvent(event);
+    auto index = indexAt(event->pos());
+
+    if (index.column() == model()->columnCount() - 1)
+    {
+        state = DragTag;
+
+        int n = (event->x() - visualRect(index).x()) / 20;
+
+        model()->setData(selectedTag, -1, Qt::UserRole + 1);
+
+        if (n < index.data().toList().length())
+        {
+            clicked = true;
+            model()->setData(selectedTag = index, n, Qt::UserRole + 1);
+        }
+
+        update();
+    }
+    else
+    {
+        if (!index.isValid())
+        {
+            model()->setData(selectedTag, -1, Qt::UserRole + 1);
+            clearSelection();
+            update();
+        }
+
+        QTableView::mousePressEvent(event);
+    }
 }
+
+#include <QDrag>
+#include <QMimeData>
 
 void TableView::mouseMoveEvent(QMouseEvent *event)
 {
-    QTableView::mouseMoveEvent(event);
+    if (state == DragTag)
+    {
+        if (clicked)
+        {
+            clicked = false;
+
+            QDrag *drag = new QDrag(this);
+            drag->setMimeData(new QMimeData);
+            drag->exec(Qt::MoveAction);
+        }
+    }
+    else
+        QTableView::mouseMoveEvent(event);
 }
 
 void TableView::mouseReleaseEvent(QMouseEvent *event)
 {
-    QTableView::mouseReleaseEvent(event);
+    if (state == DragTag)
+        clicked = false;
+    else
+        QTableView::mouseReleaseEvent(event);
+
+    state = NoState;
 }
 
 void TableView::dragEnterEvent(QDragEnterEvent *event)
@@ -52,7 +100,7 @@ void TableView::dragMoveEvent(QDragMoveEvent *event)
 {
     auto index = indexAt(event->pos());
 
-    if (index.isValid() && (index.column() != 5 || event->source() == this))
+    if (index.isValid() && (index.column() != model()->columnCount() - 1 || event->source() == this))
         event->acceptProposedAction();
     else
         event->ignore();
@@ -63,7 +111,7 @@ void TableView::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
 
     auto index = indexAt(event->pos());
-    index = index.sibling(index.row(), 5);
+    index = index.sibling(index.row(), model()->columnCount() - 1);
 
     auto mat = event->source() == this ? takeSelectedMaterial() : qobject_cast<Material*>(event->source());
 

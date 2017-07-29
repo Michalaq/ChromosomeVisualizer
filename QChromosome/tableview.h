@@ -25,7 +25,15 @@ protected:
 private:
     Material* takeSelectedMaterial();
 
+    enum TableViewState
+    {
+        NoState,
+        DragTag
+    } state;
+
     QModelIndex selectedTag;
+
+    bool clicked = false;
 
 signals:
 
