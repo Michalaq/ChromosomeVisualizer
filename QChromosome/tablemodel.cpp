@@ -46,11 +46,10 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
     if (!index.isValid())
         return false;
 
-    if (role == Qt::EditRole)
-        database[index.row()][index.column()] = value;
-
     if (role == Qt::UserRole + 1)
         database[index.row()].last() = value;
+    else
+        database[index.row()][index.column()] = value;
 
     emit dataChanged(index, index);
     return true;
