@@ -277,6 +277,13 @@ void TreeView::mousePressEvent(QMouseEvent *event)
                 clicked = true;
                 model()->setData(selectedTag = index, n, Qt::UserRole + 1);
             }
+            else
+            {
+                model()->setData(selectedTag, -1, Qt::UserRole + 1);
+                selectedTag = QModelIndex();
+
+                clearSelection();
+            }
 
             update();
             break;
