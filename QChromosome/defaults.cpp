@@ -203,7 +203,20 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         previous = i->data(Qt::DisplayRole);
     });
 
-    connect(ui->tableWidget_3, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+    ui->tableView_3->setItemDelegateForColumn(0, new TableNameDelegate(this));
+    ui->tableView_3->setItemDelegateForColumn(1, new TagsDelegate(this));
+
+    auto *m3 = new TableModel({"Residue Name", "Default Tags"}, this);
+
+    m3->insertRows(0, 4, m3->index(0, 0));
+    m3->setData(m3->index(0, 0), "LAM"); m3->setData(m3->index(0, 1), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
+    m3->setData(m3->index(1, 0), "BIN"); m3->setData(m3->index(1, 1), QVariantList({QVariant::fromValue(new Material("", Qt::white, .5))}));
+    m3->setData(m3->index(2, 0), "UNB"); m3->setData(m3->index(2, 1), QVariantList({QVariant::fromValue(new Material("", Qt::red))}));
+    m3->setData(m3->index(3, 0), "BOU"); m3->setData(m3->index(3, 1), QVariantList({QVariant::fromValue(new Material("", Qt::green))}));
+
+    ui->tableView_3->setModel(m3);
+
+    /*connect(ui->tableWidget_3, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
         key3 = ui->tableWidget_3->item(i->row(), 0)->data(Qt::DisplayRole).toString().toStdString();
         key = rs2tn[key3];
@@ -244,10 +257,9 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         }
 
         previous = i->data(Qt::DisplayRole);
-    });
+    });*/
 
     ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
-    ui->tableWidget_3->setItemDelegateForColumn(1, new TagsDelegate(this));
 }
 
 Defaults::~Defaults()
