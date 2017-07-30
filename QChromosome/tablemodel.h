@@ -27,6 +27,8 @@ private:
     QVector<QVector<QVariant>> database;
     QVector<QVariant> placeholder;
 
+    QMap<QVariant, QPersistentModelIndex> fst2ix;
+
 signals:
 
 public slots:

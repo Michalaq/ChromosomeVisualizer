@@ -48,7 +48,22 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
     if (role == Qt::UserRole + 1)
         database[index.row()].last() = value;
     else
-        database[index.row()][index.column()] = value;
+    {
+        // first column is a primary key
+        if (index.column() == 0)
+        {
+            if (!fst2ix.contains(value))
+            {
+                fst2ix.remove(index.data());
+                fst2ix.insert(value, QPersistentModelIndex(index));
+                database[index.row()][index.column()] = value;
+            }
+            else
+                return false;
+        }
+        else
+            database[index.row()][index.column()] = value;
+    }
 
     emit dataChanged(index, index);
     return true;
