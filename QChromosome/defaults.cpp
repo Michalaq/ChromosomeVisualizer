@@ -81,7 +81,17 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
-    ui->tableView->setModel(new TableModel({"Binder Type", "Binder Name", "Default Tags"}, this));
+    ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
+    ui->tableView->setItemDelegateForColumn(1, new TableNameDelegate(this));
+    ui->tableView->setItemDelegateForColumn(2, new TagsDelegate(this));
+
+    auto *m1 = new TableModel({"Binder Type", "Binder Name", "Default Tags"}, this);
+
+    m1->insertRows(0, 2, m1->index(0, 0));
+    m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM"); m1->setData(m1->index(0, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
+    m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN"); m1->setData(m1->index(1, 2), QVariantList({QVariant::fromValue(new Material("", Qt::white, .5))}));
+
+    ui->tableView->setModel(m1);
 
     /*connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
@@ -235,10 +245,6 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });
-
-    ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
-    ui->tableView->setItemDelegateForColumn(1, new TableNameDelegate(this));
-    ui->tableView->setItemDelegateForColumn(2, new TagsDelegate(this));
 
     ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
     ui->tableWidget_3->setItemDelegateForColumn(1, new TagsDelegate(this));

@@ -24,7 +24,8 @@ public:
 
 private:
     QStringList header;
-    QVector<QVariantList> database;
+    QVector<QVector<QVariant>> database;
+    QVector<QVariant> placeholder;
 
 signals:
 

@@ -2,9 +2,8 @@
 
 TableModel::TableModel(const QStringList &h, QObject *parent) : header(h), QAbstractTableModel(parent)
 {
-    //TODO usunąć
-    database.push_back({0, "LAM", QVariantList(), -1});
-    database.push_back({1, "BIN", QVariantList(), -1});
+    placeholder = QVector<QVariant>(header.size(), QVariant());
+    placeholder.push_back(-1);
 }
 
 TableModel::~TableModel()
@@ -62,7 +61,14 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 bool TableModel::insertRows(int row, int count, const QModelIndex &parent)
 {
-    return false;
+    if (parent.isValid())
+        row += parent.row();
+
+    beginInsertRows(parent, row, row + count - 1);
+    database.insert(row, count, placeholder);
+    endInsertRows();
+
+    return true;
 }
 
 bool TableModel::removeRows(int row, int count, const QModelIndex &parent)
