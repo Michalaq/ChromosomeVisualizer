@@ -10,6 +10,7 @@ class MaterialRenderer : public QOffscreenSurface
     Q_OBJECT
 public:
     static MaterialRenderer* getInstance();
+    ~MaterialRenderer();
 
     void initializeGL();
 

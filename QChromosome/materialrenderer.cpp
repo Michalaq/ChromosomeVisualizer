@@ -15,6 +15,11 @@ MaterialRenderer::MaterialRenderer(QScreen *targetScreen) : QOffscreenSurface(ta
     initializeGL();
 }
 
+MaterialRenderer::~MaterialRenderer()
+{
+
+}
+
 MaterialRenderer* MaterialRenderer::getInstance()
 {
     return instance ? instance : (instance = new MaterialRenderer);

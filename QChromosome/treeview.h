@@ -87,7 +87,7 @@ private:
 
     HeaderView *hv;
 
-    QModelIndex selectedTag;
+    QPersistentModelIndex selectedTag;
 
     bool clicked = false;
 };

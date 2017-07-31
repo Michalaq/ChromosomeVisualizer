@@ -31,7 +31,7 @@ private:
         DragTag
     } state;
 
-    QModelIndex selectedTag;
+    QPersistentModelIndex selectedTag;
 
     bool clicked = false;
     bool tagsFocused;
