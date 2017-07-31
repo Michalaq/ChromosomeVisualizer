@@ -1,42 +1,17 @@
 #include "defaults.h"
 #include "ui_defaults.h"
 
-QMap<int, int> Defaults::bt2tn = {
-    {0, 2},
-    {1, 3}
-}; // maps binder type to its name
-
-QMap<std::vector<int>, int> Defaults::ev2tn = {
-    {{0,0}, 4},
-    {{0,1}, 5},
-    {{1,0}, 6},
-    {{2,0}, 7}
-}; // maps energy vector to bead name
-
-QMap<std::string, int> Defaults::rs2tn = {
-    {"LAM", 9},
-    {"BIN", 10},
-    {"UNB", 11},
-    {"BOU", 12}
-}; // maps residue name to atom name
+QMap<int, int> Defaults::bt2tn;
+QMap<std::vector<int>, int> Defaults::ev2tn;
+QMap<std::string, int> Defaults::rs2tn;
 
 QMap<int, QPair<QString, QVariant>> Defaults::tn2defaults = {
     {0, {"(unresolved binder type)", QVariant()}},
     {1, {"(unresolved bead type)", QVariant()}},
-    {2, {"LAM", QVariant()}},
-    {3, {"BIN", QVariant()}},
-    {4, {"UNB", QVariant()}},
-    {5, {"BOU", QVariant()}},
-    {6, {"LAM", QVariant()}},
-    {7, {"LAM", QVariant()}},
-    {8, {"(unresolved atom type)", QVariant()}},
-    {9, {"LAM", QVariant()}},
-    {10, {"BIN", QVariant()}},
-    {11, {"UNB", QVariant()}},
-    {12, {"BOU", QVariant()}},
+    {2, {"(unresolved atom type)", QVariant()}},
 };
 
-int Defaults::typenames = 8;
+int Defaults::typenames = 3;
 
 #include "tablemodel.h"
 #include "tagsdelegate.h"
@@ -57,21 +32,24 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     ui->tableView->setModel(m1);
 
     connect(m1, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        auto pk = ix.sibling(ix.row(), 0).data().toInt();
         switch (ix.column())
         {
         case 0: // binder type
             if (old.isValid())
             {
                 auto oldtn = bt2tn.take(old.toInt());
-                bt2tn.insert(ix.data().toInt(), oldtn);
+                bt2tn.insert(pk, oldtn);
             }
+            else
+                bt2tn.insert(pk, typenames++);
 
             break;
         case 1: // binder name
-            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].first = ix.data().toString();
+            tn2defaults[bt2tn[pk]].first = ix.data().toString();
             break;
         case 2: // binder color
-            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].second = ix.data();
+            tn2defaults[bt2tn[pk]].second = ix.data();
             break;
         }
     });
@@ -104,6 +82,8 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
                 auto oldtn = ev2tn.take(opk);
                 ev2tn.insert(pk, oldtn);
             }
+            else
+                ev2tn.insert(pk, typenames++);
 
             break;
         case 1: // bead name
@@ -130,22 +110,26 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     ui->tableView_3->setModel(m3);
 
     connect(m3, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        auto pk = ix.sibling(ix.row(), 0).data().toString();
         switch (ix.column())
         {
         case 0: // residue name
             if (old.isValid())
             {
-                auto v = ix.data().toString();
-
                 auto oldtn = rs2tn.take(old.toString().toStdString());
-                rs2tn.insert(v.toStdString(), oldtn);
+                rs2tn.insert(pk.toStdString(), oldtn);
 
-                tn2defaults[oldtn].first = v;
+                tn2defaults[oldtn].first = pk;
+            }
+            else
+            {
+                rs2tn.insert(pk.toStdString(), typenames);
+                tn2defaults[typenames++].first = pk;
             }
 
             break;
         case 1: // atom color
-            tn2defaults[rs2tn[ix.sibling(ix.row(), 0).data().toString().toStdString()]].second = ix.data();
+            tn2defaults[rs2tn[pk.toStdString()]].second = ix.data();
             break;
         }
     });
@@ -177,7 +161,7 @@ int Defaults::ev2typename(std::vector<int> ev)
 int Defaults::rs2typename(std::string rs)
 {
     auto i = rs2tn.find(rs);
-    return i != rs2tn.end() ? i.value() : 8;
+    return i != rs2tn.end() ? i.value() : 2;
 }
 
 const QString& Defaults::typename2label(int tn)
