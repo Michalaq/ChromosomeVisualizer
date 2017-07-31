@@ -38,42 +38,6 @@ QMap<int, QPair<const char*, QColor>> Defaults::tn2defaults = {
 
 int Defaults::typenames = 8;
 
-#include <QJsonDocument>
-#include <QJsonArray>
-
-std::vector<int> parseJsonArray(QByteArray stream, bool *ok = Q_NULLPTR)
-{
-    auto document = QJsonDocument::fromJson(stream);
-
-    if (!document.isArray())
-    {
-        *ok = false;
-        return {};
-    }
-
-    auto array = document.array().toVariantList();
-
-    std::vector<int> ans;
-
-    bool b;
-
-    for (auto x : array)
-    {
-        auto y = x.toInt(&b);
-
-        if (!b)
-        {
-            if (ok) *ok = false;
-            return {};
-        }
-
-        ans.push_back(y);
-    }
-
-    if (ok) *ok = true;
-    return ans;
-}
-
 #include "tablemodel.h"
 #include "tagsdelegate.h"
 
@@ -148,7 +112,21 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         previous = i->data(Qt::DisplayRole);
     });*/
 
-    connect(ui->tableWidget_2, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
+    ui->tableView_2->setItemDelegateForColumn(0, new TableVectDelegate(this));
+    ui->tableView_2->setItemDelegateForColumn(1, new TableNameDelegate(this));
+    ui->tableView_2->setItemDelegateForColumn(2, new TagsDelegate(this));
+
+    auto *m2 = new TableModel({"Energy Vector", "Bead Name", "Default Tags"}, this);
+
+    m2->insertRows(0, 4, m2->index(0, 0));
+    m2->setData(m2->index(0, 0), "[0,0]"); m2->setData(m2->index(0, 1), "UNB"); m2->setData(m2->index(0, 2), QVariantList({QVariant::fromValue(new Material("", Qt::red))}));
+    m2->setData(m2->index(1, 0), "[0,1]"); m2->setData(m2->index(1, 1), "BOU"); m2->setData(m2->index(1, 2), QVariantList({QVariant::fromValue(new Material("", Qt::green))}));
+    m2->setData(m2->index(2, 0), "[1,0]"); m2->setData(m2->index(2, 1), "LAM"); m2->setData(m2->index(2, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
+    m2->setData(m2->index(3, 0), "[2,0]"); m2->setData(m2->index(3, 1), "LAM"); m2->setData(m2->index(3, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
+
+    ui->tableView_2->setModel(m2);
+
+    /*connect(ui->tableWidget_2, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
         previous = i->data(Qt::DisplayRole);
         key2 = parseJsonArray(ui->tableWidget_2->item(i->row(), 0)->data(Qt::DisplayRole).toByteArray());
         key = ev2tn[key2];
@@ -201,7 +179,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
         }
 
         previous = i->data(Qt::DisplayRole);
-    });
+    });*/
 
     ui->tableView_3->setItemDelegateForColumn(0, new TableNameDelegate(this));
     ui->tableView_3->setItemDelegateForColumn(1, new TagsDelegate(this));
@@ -258,8 +236,6 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
         previous = i->data(Qt::DisplayRole);
     });*/
-
-    ui->tableWidget_2->setItemDelegateForColumn(2, new TagsDelegate(this));
 }
 
 Defaults::~Defaults()

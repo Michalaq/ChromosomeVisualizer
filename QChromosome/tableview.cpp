@@ -215,7 +215,20 @@ void TableVectDelegate::setEditorData(QWidget * editor, const QModelIndex & inde
     qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
 }
 
+#include <QJsonDocument>
+#include <QJsonArray>
+
 void TableVectDelegate::setModelData(QWidget * editor, QAbstractItemModel * model, const QModelIndex & index) const
 {
+    QString str = qobject_cast<QLineEdit*>(editor)->text();
 
+    auto doc = QJsonDocument::fromJson(str.toUtf8());
+
+    if (doc.isArray())
+    {
+        for (auto i : doc.array())
+            if (!i.isDouble()) return;
+
+        model->setData(index, doc.toJson(QJsonDocument::Compact));
+    }
 }

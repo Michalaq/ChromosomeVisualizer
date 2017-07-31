@@ -67,7 +67,6 @@ SOURCES += main.cpp\
     materialrenderer.cpp \
     materialattributes.cpp \
     materialbrowser.cpp \
-    tablewidget.cpp \
     tablemodel.cpp \
     tableview.cpp
 
@@ -144,7 +143,6 @@ HEADERS  += mainwindow.h\
     materialrenderer.h \
     materialattributes.h \
     materialbrowser.h \
-    tablewidget.h \
     tablemodel.h \
     tableview.h
 
