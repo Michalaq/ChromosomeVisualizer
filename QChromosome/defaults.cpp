@@ -20,7 +20,7 @@ QMap<std::string, int> Defaults::rs2tn = {
     {"BOU", 12}
 }; // maps residue name to atom name
 
-QMap<int, QPair<const char*, QVariant>> Defaults::tn2defaults = {
+QMap<int, QPair<QString, QVariant>> Defaults::tn2defaults = {
     {0, {"(unresolved binder type)", QVariant()}},
     {1, {"(unresolved bead type)", QVariant()}},
     {2, {"LAM", QVariant()}},
@@ -68,9 +68,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
             break;
         case 1: // binder name
-            dump.append(ix.data().toByteArray());
-            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].first = dump.last().constData();
-
+            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].first = ix.data().toString();
             break;
         case 2: // binder color
             tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].second = ix.data();
@@ -109,9 +107,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
             break;
         case 1: // bead name
-            dump.append(ix.data().toByteArray());
-            tn2defaults[ev2tn[pk]].first = dump.last().constData();
-
+            tn2defaults[ev2tn[pk]].first = ix.data().toString();
             break;
         case 2: // bead color
             tn2defaults[ev2tn[pk]].second = ix.data();
@@ -144,8 +140,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
                 auto oldtn = rs2tn.take(old.toString().toStdString());
                 rs2tn.insert(v.toStdString(), oldtn);
 
-                dump.append(v.toUtf8());
-                tn2defaults[oldtn].first = dump.last().constData();
+                tn2defaults[oldtn].first = v;
             }
 
             break;
@@ -185,12 +180,12 @@ int Defaults::rs2typename(std::string rs)
     return i != rs2tn.end() ? i.value() : 8;
 }
 
-const char* Defaults::typename2label(int tn)
+const QString& Defaults::typename2label(int tn)
 {
     return tn2defaults[tn].first;
 }
 
-QVariant Defaults::typename2color(int tn)
+const QVariant& Defaults::typename2color(int tn)
 {
     return tn2defaults[tn].second;
 }

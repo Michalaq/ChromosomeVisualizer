@@ -21,8 +21,8 @@ public:
     static int ev2typename(std::vector<int> ev);
     static int rs2typename(std::string rs);
 
-    static const char *typename2label(int tn);
-    static QVariant typename2color(int tn);
+    static const QString &typename2label(int tn);
+    static const QVariant &typename2color(int tn);
 
 signals:
 
@@ -34,14 +34,7 @@ private:
     static QMap<int, int> bt2tn; // maps binder type to its typename
     static QMap<std::vector<int>, int> ev2tn; // maps energy vector to bead typename
     static QMap<std::string, int> rs2tn; // maps residue name to typename
-    static QMap<int, QPair<const char*, QVariant>> tn2defaults; // maps typenames to their defaults
-
-    QVariant previous;
-    int key, key1;
-    std::vector<int> key2;
-    std::string key3;
-
-    QVector<QByteArray> dump;
+    static QMap<int, QPair<QString, QVariant>> tn2defaults; // maps typenames to their defaults
 
     static int typenames;
 };

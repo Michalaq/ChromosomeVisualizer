@@ -813,7 +813,7 @@ AtomSelection VizWidget::atomTypeSelection(const char * s)
     const auto frame = simulation_->getFrame(0);
     for (unsigned int i = 0; i < sphereCount_; i++)
     {
-        if (strcmp(Defaults::typename2label(frame->atoms[i].type), s) == 0)
+        if (Defaults::typename2label(frame->atoms[i].type) == s)
             l.push_back(i);
     }
 
