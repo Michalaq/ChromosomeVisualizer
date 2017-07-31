@@ -1,6 +1,8 @@
 #include "rendersettings.h"
 #include "ui_rendersettings.h"
 
+RenderSettings* RenderSettings::instance = nullptr;
+
 #include <QProxyStyle>
 #include <QPainter>
 
@@ -94,6 +96,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
 RenderSettings::~RenderSettings()
 {
     delete ui;
+}
+
+RenderSettings* RenderSettings::getInstance()
+{
+    return instance ? instance : instance = new RenderSettings();
 }
 
 QSize RenderSettings::outputSize() const

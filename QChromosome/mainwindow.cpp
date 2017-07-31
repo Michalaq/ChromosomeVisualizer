@@ -16,9 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
-    renderSettings(new RenderSettings),
+    renderSettings(RenderSettings::getInstance()),
     preferences(new Preferences),
-    materialBrowser(new MaterialBrowser),
+    materialBrowser(MaterialBrowser::getInstance()),
     ignore(0)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
@@ -725,7 +725,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture()
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, suffix);
+    MovieMaker::captureScene(ui->scene, ui->camera, suffix);
 
     system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
     system("rm povray.ini");
@@ -742,7 +742,7 @@ void MainWindow::captureMovie()
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
     for (int i = 1; ; i++)
     {
-        MovieMaker::captureScene(ui->scene, ui->camera, renderSettings, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
+        MovieMaker::captureScene(ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
         if (i != frames)
             ui->scene->advanceFrame();
         else

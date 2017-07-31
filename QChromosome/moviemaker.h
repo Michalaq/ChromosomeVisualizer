@@ -37,8 +37,9 @@ public:
                           + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
     }
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, const RenderSettings * renderSettings, QString suffix)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix)
     {
+        auto renderSettings = RenderSettings::getInstance();
         prepareINIFile(renderSettings);
         std::ofstream outFile;
         QString filename = renderSettings->saveFile() + suffix;

@@ -2,6 +2,8 @@
 #include "ui_materialbrowser.h"
 #include "material.h"
 
+MaterialBrowser* MaterialBrowser::instance = nullptr;
+
 MaterialBrowser::MaterialBrowser(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MaterialBrowser)
@@ -37,6 +39,11 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 MaterialBrowser::~MaterialBrowser()
 {
     delete ui;
+}
+
+MaterialBrowser* MaterialBrowser::getInstance()
+{
+    return instance ? instance : instance = new MaterialBrowser();
 }
 
 void MaterialBrowser::read(const QJsonArray& json, QMap<int, Material*>& tags)

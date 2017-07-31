@@ -35,11 +35,12 @@ class MaterialBrowser : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MaterialBrowser(QWidget *parent = 0);
     ~MaterialBrowser();
 
     void read(const QJsonArray &json, QMap<int, Material*> &tags);
     void write(QJsonArray &json, QMap<Material*, int> &tags) const;
+
+    static MaterialBrowser* getInstance();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -48,7 +49,11 @@ signals:
     void materialsSelected(const QList<Material*>&);
 
 private:
+    explicit MaterialBrowser(QWidget *parent = 0);
+
     Ui::MaterialBrowser *ui;
+
+    static MaterialBrowser* instance;
 };
 
 #include <QAbstractListModel>

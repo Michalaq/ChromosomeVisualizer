@@ -12,7 +12,7 @@ class RenderSettings : public QWidget
 {
     Q_OBJECT
 public:
-    explicit RenderSettings(QWidget *parent = 0);
+    static RenderSettings* getInstance();
     ~RenderSettings();
 
     /* Output */
@@ -79,6 +79,9 @@ protected:
     void connectNotify(const QMetaMethod& signal);
 
 private:
+    explicit RenderSettings(QWidget *parent = 0);
+    static RenderSettings *instance;
+
     Ui::RenderSettings *ui;
 
     qreal aspectRatio;
