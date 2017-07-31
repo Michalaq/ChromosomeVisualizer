@@ -30,6 +30,7 @@ private:
     QMap<QVariant, QPersistentModelIndex> fst2ix;
 
 signals:
+    void foo(QModelIndex ix, QVariant old);//TODO hack dla defaults, usunąć
 
 public slots:
 };

@@ -497,10 +497,6 @@ void VizWidget::setFirstFrame()
 
     setFrame(0);
 
-    // Assign appropriate default colors
-    for (unsigned int i = 0; i < sphereCount_; i++)
-        frameState_[i].color = Defaults::typename2color(frame->atoms[i].type).rgba();
-
     needVBOUpdate_ = true;
     update();
 

@@ -20,20 +20,20 @@ QMap<std::string, int> Defaults::rs2tn = {
     {"BOU", 12}
 }; // maps residue name to atom name
 
-QMap<int, QPair<const char*, QColor>> Defaults::tn2defaults = {
-    {0, {"(unresolved binder type)", Qt::gray}},
-    {1, {"(unresolved bead type)", Qt::gray}},
-    {2, {"LAM", Qt::blue}},
-    {3, {"BIN", QColor("#7fffffff")}},
-    {4, {"UNB", Qt::red}},
-    {5, {"BOU", Qt::green}},
-    {6, {"LAM", Qt::blue}},
-    {7, {"LAM", Qt::blue}},
-    {8, {"(unresolved atom type)", Qt::gray}},
-    {9, {"LAM", Qt::blue}},
-    {10, {"BIN", QColor("#7fffffff")}},
-    {11, {"UNB", Qt::red}},
-    {12, {"BOU", Qt::green}},
+QMap<int, QPair<const char*, QVariant>> Defaults::tn2defaults = {
+    {0, {"(unresolved binder type)", QVariant()}},
+    {1, {"(unresolved bead type)", QVariant()}},
+    {2, {"LAM", QVariant()}},
+    {3, {"BIN", QVariant()}},
+    {4, {"UNB", QVariant()}},
+    {5, {"BOU", QVariant()}},
+    {6, {"LAM", QVariant()}},
+    {7, {"LAM", QVariant()}},
+    {8, {"(unresolved atom type)", QVariant()}},
+    {9, {"LAM", QVariant()}},
+    {10, {"BIN", QVariant()}},
+    {11, {"UNB", QVariant()}},
+    {12, {"BOU", QVariant()}},
 };
 
 int Defaults::typenames = 8;
@@ -186,56 +186,35 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
     auto *m3 = new TableModel({"Residue Name", "Default Tags"}, this);
 
+    ui->tableView_3->setModel(m3);
+
+    connect(m3, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        switch (ix.column())
+        {
+        case 0: // residue name
+            if (old.isValid())
+            {
+                auto v = ix.data().toString();
+
+                auto oldtn = rs2tn.take(old.toString().toStdString());
+                rs2tn.insert(v.toStdString(), oldtn);
+
+                dump.append(v.toUtf8());
+                tn2defaults[oldtn].first = dump.last().constData();
+            }
+
+            break;
+        case 1: // atom color
+            tn2defaults[rs2tn[ix.sibling(ix.row(), 0).data().toString().toStdString()]].second = ix.data();
+            break;
+        }
+    });
+
     m3->insertRows(0, 4, m3->index(0, 0));
     m3->setData(m3->index(0, 0), "LAM"); m3->setData(m3->index(0, 1), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
     m3->setData(m3->index(1, 0), "BIN"); m3->setData(m3->index(1, 1), QVariantList({QVariant::fromValue(new Material("", Qt::white, .5))}));
     m3->setData(m3->index(2, 0), "UNB"); m3->setData(m3->index(2, 1), QVariantList({QVariant::fromValue(new Material("", Qt::red))}));
     m3->setData(m3->index(3, 0), "BOU"); m3->setData(m3->index(3, 1), QVariantList({QVariant::fromValue(new Material("", Qt::green))}));
-
-    ui->tableView_3->setModel(m3);
-
-    /*connect(ui->tableWidget_3, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
-        previous = i->data(Qt::DisplayRole);
-        key3 = ui->tableWidget_3->item(i->row(), 0)->data(Qt::DisplayRole).toString().toStdString();
-        key = rs2tn[key3];
-    });
-
-    connect(ui->tableWidget_3, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
-        int c = i->column();
-        switch (c)
-        {
-        case 0: // residue name
-            {
-                auto v = i->data(Qt::DisplayRole).toString().toStdString();
-                if (!rs2tn.contains(v))
-                {
-                    auto oldtn = rs2tn.take(key3);
-                    rs2tn.insert(v, oldtn);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            break;
-        case 1: // atom color
-            if (i->data(Qt::DisplayRole).canConvert<QString>())
-            {
-                auto c = QColor(i->data(Qt::DisplayRole).toString());
-                if (c.isValid())
-                {
-                    auto v = tn2defaults.take(key);
-                    v.second = c;
-                    tn2defaults.insert(key, v);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            else
-                i->setData(Qt::DisplayRole, previous);
-            break;
-        }
-
-        previous = i->data(Qt::DisplayRole);
-    });*/
 }
 
 Defaults::~Defaults()
@@ -266,7 +245,7 @@ const char* Defaults::typename2label(int tn)
     return tn2defaults[tn].first;
 }
 
-QColor Defaults::typename2color(int tn)
+QVariant Defaults::typename2color(int tn)
 {
     return tn2defaults[tn].second;
 }

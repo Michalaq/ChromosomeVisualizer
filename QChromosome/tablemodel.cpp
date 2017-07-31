@@ -46,9 +46,12 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
         return false;
 
     if (role == Qt::UserRole + 1)
-        database[index.row()].last() = value;
-    else
     {
+        database[index.row()].last() = value;
+        return true;
+    }
+    else
+    {auto old = index.data();//TODO hack dla defaults, usunąć
         // first column is a primary key
         if (index.column() == 0)
         {
@@ -63,10 +66,11 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
         }
         else
             database[index.row()][index.column()] = value;
-    }
 
-    emit dataChanged(index, index);
-    return true;
+        emit foo(index, old);//TODO hack dla defaults, usunąć
+        emit dataChanged(index, index);
+        return true;
+    }
 }
 
 Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
