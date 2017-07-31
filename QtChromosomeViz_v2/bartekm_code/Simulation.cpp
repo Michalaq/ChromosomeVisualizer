@@ -98,7 +98,7 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
     return maximum;
 }
 
-void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
+void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc, bool init)
 {
     const auto offset = getFrame(0)->atoms.size();
     layerConcatenations_.emplace_back(slc);
@@ -115,7 +115,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     slc->setLayerId(layerId);
    
     auto f = slc->getFrame(0);
-    model->setupModelData(f->atoms, f->connectedRanges, layerId, offset);
+    model->setupModelData(f->atoms, f->connectedRanges, layerId, offset, init);
 
 }
 
@@ -138,7 +138,7 @@ void Simulation::read(const QJsonArray &json)
         auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
         simulationLayer->read(i.toArray());
 
-        addSimulationLayerConcatenation(simulationLayer);
+        addSimulationLayerConcatenation(simulationLayer, false);
     }
 }
 

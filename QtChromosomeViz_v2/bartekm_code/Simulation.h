@@ -22,7 +22,7 @@ public:
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
-    void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc);
+    void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc, bool init = true);
     std::shared_ptr<SimulationLayerConcatenation> getSimulationLayerConcatenation(int i);
     //virtual std::shared_ptr<Frame> getFrameByNumber(frameNumber_t position);
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t time);

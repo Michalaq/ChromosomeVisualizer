@@ -166,7 +166,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 #include "defaults.h"
 
-void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent)
+void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
     TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parent);
 
@@ -177,7 +177,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, Defaults::typename2color(t)}, root);
+            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
 
         types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
     }
@@ -190,7 +190,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
 #include <QBitArray>
 
-void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset)
+void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init)
 {
     QBitArray used(atoms.size(), false);
 
@@ -201,7 +201,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     for (auto range : connectedRanges)
     {
         used.fill(true, range.first - 1, range.second);
-        appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root);
+        appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root, init);
     }
 
     QMap<int, TreeItem*> types;
@@ -212,7 +212,7 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, Defaults::typename2color(t)}, root);
+                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
 
             types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
         }
