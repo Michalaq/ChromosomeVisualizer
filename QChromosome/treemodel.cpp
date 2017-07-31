@@ -226,8 +226,8 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
 
     endInsertRows();
 
-    indices.resize(atoms.size() + 1);
-    dumpModel(this, index(0, 0), indices);
+    indices.resize(offset + atoms.size() + 1);
+    dumpModel(this, index(rowCount() - 1, 0), indices);
 }
 
 const QVector<QModelIndex>& TreeModel::getIndices() const
