@@ -468,20 +468,17 @@ bool TreeView::event(QEvent *event)
 void TreeView::materializeTags(const QModelIndex &root)
 {
     for (int r = 0; r < model()->rowCount(root); r++)
+        materializeTags(model()->index(r, 0, root));
+
+    auto *m = getMaterial(root);
+
+    if (m != nullptr)
     {
-        auto c = model()->index(r, 0, root);
-        materializeTags(c);
+        QList<unsigned int> id;
+        dumpModel(root, id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
-        auto *m = getMaterial(c);
+        scene->customSelection(id).setMaterial(m);
 
-        if (m != nullptr)
-        {
-            QList<unsigned int> id;
-            dumpModel(c, id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
-
-            scene->customSelection(id).setMaterial(m);
-
-            m->assign(c);
-        }
+        m->assign(root);
     }
 }
