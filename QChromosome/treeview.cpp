@@ -220,7 +220,6 @@ Material* TreeView::takeSelectedMaterial()
 
     model()->setData(selectedTag, list, Qt::DisplayRole);
     model()->setData(selectedTag, -1, Qt::UserRole + 1);
-    selectedTag = QModelIndex();
 
     update();
 
@@ -233,6 +232,8 @@ Material* TreeView::takeSelectedMaterial()
     dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
 
     scene->customSelection(id).setMaterial(getMaterial(root));
+
+    selectedTag = QModelIndex();
 
     return ans;
 }

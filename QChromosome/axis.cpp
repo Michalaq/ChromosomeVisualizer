@@ -9,6 +9,11 @@ Axis::Axis(QWidget *parent) :
     setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
+Axis::~Axis()
+{
+
+}
+
 #include <QPainter>
 
 void Axis::paintEvent(QPaintEvent *event)

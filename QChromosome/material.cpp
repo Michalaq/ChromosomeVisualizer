@@ -87,7 +87,7 @@ void Material::paint(QPainter *painter, QRect bounds)
     MaterialRenderer::getInstance()->paint(painter, b, this);
 }
 
-void Material::assign(const QModelIndex &ix, bool b)
+void Material::assign(const QPersistentModelIndex &ix, bool b)
 {
     auto it = assignment.find(ix);
 
@@ -105,7 +105,7 @@ void Material::assign(const QModelIndex &ix, bool b)
     }
 }
 
-QModelIndexList Material::getAssigned() const
+QList<QPersistentModelIndex> Material::getAssigned() const
 {
     return assignment.keys();
 }

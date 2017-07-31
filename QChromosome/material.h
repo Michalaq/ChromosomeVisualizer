@@ -29,8 +29,8 @@ public:
 
     void paint(QPainter *painter, QRect bounds);
 
-    void assign(const QModelIndex& ix, bool b = true);
-    QModelIndexList getAssigned() const;
+    void assign(const QPersistentModelIndex& ix, bool b = true);
+    QList<QPersistentModelIndex> getAssigned() const;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -51,7 +51,7 @@ private:
 
     static Material* dm;
 
-    QMap<QModelIndex, int> assignment;
+    QMap<QPersistentModelIndex, int> assignment;
 
 signals:
 

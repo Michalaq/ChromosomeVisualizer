@@ -9,6 +9,7 @@ class Axis : public QWidget
     Q_OBJECT
 public:
     explicit Axis(QWidget *parent = 0);
+    ~Axis();
 
     void setTextVisible(bool czy);
     void setScale(double s);
