@@ -40,11 +40,14 @@ int Defaults::typenames = 8;
 
 #include "tablemodel.h"
 #include "tagsdelegate.h"
+#include <QJsonDocument>
+#include <QJsonArray>
 
 Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
+    // first table
     ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
     ui->tableView->setItemDelegateForColumn(1, new TableNameDelegate(this));
     ui->tableView->setItemDelegateForColumn(2, new TagsDelegate(this));
@@ -79,11 +82,42 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM"); m1->setData(m1->index(0, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
     m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN"); m1->setData(m1->index(1, 2), QVariantList({QVariant::fromValue(new Material("", Qt::white, .5))}));
 
+    // second table
     ui->tableView_2->setItemDelegateForColumn(0, new TableVectDelegate(this));
     ui->tableView_2->setItemDelegateForColumn(1, new TableNameDelegate(this));
     ui->tableView_2->setItemDelegateForColumn(2, new TagsDelegate(this));
 
     auto *m2 = new TableModel({"Energy Vector", "Bead Name", "Default Tags"}, this);
+
+    ui->tableView_2->setModel(m2);
+
+    connect(m2, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        auto tmp = QJsonDocument::fromJson(ix.sibling(ix.row(), 0).data().toByteArray()).array().toVariantList();
+        std::vector<int> pk;
+        for (auto i : tmp) pk.push_back(i.toInt());
+        switch (ix.column())
+        {
+        case 0: // energy vector
+            if (old.isValid())
+            {
+                auto tmp = QJsonDocument::fromJson(old.toByteArray()).array().toVariantList();
+                std::vector<int> opk;
+                for (auto i : tmp) opk.push_back(i.toInt());
+                auto oldtn = ev2tn.take(opk);
+                ev2tn.insert(pk, oldtn);
+            }
+
+            break;
+        case 1: // bead name
+            dump.append(ix.data().toByteArray());
+            tn2defaults[ev2tn[pk]].first = dump.last().constData();
+
+            break;
+        case 2: // bead color
+            tn2defaults[ev2tn[pk]].second = ix.data();
+            break;
+        }
+    });
 
     m2->insertRows(0, 4, m2->index(0, 0));
     m2->setData(m2->index(0, 0), "[0,0]"); m2->setData(m2->index(0, 1), "UNB"); m2->setData(m2->index(0, 2), QVariantList({QVariant::fromValue(new Material("", Qt::red))}));
@@ -91,63 +125,7 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     m2->setData(m2->index(2, 0), "[1,0]"); m2->setData(m2->index(2, 1), "LAM"); m2->setData(m2->index(2, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
     m2->setData(m2->index(3, 0), "[2,0]"); m2->setData(m2->index(3, 1), "LAM"); m2->setData(m2->index(3, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
 
-    ui->tableView_2->setModel(m2);
-
-    /*connect(ui->tableWidget_2, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
-        previous = i->data(Qt::DisplayRole);
-        key2 = parseJsonArray(ui->tableWidget_2->item(i->row(), 0)->data(Qt::DisplayRole).toByteArray());
-        key = ev2tn[key2];
-    });
-
-    connect(ui->tableWidget_2, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
-        int c = i->column();
-        switch (c)
-        {
-        case 0: // energy vector
-            {
-                bool ok;
-                auto v = parseJsonArray(i->data(Qt::DisplayRole).toByteArray(), &ok);
-                if (ok && !ev2tn.contains(v))
-                {
-                    auto oldtn = ev2tn.take(key2);
-                    ev2tn.insert(v, oldtn);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            break;
-        case 1: // bead name
-            if (i->data(Qt::DisplayRole).canConvert<QString>())
-            {
-                dump.append(i->data(Qt::DisplayRole).toByteArray());
-                auto v = tn2defaults.take(key);
-                v.first = dump.last().constData();
-                tn2defaults.insert(key, v);
-            }
-            else
-                i->setData(Qt::DisplayRole, previous);
-            break;
-        case 2: // bead color
-            if (i->data(Qt::DisplayRole).canConvert<QString>())
-            {
-                auto c = QColor(i->data(Qt::DisplayRole).toString());
-                if (c.isValid())
-                {
-                    auto v = tn2defaults.take(key);
-                    v.second = c;
-                    tn2defaults.insert(key, v);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            else
-                i->setData(Qt::DisplayRole, previous);
-            break;
-        }
-
-        previous = i->data(Qt::DisplayRole);
-    });*/
-
+    // third table
     ui->tableView_3->setItemDelegateForColumn(0, new TableNameDelegate(this));
     ui->tableView_3->setItemDelegateForColumn(1, new TagsDelegate(this));
 
