@@ -42,6 +42,8 @@ public:
 
     static MaterialBrowser* getInstance();
 
+    Material *mat[4];
+
 protected:
     void paintEvent(QPaintEvent *event);
 

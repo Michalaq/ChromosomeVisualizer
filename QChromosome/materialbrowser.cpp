@@ -13,10 +13,10 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     ui->listView->setItemDelegate(new MaterialDelegate(this));
 
     auto * m = new MaterialListModel;
-    m->prepend(new Material(m->next_name(), Qt::red));
-    m->prepend(new Material(m->next_name(), Qt::green));
-    m->prepend(new Material(m->next_name(), Qt::blue));
-    m->prepend(new Material(m->next_name(), Qt::white, .5));
+    m->prepend(mat[0] = new Material(m->next_name(), Qt::red));
+    m->prepend(mat[1] = new Material(m->next_name(), Qt::green));
+    m->prepend(mat[2] = new Material(m->next_name(), Qt::blue));
+    m->prepend(mat[3] = new Material(m->next_name(), Qt::white, .5));
 
     ui->listView->setModel(m);
 
