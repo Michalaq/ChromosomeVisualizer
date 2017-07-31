@@ -14,6 +14,11 @@ Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
     visible.setChecked(true);
 }
 
+Legend::~Legend()
+{
+
+}
+
 QColor Legend::pen() const
 {
     return visible.isChecked() ? color : Qt::transparent;

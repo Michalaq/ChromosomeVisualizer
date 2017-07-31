@@ -39,6 +39,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 MaterialBrowser::~MaterialBrowser()
 {
     delete ui;
+    qDeleteAll(mat, mat + 4);
 }
 
 MaterialBrowser* MaterialBrowser::getInstance()
@@ -86,6 +87,11 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
 }
 
 ListView::ListView(QWidget *parent) : QListView(parent)
+{
+
+}
+
+ListView::~ListView()
 {
 
 }

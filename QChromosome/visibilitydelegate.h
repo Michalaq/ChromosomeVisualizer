@@ -8,6 +8,7 @@ class VisibilityDelegate : public QStyledItemDelegate
     Q_OBJECT
 public:
     explicit VisibilityDelegate(QObject *parent = 0);
+    ~VisibilityDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 

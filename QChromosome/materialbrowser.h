@@ -12,6 +12,7 @@ class ListView : public QListView
     Q_OBJECT
 public:
     explicit ListView(QWidget *parent = 0);
+    ~ListView();
 
 protected:
     void mousePressEvent(QMouseEvent *event);

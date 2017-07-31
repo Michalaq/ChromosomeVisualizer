@@ -9,6 +9,7 @@ class Picker : public ComboBox
     Q_OBJECT
 public:
     explicit Picker(QWidget *parent = 0);
+    ~Picker();
 
     QColor value() const;
     void setValue(const QColor& c, bool spontaneous = true);

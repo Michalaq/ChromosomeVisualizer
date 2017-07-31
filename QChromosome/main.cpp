@@ -4,6 +4,9 @@
 #include <QFontDatabase>
 #include <QSplashScreen>
 
+#include "commondata.h"
+#include "materialrenderer.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -33,5 +36,14 @@ int main(int argc, char *argv[])
 
     s.finish(&w);
 
-    return a.exec();
+    int ans = a.exec();
+
+    delete CommonData::getInstance();
+    delete MaterialBrowser::getInstance();
+    delete MaterialRenderer::getInstance();
+    delete RenderSettings::getInstance();
+
+    delete Material::getDefault();
+
+    return ans;
 }

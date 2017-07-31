@@ -8,6 +8,7 @@ class SoftSlider : public QSlider
     Q_OBJECT
 public:
     explicit SoftSlider(QWidget *parent = 0);
+    virtual ~SoftSlider();
 
     void setMinimum(int min);
     void setMaximum(int max);

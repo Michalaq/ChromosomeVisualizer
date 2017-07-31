@@ -8,6 +8,7 @@ class SpinBox : public QSpinBox
     Q_OBJECT
 public:
     explicit SpinBox(QWidget *parent = 0);
+    ~SpinBox();
 
     QValidator::State validate(QString &input, int &pos) const;
     int valueFromText(const QString &text) const;

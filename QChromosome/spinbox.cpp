@@ -14,6 +14,11 @@ SpinBox::SpinBox(QWidget *parent) : QSpinBox(parent)
     });
 }
 
+SpinBox::~SpinBox()
+{
+
+}
+
 void SpinBox::setValue(int val, bool spontaneous)
 {
     bool b;

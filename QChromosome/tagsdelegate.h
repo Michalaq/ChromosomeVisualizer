@@ -8,6 +8,7 @@ class TagsDelegate : public QStyledItemDelegate
     Q_OBJECT
 public:
     explicit TagsDelegate(QObject *parent = 0);
+    ~TagsDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 

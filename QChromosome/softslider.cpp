@@ -8,6 +8,11 @@ SoftSlider::SoftSlider(QWidget *parent) :
 
 }
 
+SoftSlider::~SoftSlider()
+{
+
+}
+
 void SoftSlider::setMinimum(int min)
 {
     QSlider::setMinimum(min);

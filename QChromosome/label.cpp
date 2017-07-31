@@ -5,6 +5,11 @@ Label::Label(QWidget *parent) : QLabel(parent)
 
 }
 
+Label::~Label()
+{
+
+}
+
 #include <QPainter>
 #include <QFontMetrics>
 

@@ -32,6 +32,11 @@ Camera::Camera(QWidget *parent)
     updateAngles();
 }
 
+Camera::~Camera()
+{
+
+}
+
 void Camera::resizeEvent(QResizeEvent *event)
 {
     emit projectionChanged(updateProjection());

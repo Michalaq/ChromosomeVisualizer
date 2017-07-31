@@ -8,6 +8,7 @@ class ToolBar : public QToolBar
     Q_OBJECT
 public:
     explicit ToolBar(QWidget *parent = 0);
+    ~ToolBar();
 
     void addAction(QAction *action);
 

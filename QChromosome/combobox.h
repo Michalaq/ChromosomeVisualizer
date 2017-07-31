@@ -8,6 +8,7 @@ class ComboBox : public QComboBox
     Q_OBJECT
 public:
     explicit ComboBox(QWidget *parent = 0);
+    ~ComboBox();
 
 protected:
     void focusInEvent(QFocusEvent *event);

@@ -6,6 +6,11 @@ ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
     layout()->setMargin(0);
 }
 
+ToolBar::~ToolBar()
+{
+
+}
+
 #include <QWidgetAction>
 #include "mediacontrol.h"
 

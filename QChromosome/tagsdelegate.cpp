@@ -5,6 +5,11 @@ TagsDelegate::TagsDelegate(QObject *parent) : QStyledItemDelegate(parent)
 
 }
 
+TagsDelegate::~TagsDelegate()
+{
+
+}
+
 #include "material.h"
 #include <QPainter>
 

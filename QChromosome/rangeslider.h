@@ -8,6 +8,7 @@ class RangeSlider : public QSlider
     Q_OBJECT
 public:
     explicit RangeSlider(QWidget *parent = 0);
+    ~RangeSlider();
 
     QSize minimumSizeHint() const;
 

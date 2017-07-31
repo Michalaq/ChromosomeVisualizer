@@ -8,6 +8,7 @@ class Blind : public QWidget
     Q_OBJECT
 public:
     explicit Blind(QWidget *parent = 0);
+    ~Blind();
 
     void setOpacity(double o);
     void setColor(QColor c);

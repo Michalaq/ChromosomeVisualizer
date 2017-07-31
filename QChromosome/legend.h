@@ -9,6 +9,7 @@ class Legend : public QLabel
     Q_OBJECT
 public:
     explicit Legend(const QString & text, const QColor& color, QWidget *parent = 0);
+    ~Legend();
 
     QColor pen() const;
     QColor brush() const;

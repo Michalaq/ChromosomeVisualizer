@@ -15,6 +15,11 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     setFixedSize(45, 45);
 }
 
+Material::~Material()
+{
+
+}
+
 QString Material::getName() const
 {
     return name;

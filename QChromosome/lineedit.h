@@ -8,6 +8,7 @@ class LineEdit : public QLineEdit
     Q_OBJECT
 public:
     explicit LineEdit(QWidget *parent = 0);
+    ~LineEdit();
 
 protected:
     void focusInEvent(QFocusEvent *event);

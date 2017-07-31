@@ -14,6 +14,11 @@ DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
     });
 }
 
+DoubleSpinBox::~DoubleSpinBox()
+{
+
+}
+
 void DoubleSpinBox::setValue(double val, bool spontaneous)
 {
     bool b;

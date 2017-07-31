@@ -5,6 +5,11 @@ LineEdit::LineEdit(QWidget *parent) : QLineEdit(parent)
 
 }
 
+LineEdit::~LineEdit()
+{
+
+}
+
 #include <QStyle>
 
 void LineEdit::focusInEvent(QFocusEvent *event)

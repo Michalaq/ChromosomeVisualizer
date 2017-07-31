@@ -5,6 +5,11 @@ Picker::Picker(QWidget *parent) : ComboBox(parent), alpha(true)
     addItem(QIcon(), "<< multiple values >>");
 }
 
+Picker::~Picker()
+{
+
+}
+
 QColor Picker::value() const
 {
     return color;

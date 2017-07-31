@@ -9,6 +9,11 @@ RangeSlider::RangeSlider(QWidget *parent) :
 
 }
 
+RangeSlider::~RangeSlider()
+{
+
+}
+
 QSize RangeSlider::minimumSizeHint() const
 {
     return QSize(40, 20);

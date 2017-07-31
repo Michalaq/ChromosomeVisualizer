@@ -8,6 +8,7 @@ class Label : public QLabel
     Q_OBJECT
 public:
     explicit Label(QWidget *parent = 0);
+    ~Label();
 
     void paintEvent(QPaintEvent *event);
 

@@ -7,6 +7,11 @@ ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
     setItemDelegate(new QStyledItemDelegate(this));
 }
 
+ComboBox::~ComboBox()
+{
+
+}
+
 void ComboBox::setCurrentIndex(int index, bool spontaneous)
 {
     bool b;

@@ -13,6 +13,7 @@ class Camera : public Draggable
     Q_OBJECT
 public:
     explicit Camera(QWidget *parent = 0);
+    ~Camera();
 
 protected:
     void resizeEvent(QResizeEvent *event);

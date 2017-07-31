@@ -5,6 +5,11 @@ NameDelegate::NameDelegate(QObject *parent) : QStyledItemDelegate(parent)
 
 }
 
+NameDelegate::~NameDelegate()
+{
+
+}
+
 #include <QLineEdit>
 
 void NameDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const

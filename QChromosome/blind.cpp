@@ -9,6 +9,11 @@ Blind::Blind(QWidget *parent) :
     setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
+Blind::~Blind()
+{
+
+}
+
 #include <QPainter>
 #include <QtMath>
 

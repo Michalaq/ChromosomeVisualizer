@@ -5,6 +5,11 @@ VisibilityDelegate::VisibilityDelegate(QObject *parent) : QStyledItemDelegate(pa
 
 }
 
+VisibilityDelegate::~VisibilityDelegate()
+{
+
+}
+
 #include <QPainter>
 #include "treemodel.h"
 
