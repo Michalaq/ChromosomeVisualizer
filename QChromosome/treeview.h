@@ -38,6 +38,8 @@ public:
 
     void read(const QJsonObject& json, const QMap<int, Material*>& tags);
 
+    void materializeTags(const QModelIndex& root = QModelIndex());
+
 signals:
     void visibilityChanged(VisibilityMode);
 

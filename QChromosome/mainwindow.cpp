@@ -384,6 +384,7 @@ void MainWindow::addLayer()
             ui->plot->updateSimulation();
 
             connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+            ui->treeView->materializeTags();
         }
     } catch (std::exception& e) {
         QMessageBox::critical(0, "Error occured.", e.what());
