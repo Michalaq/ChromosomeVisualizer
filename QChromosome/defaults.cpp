@@ -51,66 +51,33 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 
     auto *m1 = new TableModel({"Binder Type", "Binder Name", "Default Tags"}, this);
 
+    ui->tableView->setModel(m1);
+
+    connect(m1, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        switch (ix.column())
+        {
+        case 0: // binder type
+            if (old.isValid())
+            {
+                auto oldtn = bt2tn.take(old.toInt());
+                bt2tn.insert(ix.data().toInt(), oldtn);
+            }
+
+            break;
+        case 1: // binder name
+            dump.append(ix.data().toByteArray());
+            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].first = dump.last().constData();
+
+            break;
+        case 2: // binder color
+            tn2defaults[bt2tn[ix.sibling(ix.row(), 0).data().toInt()]].second = ix.data();
+            break;
+        }
+    });
+
     m1->insertRows(0, 2, m1->index(0, 0));
     m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM"); m1->setData(m1->index(0, 2), QVariantList({QVariant::fromValue(new Material("", Qt::blue))}));
     m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN"); m1->setData(m1->index(1, 2), QVariantList({QVariant::fromValue(new Material("", Qt::white, .5))}));
-
-    ui->tableView->setModel(m1);
-
-    /*connect(ui->tableWidget, &QTableWidget::currentItemChanged, [this](QTableWidgetItem* i, QTableWidgetItem*) {
-        previous = i->data(Qt::DisplayRole);
-        key1 = ui->tableWidget->item(i->row(), 0)->data(Qt::DisplayRole).toInt();
-        key = bt2tn[key1];
-    });
-
-    connect(ui->tableWidget, &QTableWidget::itemChanged, [this](QTableWidgetItem* i) {
-        int c = i->column();
-        switch (c)
-        {
-        case 0: // binder type
-            {
-                bool ok;
-                int v = i->data(Qt::DisplayRole).toInt(&ok);
-                if (ok && !bt2tn.contains(v))
-                {
-                    auto oldtn = bt2tn.take(key1);
-                    bt2tn.insert(v, oldtn);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            break;
-        case 1: // binder name
-            if (i->data(Qt::DisplayRole).canConvert<QString>())
-            {
-                dump.append(i->data(Qt::DisplayRole).toByteArray());
-                auto v = tn2defaults.take(key);
-                v.first = dump.last().constData();
-                tn2defaults.insert(key, v);
-            }
-            else
-                i->setData(Qt::DisplayRole, previous);
-            break;
-        case 2: // binder color
-            if (i->data(Qt::DisplayRole).canConvert<QString>())
-            {
-                auto c = QColor(i->data(Qt::DisplayRole).toString());
-                if (c.isValid())
-                {
-                    auto v = tn2defaults.take(key);
-                    v.second = c;
-                    tn2defaults.insert(key, v);
-                }
-                else
-                    i->setData(Qt::DisplayRole, previous);
-            }
-            else
-                i->setData(Qt::DisplayRole, previous);
-            break;
-        }
-
-        previous = i->data(Qt::DisplayRole);
-    });*/
 
     ui->tableView_2->setItemDelegateForColumn(0, new TableVectDelegate(this));
     ui->tableView_2->setItemDelegateForColumn(1, new TableNameDelegate(this));
