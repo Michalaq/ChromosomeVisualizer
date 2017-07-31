@@ -669,7 +669,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
         id[t].append(v.toUInt());
 
     for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, root.child(r, 0), id);
+        dumpModel(model, model->index(r, 0, root), id);
 }
 
 void MainWindow::handleModelSelection()

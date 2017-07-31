@@ -161,7 +161,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
         id[v.toUInt()] = root;
 
     for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, root.child(r, 0), id);
+        dumpModel(model, model->index(r, 0, root), id);
 }
 
 #include "defaults.h"
@@ -255,7 +255,7 @@ void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonO
     const QJsonObject children = json["Descendants"].toObject();
 
     for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(model, root.child(child.key().toInt(), 0), child.value().toObject());
+        dumpModel3(model, model->index(child.key().toInt(), 0, root), child.value().toObject());
 }
 
 void TreeModel::read(const QJsonObject &json)
@@ -300,7 +300,7 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
     {
         QJsonObject child;
 
-        dumpModel2(model, root.child(r, 0), child, tags);
+        dumpModel2(model, model->index(r, 0, root), child, tags);
 
         if (!child.empty())
             children[QString::number(r)] = child;

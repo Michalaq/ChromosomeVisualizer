@@ -105,7 +105,7 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::
 
     for (int r = 0; r < model()->rowCount(root); r++)
     {
-        auto c = root.child(r, 0);
+        auto c = model()->index(r, 0, root);
 
         if (functor(c))
             dumpModel(c, id, functor);
@@ -172,7 +172,7 @@ void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json, cons
     const QJsonObject children = json["Descendants"].toObject();
 
     for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(root.child(child.key().toInt(), 0), child.value().toObject(), tags);
+        dumpModel3(model()->index(child.key().toInt(), 0, root), child.value().toObject(), tags);
 
     const QJsonArray t = json["Object"].toObject()["Tags"].toArray();
 
