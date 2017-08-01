@@ -7,7 +7,7 @@ Requirements
 Chromosome Visualizer is based on few components required for it to work correctly on Ubuntu 16.04:  
 1.  **Qt 5.5** -- the framework used to develop the application  
 2.  **build-essential libgl1-mesa-dev** -- these are required for OpenGL support  
-3.  **povray** -- required for picture capturing  
+3.  **povray povray-includes** -- required for picture capturing  
 4.  **ffmpeg** -- required for movie rendering  
 5.  **libprotobuf-dev protobuf-compiler** -- required for binary format support  
 6.  **gcc, version >= 5.0** -- required for C++14 support
