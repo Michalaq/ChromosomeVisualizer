@@ -57,12 +57,12 @@ public:
         for (auto b : vizBalls)
             addSphere(outFile, b.position, b.size, QColor::fromRgba(b.color));
 
-        for (int i = 0; i < vizBalls.length() - 1; i++)
+        auto frame = scene->currentFrame();
+
+        for (auto c : frame->connectedRanges)
         {
-            if (((vizBalls[i].color >> 24) == 0xFF) && ((vizBalls[i+1].color >> 24) == 0xFF))
-                addCylinder(outFile, vizBalls[i].position, vizBalls[i + 1].position, vizBalls[i].size / 2, QColor::fromRgba(vizBalls[i].color), QColor::fromRgba(vizBalls[i + 1].color));
-            else
-                break;
+            for (int i = c.first; i < c.second; i++)
+                addCylinder(outFile, vizBalls[i - 1].position, vizBalls[i].position, vizBalls[i - 1].size / 2, QColor::fromRgba(vizBalls[i - 1].color), QColor::fromRgba(vizBalls[i].color));
         }
 
         for (auto & key : scene->getLabels().keys())
