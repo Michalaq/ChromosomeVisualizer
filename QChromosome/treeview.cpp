@@ -479,6 +479,6 @@ void TreeView::materializeTags(const QModelIndex &root)
 
         scene->customSelection(id).setMaterial(m);
 
-        m->assign(root);
+        m->assign(root.sibling(root.row(), 5));
     }
 }
