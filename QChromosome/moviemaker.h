@@ -1,7 +1,6 @@
 #ifndef MOVIEMAKER_H
 #define MOVIEMAKER_H
 
-#include <cstdlib>
 #include <fstream>
 
 #include <QVector3D>
@@ -76,6 +75,66 @@ public:
         QStringList argv;
         argv << "povray.ini" << "-D" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
         QProcess::execute("povray", argv);
+#elif _WIN32
+        qDebug() << "windows povray photo";
+        system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
+#else
+        qDebug() << "platform not supported";
+#endif
+    }
+
+    static void inline captureScene1(const VizWidget* scene, const Camera* camera, QString suffix)
+    {
+        auto renderSettings = RenderSettings::getInstance();
+        prepareINIFile(renderSettings);
+        std::ofstream outFile;
+        QString filename = renderSettings->saveFile() + suffix;
+        createPOVFile(outFile, filename.toStdString(), renderSettings);
+
+        if (renderSettings->cam360())
+            set360Camera(outFile, camera, renderSettings->outputSize());
+        else
+            setCamera(outFile, camera, renderSettings->outputSize());
+        setBackgroundColor(outFile, scene->backgroundColor());
+        setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
+
+        auto& vizBalls = scene->getBallInstances();
+
+        for (auto b : vizBalls)
+            addSphere(outFile, b.position, b.size, QColor::fromRgba(b.color));
+
+        auto frame = scene->currentFrame();
+
+        for (auto c : frame->connectedRanges)
+        {
+            for (int i = c.first; i < c.second; i++)
+                addCylinder(outFile, vizBalls[i - 1].position, vizBalls[i].position, vizBalls[i - 1].size / 2, QColor::fromRgba(vizBalls[i - 1].color), QColor::fromRgba(vizBalls[i].color));
+        }
+
+        for (auto & key : scene->getLabels().keys())
+            addLabel(outFile, "");
+
+        outFile.flush();
+
+        QSettings settings;
+
+#ifdef __linux__
+        QStringList argv;
+        argv << "povray.ini" << "-D" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
+
+        QProcess *p = new QProcess;
+        p->setCurrentReadChannel(QProcess::StandardError);
+        p->start("povray", argv);
+
+        QObject::connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [=](int exitCode, QProcess::ExitStatus exitStatus){
+            system(QString(QString("rm ") + filename + ".pov").toUtf8().constData());
+            system("rm povray.ini");
+
+            if (renderSettings->openFile() && exitStatus == QProcess::NormalExit)
+                system(QString(QString("xdg-open ") + filename + ".png").toUtf8().constData());
+
+            p->deleteLater();
+        });
 #elif _WIN32
         qDebug() << "windows povray photo";
         system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());

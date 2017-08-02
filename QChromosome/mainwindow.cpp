@@ -725,13 +725,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture()
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->scene, ui->camera, suffix);
-
-    system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
-    system("rm povray.ini");
-
-    if (renderSettings->openFile())
-        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
+    MovieMaker::captureScene1(ui->scene, ui->camera, suffix);
 }
 
 void MainWindow::captureMovie()
