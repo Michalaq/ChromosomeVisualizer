@@ -214,3 +214,22 @@ void Interpolator::write(QJsonArray &json) const
         json.append(keyProperties);
     }
 }
+
+QDataStream &operator<<(QDataStream &stream, const Interpolator &ip)
+{
+    QDataStream p, a;
+
+    for (auto i = ip.values.begin(); i != ip.values.end(); i++)
+    {
+        auto& t = i.key();
+        auto& v = i.value().first;
+
+        p << t << ", <" << v[0] << ", " << v[1] << ", " << v[2] << ">\n";
+        a << t << ", <" << v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
+    stream << "#declare MySplinePos = \nspline {\ncubic_spline\n" << p << "}\n";
+    stream << "#declare MySplineAng = \nspline {\ncubic_spline\n" << a << "}\n";
+
+    return stream;
+}

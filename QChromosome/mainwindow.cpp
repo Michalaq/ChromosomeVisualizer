@@ -738,7 +738,7 @@ void MainWindow::captureMovie()
     {
         MovieMaker::captureScene(ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
         if (i != frames)
-            ui->scene->nextInterestingFrame();
+            ui->scene->advanceFrame();
         else
             break;
     }

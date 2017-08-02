@@ -60,6 +60,10 @@ private:
     bool isRecording;
 
     QMap<double, QPair<QVector<double>, QPair<bool, bool>>>::iterator selectedFrame;
+
+friend QDataStream &operator<<(QDataStream &stream, const Interpolator &ip);
 };
+
+QDataStream &operator<<(QDataStream &stream, const Interpolator &ip);
 
 #endif // INTERPOLATOR_H
