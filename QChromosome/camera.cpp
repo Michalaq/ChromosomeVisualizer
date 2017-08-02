@@ -76,7 +76,7 @@ QVector3D Camera::position() const
 
 QVector3D Camera::EulerAngles() const
 {
-    return QVector3D(h, p, b);
+    return QVector3D(p, h, b);
 }
 
 void Camera::setPosition(const QVector3D &p)

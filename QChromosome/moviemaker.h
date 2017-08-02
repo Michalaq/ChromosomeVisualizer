@@ -194,11 +194,12 @@ private:
 
     static void inline setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
     {
-        outFile << "camera{\n"
+        outFile << "camera{perspective\n"
                 << "right x*" << size.width() << "/" << size.height() << "\n"
-                << "location " << camera->position() << "\n"
-                << "look_at " << camera->lookAt() << "\n"
+                << "look_at -z\n"
                 << "angle " << camera->angle() << "\n"
+                << "rotate " << -camera->EulerAngles() << "\n"
+                << "translate " << camera->position() << "\n"
                 << "}\n"
                 << "\n";
 
