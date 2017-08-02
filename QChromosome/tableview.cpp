@@ -38,12 +38,10 @@ void TableView::mousePressEvent(QMouseEvent *event)
 
         int n = (event->x() - visualRect(index).x()) / 20;
 
-        model()->setData(selectedTag, -1, Qt::UserRole + 1);
-        selectedTag = QModelIndex();
-
         if (n < index.data().toList().length())
         {
             clicked = true;
+            model()->setData(selectedTag, -1, Qt::UserRole + 1);
             model()->setData(selectedTag = index, n, Qt::UserRole + 1);
         }
         else
@@ -62,9 +60,6 @@ void TableView::mousePressEvent(QMouseEvent *event)
         {
             model()->setData(selectedTag, -1, Qt::UserRole + 1);
             selectedTag = QModelIndex();
-
-            clearSelection();
-            update();
         }
 
         QTableView::mousePressEvent(event);
@@ -141,7 +136,6 @@ void TableView::dropEvent(QDropEvent *event)
 
     mat->assign(index);
 
-    model()->setData(selectedTag, -1, Qt::UserRole + 1);
     model()->setData(selectedTag = index, n, Qt::UserRole + 1);
 
     update();

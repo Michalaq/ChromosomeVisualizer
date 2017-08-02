@@ -23,7 +23,11 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
 {
     ui->setupUi(this);
 
-    auto mat = MaterialBrowser::getInstance()->mat;
+    Material** mat = MaterialBrowser::getInstance()->mat;
+    auto mat0 = QVariantList({QVariant::fromValue(mat[0])});
+    auto mat1 = QVariantList({QVariant::fromValue(mat[1])});
+    auto mat2 = QVariantList({QVariant::fromValue(mat[2])});
+    auto mat3 = QVariantList({QVariant::fromValue(mat[3])});
 
     // first table
     ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
@@ -58,8 +62,8 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     });
 
     m1->insertRows(0, 2, m1->index(0, 0));
-    m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM"); m1->setData(m1->index(0, 2), QVariantList({QVariant::fromValue(mat[2])}));
-    m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN"); m1->setData(m1->index(1, 2), QVariantList({QVariant::fromValue(mat[3])}));
+    m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM"); m1->setData(m1->index(0, 2), mat2);
+    m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN"); m1->setData(m1->index(1, 2), mat3);
 
     // second table
     ui->tableView_2->setItemDelegateForColumn(0, new TableVectDelegate(this));
@@ -99,10 +103,10 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     });
 
     m2->insertRows(0, 4, m2->index(0, 0));
-    m2->setData(m2->index(0, 0), "[0,0]"); m2->setData(m2->index(0, 1), "UNB"); m2->setData(m2->index(0, 2), QVariantList({QVariant::fromValue(mat[0])}));
-    m2->setData(m2->index(1, 0), "[0,1]"); m2->setData(m2->index(1, 1), "BOU"); m2->setData(m2->index(1, 2), QVariantList({QVariant::fromValue(mat[1])}));
-    m2->setData(m2->index(2, 0), "[1,0]"); m2->setData(m2->index(2, 1), "LAM"); m2->setData(m2->index(2, 2), QVariantList({QVariant::fromValue(mat[2])}));
-    m2->setData(m2->index(3, 0), "[2,0]"); m2->setData(m2->index(3, 1), "LAM"); m2->setData(m2->index(3, 2), QVariantList({QVariant::fromValue(mat[2])}));
+    m2->setData(m2->index(0, 0), "[0,0]"); m2->setData(m2->index(0, 1), "UNB"); m2->setData(m2->index(0, 2), mat0);
+    m2->setData(m2->index(1, 0), "[0,1]"); m2->setData(m2->index(1, 1), "BOU"); m2->setData(m2->index(1, 2), mat1);
+    m2->setData(m2->index(2, 0), "[1,0]"); m2->setData(m2->index(2, 1), "LAM"); m2->setData(m2->index(2, 2), mat2);
+    m2->setData(m2->index(3, 0), "[2,0]"); m2->setData(m2->index(3, 1), "LAM"); m2->setData(m2->index(3, 2), mat2);
 
     // third table
     ui->tableView_3->setItemDelegateForColumn(0, new TableNameDelegate(this));
@@ -138,10 +142,10 @@ Defaults::Defaults(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults)
     });
 
     m3->insertRows(0, 4, m3->index(0, 0));
-    m3->setData(m3->index(0, 0), "LAM"); m3->setData(m3->index(0, 1), QVariantList({QVariant::fromValue(mat[2])}));
-    m3->setData(m3->index(1, 0), "BIN"); m3->setData(m3->index(1, 1), QVariantList({QVariant::fromValue(mat[3])}));
-    m3->setData(m3->index(2, 0), "UNB"); m3->setData(m3->index(2, 1), QVariantList({QVariant::fromValue(mat[0])}));
-    m3->setData(m3->index(3, 0), "BOU"); m3->setData(m3->index(3, 1), QVariantList({QVariant::fromValue(mat[1])}));
+    m3->setData(m3->index(0, 0), "LAM"); m3->setData(m3->index(0, 1), mat2);
+    m3->setData(m3->index(1, 0), "BIN"); m3->setData(m3->index(1, 1), mat3);
+    m3->setData(m3->index(2, 0), "UNB"); m3->setData(m3->index(2, 1), mat0);
+    m3->setData(m3->index(3, 0), "BOU"); m3->setData(m3->index(3, 1), mat1);
 }
 
 Defaults::~Defaults()
