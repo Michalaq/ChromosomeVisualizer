@@ -120,17 +120,21 @@ public:
 
 #ifdef __linux__
         QStringList argv;
-        argv << "povray.ini" << "-D" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
+        argv << "povray.ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
 
         QProcess *p = new QProcess;
         p->setCurrentReadChannel(QProcess::StandardError);
         p->start("povray", argv);
 
+        QObject::connect(p, &QProcess::readyRead, [=]() {
+           ;
+        });
+
         QObject::connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [=](int exitCode, QProcess::ExitStatus exitStatus){
             system(QString(QString("rm ") + filename + ".pov").toUtf8().constData());
             system("rm povray.ini");
 
-            if (renderSettings->openFile() && exitStatus == QProcess::NormalExit)
+            if (renderSettings->openFile() && exitStatus == QProcess::NormalExit && exitCode == 0)
                 system(QString(QString("xdg-open ") + filename + ".png").toUtf8().constData());
 
             p->deleteLater();
