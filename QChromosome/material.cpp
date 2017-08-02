@@ -94,25 +94,15 @@ void Material::paint(QPainter *painter, QRect bounds)
 
 void Material::assign(const QPersistentModelIndex &ix, bool b)
 {
-    auto it = assignment.find(ix);
-
     if (b)
-    {
-        if (it != assignment.end())
-            it.value()++;
-        else
-            assignment.insert(ix, 1);
-    }
+        assignment.append(ix);
     else
-    {
-        if (--it.value() == 0)
-            assignment.erase(it);
-    }
+        assignment.removeOne(ix);
 }
 
-QList<QPersistentModelIndex> Material::getAssigned() const
+const QList<QPersistentModelIndex>& Material::getAssigned() const
 {
-    return assignment.keys();
+    return assignment;
 }
 
 void Material::read(const QJsonObject& json)
