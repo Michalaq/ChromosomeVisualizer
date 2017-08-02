@@ -11,6 +11,7 @@
 
 #include <QSettings>
 #include <QProcess>
+#include "interpolator.h"
 
 std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
 {
@@ -36,7 +37,7 @@ public:
                           + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
     }
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn)
     {
         auto renderSettings = RenderSettings::getInstance();
         prepareINIFile(renderSettings);
@@ -44,10 +45,12 @@ public:
         QString filename = renderSettings->saveFile() + suffix;
         createPOVFile(outFile, filename.toStdString(), renderSettings);
 
+        outFile << ip;
+
         if (renderSettings->cam360())
             set360Camera(outFile, camera, renderSettings->outputSize());
         else
-            setCamera(outFile, camera, renderSettings->outputSize());
+            setCamera1(outFile, camera, renderSettings->outputSize(), fn);
         setBackgroundColor(outFile, scene->backgroundColor());
         setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
@@ -200,6 +203,21 @@ private:
                 << "angle " << camera->angle() << "\n"
                 << "rotate " << -camera->EulerAngles() << "\n"
                 << "translate " << camera->position() << "\n"
+                << "}\n"
+                << "\n";
+
+        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
+                << "\n";
+    }
+
+    static void inline setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn)
+    {
+        outFile << "camera{perspective\n"
+                << "right x*" << size.width() << "/" << size.height() << "\n"
+                << "look_at -z\n"
+                << "angle " << camera->angle() << "\n"
+                << "rotate " << -camera->EulerAngles() << "\n"
+                << "translate MySplinePos(" << fn << ")\n"
                 << "}\n"
                 << "\n";
 

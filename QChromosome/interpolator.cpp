@@ -215,21 +215,37 @@ void Interpolator::write(QJsonArray &json) const
     }
 }
 
-QDataStream &operator<<(QDataStream &stream, const Interpolator &ip)
+#include <fstream>
+
+std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
 {
-    QDataStream p, a;
+    stream << "#declare MySplinePos = \nspline {\ncubic_spline\n";
+    stream << -1 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
 
     for (auto i = ip.values.begin(); i != ip.values.end(); i++)
     {
         auto& t = i.key();
         auto& v = i.value().first;
 
-        p << t << ", <" << v[0] << ", " << v[1] << ", " << v[2] << ">\n";
-        a << t << ", <" << v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
     }
 
-    stream << "#declare MySplinePos = \nspline {\ncubic_spline\n" << p << "}\n";
-    stream << "#declare MySplineAng = \nspline {\ncubic_spline\n" << a << "}\n";
+    stream << 1000000 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
+    stream << "}\n";
+
+    stream << "#declare MySplineAng = \nspline {\ncubic_spline\n";
+    stream << -1 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
+
+    for (auto i = ip.values.begin(); i != ip.values.end(); i++)
+    {
+        auto& t = i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[6] << ", " << v[7] << ", " << v[8] << ">\n";
+    }
+
+    stream << 1000000 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
+    stream << "}\n";
 
     return stream;
 }
