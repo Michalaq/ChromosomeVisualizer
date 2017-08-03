@@ -183,6 +183,8 @@ private:
     static void inline createPOVFile(std::ofstream& outFile, std::string filename, const RenderSettings * renderSettings)
     {
         outFile.open(filename + ".pov");
+        outFile << "#version 3.7\n"
+                << "global_settings { assumed_gamma 1.0 }\n";
         outFile << "#default{finish{ambient " << renderSettings->ambient().toStdString()
                 << " diffuse " << renderSettings->diffuse().toStdString()
                 << " phong " << renderSettings->phong().toStdString()
@@ -191,7 +193,9 @@ private:
                 << " irid { " << renderSettings->iridescence().toStdString()
                 << " thickness " << renderSettings->iridescenceThickness().toStdString()
                 << " turbulence " << renderSettings->iridescenceTurbulence().toStdString()
-                << "}}}\n"
+                << "} specular 1.0"
+                << " roughness 0.02"
+                << "}}\n"
                 << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
     }
 
@@ -206,8 +210,11 @@ private:
                 << "}\n"
                 << "\n";
 
-        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
-                << "\n";
+        outFile << "light_source {\n"
+                << QVector3D() << "," << QColor(Qt::white) << "\n"
+                << "parallel\n"
+                << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+                << "}\n";
     }
 
     static void inline setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn)
@@ -221,8 +228,11 @@ private:
                 << "}\n"
                 << "\n";
 
-        outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
-                << "\n";
+        outFile << "light_source {\n"
+                << QVector3D() << "," << QColor(Qt::white) << "\n"
+                << "parallel\n"
+                << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+                << "}\n";
     }
 
     static void inline set360Camera(std::ofstream& outFile, const Camera* camera, QSize size)
