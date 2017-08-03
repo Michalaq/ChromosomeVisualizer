@@ -241,7 +241,7 @@ std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
         auto& t = i.key();
         auto& v = i.value().first;
 
-        stream << t << ", <" << -v[6] << ", " << v[7] << ", " << v[8] << ">\n";
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
     }
 
     stream << 1000000 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";

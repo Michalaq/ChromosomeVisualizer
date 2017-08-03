@@ -223,13 +223,14 @@ private:
         outFile << "camera{perspective\n"
                 << "right x*" << size.width() << "/" << size.height() << "\n"
                 << "look_at -z\n"
-                << "angle " << camera->angle() << "\n"
-                << "rotate " << -camera->EulerAngles() << "\n";
+                << "angle " << camera->angle() << "\n";
 
         if (s)
-            outFile << "translate " << camera->position() << "\n";
+            outFile << "rotate " << -camera->EulerAngles() << "\n"
+                << "translate " << camera->position() << "\n";
         else
-            outFile << "translate MySplinePos(" << fn << ")\n";
+            outFile << "rotate -MySplineAng(" << fn << ")\n"
+                << "translate MySplinePos(" << fn << ")\n";
 
         outFile << "}\n"
                 << "\n";
