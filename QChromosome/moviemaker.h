@@ -37,7 +37,7 @@ public:
                           + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
     }
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
     {
         auto renderSettings = RenderSettings::getInstance();
         prepareINIFile(renderSettings);
@@ -85,6 +85,18 @@ public:
 #else
         qDebug() << "platform not supported";
 #endif
+
+        QImage img;
+        img.load(filename + ".png");
+        QPainter p(&img);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(Qt::white);
+        QFont f;
+        f.setFamily("RobotoMono");
+        f.setPixelSize(img.height()/20);
+        p.setFont(f);
+        p.drawText(QRect(0, 0, img.width()-10, img.height()/20+20), QString("Frame %1/%2").arg(QString::number(fn+1).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
+        img.save(filename + ".png", "PNG");
     }
 
     static void inline captureScene1(const VizWidget* scene, const Camera* camera, QString suffix)
