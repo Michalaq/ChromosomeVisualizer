@@ -45,12 +45,13 @@ public:
         QString filename = renderSettings->saveFile() + suffix;
         createPOVFile(outFile, filename.toStdString(), renderSettings);
 
-        outFile << ip;
+        if (!ip.keys().isEmpty())
+            outFile << ip;
 
         if (renderSettings->cam360())
             set360Camera(outFile, camera, renderSettings->outputSize());
         else
-            setCamera1(outFile, camera, renderSettings->outputSize(), fn);
+            setCamera1(outFile, camera, renderSettings->outputSize(), fn, ip.keys().isEmpty());
         setBackgroundColor(outFile, scene->backgroundColor());
         setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
@@ -217,15 +218,20 @@ private:
                 << "}\n";
     }
 
-    static void inline setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn)
+    static void inline setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn, bool s)
     {
         outFile << "camera{perspective\n"
                 << "right x*" << size.width() << "/" << size.height() << "\n"
                 << "look_at -z\n"
                 << "angle " << camera->angle() << "\n"
-                << "rotate " << -camera->EulerAngles() << "\n"
-                << "translate MySplinePos(" << fn << ")\n"
-                << "}\n"
+                << "rotate " << -camera->EulerAngles() << "\n";
+
+        if (s)
+            outFile << "translate " << camera->position() << "\n";
+        else
+            outFile << "translate MySplinePos(" << fn << ")\n";
+
+        outFile << "}\n"
                 << "\n";
 
         outFile << "light_source {\n"
