@@ -19,8 +19,8 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 {
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());
-    std::cout << header.simulation_name() << std::endl;
-    std::cout << header.simulation_description() << std::endl;
+//    std::cout << header.simulation_name() << std::endl;
+//    std::cout << header.simulation_description() << std::endl;
     for (const auto& keyframe : rd_) {
         keyframes_.resize(keyframes_.size() + 1);
         keyframesData_.push_back(keyframe);
@@ -29,7 +29,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
               std::cout << "Failed to parse keyframe." << std::endl;
         }
     }
-    std::cout << keyframes_.size() << std::endl;
+//    std::cout << keyframes_.size() << std::endl;
 
     for (const auto& binder : keyframes_[0].binders()) {
         binderTypes.push_back(Defaults::bt2typename(binder.binder_type()));
@@ -45,11 +45,11 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
         }
         chainAtomTypes.push_back(types);
     }
-    for (const auto& d : chainAtomTypes) {
-        for (const auto& e : d) {
-            std::cout << "Typ: " << e << std::endl;
-        }
-    }
+//    for (const auto& d : chainAtomTypes) {
+//        for (const auto& e : d) {
+//            std::cout << "Typ: " << e << std::endl;
+//        }
+//    }
 //    for (const auto& realtyp : chain_binder_types_renumbered_) {
 //        std::cout << "lol";
 //        for (const auto& dupa : realtyp)
@@ -62,7 +62,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //    }
 
     deltasPerKeyframe_ = rd_.frames_per_keyframe();
-    std::cout << deltasPerKeyframe_ << std::endl;
+//    std::cout << deltasPerKeyframe_ << std::endl;
 
     // Get last frame time
     lastFrameNumber_ = rd_.frame_count() - 1;
