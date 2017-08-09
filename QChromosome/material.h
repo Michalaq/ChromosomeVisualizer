@@ -36,6 +36,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
+    std::ostream &operator<<(std::ostream &stream) const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -58,5 +60,7 @@ signals:
 
 public slots:
 };
+
+std::ostream &operator<<(std::ostream &stream, const Material &mat);
 
 #endif // MATERIAL_H

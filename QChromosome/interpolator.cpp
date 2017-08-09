@@ -217,7 +217,7 @@ void Interpolator::write(QJsonArray &json) const
 
 #include <fstream>
 
-std::ofstream &Interpolator::operator<<(std::ofstream &stream) const
+std::ostream &Interpolator::operator<<(std::ostream &stream) const
 {
     stream << "#declare MySplinePos = \nspline {\ncubic_spline\n";
 
@@ -286,7 +286,7 @@ std::ofstream &Interpolator::operator<<(std::ofstream &stream) const
     return stream;
 }
 
-std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
+std::ostream &operator<<(std::ostream &stream, const Interpolator &ip)
 {
     return ip << stream;
 }

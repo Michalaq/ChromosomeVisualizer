@@ -39,7 +39,7 @@ public:
     void read(const QJsonArray& json);
     void write(QJsonArray &json) const;
 
-    std::ofstream &operator<<(std::ofstream &stream) const;
+    std::ostream &operator<<(std::ostream &stream) const;
 
 signals:
     void selectionChanged();
@@ -64,6 +64,6 @@ private:
     QMap<double, QPair<QVector<double>, QPair<bool, bool>>>::iterator selectedFrame;
 };
 
-std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip);
+std::ostream &operator<<(std::ostream &stream, const Interpolator &ip);
 
 #endif // INTERPOLATOR_H
