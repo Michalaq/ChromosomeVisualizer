@@ -314,3 +314,46 @@ void TreeModel::write(QJsonObject &json, const QMap<Material *, int> &tags) cons
 {
     dumpModel2(this, index(0, 0), json, tags);
 }
+
+#include <QSet>
+
+void dumpModel4(const QAbstractItemModel* model, const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used)
+{
+    if (root.isValid())
+    {
+        auto list = model->data(root.sibling(root.row(), 5)).toList();
+        if (!list.isEmpty())
+        {
+            mat = qobject_cast<Material*>(list.last().value<QObject*>());
+            if (!used.contains(mat))
+            {
+                stream << *mat;
+                used.insert(mat);
+            }
+        }
+    }
+
+    auto v = root.sibling(root.row(), 2).data();
+
+    if (v.canConvert<uint>())
+    {
+        auto& a = frame->atoms[v.toUInt()];
+        stream << "sphere {"
+               << "<" << -a.x << ", " << a.y << ", " << a.z << ">, "
+               << 1 << " "
+               << "texture { " << mat->getName().toStdString() << " }"
+               << "}\n";
+    }
+
+    for (int r = 0; r < model->rowCount(root); r++)
+        dumpModel4(model, model->index(r, 0, root), stream, frame, mat, used);
+}
+
+void TreeModel::dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) const
+{
+    auto mat = Material::getDefault();
+    stream << *mat;
+
+    QSet<Material*> used = {mat};
+    dumpModel4(this, index(0, 0), stream, frame, mat, used);
+}

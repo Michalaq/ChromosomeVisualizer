@@ -99,7 +99,7 @@ public:
         img.save(filename + ".png", "PNG");
     }
 
-    static void inline captureScene1(const VizWidget* scene, const Camera* camera, QString suffix)
+    static void inline captureScene1(std::shared_ptr<Simulation> simulation, int fn, const VizWidget* scene, const Camera* camera, QString suffix)
     {
         auto renderSettings = RenderSettings::getInstance();
         prepareINIFile(renderSettings);
@@ -114,10 +114,9 @@ public:
         setBackgroundColor(outFile, scene->backgroundColor());
         setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-        auto& vizBalls = scene->getBallInstances();
+        simulation->dumpFrame(outFile, fn);
 
-        for (auto b : vizBalls)
-            addSphere(outFile, b.position, b.size, QColor::fromRgba(b.color));
+        auto& vizBalls = scene->getBallInstances();
 
         auto frame = scene->currentFrame();
 

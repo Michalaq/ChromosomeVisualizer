@@ -58,7 +58,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
     return std::make_shared<Frame>(f);
 }
 
-frameNumber_t Simulation::getNextTime(frameNumber_t time)
+frameNumber_t Simulation::getNextTime(frameNumber_t time) const
 {
     if (layerConcatenations_.empty())
         return 0;
@@ -78,7 +78,7 @@ frameNumber_t Simulation::getNextTime(frameNumber_t time)
     return minimum;
 }
 
-frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
+frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
 {
     if (layerConcatenations_.empty())
         return 0;
@@ -151,4 +151,9 @@ void Simulation::write(QJsonArray &json) const
 
         json.append(simulationLayer);
     }
+}
+
+void Simulation::dumpFrame(std::ostream &stream, const frameNumber_t frame)
+{
+    model->dumpFrame(stream, getFrame(frame));
 }

@@ -26,12 +26,14 @@ public:
     std::shared_ptr<SimulationLayerConcatenation> getSimulationLayerConcatenation(int i);
     //virtual std::shared_ptr<Frame> getFrameByNumber(frameNumber_t position);
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t time);
-    frameNumber_t getNextTime(frameNumber_t time);
-    frameNumber_t getPreviousTime(frameNumber_t time);
+    frameNumber_t getNextTime(frameNumber_t time) const;
+    frameNumber_t getPreviousTime(frameNumber_t time) const;
     TreeModel* getModel();
 
     void read(const QJsonArray& json);
     void write(QJsonArray& json) const;
+
+    void dumpFrame(std::ostream &stream, const frameNumber_t frame);
 
 signals:
     void frameCountChanged(int frameCount);

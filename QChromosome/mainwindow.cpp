@@ -725,7 +725,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture()
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(ui->scene, ui->camera, suffix);
+    MovieMaker::captureScene1(simulation, currentFrame, ui->scene, ui->camera, suffix);
 }
 
 void MainWindow::captureMovie()

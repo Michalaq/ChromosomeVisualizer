@@ -187,7 +187,7 @@ std::ostream &Material::operator<<(std::ostream &stream) const
            << "texture {\n"
            << " pigment {\n"
            << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
-           << "  transmit " << 1. - transparency * transparency << "\n"
+           << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
            << " }\n"
            << " finish {\n"
            << "  ambient " << renderSettings->ambient().toStdString() << "\n"
