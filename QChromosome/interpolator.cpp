@@ -217,12 +217,21 @@ void Interpolator::write(QJsonArray &json) const
 
 #include <fstream>
 
-std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
+std::ofstream &Interpolator::operator<<(std::ofstream &stream) const
 {
     stream << "#declare MySplinePos = \nspline {\ncubic_spline\n";
-    stream << -1 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
 
-    for (auto i = ip.values.begin(); i != ip.values.end(); i++)
+    {
+        auto j = values.begin();
+        auto i = j + 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
+    for (auto i = values.begin(); i != values.end(); i++)
     {
         auto& t = i.key();
         auto& v = i.value().first;
@@ -230,13 +239,31 @@ std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
         stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
     }
 
-    stream << 1000000 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
+    {
+        auto j = values.end() - 1;
+        auto i = j - 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
     stream << "}\n";
 
     stream << "#declare MySplineAng = \nspline {\ncubic_spline\n";
-    stream << -1 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
 
-    for (auto i = ip.values.begin(); i != ip.values.end(); i++)
+    {
+        auto j = values.begin();
+        auto i = j + 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
+    }
+
+    for (auto i = values.begin(); i != values.end(); i++)
     {
         auto& t = i.key();
         auto& v = i.value().first;
@@ -244,8 +271,22 @@ std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
         stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
     }
 
-    stream << 1000000 << ", <" << 0 << ", " << 0 << ", " << 0 << ">\n";
+    {
+        auto j = values.end() - 1;
+        auto i = j - 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
+    }
+
     stream << "}\n";
 
     return stream;
+}
+
+std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip)
+{
+    return ip << stream;
 }

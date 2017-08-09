@@ -39,6 +39,8 @@ public:
     void read(const QJsonArray& json);
     void write(QJsonArray &json) const;
 
+    std::ofstream &operator<<(std::ofstream &stream) const;
+
 signals:
     void selectionChanged();
     void interpolationChanged();
@@ -60,8 +62,6 @@ private:
     bool isRecording;
 
     QMap<double, QPair<QVector<double>, QPair<bool, bool>>>::iterator selectedFrame;
-
-friend std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip);
 };
 
 std::ofstream &operator<<(std::ofstream &stream, const Interpolator &ip);
