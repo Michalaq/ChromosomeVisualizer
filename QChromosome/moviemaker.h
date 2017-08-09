@@ -139,7 +139,7 @@ public:
         argv << "povray.ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
 
         QProcess *p = new QProcess;
-        p->setCurrentReadChannel(QProcess::StandardError);
+        //p->setCurrentReadChannel(QProcess::StandardError);
         p->start("povray", argv);
 
         QObject::connect(p, &QProcess::readyRead, [=]() {

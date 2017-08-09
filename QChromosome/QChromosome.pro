@@ -169,4 +169,4 @@ RESOURCES += \
 
 OTHER_FILES +=
 
-unix|win32: LIBS += -lprotobuf
+unix|win32: LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
