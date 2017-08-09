@@ -37,7 +37,7 @@ public:
                           + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
     }
 
-    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
+    static void inline captureScene(const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int gfn, int fn, int total)
     {
         auto renderSettings = RenderSettings::getInstance();
         prepareINIFile(renderSettings);
@@ -51,7 +51,7 @@ public:
         if (renderSettings->cam360())
             set360Camera(outFile, camera, renderSettings->outputSize());
         else
-            setCamera1(outFile, camera, renderSettings->outputSize(), fn, ip.keys().isEmpty());
+            setCamera1(outFile, camera, renderSettings->outputSize(), gfn, ip.keys().isEmpty());
         setBackgroundColor(outFile, scene->backgroundColor());
         setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
@@ -95,7 +95,7 @@ public:
         f.setFamily("RobotoMono");
         f.setPixelSize(img.height()/20);
         p.setFont(f);
-        p.drawText(QRect(0, 0, img.width()-10, img.height()/20+20), QString("Frame %1/%2").arg(QString::number(fn+1).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
+        p.drawText(QRect(0, 0, img.width()-10, img.height()/20+20), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
         img.save(filename + ".png", "PNG");
     }
 
