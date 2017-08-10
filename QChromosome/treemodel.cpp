@@ -318,11 +318,11 @@ void TreeModel::write(QJsonObject &json) const
 
 #include <QSet>
 
-void dumpModel4(const QAbstractItemModel* model, const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used)
+void TreeModel::dumpModel4(const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used, Visibility vis) const
 {
     if (root.isValid())
     {
-        auto list = model->data(root.sibling(root.row(), 5)).toList();
+        auto list = data(root.sibling(root.row(), 5)).toList();
         if (!list.isEmpty())
         {
             mat = qobject_cast<Material*>(list.last().value<QObject*>());
@@ -334,11 +334,12 @@ void dumpModel4(const QAbstractItemModel* model, const QModelIndex& root, std::o
         }
     }
 
-    auto v = root.sibling(root.row(), 2).data();
+    auto s = root.sibling(root.row(), 2).data();
+    auto v = Visibility(root.sibling(root.row(), 4).data().toInt());
 
-    if (v.canConvert<uint>())
+    if (s.canConvert<uint>() && (v == On || (v == Default && vis == On)))
     {
-        auto& a = frame->atoms[v.toUInt()];
+        auto& a = frame->atoms[s.toUInt()];
         stream << "sphere {"
                << "<" << -a.x << ", " << a.y << ", " << a.z << ">, "
                << 1 << " "
@@ -346,8 +347,8 @@ void dumpModel4(const QAbstractItemModel* model, const QModelIndex& root, std::o
                << "}\n";
     }
 
-    for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel4(model, model->index(r, 0, root), stream, frame, mat, used);
+    for (int r = 0; r < rowCount(root); r++)
+        dumpModel4(index(r, 0, root), stream, frame, mat, used, v == Default ? vis : v);
 }
 
 void TreeModel::dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) const
@@ -356,5 +357,5 @@ void TreeModel::dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) co
     stream << *mat;
 
     QSet<Material*> used = {mat};
-    dumpModel4(this, index(0, 0), stream, frame, mat, used);
+    dumpModel4(index(0, 0), stream, frame, mat, used, On);
 }

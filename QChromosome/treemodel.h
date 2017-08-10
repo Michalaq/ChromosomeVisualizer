@@ -97,6 +97,8 @@ public:
 private:
     TreeItem *header;
     QVector<QModelIndex> indices;
+
+    void dumpModel4(const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used, Visibility vis) const;
 };
 
 #endif // TREEMODEL_H
