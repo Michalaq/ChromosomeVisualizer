@@ -341,7 +341,7 @@ void dumpModel4(const QAbstractItemModel* model, const QModelIndex& root, std::o
         stream << "sphere {"
                << "<" << -a.x << ", " << a.y << ", " << a.z << ">, "
                << 1 << " "
-               << "texture { " << mat->getName().toStdString() << " }"
+               << "texture { m" << QString::number(quintptr(mat), 16).toStdString() << " }"
                << "}\n";
     }
 

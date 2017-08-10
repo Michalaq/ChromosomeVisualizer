@@ -6,6 +6,7 @@ Material* Material::dm = nullptr;
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
     QWidget(parent),
     clicked(false),
+    id(QUuid::createUuid()),
     name(n),
     color(c),
     transparency(t),
@@ -18,6 +19,11 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
 Material::~Material()
 {
 
+}
+
+QUuid Material::getId() const
+{
+    return id;
 }
 
 QString Material::getName() const
@@ -183,7 +189,7 @@ std::ostream &Material::operator<<(std::ostream &stream) const
 {
     auto renderSettings = RenderSettings::getInstance();
 
-    stream << "#declare " << name.toStdString() << " =\n"
+    stream << "#declare m" << QString::number(quintptr(this), 16).toStdString() << " =\n"
            << "texture {\n"
            << " pigment {\n"
            << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
