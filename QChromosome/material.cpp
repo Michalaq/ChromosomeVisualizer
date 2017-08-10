@@ -123,6 +123,7 @@ QList<QPersistentModelIndex> Material::getAssigned() const
 
 void Material::read(const QJsonObject& json)
 {
+    id = json["UUID"].toString();
     name = json["Name"].toString();
 
     const QJsonObject color_ = json["Color"].toObject();
@@ -136,6 +137,7 @@ void Material::read(const QJsonObject& json)
 
 void Material::write(QJsonObject& json) const
 {
+    json["UUID"] = id.toString();
     json["Name"] = name;
 
     QJsonObject color_;

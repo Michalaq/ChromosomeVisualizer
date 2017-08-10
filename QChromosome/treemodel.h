@@ -90,7 +90,7 @@ public:
     const QVector<QModelIndex>& getIndices() const;
 
     void read(const QJsonObject& json);
-    void write(QJsonObject& json, const QMap<Material*, int>& tags) const;
+    void write(QJsonObject& json) const;
 
     void dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) const;
 

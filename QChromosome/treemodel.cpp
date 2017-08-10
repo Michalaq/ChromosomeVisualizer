@@ -264,8 +264,9 @@ void TreeModel::read(const QJsonObject &json)
 }
 
 #include "material.h"
+#include "materialbrowser.h"
 
-void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json, const QMap<Material *, int> &tags)
+void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
 {
     QJsonObject object;
 
@@ -286,7 +287,7 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
         QJsonArray u;
 
         for (auto i : t)
-            u.append(tags[i.value<Material*>()]);
+            u.append(i.value<Material*>()->getId().toString());
 
         object["Tags"] = u;
     }
@@ -300,7 +301,7 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
     {
         QJsonObject child;
 
-        dumpModel2(model, model->index(r, 0, root), child, tags);
+        dumpModel2(model, model->index(r, 0, root), child);
 
         if (!child.empty())
             children[QString::number(r)] = child;
@@ -310,9 +311,9 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
         json["Descendants"] = children;
 }
 
-void TreeModel::write(QJsonObject &json, const QMap<Material *, int> &tags) const
+void TreeModel::write(QJsonObject &json) const
 {
-    dumpModel2(this, index(0, 0), json, tags);
+    dumpModel2(this, index(0, 0), json);
 }
 
 #include <QSet>

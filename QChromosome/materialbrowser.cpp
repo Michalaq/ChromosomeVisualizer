@@ -47,10 +47,15 @@ MaterialBrowser* MaterialBrowser::getInstance()
     return instance ? instance : instance = new MaterialBrowser();
 }
 
-void MaterialBrowser::read(const QJsonArray& json, QMap<int, Material*>& tags)
+Material* MaterialBrowser::getMaterialById(const QUuid &id)
+{
+    return qobject_cast<MaterialListModel*>(instance->ui->listView->model())->getMaterialById(id);
+}
+
+void MaterialBrowser::read(const QJsonArray& json)
 {
     auto * m = new MaterialListModel;
-    m->read(json, tags);
+    m->read(json);
 
     ui->listView->setModel(m);
     ui->listView->setCurrentIndex(QModelIndex());
@@ -69,9 +74,9 @@ void MaterialBrowser::read(const QJsonArray& json, QMap<int, Material*>& tags)
     });
 }
 
-void MaterialBrowser::write(QJsonArray& json, QMap<Material*, int> &tags) const
+void MaterialBrowser::write(QJsonArray& json) const
 {
-    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json, tags);
+    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json);
 }
 
 #include <QPainter>
@@ -230,7 +235,11 @@ bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &pa
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
     for (int row = 0; row < rows; ++row)
-        materials.takeAt(position)->deleteLater();
+    {
+        auto m = materials.takeAt(position);
+        id2mat.remove(m->getId());
+        m->deleteLater();
+    }
 
     endRemoveRows();
     return true;
@@ -241,6 +250,7 @@ void MaterialListModel::prepend(Material *m)
     beginInsertRows(QModelIndex(), 0, 0);
 
     materials.prepend(m);
+    id2mat.insert(m->getId(), m);
 
     endInsertRows();
 }
@@ -248,29 +258,26 @@ void MaterialListModel::prepend(Material *m)
 #include <QJsonObject>
 #include <QJsonArray>
 
-void MaterialListModel::read(const QJsonArray &json, QMap<int, Material *> &tags)
+void MaterialListModel::read(const QJsonArray &json)
 {
-    int n = 0;
+    id2mat.clear();
 
     for (auto i = json.begin(); i != json.end(); i++)
     {
         auto * m = new Material;
         m->read((*i).toObject());
         materials.prepend(m);
-        tags.insert(n++, m);
+        id2mat.insert(m->getId(), m);
     }
 }
 
-void MaterialListModel::write(QJsonArray &json, QMap<Material*, int> &tags) const
+void MaterialListModel::write(QJsonArray &json) const
 {
-    int n = materials.count();
-
     for (auto i = materials.begin(); i != materials.end(); i++)
     {
         QJsonObject m;
         (*i)->write(m);
         json.prepend(m);
-        tags.insert(*i, --n);
     }
 }
 
@@ -296,6 +303,11 @@ QString MaterialListModel::next_name()
     for (auto j = used.begin(); j != used.end() && i == *j; i++, j++);
 
     return i ? QString("Mat.") + QString::number(i) : "Mat";
+}
+
+Material* MaterialListModel::getMaterialById(const QUuid &id) const
+{
+    return id2mat[id];
 }
 
 MaterialDelegate::MaterialDelegate(QObject *parent) : QStyledItemDelegate(parent)

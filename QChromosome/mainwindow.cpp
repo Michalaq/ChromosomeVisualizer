@@ -345,11 +345,10 @@ void MainWindow::openProject()
         ui->plot->updateSimulation();
 
         const QJsonArray materials = project["Materials"].toArray();
-        QMap<int, Material*> tags;
-        materialBrowser->read(materials, tags);
+        materialBrowser->read(materials);
 
         const QJsonObject structure = project["Structure"].toObject();
-        ui->treeView->read(structure, tags);
+        ui->treeView->read(structure);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
@@ -419,12 +418,11 @@ void MainWindow::saveProject()
         project["Layers"] = layers;
 
         QJsonArray materials;
-        QMap<Material*, int> tags;
-        materialBrowser->write(materials, tags);
+        materialBrowser->write(materials);
         project["Materials"] = materials;
 
         QJsonObject structure;
-        simulation->getModel()->write(structure, tags);
+        simulation->getModel()->write(structure);
         project["Structure"] = structure;
 
         QJsonObject bar;
