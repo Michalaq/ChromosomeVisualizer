@@ -284,11 +284,12 @@ private:
     static void inline addCylinder(std::ofstream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, QColor colorA, QColor colorB)
     {
         QVector3D direction = positionB - positionA;
-        qreal dist = qFabs(QVector3D::dotProduct(positionA, direction)) / direction.length(); //distance of positionA from plane defined by normal vector 'direction' and point (0,0,0)
-        outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius <<
-            " texture{pigment{gradient" << direction << " color_map{[0.0 color " << colorA << "][1.0 color " <<
-            colorB << "]} phase " << (dist - static_cast<int>(dist / direction.length()) * direction.length()) / direction.length() <<
-            " scale " << direction.length() << "}}}\n";
+
+        outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius
+                << " texture{pigment{gradient" << direction.normalized() << " color_map{[0.0 color " << colorA << "][1.0 color " << colorB << "]}"
+                << " scale " << direction.length()
+                << " translate " << positionA
+                << "}}}\n";
     }
 
     static void inline addLabel(std::ofstream& outFile, const QString & label)
