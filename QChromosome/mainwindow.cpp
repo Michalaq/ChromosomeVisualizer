@@ -734,7 +734,7 @@ void MainWindow::captureMovie()
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
     for (int i = 1; ; i++)
     {
-        MovieMaker::captureScene(ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, ui->horizontalSlider_2->getLowerBound() + i - 1, i, frames);
+        MovieMaker::captureScene(simulation, ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
         if (i != frames)
             ui->scene->advanceFrame();
         else

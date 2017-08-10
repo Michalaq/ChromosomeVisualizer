@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     materialattributes.cpp \
     materialbrowser.cpp \
     tablemodel.cpp \
-    tableview.cpp
+    tableview.cpp \
+    moviemaker.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\

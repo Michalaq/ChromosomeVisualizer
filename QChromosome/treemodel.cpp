@@ -316,9 +316,15 @@ void TreeModel::write(QJsonObject &json) const
     dumpModel2(this, index(0, 0), json);
 }
 
+#include "moviemaker.h"
 #include <QSet>
 
-void TreeModel::dumpModel4(const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used, Visibility vis) const
+QVector3D pos(const Atom& a)
+{
+    return {a.x, a.y, a.z};
+}
+
+void TreeModel::dumpModel4(const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used, Visibility vis, QVector<Material*>& materials) const
 {
     if (root.isValid())
     {
@@ -337,18 +343,19 @@ void TreeModel::dumpModel4(const QModelIndex& root, std::ostream &stream, std::s
     auto s = root.sibling(root.row(), 2).data();
     auto v = Visibility(root.sibling(root.row(), 4).data().toInt());
 
-    if (s.canConvert<uint>() && (v == On || (v == Default && vis == On)))
+    bool ok;
+    int i = s.toUInt(&ok);
+
+    if (ok)
     {
-        auto& a = frame->atoms[s.toUInt()];
-        stream << "sphere {"
-               << "<" << -a.x << ", " << a.y << ", " << a.z << ">, "
-               << 1 << " "
-               << "texture { m" << QString::number(quintptr(mat), 16).toStdString() << " }"
-               << "}\n";
+        materials[i] = mat;
+
+        if (v == On || (v == Default && vis == On))
+            MovieMaker::addSphere(stream, pos(frame->atoms[i]), 1, mat);
     }
 
     for (int r = 0; r < rowCount(root); r++)
-        dumpModel4(index(r, 0, root), stream, frame, mat, used, v == Default ? vis : v);
+        dumpModel4(index(r, 0, root), stream, frame, mat, used, v == Default ? vis : v, materials);
 }
 
 void TreeModel::dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) const
@@ -356,6 +363,14 @@ void TreeModel::dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) co
     auto mat = Material::getDefault();
     stream << *mat;
 
+    // spheres
+    QVector<Material*> materials(indices.size());
+
     QSet<Material*> used = {mat};
-    dumpModel4(index(0, 0), stream, frame, mat, used, On);
+    dumpModel4(index(0, 0), stream, frame, mat, used, On, materials);
+
+    // cylinders
+    for (auto c : frame->connectedRanges)
+        for (int i = c.first; i < c.second; i++)
+            MovieMaker::addCylinder(stream, pos(frame->atoms[i - 1]), pos(frame->atoms[i]), 0.5, materials[i - 1], materials[i]);
 }
