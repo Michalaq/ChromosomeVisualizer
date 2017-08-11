@@ -43,23 +43,11 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
     }
 }
 
-void createPOVFile(std::ofstream& outFile, std::string filename, const RenderSettings * renderSettings)
+void createPOVFile(std::ofstream& outFile, std::string filename)
 {
     outFile.open(filename + ".pov");
-    outFile << "#version 3.7\n"
+    outFile << "#version 3.7;\n"
             << "global_settings { assumed_gamma 1.0 }\n";
-    outFile << "#default{finish{ambient " << renderSettings->ambient().toStdString()
-            << " diffuse " << renderSettings->diffuse().toStdString()
-            << " phong " << renderSettings->phong().toStdString()
-            << " phong_size " << renderSettings->phongSize().toStdString()
-            << " metallic " << renderSettings->metallic().toStdString()
-            << " irid { " << renderSettings->iridescence().toStdString()
-            << " thickness " << renderSettings->iridescenceThickness().toStdString()
-            << " turbulence " << renderSettings->iridescenceTurbulence().toStdString()
-            << "} specular 1.0"
-            << " roughness 0.02"
-            << "}}\n"
-            << "#include \"colors.inc\"\n#include \"stones.inc\"\n";
 }
 
 void setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
@@ -148,7 +136,7 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
     QString filename = renderSettings->saveFile() + suffix;
     prepareINIFile(filename, renderSettings);
     std::ofstream outFile;
-    createPOVFile(outFile, filename.toStdString(), renderSettings);
+    createPOVFile(outFile, filename.toStdString());
 
     if (!ip.keys().isEmpty())
         outFile << ip;
@@ -171,7 +159,7 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
 
 #ifdef __linux__
     QStringList argv;
-    argv << filename + ".ini" << "-D" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
+    argv << filename + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
     QProcess::execute("povray", argv);
 #elif _WIN32
     qDebug() << "windows povray photo";
@@ -202,7 +190,7 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     QString filename = renderSettings->saveFile() + suffix;
     prepareINIFile(filename, renderSettings);
     std::ofstream outFile;
-    createPOVFile(outFile, filename.toStdString(), renderSettings);
+    createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
         set360Camera(outFile, camera, renderSettings->outputSize());
