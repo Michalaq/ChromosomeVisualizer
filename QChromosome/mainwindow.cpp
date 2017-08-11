@@ -9,6 +9,7 @@
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
 #include "tagsdelegate.h"
+#include <QtConcurrent/QtConcurrentRun>
 
 static const char * ext = ".qcs";
 
@@ -217,6 +218,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCustom, &QAction::toggled, [this](bool checked) {
         if (checked)
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
+    });
+
+    connect(ui->actionSnapshot, &QAction::triggered, [this] {
+        QtConcurrent::run(this, &MainWindow::capture);
+    });
+
+    connect(ui->actionFilm, &QAction::triggered, [this] {
+        QtConcurrent::run(this, &MainWindow::captureMovie);
     });
 
     ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
@@ -731,6 +740,8 @@ void MainWindow::capture() const
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
 }
 
+#include <QtConcurrent/QtConcurrentMap>
+
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
@@ -738,14 +749,18 @@ void MainWindow::captureMovie() const
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
 
+    QList<int> range;
     for (int i = 1; i <= frames; i++)
+        range << i;
+
+    QtConcurrent::map(range, [=](int i) {
         MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
+    }).waitForFinished();
 
     MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), suffix);
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
-                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
-    system((QString("rm ") + renderSettings->saveFile() + suffix + ".ini").toUtf8().constData());
+                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|ini\\|pov\\)\" -delete").toUtf8().constData());
 
     if (renderSettings->openFile())
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());

@@ -1899,38 +1899,6 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>actionSnapshot</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>capture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionFilm</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>captureMovie()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>plot</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
