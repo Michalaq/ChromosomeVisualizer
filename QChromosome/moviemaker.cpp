@@ -189,7 +189,10 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
     f.setFamily("RobotoMono");
     f.setPixelSize(img.height()/20);
     p.setFont(f);
-    p.drawText(QRect(0, 0, img.width()-10, img.height()/20+20), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
+    int w = img.width()-10;
+    int h = img.height()/20+20;
+    p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
+    p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
     img.save(filename + ".png", "PNG");
 }
 
