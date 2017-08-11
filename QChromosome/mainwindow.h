@@ -59,8 +59,8 @@ public slots:
     void setBaseAction(bool enabled);
 
     /* povray */
-    void capture();
-    void captureMovie();
+    void capture() const;
+    void captureMovie() const;
 
     void updateLocks();
 

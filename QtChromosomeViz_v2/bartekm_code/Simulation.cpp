@@ -9,6 +9,9 @@ Simulation::Simulation()
       model(new TreeModel(this))
 {}
 
+Simulation::~Simulation()
+{}
+
 frameNumber_t Simulation::getFrameCount() const
 {
     return nextUnreadFrame_ + 1;
@@ -151,9 +154,4 @@ void Simulation::write(QJsonArray &json) const
 
         json.append(simulationLayer);
     }
-}
-
-void Simulation::dumpFrame(std::ostream &stream, const frameNumber_t frame)
-{
-    model->dumpFrame(stream, getFrame(frame));
 }

@@ -506,6 +506,9 @@ void VizWidget::setFirstFrame()
     VizLink dummy2;
     linksState_.fill(dummy2, connectionCount_);
 
+    Material* dummy3 = Material::getDefault();
+    materials.fill(dummy3, sphereCount_);
+
     setFrame(0);
 
     needVBOUpdate_ = true;
@@ -926,11 +929,6 @@ float VizWidget::fogContribution() const
     return fogContribution_;
 }
 
-const QVector<VizBallInstance> & VizWidget::getBallInstances() const
-{
-    return frameState_;
-}
-
 void VizWidget::read(const QJsonObject& json)
 {
     for (auto i = json.begin(); i != json.end(); i++)
@@ -968,6 +966,37 @@ void VizWidget::write(QJsonObject& json) const
 {
     for (auto i = changes.begin(); i != changes.end(); i++)
         json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
+}
+
+#include "moviemaker.h"
+
+constexpr QVector3D vec3(const Atom& a)
+{
+    return {a.x, a.y, a.z};
+}
+
+void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
+{
+    // Materials
+    QSet<const Material*> used;
+
+    for (auto m : materials)
+        if (!used.contains(m))
+        {
+            stream << *m;
+            used.insert(m);
+        }
+
+    auto frame = simulation_->getFrame(f);
+
+    // Spheres
+    for (int i = 0; i < sphereCount_; i++)
+        MovieMaker::addSphere(stream, vec3(frame->atoms[i]), frameState_[i].size, materials[i]);
+
+    // Cylinders
+    for (auto r : frame->connectedRanges)
+        for (int i = r.first; i < r.second; i++)
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
 }
 
 void VizWidget::generateSortedState()
@@ -1100,6 +1129,7 @@ void AtomSelection::setMaterial(const Material *material)
         widget_->frameState_[i].color = code1;
         widget_->frameState_[i].specularColor = code2;
         widget_->frameState_[i].specularExponent = exponent;
+        widget_->materials[i] = material;
     }
 
     widget_->needVBOUpdate_ = true;

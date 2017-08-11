@@ -10,11 +10,11 @@
 namespace MovieMaker
 {
 void makeMovie(QString filename, int frames, float framerate, int fps, QString suffix);
-void captureScene(std::shared_ptr<Simulation> simulation, int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total);
-void captureScene1(std::shared_ptr<Simulation> simulation, int fn, const VizWidget* scene, const Camera* camera, QString suffix);
+void captureScene(int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total);
+void captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix);
 
-void addSphere(std::ostream& outFile, const QVector3D & position, float radius, Material* color);
-void addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, Material* colorA, Material* colorB);
+void addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material* color);
+void addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, const Material* colorA, const Material* colorB);
 }
 
 #endif // MOVIEMAKER_H

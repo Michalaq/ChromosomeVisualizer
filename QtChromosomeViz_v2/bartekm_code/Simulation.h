@@ -18,7 +18,7 @@ protected:
     TreeModel *model;
 public:
     Simulation();
-    virtual ~Simulation() {};
+    virtual ~Simulation();
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
@@ -32,8 +32,6 @@ public:
 
     void read(const QJsonArray& json);
     void write(QJsonArray& json) const;
-
-    void dumpFrame(std::ostream &stream, const frameNumber_t frame);
 
 signals:
     void frameCountChanged(int frameCount);

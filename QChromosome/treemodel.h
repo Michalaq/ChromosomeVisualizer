@@ -92,13 +92,9 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void dumpFrame(std::ostream &stream, std::shared_ptr<Frame> frame) const;
-
 private:
     TreeItem *header;
     QVector<QModelIndex> indices;
-
-    void dumpModel4(const QModelIndex& root, std::ostream &stream, std::shared_ptr<Frame> frame, Material* mat, QSet<Material*>& used, Visibility vis, QVector<Material*>& materials) const;
 };
 
 #endif // TREEMODEL_H

@@ -138,10 +138,10 @@ public slots:
     float fogDensity() const;
     float fogContribution() const;
 
-    const QVector<VizBallInstance> & getBallInstances() const;
-
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -230,6 +230,8 @@ private:
     QMap<unsigned int, QVariantMap> changes;
 
     TreeView* treeView;
+
+    QVector<const Material*> materials;
 };
 
 #endif /* VIZWINDOW_HPP */

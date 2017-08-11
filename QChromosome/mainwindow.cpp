@@ -720,26 +720,21 @@ void MainWindow::setBaseAction(bool enabled)
 
 #include "moviemaker.h"
 
-void MainWindow::capture()
+void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(simulation, currentFrame, ui->scene, ui->camera, suffix);
+    MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
 }
 
-void MainWindow::captureMovie()
+void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
 
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
-    for (int i = 1; ; i++)
-    {
-        MovieMaker::captureScene(simulation, ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
-        if (i != frames)
-            ui->scene->advanceFrame();
-        else
-            break;
-    }
+
+    for (int i = 1; i <= frames; i++)
+        MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
 
     MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), suffix);
 

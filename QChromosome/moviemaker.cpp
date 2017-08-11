@@ -142,7 +142,7 @@ void MovieMaker::makeMovie(QString filename, int frames, float framerate, int fp
                       + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
 }
 
-void MovieMaker::captureScene(std::shared_ptr<Simulation> simulation, int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
+void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
 {
     auto renderSettings = RenderSettings::getInstance();
     prepareINIFile(renderSettings);
@@ -160,7 +160,7 @@ void MovieMaker::captureScene(std::shared_ptr<Simulation> simulation, int gfn, c
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    simulation->dumpFrame(outFile, fn);
+    scene->writePOVFrame(outFile, fn);
 
     for (auto & key : scene->getLabels().keys())
         addLabel(outFile, "");
@@ -193,7 +193,7 @@ void MovieMaker::captureScene(std::shared_ptr<Simulation> simulation, int gfn, c
     img.save(filename + ".png", "PNG");
 }
 
-void MovieMaker::captureScene1(std::shared_ptr<Simulation> simulation, int fn, const VizWidget* scene, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
 {
     auto renderSettings = RenderSettings::getInstance();
     prepareINIFile(renderSettings);
@@ -208,7 +208,7 @@ void MovieMaker::captureScene1(std::shared_ptr<Simulation> simulation, int fn, c
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    simulation->dumpFrame(outFile, fn);
+    scene->writePOVFrame(outFile, fn);
 
     for (auto & key : scene->getLabels().keys())
         addLabel(outFile, "");
@@ -246,7 +246,7 @@ void MovieMaker::captureScene1(std::shared_ptr<Simulation> simulation, int fn, c
 #endif
 }
 
-void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, float radius, Material* color)
+void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material *color)
 {
     outFile << "sphere {"
             << position << ", "
@@ -255,7 +255,7 @@ void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, fl
             << "}\n";
 }
 
-void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, Material* colorA, Material* colorB)
+void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, const Material *colorA, const Material *colorB)
 {
     QVector3D direction = positionB - positionA;
 
