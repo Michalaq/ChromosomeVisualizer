@@ -724,6 +724,11 @@ void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
+
+    system((QString("rm ") + renderSettings->saveFile() + suffix + ".pov " + renderSettings->saveFile() + suffix + ".ini").toUtf8().constData());
+
+    if (renderSettings->openFile())
+        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
 }
 
 void MainWindow::captureMovie() const
@@ -740,7 +745,7 @@ void MainWindow::captureMovie() const
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
                    + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
-    system("rm povray.ini");
+    system((QString("rm ") + renderSettings->saveFile() + suffix + ".ini").toUtf8().constData());
 
     if (renderSettings->openFile())
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
