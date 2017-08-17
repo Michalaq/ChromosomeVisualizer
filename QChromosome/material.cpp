@@ -6,6 +6,7 @@ Material* Material::dm = nullptr;
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
     QWidget(parent),
     clicked(false),
+    id(QUuid::createUuid()),
     name(n),
     color(c),
     transparency(t),
@@ -18,6 +19,11 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
 Material::~Material()
 {
 
+}
+
+QUuid Material::getId() const
+{
+    return id;
 }
 
 QString Material::getName() const
@@ -107,6 +113,7 @@ const QList<QPersistentModelIndex>& Material::getAssigned() const
 
 void Material::read(const QJsonObject& json)
 {
+    id = json["UUID"].toString();
     name = json["Name"].toString();
 
     const QJsonObject color_ = json["Color"].toObject();
@@ -120,6 +127,7 @@ void Material::read(const QJsonObject& json)
 
 void Material::write(QJsonObject& json) const
 {
+    json["UUID"] = id.toString();
     json["Name"] = name;
 
     QJsonObject color_;
@@ -165,4 +173,39 @@ void Material::paintEvent(QPaintEvent *event)
 
     QPainter p(this);
     paint(&p, rect());
+}
+
+#include "rendersettings.h"
+
+std::ostream &Material::operator<<(std::ostream &stream) const
+{
+    auto renderSettings = RenderSettings::getInstance();
+
+    stream << "#declare m" << QString::number(quintptr(this), 16).toStdString() << " =\n"
+           << "texture {\n"
+           << " pigment {\n"
+           << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
+           << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
+           << " }\n"
+           << " finish {\n"
+           << "  ambient " << renderSettings->ambient().toStdString() << "\n"
+           << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
+           << "  phong " << renderSettings->phong().toStdString() << "\n"
+           << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
+           << "  metallic " << renderSettings->metallic().toStdString() << "\n"
+           << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
+           << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
+           << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
+           << "  }\n"
+           << "  specular 1.0\n"
+           << "  roughness 0.02\n"
+           << " }\n"
+           << "}\n";
+
+    return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Material &mat)
+{
+    return mat << stream;
 }

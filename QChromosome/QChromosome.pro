@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui opengl svg
+QT       += core gui opengl svg concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     materialattributes.cpp \
     materialbrowser.cpp \
     tablemodel.cpp \
-    tableview.cpp
+    tableview.cpp \
+    moviemaker.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -169,4 +170,4 @@ RESOURCES += \
 
 OTHER_FILES +=
 
-unix|win32: LIBS += -lprotobuf
+unix|win32: LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a

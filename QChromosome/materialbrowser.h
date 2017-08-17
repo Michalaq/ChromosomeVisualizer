@@ -38,10 +38,11 @@ class MaterialBrowser : public QMainWindow
 public:
     ~MaterialBrowser();
 
-    void read(const QJsonArray &json, QMap<int, Material*> &tags);
-    void write(QJsonArray &json, QMap<Material*, int> &tags) const;
+    void read(const QJsonArray &json);
+    void write(QJsonArray &json) const;
 
     static MaterialBrowser* getInstance();
+    static Material* getMaterialById(const QUuid& id);
 
     Material *mat[4];
 
@@ -81,13 +82,16 @@ public:
 
     void prepend(Material *m);
 
-    void read(const QJsonArray &json, QMap<int, Material*> &tags);
-    void write(QJsonArray &json, QMap<Material*, int> &tags) const;
+    void read(const QJsonArray &json);
+    void write(QJsonArray &json) const;
 
     QString next_name();
 
+    Material* getMaterialById(const QUuid& id) const;
+
 private:
     QList<Material*> materials;
+    QMap<QUuid, Material*> id2mat;
 };
 
 #include <QStyledItemDelegate>

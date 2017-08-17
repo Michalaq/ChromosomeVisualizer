@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QModelIndex>
+#include <QUuid>
 
 class Material : public QWidget
 {
@@ -10,6 +11,8 @@ class Material : public QWidget
 public:
     explicit Material(QString n = "Mat", QColor c = "#cbcbcb", float t = 0., QColor sc = Qt::white, float se = 10., QWidget *parent = 0);
     ~Material();
+
+    QUuid getId() const;
 
     QString getName() const;
     void setName(QString n);
@@ -36,6 +39,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
+    std::ostream &operator<<(std::ostream &stream) const;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -44,6 +49,7 @@ protected:
 private:
     bool clicked;
 
+    QUuid id;
     QString name;
     QColor color;
     float transparency;
@@ -58,5 +64,7 @@ signals:
 
 public slots:
 };
+
+std::ostream &operator<<(std::ostream &stream, const Material &mat);
 
 #endif // MATERIAL_H

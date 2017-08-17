@@ -456,6 +456,17 @@ void VizWidget::setTreeView(TreeView *tv)
     treeView = tv;
 }
 
+std::shared_ptr<Frame> VizWidget::currentFrame() const
+{
+    return simulation_->getFrame(frameNumber_);
+}
+
+void VizWidget::nextInterestingFrame()
+{
+    auto next = simulation_->getNextTime(frameNumber_);
+    setFrame(next);
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
@@ -494,6 +505,9 @@ void VizWidget::setFirstFrame()
 
     VizLink dummy2;
     linksState_.fill(dummy2, connectionCount_);
+
+    Material* dummy3 = Material::getDefault();
+    materials.fill(dummy3, sphereCount_);
 
     setFrame(0);
 
@@ -637,14 +651,14 @@ QVector<VizVertex> VizWidget::generateSolidOfRevolution(
 QVector<VizVertex> VizWidget::generateSphere(unsigned int rings, unsigned int segments)
 {
     assert(rings > 1);
-    
+
     const QVector3D auxAxis { 1.0, 0.0, 0.0 };
     const QVector3D mainAxis { 0.0, 0.0, 1.0 };
     const VizVertex auxVertex {
         { 0.0, 0.0, 1.0 },
         { 0.0, 0.0, 1.0 }
     };
-    
+
     // Generate quads outline
     QVector<VizSegment> outline;
     for (unsigned int i = 0; i < rings; i++)
@@ -915,11 +929,6 @@ float VizWidget::fogContribution() const
     return fogContribution_;
 }
 
-const QVector<VizBallInstance> & VizWidget::getBallInstances() const
-{
-    return frameState_;
-}
-
 void VizWidget::read(const QJsonObject& json)
 {
     for (auto i = json.begin(); i != json.end(); i++)
@@ -930,19 +939,7 @@ void VizWidget::read(const QJsonObject& json)
         unsigned int id = i.key();
         QVariantMap& map = i.value();
 
-        auto j = map.find("Color");
-        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0xFF000000) | QColor((*j).toString()).rgb();
-
-        j = map.find("Transparency");
-        if (j != map.end()) frameState_[id].color = (frameState_[id].color & 0x00FFFFFF) | ((unsigned int)((*j).toFloat() * 255.f) << 24) & 0xFF000000U;
-
-        j = map.find("Specular color");
-        if (j != map.end()) frameState_[id].specularColor = (frameState_[id].specularColor & 0xFF000000) | QColor((*j).toString()).rgb();
-
-        j = map.find("Shininess exponent");
-        if (j != map.end()) frameState_[id].specularExponent = (*j).toFloat();
-
-        j = map.find("Radius");
+        auto j = map.find("Radius");
         if (j != map.end()) frameState_[id].size = (*j).toFloat();
 
         j = map.find("Label");
@@ -957,6 +954,37 @@ void VizWidget::write(QJsonObject& json) const
 {
     for (auto i = changes.begin(); i != changes.end(); i++)
         json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
+}
+
+#include "moviemaker.h"
+
+constexpr QVector3D vec3(const Atom& a)
+{
+    return {a.x, a.y, a.z};
+}
+
+void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
+{
+    // Materials
+    QSet<const Material*> used;
+
+    for (auto m : materials)
+        if (!used.contains(m))
+        {
+            stream << *m;
+            used.insert(m);
+        }
+
+    auto frame = simulation_->getFrame(f);
+
+    // Spheres
+    for (int i = 0; i < sphereCount_; i++)
+        MovieMaker::addSphere(stream, vec3(frame->atoms[i]), frameState_[i].size, materials[i]);
+
+    // Cylinders
+    for (auto r : frame->connectedRanges)
+        for (int i = r.first; i < r.second; i++)
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
 }
 
 void VizWidget::generateSortedState()
@@ -1089,6 +1117,7 @@ void AtomSelection::setMaterial(const Material *material)
         widget_->frameState_[i].color = code1;
         widget_->frameState_[i].specularColor = code2;
         widget_->frameState_[i].specularExponent = exponent;
+        widget_->materials[i] = material;
     }
 
     widget_->needVBOUpdate_ = true;

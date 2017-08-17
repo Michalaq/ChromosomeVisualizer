@@ -9,6 +9,7 @@
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
 #include "tagsdelegate.h"
+#include <QtConcurrent/QtConcurrentRun>
 
 static const char * ext = ".qcs";
 
@@ -219,6 +220,14 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
     });
 
+    connect(ui->actionSnapshot, &QAction::triggered, [this] {
+        QtConcurrent::run(this, &MainWindow::capture);
+    });
+
+    connect(ui->actionFilm, &QAction::triggered, [this] {
+        QtConcurrent::run(this, &MainWindow::captureMovie);
+    });
+
     ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
     ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
@@ -345,11 +354,10 @@ void MainWindow::openProject()
         ui->plot->updateSimulation();
 
         const QJsonArray materials = project["Materials"].toArray();
-        QMap<int, Material*> tags;
-        materialBrowser->read(materials, tags);
+        materialBrowser->read(materials);
 
         const QJsonObject structure = project["Structure"].toObject();
-        ui->treeView->read(structure, tags);
+        ui->treeView->read(structure);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
@@ -419,12 +427,11 @@ void MainWindow::saveProject()
         project["Layers"] = layers;
 
         QJsonArray materials;
-        QMap<Material*, int> tags;
-        materialBrowser->write(materials, tags);
+        materialBrowser->write(materials);
         project["Materials"] = materials;
 
         QJsonObject structure;
-        simulation->getModel()->write(structure, tags);
+        simulation->getModel()->write(structure);
         project["Structure"] = structure;
 
         QJsonObject bar;
@@ -722,38 +729,38 @@ void MainWindow::setBaseAction(bool enabled)
 
 #include "moviemaker.h"
 
-void MainWindow::capture()
+void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->scene, ui->camera, suffix);
+    MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
 
-    system(QString(QString("rm ") + renderSettings->saveFile() + suffix + ".pov").toUtf8().constData());
-    system("rm povray.ini");
+    system((QString("rm ") + renderSettings->saveFile() + suffix + ".pov " + renderSettings->saveFile() + suffix + ".ini").toUtf8().constData());
 
     if (renderSettings->openFile())
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
 }
 
-void MainWindow::captureMovie()
+#include <QtConcurrent/QtConcurrentMap>
+
+void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
 
     ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
     int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
-    for (int i = 1; ; i++)
-    {
-        MovieMaker::captureScene(ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'));
-        if (i != frames)
-            ui->scene->advanceFrame();
-        else
-            break;
-    }
+
+    QList<int> range;
+    for (int i = 1; i <= frames; i++)
+        range << i;
+
+    QtConcurrent::map(range, [=](int i) {
+        MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
+    }).waitForFinished();
 
     MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), suffix);
 
     system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
-                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|pov\\)\" -delete").toUtf8().constData());
-    system("rm povray.ini");
+                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|ini\\|pov\\)\" -delete").toUtf8().constData());
 
     if (renderSettings->openFile())
         system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());

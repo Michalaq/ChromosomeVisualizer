@@ -167,12 +167,14 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
     m->assign(index);
 }
 
-void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json, const QMap<int, Material *> &tags)
+#include "materialbrowser.h"
+
+void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json)
 {
     const QJsonObject children = json["Descendants"].toObject();
 
     for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(model()->index(child.key().toInt(), 0, root), child.value().toObject(), tags);
+        dumpModel3(model()->index(child.key().toInt(), 0, root), child.value().toObject());
 
     const QJsonArray t = json["Object"].toObject()["Tags"].toArray();
 
@@ -181,7 +183,7 @@ void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json, cons
         QVariantList u;
 
         for (auto i : t)
-            u.push_back(QVariant::fromValue(tags[i.toInt()]));
+            u.push_back(QVariant::fromValue(MaterialBrowser::getMaterialById(i.toString())));
 
         model()->setData(root.sibling(root.row(), 5), u);
 
@@ -192,10 +194,10 @@ void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json, cons
     }
 }
 
-void TreeView::read(const QJsonObject &json, const QMap<int, Material *> &tags)
+void TreeView::read(const QJsonObject &json)
 {
     qobject_cast<TreeModel*>(model())->read(json);
-    dumpModel3(model()->index(0, 0), json, tags);
+    dumpModel3(model()->index(0, 0), json);
 }
 
 void TreeView::updateAttributes(const Material *m)

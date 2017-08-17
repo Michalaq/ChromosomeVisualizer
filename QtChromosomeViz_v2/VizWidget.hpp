@@ -95,6 +95,9 @@ public:
     void setSimulation(std::shared_ptr<Simulation> dp);
     void setTreeView(TreeView* tv);
 
+    std::shared_ptr<Frame> currentFrame() const;
+    void nextInterestingFrame();
+
 public slots:
     void advanceFrame();
     void setFrame(frameNumber_t frame);
@@ -135,10 +138,10 @@ public slots:
     float fogDensity() const;
     float fogContribution() const;
 
-    const QVector<VizBallInstance> & getBallInstances() const;
-
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -201,7 +204,7 @@ private:
 
     std::shared_ptr<Simulation> simulation_;
     frameNumber_t frameNumber_;
-    
+
     bool needVBOUpdate_;
     QVector<VizBallInstance> frameState_, sortedState_;
     QVector<VizLink> linksState_;
@@ -227,6 +230,8 @@ private:
     QMap<unsigned int, QVariantMap> changes;
 
     TreeView* treeView;
+
+    QVector<const Material*> materials;
 };
 
 #endif /* VIZWINDOW_HPP */

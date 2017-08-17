@@ -9,6 +9,9 @@ Simulation::Simulation()
       model(new TreeModel(this))
 {}
 
+Simulation::~Simulation()
+{}
+
 frameNumber_t Simulation::getFrameCount() const
 {
     return nextUnreadFrame_ + 1;
@@ -58,7 +61,7 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
     return std::make_shared<Frame>(f);
 }
 
-frameNumber_t Simulation::getNextTime(frameNumber_t time)
+frameNumber_t Simulation::getNextTime(frameNumber_t time) const
 {
     if (layerConcatenations_.empty())
         return 0;
@@ -78,7 +81,7 @@ frameNumber_t Simulation::getNextTime(frameNumber_t time)
     return minimum;
 }
 
-frameNumber_t Simulation::getPreviousTime(frameNumber_t time)
+frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
 {
     if (layerConcatenations_.empty())
         return 0;

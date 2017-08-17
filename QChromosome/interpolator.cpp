@@ -214,3 +214,79 @@ void Interpolator::write(QJsonArray &json) const
         json.append(keyProperties);
     }
 }
+
+#include <fstream>
+
+std::ostream &Interpolator::operator<<(std::ostream &stream) const
+{
+    stream << "#declare MySplinePos = \nspline {\ncubic_spline\n";
+
+    {
+        auto j = values.begin();
+        auto i = j + 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
+    for (auto i = values.begin(); i != values.end(); i++)
+    {
+        auto& t = i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
+    {
+        auto j = values.end() - 1;
+        auto i = j - 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[3] << ", " << v[4] << ", " << v[5] << ">\n";
+    }
+
+    stream << "}\n";
+
+    stream << "#declare MySplineAng = \nspline {\ncubic_spline\n";
+
+    {
+        auto j = values.begin();
+        auto i = j + 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
+    }
+
+    for (auto i = values.begin(); i != values.end(); i++)
+    {
+        auto& t = i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
+    }
+
+    {
+        auto j = values.end() - 1;
+        auto i = j - 1;
+
+        auto t = 2 * j.key() - i.key();
+        auto& v = i.value().first;
+
+        stream << t << ", <" << -v[7] << ", " << v[6] << ", " << v[8] << ">\n";
+    }
+
+    stream << "}\n";
+
+    return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Interpolator &ip)
+{
+    return ip << stream;
+}

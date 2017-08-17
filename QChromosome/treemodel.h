@@ -44,6 +44,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <memory>
 
 #include "../QtChromosomeViz_v2/bartekm_code/common.h"
 
@@ -89,7 +90,7 @@ public:
     const QVector<QModelIndex>& getIndices() const;
 
     void read(const QJsonObject& json);
-    void write(QJsonObject& json, const QMap<Material*, int>& tags) const;
+    void write(QJsonObject& json) const;
 
 private:
     TreeItem *header;
