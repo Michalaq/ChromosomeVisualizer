@@ -1,6 +1,6 @@
 QChromosome/QChromosome.pro.user
 *.autosave
-build*
+build-QChromosome-*
 QtChromosomeViz_v2/bartekm_code/message_format/*
 !QtChromosomeViz_v2/bartekm_code/message_format/*.proto
 

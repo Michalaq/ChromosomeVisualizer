@@ -35,7 +35,6 @@ SOURCES += main.cpp\
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.cc \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp \
     treeitem.cpp \
     treemodel.cpp \
@@ -110,7 +109,6 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/include/posix_file_handler.h \
     ../QtChromosomeViz_v2/bartekm_code/include/stream.h \
     ../QtChromosomeViz_v2/bartekm_code/include/utils.h \
-    ../QtChromosomeViz_v2/bartekm_code/message_format/message.pb.h \
     ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h \
     treeitem.h \
     treemodel.h \
@@ -170,4 +168,12 @@ RESOURCES += \
 
 OTHER_FILES +=
 
-unix|win32: LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
+BITSIZE = $$system(getconf LONG_BIT)
+if (contains(BITSIZE, 64)) {
+    LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
+}
+if (contains(BITSIZE, 32)) {
+    LIBS += /usr/lib/libprotobuf.a
+}
+PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
+include(protobuf.pri)
