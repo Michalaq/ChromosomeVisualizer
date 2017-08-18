@@ -275,12 +275,22 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizLink, size)
     );
 
+    glEnableVertexAttribArray(8);
+    glVertexAttribIPointer(
+        8,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, visible)
+    );
+
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(8, 1);
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -299,6 +309,7 @@ void VizWidget::initializeGL()
 
     assert(cylinderProgram_.create());
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/cylinder/vertex.glsl");
+    cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/cylinder/geometry.glsl");
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/cylinder/fragment.glsl");
     assert(cylinderProgram_.link());
 
@@ -559,6 +570,7 @@ void VizWidget::setFrame(frameNumber_t frame)
             link.specularExponent[1] = frameState_[i + 1].specularExponent;
             link.size[0] = frameState_[i].size;
             link.size[1] = frameState_[i + 1].size;
+            link.visible = visibleBitmap_[i] && visibleBitmap_[i + 1];
         }
     }
 

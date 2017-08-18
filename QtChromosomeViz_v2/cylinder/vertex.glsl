@@ -8,18 +8,20 @@ layout(location = 4) in uvec2 cInstanceColor;
 layout(location = 5) in uvec2 cInstanceSpecularColor;
 layout(location = 6) in vec2 fInstanceSpecularExponent;
 layout(location = 7) in vec3 fInstanceSize;
+layout(location = 8) in uint iInstanceVisible;
 
 uniform mat4 mvp;
 uniform mat4 mv;
 uniform mat3 mvNormal;
-out vec4 vPosition;
-out vec4 vViewPosition;
-out vec3 vNormal;
-flat out uint iInstanceID;
-flat out uint iFlags;
-out vec4 cColor;
-out vec3 cSpecularColor;
-out float fSpecularExponent;
+out vec4 gvPosition;
+out vec4 gvViewPosition;
+out vec3 gvNormal;
+flat out uint giInstanceID;
+flat out uint giFlags;
+out vec4 gcColor;
+out vec3 gcSpecularColor;
+out float gfSpecularExponent;
+flat out uint giVisible;
 
 vec4 colorFromARGB8(uint color) {
     vec4 ret;
@@ -42,18 +44,19 @@ void main() {
     vec4 objectSpacePos = vec4(pos3 + vInstancePosition.xyz, 1);
     vec4 pos = mvp * objectSpacePos;
     gl_Position = pos;
-    vPosition = pos;
-    vViewPosition = mv * objectSpacePos;
-    vNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));
-    iInstanceID = 0u;
-    iFlags = 0u;
-    cColor = mix(colorFromARGB8(cInstanceColor.x),
-                 colorFromARGB8(cInstanceColor.y),
-                 blendFactor);
-    cSpecularColor = mix(colorFromARGB8(cInstanceSpecularColor.x).rgb,
-                         colorFromARGB8(cInstanceSpecularColor.y).rgb,
-                         blendFactor);
-    fSpecularExponent = mix(fInstanceSpecularExponent.x,
-                            fInstanceSpecularExponent.y,
-                            blendFactor);
+    gvPosition = pos;
+    gvViewPosition = mv * objectSpacePos;
+    gvNormal = normalize(mvNormal * -rotate_vector(vInstanceRotation.wxyz, vVertexNormal));
+    giInstanceID = 0u;
+    giFlags = 0u;
+    gcColor = mix(colorFromARGB8(cInstanceColor.x),
+                  colorFromARGB8(cInstanceColor.y),
+                  blendFactor);
+    gcSpecularColor = mix(colorFromARGB8(cInstanceSpecularColor.x).rgb,
+                          colorFromARGB8(cInstanceSpecularColor.y).rgb,
+                          blendFactor);
+    gfSpecularExponent = mix(fInstanceSpecularExponent.x,
+                             fInstanceSpecularExponent.y,
+                             blendFactor);
+    giVisible = iInstanceVisible;
 }

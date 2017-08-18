@@ -38,6 +38,7 @@ struct VizLink
     unsigned int specularColor[2];
     float specularExponent[2];
     float size[3];
+    unsigned int visible;
 
     void update(const QVector3D & p1, const QVector3D & p2);
 };

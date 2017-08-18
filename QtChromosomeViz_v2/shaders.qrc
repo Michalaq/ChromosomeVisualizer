@@ -11,5 +11,6 @@
         <file>sphere/fragment.glsl</file>
         <file>sphere/geometry.glsl</file>
         <file>sphere/vertex.glsl</file>
+        <file>cylinder/geometry.glsl</file>
     </qresource>
 </RCC>
