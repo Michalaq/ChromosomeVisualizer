@@ -45,6 +45,9 @@
          <height>34</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">background: white;</string>
        </property>
@@ -71,6 +74,9 @@
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -237,6 +243,13 @@
    <header>spinbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>spinBox</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>checkBox</tabstop>
+  <tabstop>checkBox_2</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

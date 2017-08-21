@@ -45,6 +45,9 @@
          <height>34</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">background: white;</string>
        </property>
@@ -71,6 +74,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>View</string>
@@ -84,6 +90,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -175,6 +184,9 @@
                  <width>16777215</width>
                  <height>32</height>
                 </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
                </property>
               </widget>
              </item>
@@ -321,6 +333,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_2">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -372,6 +387,9 @@
                  <width>16777215</width>
                  <height>32</height>
                 </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
                </property>
               </widget>
              </item>
@@ -479,6 +497,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_3">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -538,6 +559,9 @@
                  <height>32</height>
                 </size>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
               </widget>
              </item>
              <item row="1" column="1">
@@ -559,6 +583,9 @@
                  <width>16777215</width>
                  <height>32</height>
                 </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
                </property>
               </widget>
              </item>
@@ -615,6 +642,19 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>checkBox</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>widget</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>doubleSpinBox_2</tabstop>
+  <tabstop>checkBox_2</tabstop>
+  <tabstop>widget_2</tabstop>
+  <tabstop>doubleSpinBox_3</tabstop>
+  <tabstop>doubleSpinBox_4</tabstop>
+  <tabstop>widget_3</tabstop>
+  <tabstop>widget_4</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

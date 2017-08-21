@@ -45,6 +45,9 @@
          <height>34</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">background: white;</string>
        </property>
@@ -84,6 +87,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>Color</string>
@@ -97,6 +103,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_2">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -142,6 +151,9 @@
                  <width>0</width>
                  <height>32</height>
                 </size>
+               </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
                </property>
               </widget>
              </item>
@@ -202,6 +214,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_3">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -268,6 +283,9 @@
                  <height>32</height>
                 </size>
                </property>
+               <property name="focusPolicy">
+                <enum>Qt::StrongFocus</enum>
+               </property>
               </widget>
              </item>
             </layout>
@@ -323,6 +341,12 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>widget</tabstop>
+  <tabstop>doubleSpinBox_2</tabstop>
+  <tabstop>doubleSpinBox_3</tabstop>
+  <tabstop>widget_2</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

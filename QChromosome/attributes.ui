@@ -45,6 +45,9 @@
          <height>34</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">background: white;</string>
        </property>
@@ -68,6 +71,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Basic</string>
@@ -81,6 +87,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -214,6 +223,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_2">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -221,7 +233,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-36</y>
             <width>362</width>
             <height>228</height>
            </rect>
@@ -440,6 +452,17 @@
    <header>lineedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>comboBox_2</tabstop>
+  <tabstop>spinBox</tabstop>
+  <tabstop>spinBox_2</tabstop>
+  <tabstop>spinBox_3</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>spinBox_4</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>
