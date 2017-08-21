@@ -43,6 +43,38 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
     }
 }
 
+void prepareINIFile1(const QString& filename, const RenderSettings * renderSettings, int fbeg, int fend)
+{
+    std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    QSize size = renderSettings->outputSize();
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+            << "\nQuality=" << renderSettings->quality().toStdString();
+    if (renderSettings->antiAliasing())
+    {
+        outFile << "\nAntialias=on"
+                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+        if (renderSettings->aaJitter())
+        {
+            outFile << "\nJitter=on"
+                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+        }
+        else
+        {
+            outFile << "\nJitter=off";
+        }
+    }
+    else
+    {
+        outFile << "\nAntialias=off";
+    }
+    outFile << "\nInitial_Frame=" << fbeg
+            << "\nFinal_Frame=" << fend
+            << "\nInitial_Clock=" << fbeg
+            << "\nFinal_Clock=" << fend;
+}
+
 void createPOVFile(std::ofstream& outFile, std::string filename)
 {
     outFile.open(filename + ".pov");
@@ -68,7 +100,7 @@ void setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
             << "}\n";
 }
 
-void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn, bool s)
+void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s)
 {
     outFile << "camera{perspective\n"
             << "right x*" << size.width() << "/" << size.height() << "\n"
@@ -79,8 +111,8 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double
         outFile << "rotate " << -camera->EulerAngles() << "\n"
             << "translate " << camera->position() << "\n";
     else
-        outFile << "rotate -MySplineAng(" << fn << ")\n"
-            << "translate MySplinePos(" << fn << ")\n";
+        outFile << "rotate -MySplineAng(clock)\n"
+            << "translate MySplinePos(clock)\n";
 
     outFile << "}\n"
             << "\n";
@@ -130,11 +162,11 @@ void MovieMaker::makeMovie(QString filename, int frames, float framerate, int fp
                       + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
 }
 
-void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
+void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix)
 {
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = renderSettings->saveFile() + suffix;
-    prepareINIFile(filename, renderSettings);
+    QString filename = renderSettings->saveFile();
+    prepareINIFile1(filename, renderSettings, fbeg, fend);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
@@ -144,11 +176,11 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
     if (renderSettings->cam360())
         set360Camera(outFile, camera, renderSettings->outputSize());
     else
-        setCamera1(outFile, camera, renderSettings->outputSize(), gfn, ip.keys().isEmpty());
+        setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    scene->writePOVFrame(outFile, fn);
+    scene->writePOVFrame(outFile, fbeg);
 
     for (auto & key : scene->getLabels().keys())
         addLabel(outFile, "");
@@ -168,7 +200,7 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
     qDebug() << "platform not supported";
 #endif
 
-    QImage img;
+    /*QImage img;
     img.load(filename + ".png");
     QPainter p(&img);
     p.setRenderHint(QPainter::Antialiasing);
@@ -181,7 +213,7 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
     int h = img.height()/20+20;
     p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
     p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
-    img.save(filename + ".png", "PNG");
+    img.save(filename + ".png", "PNG");*/
 }
 
 void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
