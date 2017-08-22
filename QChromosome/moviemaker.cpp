@@ -164,8 +164,9 @@ void makeMovie(QString filename, int frames, float framerate, int fps, QString s
 
 void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr)
 {
+    QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = renderSettings->saveFile();
+    QString filename = dir.path() + "/" + renderSettings->saveFile();
     prepareINIFile1(filename, renderSettings, fbeg, fend);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
@@ -190,15 +191,14 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     QSettings settings;
 
 #ifdef __linux__
+    QProcess p;
+    p.setWorkingDirectory(dir.path());
+
     QStringList argv;
-    argv << filename + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
-    QProcess::execute("povray", argv);
-#elif _WIN32
-    qDebug() << "windows povray photo";
-    system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
-#else
-    qDebug() << "platform not supported";
-#endif
+    argv << renderSettings->saveFile() + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + ".pov";
+
+    p.start("povray", argv);
+    p.waitForFinished(-1);
 
     /*QImage img;
     img.load(filename + ".png");
@@ -216,13 +216,10 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     img.save(filename + ".png", "PNG");*/
 
     int frames = fend - fbeg + 1;
-    makeMovie(renderSettings->saveFile(), frames, fr, fr, suffix);
-
-    QFile::remove(filename + ".pov");
-    QFile::remove(filename + ".ini");
-
-    system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
-                   + QString::number(QString::number(frames).length()) + "\\}\\.png\" -delete").toUtf8().constData());
+    p.start(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(fr) + " -i " + renderSettings->saveFile() + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
+                      + " -r " + QString::number(fr) + " -pix_fmt yuv420p file:" + QDir::currentPath() + "/" + renderSettings->saveFile() + suffix + ".mp4");
+    p.waitForFinished(-1);
+#endif
 }
 
 void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
