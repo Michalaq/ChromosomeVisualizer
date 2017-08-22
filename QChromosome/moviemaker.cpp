@@ -152,7 +152,7 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void MovieMaker::makeMovie(QString filename, int frames, float framerate, int fps, QString suffix)
+void makeMovie(QString filename, int frames, float framerate, int fps, QString suffix)
 {
     QStringList argv;
     argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
@@ -162,7 +162,7 @@ void MovieMaker::makeMovie(QString filename, int frames, float framerate, int fp
                       + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
 }
 
-void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix)
+void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr)
 {
     auto renderSettings = RenderSettings::getInstance();
     QString filename = renderSettings->saveFile();
@@ -214,6 +214,15 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
     p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
     img.save(filename + ".png", "PNG");*/
+
+    int frames = fend - fbeg + 1;
+    makeMovie(renderSettings->saveFile(), frames, fr, fr, suffix);
+
+    QFile::remove(filename + ".pov");
+    QFile::remove(filename + ".ini");
+
+    system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
+                   + QString::number(QString::number(frames).length()) + "\\}\\.png\" -delete").toUtf8().constData());
 }
 
 void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
@@ -250,6 +259,9 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
 #else
     qDebug() << "platform not supported";
 #endif
+
+    QFile::remove(filename + ".pov");
+    QFile::remove(filename + ".ini");
 }
 
 void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material *color)

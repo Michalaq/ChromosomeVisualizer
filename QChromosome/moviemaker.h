@@ -9,8 +9,7 @@
 
 namespace MovieMaker
 {
-void makeMovie(QString filename, int frames, float framerate, int fps, QString suffix);
-void captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix);
+void captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr);
 void captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix);
 
 void addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material* color);
