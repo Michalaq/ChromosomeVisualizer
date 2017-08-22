@@ -191,25 +191,30 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.start("povray", argv);
     p.waitForFinished(-1);
 
-    /*QImage img;
-    img.load(filename + ".png");
-    QPainter p(&img);
-    p.setRenderHint(QPainter::Antialiasing);
-    p.setPen(Qt::white);
-    QFont f;
-    f.setFamily("RobotoMono");
-    f.setPixelSize(img.height()/20);
-    p.setFont(f);
-    int w = img.width()-10;
-    int h = img.height()/20+20;
-    p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
-    p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
-    img.save(filename + ".png", "PNG");*/
+    int total = fend - fbeg;
+
+    for (int i = 0; i <= total; i++)
+    {
+        QImage img;
+        img.load(filename + QString::number(i).rightJustified(QString::number(total).length(), '0') + ".png");
+        QPainter p(&img);
+        p.setRenderHint(QPainter::Antialiasing);
+        p.setPen(Qt::white);
+        QFont f;
+        f.setFamily("RobotoMono");
+        f.setPixelSize(img.height()/20);
+        p.setFont(f);
+        int w = img.width()-10;
+        int h = img.height()/20+20;
+        p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(i).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
+        p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(fbeg + i).rightJustified(QString::number(fend).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
+        img.save(filename + QString::number(i).rightJustified(QString::number(total).length(), '0') + ".png", "PNG");
+    }
 
     argv.clear();
     argv << "-y"
          << "-framerate" << QString::number(fr)
-         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(fend - fbeg).length()) + "d.png"
+         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(total).length()) + "d.png"
          << "-c:v" << "libx264"
          << "-r" << QString::number(fr)
          << "-pix_fmt" << "yuv420p"
