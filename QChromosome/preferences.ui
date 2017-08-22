@@ -198,7 +198,7 @@ QScrollArea &gt; QWidget &gt; QWidget {
            <item>
             <widget class="Label" name="label_2">
              <property name="text">
-              <string>POV-Ray installation path</string>
+              <string>POV-Ray installation path (TODO obecnie nieużywana)</string>
              </property>
             </widget>
            </item>

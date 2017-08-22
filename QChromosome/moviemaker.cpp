@@ -178,8 +178,6 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
 
     outFile.flush();
 
-    QSettings settings;
-
 #ifdef __linux__
     QProcess p;
     p.setWorkingDirectory(dir.path());
@@ -188,7 +186,6 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     argv << renderSettings->saveFile() + ".ini"
          << "-D"
          << "+V"
-         << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/"
          << renderSettings->saveFile() + ".pov";
 
     p.start("povray", argv);
@@ -212,7 +209,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     argv.clear();
     argv << "-y"
          << "-framerate" << QString::number(fr)
-         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(fend - fbeg + 1).length()) + "d.png"
+         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(fend - fbeg).length()) + "d.png"
          << "-c:v" << "libx264"
          << "-r" << QString::number(fr)
          << "-pix_fmt" << "yuv420p"
@@ -245,14 +242,11 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
 
     outFile.flush();
 
-    QSettings settings;
-
 #ifdef __linux__
     QStringList argv;
     argv << filename + ".ini"
          << "-D"
          << "+V"
-         << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/"
          << filename + ".pov";
 
     QProcess::execute("povray", argv);
