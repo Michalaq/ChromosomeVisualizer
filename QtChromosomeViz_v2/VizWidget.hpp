@@ -142,6 +142,7 @@ public slots:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
+    void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,

@@ -987,6 +987,32 @@ void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
             MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
 }
 
+void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+{
+    // Materials
+    QSet<const Material*> used;
+
+    for (auto m : materials)
+        if (!used.contains(m))
+        {
+            stream << *m;
+            used.insert(m);
+        }
+
+    simulation_->writePOVFrames(stream, fbeg, fend);
+
+    auto frame = simulation_->getFrame(0);
+
+    // Spheres
+    for (int i = 0; i < sphereCount_; i++)
+        MovieMaker::addSphere1(stream, frameState_[i].atomID, frameState_[i].size, materials[i]);
+
+    // Cylinders
+    for (auto r : frame->connectedRanges)
+        for (int i = r.first; i < r.second; i++)
+            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
+}
+
 void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {

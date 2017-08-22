@@ -171,7 +171,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    scene->writePOVFrame(outFile, fbeg);
+    scene->writePOVFrames(outFile, fbeg, fend);
 
     for (auto & key : scene->getLabels().keys())
         addLabel(outFile, "");
@@ -279,4 +279,24 @@ void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA,
             << " scale " << direction.length()
             << " translate " << positionA
             << "}}\n";
+}
+
+void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const Material *color)
+{
+    outFile << "sphere {"
+            << "Atom" << id << "Pos(clock), "
+            << radius << " "
+            << "texture { m" << QString::number(quintptr(color), 16).toStdString() << " }"
+            << "}\n";
+}
+
+void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radius, const Material *colorA, const Material *colorB)
+{
+    /*QVector3D direction = positionB - positionA;
+
+    outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius
+            << " texture{gradient" << direction.normalized() << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
+            << " scale " << direction.length()
+            << " translate " << positionA
+            << "}}\n";*/
 }
