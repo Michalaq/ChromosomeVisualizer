@@ -69,8 +69,8 @@ void prepareINIFile1(const QString& filename, const RenderSettings * renderSetti
     {
         outFile << "\nAntialias=off";
     }
-    outFile << "\nInitial_Frame=" << fbeg
-            << "\nFinal_Frame=" << fend
+    outFile << "\nInitial_Frame=" << 0
+            << "\nFinal_Frame=" << fend - fbeg
             << "\nInitial_Clock=" << fbeg
             << "\nFinal_Clock=" << fend;
 }
@@ -152,16 +152,6 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void makeMovie(QString filename, int frames, float framerate, int fps, QString suffix)
-{
-    QStringList argv;
-    argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
-         << "-r " + QString::number(fps) << "-pix_fmt yuv420p" << filename + ".mp4";
-    //QProcess::execute("ffmpeg", argv);
-    QProcess::execute(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(framerate) + " -i " + filename + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
-                      + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
-}
-
 void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr)
 {
     QTemporaryDir dir;
@@ -195,7 +185,11 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.setWorkingDirectory(dir.path());
 
     QStringList argv;
-    argv << renderSettings->saveFile() + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << renderSettings->saveFile() + ".pov";
+    argv << renderSettings->saveFile() + ".ini"
+         << "-D"
+         << "+V"
+         << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/"
+         << renderSettings->saveFile() + ".pov";
 
     p.start("povray", argv);
     p.waitForFinished(-1);
@@ -215,9 +209,16 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
     img.save(filename + ".png", "PNG");*/
 
-    int frames = fend - fbeg + 1;
-    p.start(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(fr) + " -i " + renderSettings->saveFile() + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
-                      + " -r " + QString::number(fr) + " -pix_fmt yuv420p file:" + QDir::currentPath() + "/" + renderSettings->saveFile() + suffix + ".mp4");
+    argv.clear();
+    argv << "-y"
+         << "-framerate" << QString::number(fr)
+         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(fend - fbeg + 1).length()) + "d.png"
+         << "-c:v" << "libx264"
+         << "-r" << QString::number(fr)
+         << "-pix_fmt" << "yuv420p"
+         << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
+
+    p.start("ffmpeg", argv);
     p.waitForFinished(-1);
 #endif
 }
@@ -248,17 +249,17 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
 
 #ifdef __linux__
     QStringList argv;
-    argv << filename + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
+    argv << filename + ".ini"
+         << "-D"
+         << "+V"
+         << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/"
+         << filename + ".pov";
+
     QProcess::execute("povray", argv);
-#elif _WIN32
-    qDebug() << "windows povray photo";
-    system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
-#else
-    qDebug() << "platform not supported";
-#endif
 
     QFile::remove(filename + ".pov");
     QFile::remove(filename + ".ini");
+#endif
 }
 
 void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material *color)
