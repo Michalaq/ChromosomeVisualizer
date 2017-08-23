@@ -270,11 +270,13 @@ void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, fl
             << "}\n";
 }
 
-void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
     QVector3D direction = positionB - positionA;
 
-    outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius
+    outFile << "cone{"
+            << " " << positionA << ", " << radiusA
+            << " " << positionB << ", " << radiusB
             << " texture{gradient" << direction.normalized() << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
             << " scale " << direction.length()
             << " translate " << positionA
@@ -290,9 +292,11 @@ void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const M
             << "}\n";
 }
 
-void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radius, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
-    outFile << "cylinder{Atom" << idA << "Pos(clock), Atom" << idB << "Pos(clock), " << radius
+    outFile << "cone{"
+            << " Atom" << idA << "Pos(clock), " << radiusA
+            << " Atom" << idB << "Pos(clock), " << radiusB
             << " texture{gradient vnormalize(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"

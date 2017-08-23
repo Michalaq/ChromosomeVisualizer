@@ -984,7 +984,7 @@ void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
     // Cylinders
     for (auto r : frame->connectedRanges)
         for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
 }
 
 void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
@@ -1010,7 +1010,7 @@ void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
     // Cylinders
     for (auto r : frame->connectedRanges)
         for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
+            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
 }
 
 void VizWidget::generateSortedState()
