@@ -75,6 +75,9 @@ public:
     /* Open File After Rendering  */
     bool openFile() const;
 
+    /* Framerate */
+    int framerate() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

@@ -408,7 +408,7 @@ padding-left: 10px;
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="4" column="0" colspan="3">
+           <item row="6" column="0" colspan="3">
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -428,20 +428,27 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="timestampCheckBox">
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_25">
+             <property name="text">
+              <string>Open File</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_24">
+             <property name="text">
+              <string>360° Camera</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QCheckBox" name="openFileCheckBox">
              <property name="text">
               <string/>
              </property>
              <property name="checked">
               <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_15">
-             <property name="text">
-              <string>Add Timestamp</string>
              </property>
             </widget>
            </item>
@@ -452,34 +459,44 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_24">
-             <property name="text">
-              <string>360° Camera</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QCheckBox" name="cam360CheckBox">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_25">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_15">
              <property name="text">
-              <string>Open File</string>
+              <string>Add Timestamp</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="openFileCheckBox">
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="timestampCheckBox">
              <property name="text">
               <string/>
              </property>
              <property name="checked">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_26">
+             <property name="text">
+              <string>Framerate</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QSpinBox" name="spinBox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>50</number>
              </property>
             </widget>
            </item>

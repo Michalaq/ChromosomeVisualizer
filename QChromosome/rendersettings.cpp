@@ -203,6 +203,11 @@ bool RenderSettings::openFile() const
     return ui->openFileCheckBox->isChecked();
 }
 
+int RenderSettings::framerate() const
+{
+    return ui->spinBox->value();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)

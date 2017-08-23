@@ -70,7 +70,7 @@ void prepareINIFile1(const QString& filename, const RenderSettings * renderSetti
         outFile << "\nAntialias=off";
     }
     outFile << "\nInitial_Frame=" << 0
-            << "\nFinal_Frame=" << fend - fbeg
+            << "\nFinal_Frame=" << (fend - fbeg) * renderSettings->framerate()
             << "\nInitial_Clock=" << fbeg
             << "\nFinal_Clock=" << fend;
 }
@@ -191,7 +191,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.start("povray", argv);
     p.waitForFinished(-1);
 
-    int total = fend - fbeg;
+    int total = (fend - fbeg) * renderSettings->framerate();
 
     for (int i = 0; i <= total; i++)
     {
@@ -207,9 +207,11 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         int w = img.width()-10;
         int h = img.height()/20+20;
         p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(i).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
-        p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(fbeg + i).rightJustified(QString::number(fend).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
+        p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(fbeg + i / renderSettings->framerate()).rightJustified(QString::number(fend).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
         img.save(filename + QString::number(i).rightJustified(QString::number(total).length(), '0') + ".png", "PNG");
     }
+
+    fr *= renderSettings->framerate();
 
     argv.clear();
     argv << "-y"
