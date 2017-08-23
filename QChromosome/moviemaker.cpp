@@ -279,7 +279,7 @@ void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA,
     outFile << "cone{"
             << " " << positionA << ", " << radiusA
             << " " << positionB << ", " << radiusB
-            << " texture{gradient" << direction.normalized() << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
+            << " texture{gradient" << direction << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
             << " scale " << direction.length()
             << " translate " << positionA
             << "}}\n";
@@ -299,7 +299,7 @@ void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float rad
     outFile << "cone{"
             << " Atom" << idA << "Pos(clock), " << radiusA
             << " Atom" << idB << "Pos(clock), " << radiusB
-            << " texture{gradient vnormalize(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
+            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";
