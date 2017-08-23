@@ -1109,6 +1109,16 @@ padding-left: 10px;
        </widget>
       </widget>
      </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>POV-Ray</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>FFmpeg</string>
+      </attribute>
+     </widget>
     </widget>
    </item>
   </layout>
