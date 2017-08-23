@@ -735,7 +735,7 @@ void MainWindow::capture() const
     MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
 
     if (renderSettings->openFile())
-        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
+        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
 }
 
 void MainWindow::captureMovie() const
@@ -744,7 +744,7 @@ void MainWindow::captureMovie() const
     MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, ui->camera, ip, suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->openFile())
-        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
+        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
 }
 
 void MainWindow::updateLocks()
