@@ -98,8 +98,8 @@ void Slider::paintEvent(QPaintEvent *event)
 
     while (it != keys.constEnd() && *it < softMinimum) it++;
 
-    p.setPen("#318db9");
-    p.setBrush(QBrush("#355668"));
+    p.setPen("#377c9f");
+    p.setBrush(QBrush("#33576b"));
 
     qreal dx = (width() - 20) / (softMaximum - softMinimum);
 
@@ -115,10 +115,9 @@ void Slider::paintEvent(QPaintEvent *event)
 
     if (softMinimum <= frame && frame <= softMaximum)
     {
-        p.setPen("#f47750");
-        p.setBrush(QBrush("#fcd5c6"));
+        p.setBrush(QBrush("#377c9f"));
 
-        auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, ip->selectedKeyframe(), width() - 20) + 10;
+        auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, frame, width() - 20) + 10;
 
         p.drawRect(QRect(tick - dx/2, 4, dx, 8));
     }
