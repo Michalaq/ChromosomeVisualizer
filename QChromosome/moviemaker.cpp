@@ -292,11 +292,9 @@ void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const M
 
 void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radius, const Material *colorA, const Material *colorB)
 {
-    /*QVector3D direction = positionB - positionA;
-
-    outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius
-            << " texture{gradient" << direction.normalized() << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
-            << " scale " << direction.length()
-            << " translate " << positionA
-            << "}}\n";*/
+    outFile << "cylinder{Atom" << idA << "Pos(clock), Atom" << idB << "Pos(clock), " << radius
+            << " texture{gradient vnormalize(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
+            << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
+            << " translate Atom" << idA << "Pos(clock)"
+            << "}}\n";
 }
