@@ -229,8 +229,9 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
 
 void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
 {
+    QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = renderSettings->saveFile() + suffix;
+    QString filename = dir.path() + "/" + renderSettings->saveFile();
     prepareINIFile(filename, renderSettings);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
@@ -250,16 +251,18 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     outFile.flush();
 
 #ifdef __linux__
+    QProcess p;
+    p.setWorkingDirectory(dir.path());
+
     QStringList argv;
-    argv << filename + ".ini"
+    argv << renderSettings->saveFile() + ".ini"
          << "-D"
          << "+V"
-         << filename + ".pov";
+         << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
+         << renderSettings->saveFile() + ".pov";
 
-    QProcess::execute("povray", argv);
-
-    QFile::remove(filename + ".pov");
-    QFile::remove(filename + ".ini");
+    p.start("povray", argv);
+    p.waitForFinished(-1);
 #endif
 }
 
