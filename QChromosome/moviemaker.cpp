@@ -156,7 +156,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir.path() + "/" + renderSettings->saveFile();
+    QString filename = dir.path() + '/' + renderSettings->saveFile();
     prepareINIFile1(filename, renderSettings, fbeg, fend);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
@@ -192,23 +192,38 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     p.waitForFinished(-1);
 
     int total = (fend - fbeg) * renderSettings->framerate();
+    int fw1 = QString::number(total).length();
+    int fw2 = QString::number(fend).length();
+
+    QImage img;
+
+    QFont f;
+    f.setFamily("RobotoMono");
+    f.setPixelSize(15);
+
+    QTransform t;
+    t.translate(renderSettings->outputSize().width(), 0);
+    t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
 
     for (int i = 0; i <= total; i++)
     {
-        QImage img;
-        img.load(filename + QString::number(i).rightJustified(QString::number(total).length(), '0') + ".png");
+        QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
+
+        file.open(QIODevice::ReadOnly);
+        img.load(&file, "PNG");
+        file.close();
+
         QPainter p(&img);
         p.setRenderHint(QPainter::Antialiasing);
         p.setPen(Qt::white);
-        QFont f;
-        f.setFamily("RobotoMono");
-        f.setPixelSize(img.height()/20);
         p.setFont(f);
-        int w = img.width()-10;
-        int h = img.height()/20+20;
-        p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(i).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
-        p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(fbeg + i / renderSettings->framerate()).rightJustified(QString::number(fend).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
-        img.save(filename + QString::number(i).rightJustified(QString::number(total).length(), '0') + ".png", "PNG");
+        p.setTransform(t);
+
+        p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+
+        file.open(QIODevice::WriteOnly);
+        img.save(&file, "PNG");
+        file.close();
     }
 
     fr *= renderSettings->framerate();
@@ -216,7 +231,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     argv.clear();
     argv << "-y"
          << "-framerate" << QString::number(fr)
-         << "-i" << renderSettings->saveFile() + "%0" + QString::number(QString::number(total).length()) + "d.png"
+         << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
          << "-c:v" << "libx264"
          << "-r" << QString::number(fr)
          << "-pix_fmt" << "yuv420p"
