@@ -43,32 +43,38 @@ void MaterialRenderer::initializeGL()
     context.doneCurrent();
 }
 
+#include <fstream>
+
 void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *material)
 {
     if (!(bounds.width() > 0 && bounds.height() > 0))
         return;
 
-    context.makeCurrent(this);
+    std::ofstream file("sphere.pov");
 
-    QOpenGLFramebufferObject fbo(bounds.width(), bounds.height());
+    file << *material
+         << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
+         << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
+         << "sphere {<0, 0, 0>, 2 texture { m" << QString::number(quintptr(material), 16).toStdString() << " }}\n"
+         << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
 
-    assert(fbo.bind());
+    file.close();
 
-    glEnable(GL_BLEND);
+    QStringList argv;
+    argv << QString("+W") + QString::number(bounds.width())
+         << QString("+H") + QString::number(bounds.height())
+         << "-GA"
+         << "-D"
+         << "-O-"
+         << "sphere.pov";
 
-    QColor c;
-    c = material->getColor();
-    shader.setUniformValue("cColor", c.redF(), c.greenF(), c.blueF(), 1. - material->getTransparency());
-    c = material->getSpecularColor();
-    shader.setUniformValue("cSpecularColor", c.redF(), c.greenF(), c.blueF());
-    shader.setUniformValue("fSpecularExponent", material->getSpecularExponent());
+    QProcess p;
 
-    glViewport(0, 0, bounds.width(), bounds.height());
-    glDrawArrays(GL_POINTS, 0, 1);
+    p.start("povray", argv);
+    p.waitForFinished();
 
-    assert(fbo.release());
+    QImage img;
+    img.loadFromData(p.readAllStandardOutput(), "PNG");
 
-    painter->drawImage(bounds.topLeft(), fbo.toImage());
-
-    context.doneCurrent();
+    painter->drawImage(bounds.topLeft(), img);
 }
