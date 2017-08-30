@@ -85,9 +85,14 @@ Material* Material::getDefault()
     return dm ? dm : (dm = new Material);
 }
 
+#include <QPainter>
+
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    icon.paint(painter, bounds);
+    if (mode != QIcon::Normal)
+        updates[dynamic_cast<QWidget*>(painter->device())] = bounds;
+
+    icon.paint(painter, bounds, Qt::AlignCenter, mode);
 }
 
 void Material::assign(const QPersistentModelIndex &ix, bool b)
@@ -159,8 +164,6 @@ void Material::mouseMoveEvent(QMouseEvent *event)
         QWidget::mouseMoveEvent(event);
 }
 
-#include <QPainter>
-
 void Material::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
@@ -174,7 +177,7 @@ void Material::paintEvent(QPaintEvent *event)
 
 void Material::updateIcon()
 {
-    update();
+    mode = QIcon::Disabled;
 
     std::ofstream file("sphere.pov");
 
@@ -194,17 +197,24 @@ void Material::updateIcon()
          << "-O-"
          << "sphere.pov";
 
-    QProcess p;
+    QProcess* p = new QProcess;
 
-    p.start("povray", argv);
-    p.waitForFinished();
+    p->start("povray", argv);
 
-    QImage img;
-    img.loadFromData(p.readAllStandardOutput(), "PNG");
+    connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [p,this](){
+        QImage img;
+        img.loadFromData(p->readAllStandardOutput(), "PNG");
 
-    icon = QIcon(QPixmap::fromImage(img));
+        icon = QIcon(QPixmap::fromImage(img));
+        mode = QIcon::Normal;
 
-    update();
+        for (auto i = updates.begin(); i != updates.end(); i++)
+            i.key()->update(i.value());
+
+        updates.clear();
+
+        p->deleteLater();
+    });
 }
 
 #include "rendersettings.h"

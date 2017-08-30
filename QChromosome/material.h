@@ -62,6 +62,8 @@ private:
     QList<QPersistentModelIndex> assignment;
 
     QIcon icon;
+    QIcon::Mode mode = QIcon::Normal;
+    QMap<QWidget*, QRect> updates;
     void updateIcon();
 
 signals:
