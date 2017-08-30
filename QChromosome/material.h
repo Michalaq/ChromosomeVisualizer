@@ -72,5 +72,6 @@ public slots:
 };
 
 std::ostream &operator<<(std::ostream &stream, const Material &mat);
+std::ostream &operator<<(std::ostream &stream, const Material *mat);
 
 #endif // MATERIAL_H

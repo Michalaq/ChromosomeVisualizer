@@ -188,7 +188,7 @@ void Material::updateIcon()
     file << *this
          << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
          << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
-         << "sphere {<0, 0, 0>, 2 texture { m" << QString::number(quintptr(this), 16).toStdString() << " }}\n"
+         << "sphere {<0, 0, 0>, 2 texture { " << this << " }}\n"
          << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
 
     file.close();
@@ -228,7 +228,7 @@ std::ostream &Material::operator<<(std::ostream &stream) const
 {
     auto renderSettings = RenderSettings::getInstance();
 
-    stream << "#declare m" << QString::number(quintptr(this), 16).toStdString() << " =\n"
+    stream << "#declare " << this << " =\n"
            << "texture {\n"
            << " pigment {\n"
            << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
@@ -255,4 +255,9 @@ std::ostream &Material::operator<<(std::ostream &stream) const
 std::ostream &operator<<(std::ostream &stream, const Material &mat)
 {
     return mat << stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Material *mat)
+{
+    return stream << "m" << QString::number(quintptr(mat), 16).toStdString();
 }
