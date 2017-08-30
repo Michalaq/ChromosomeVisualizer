@@ -111,6 +111,8 @@ const QList<QPersistentModelIndex>& Material::getAssigned() const
     return assignment;
 }
 
+#include <QJsonObject>
+
 void Material::read(const QJsonObject& json)
 {
     id = json["UUID"].toString();

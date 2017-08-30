@@ -4,15 +4,9 @@
 
 MaterialRenderer* MaterialRenderer::instance = Q_NULLPTR;
 
-MaterialRenderer::MaterialRenderer(QScreen *targetScreen) : QOffscreenSurface(targetScreen)
+MaterialRenderer::MaterialRenderer()
 {
-    setFormat(QSurfaceFormat::defaultFormat());
-    create();
 
-    context.setFormat(format());
-    context.create();
-
-    initializeGL();
 }
 
 MaterialRenderer::~MaterialRenderer()
@@ -25,25 +19,8 @@ MaterialRenderer* MaterialRenderer::getInstance()
     return instance ? instance : (instance = new MaterialRenderer);
 }
 
-void MaterialRenderer::initializeGL()
-{
-    context.makeCurrent(this);
-
-    vao.create();
-    vao.bind();
-
-    assert(shader.create());
-    shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/material/vertex.glsl");
-    shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/material/geometry.glsl");
-    shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/material/fragment.glsl");
-    assert(shader.link());
-
-    shader.bind();
-
-    context.doneCurrent();
-}
-
 #include <fstream>
+#include <QProcess>
 
 void MaterialRenderer::paint(QPainter *painter, QRect bounds, const Material *material)
 {
