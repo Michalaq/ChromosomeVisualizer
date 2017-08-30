@@ -172,6 +172,7 @@ void Material::paintEvent(QPaintEvent *event)
     paint(&p, rect());
 }
 
+#include <QTemporaryFile>
 #include <fstream>
 #include <QProcess>
 
@@ -179,7 +180,10 @@ void Material::updateIcon()
 {
     mode = QIcon::Disabled;
 
-    std::ofstream file("sphere.pov");
+    QTemporaryFile* f = new QTemporaryFile;
+    f->open();
+
+    std::ofstream file(f->fileName().toStdString());
 
     file << *this
          << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
@@ -195,13 +199,13 @@ void Material::updateIcon()
          << "-GA"
          << "-D"
          << "-O-"
-         << "sphere.pov";
+         << "+I\"" + f->fileName() + "\"";
 
     QProcess* p = new QProcess;
 
     p->start("povray", argv);
 
-    connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [p,this](){
+    connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [f, p, this](){
         QImage img;
         img.loadFromData(p->readAllStandardOutput(), "PNG");
 
@@ -213,6 +217,7 @@ void Material::updateIcon()
 
         updates.clear();
 
+        f->deleteLater();
         p->deleteLater();
     });
 }
