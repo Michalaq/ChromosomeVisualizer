@@ -89,7 +89,7 @@ Material* Material::getDefault()
 
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    if (mode != QIcon::Normal)
+    if (p.state() != QProcess::NotRunning)
         updates[dynamic_cast<QWidget*>(painter->device())] = bounds;
 
     icon.paint(painter, bounds, Qt::AlignCenter, mode);
@@ -174,10 +174,12 @@ void Material::paintEvent(QPaintEvent *event)
 
 #include <QTemporaryFile>
 #include <fstream>
-#include <QProcess>
 
 void Material::updateIcon()
 {
+    p.disconnect();
+    p.close();
+
     mode = QIcon::Disabled;
 
     QTemporaryFile* f = new QTemporaryFile;
@@ -201,24 +203,24 @@ void Material::updateIcon()
          << "-O-"
          << "+I\"" + f->fileName() + "\"";
 
-    QProcess* p = new QProcess;
+    p.start("povray", argv);
 
-    p->start("povray", argv);
+    connect(&p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [f, this](int exitCode){
+        if (exitCode == 0)
+        {
+            QImage img;
+            img.loadFromData(p.readAllStandardOutput(), "PNG");
 
-    connect(p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [f, p, this](){
-        QImage img;
-        img.loadFromData(p->readAllStandardOutput(), "PNG");
+            icon = QIcon(QPixmap::fromImage(img));
+            mode = QIcon::Normal;
 
-        icon = QIcon(QPixmap::fromImage(img));
-        mode = QIcon::Normal;
+            for (auto i = updates.begin(); i != updates.end(); i++)
+                if (i.key()) i.key()->update(i.value());
 
-        for (auto i = updates.begin(); i != updates.end(); i++)
-            i.key()->update(i.value());
-
-        updates.clear();
+            updates.clear();
+        }
 
         f->deleteLater();
-        p->deleteLater();
     });
 }
 

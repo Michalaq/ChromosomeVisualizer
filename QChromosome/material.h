@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <QUuid>
 #include <QIcon>
+#include <QProcess>
 
 class Material : public QWidget
 {
@@ -62,9 +63,12 @@ private:
     QList<QPersistentModelIndex> assignment;
 
     QIcon icon;
+    void updateIcon();
+
     QIcon::Mode mode = QIcon::Normal;
     QMap<QWidget*, QRect> updates;
-    void updateIcon();
+    QProcess p;
+
 
 signals:
 
