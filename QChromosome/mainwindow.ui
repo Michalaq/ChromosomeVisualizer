@@ -853,7 +853,6 @@ Label {
    <addaction name="actionZLock"/>
    <addaction name="actionCoordinates"/>
    <addaction name="separator"/>
-   <addaction name="actionQuick_Render"/>
    <addaction name="actionSnapshot"/>
    <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
