@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QModelIndex>
 #include <QUuid>
+#include <QIcon>
 
 class Material : public QWidget
 {
@@ -59,6 +60,9 @@ private:
     static Material* dm;
 
     QList<QPersistentModelIndex> assignment;
+
+    QIcon icon;
+    void updateIcon();
 
 signals:
 

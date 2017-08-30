@@ -1,5 +1,4 @@
 #include "material.h"
-#include "materialrenderer.h"
 
 Material* Material::dm = nullptr;
 
@@ -14,6 +13,7 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     specularExponent(se)
 {
     setFixedSize(45, 45);
+    updateIcon();
 }
 
 Material::~Material()
@@ -44,7 +44,7 @@ QColor Material::getColor() const
 void Material::setColor(QColor c)
 {
     color = c;
-    update();
+    updateIcon();
 }
 
 float Material::getTransparency() const
@@ -55,7 +55,7 @@ float Material::getTransparency() const
 void Material::setTransparency(float t)
 {
     transparency = t;
-    update();
+    updateIcon();
 }
 
 QColor Material::getSpecularColor() const
@@ -66,7 +66,7 @@ QColor Material::getSpecularColor() const
 void Material::setSpecularColor(QColor c)
 {
     specularColor = c;
-    update();
+    updateIcon();
 }
 
 float Material::getSpecularExponent() const
@@ -77,7 +77,7 @@ float Material::getSpecularExponent() const
 void Material::setSpecularExponent(qreal e)
 {
     specularExponent = e;
-    update();
+    updateIcon();
 }
 
 Material* Material::getDefault()
@@ -87,15 +87,7 @@ Material* Material::getDefault()
 
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    if (!(bounds.width() > 0 && bounds.height() > 0))
-        return;
-
-    int size = std::min(bounds.width(), bounds.height());
-
-    QRect b(0, 0, size, size);
-    b.moveCenter(bounds.center());
-
-    MaterialRenderer::getInstance()->paint(painter, b, this);
+    icon.paint(painter, bounds);
 }
 
 void Material::assign(const QPersistentModelIndex &ix, bool b)
@@ -175,6 +167,44 @@ void Material::paintEvent(QPaintEvent *event)
 
     QPainter p(this);
     paint(&p, rect());
+}
+
+#include <fstream>
+#include <QProcess>
+
+void Material::updateIcon()
+{
+    update();
+
+    std::ofstream file("sphere.pov");
+
+    file << *this
+         << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
+         << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
+         << "sphere {<0, 0, 0>, 2 texture { m" << QString::number(quintptr(this), 16).toStdString() << " }}\n"
+         << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
+
+    file.close();
+
+    QStringList argv;
+    argv << "+W256"
+         << "+H256"
+         << "-GA"
+         << "-D"
+         << "-O-"
+         << "sphere.pov";
+
+    QProcess p;
+
+    p.start("povray", argv);
+    p.waitForFinished();
+
+    QImage img;
+    img.loadFromData(p.readAllStandardOutput(), "PNG");
+
+    icon = QIcon(QPixmap::fromImage(img));
+
+    update();
 }
 
 #include "rendersettings.h"
