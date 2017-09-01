@@ -80,6 +80,17 @@ void Material::setSpecularExponent(qreal e)
     updateIcon();
 }
 
+int Material::getFinish() const
+{
+    return finish;
+}
+
+void Material::setFinish(int f)
+{
+    finish = f;
+    updateIcon();
+}
+
 Material* Material::getDefault()
 {
     return dm ? dm : (dm = new Material);
@@ -190,7 +201,7 @@ void Material::updateIcon()
     file << *this
          << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
          << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
-         << "sphere {<0, 0, 0>, 2 texture { " << this << " }}\n"
+         << "sphere {<0, 0, 0>, 2 material { " << this << " }}\n"
          << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
 
     file.close();
@@ -230,26 +241,42 @@ std::ostream &Material::operator<<(std::ostream &stream) const
 {
     auto renderSettings = RenderSettings::getInstance();
 
-    stream << "#declare " << this << " =\n"
-           << "texture {\n"
-           << " pigment {\n"
-           << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
-           << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
-           << " }\n"
-           << " finish {\n"
-           << "  ambient " << renderSettings->ambient().toStdString() << "\n"
-           << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
-           << "  phong " << renderSettings->phong().toStdString() << "\n"
-           << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
-           << "  metallic " << renderSettings->metallic().toStdString() << "\n"
-           << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
-           << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
-           << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
-           << "  }\n"
-           << "  specular 1.0\n"
-           << "  roughness 0.02\n"
-           << " }\n"
-           << "}\n";
+    switch (finish)
+    {
+    case 0://custom
+        stream << "#declare " << this << " =\n"
+               << "material{texture {\n"
+               << " pigment {\n"
+               << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
+               << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
+               << " }\n"
+               << " finish {\n"
+               << "  ambient " << renderSettings->ambient().toStdString() << "\n"
+               << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
+               << "  phong " << renderSettings->phong().toStdString() << "\n"
+               << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
+               << "  metallic " << renderSettings->metallic().toStdString() << "\n"
+               << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
+               << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
+               << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
+               << "  }\n"
+               << "  specular 1.0\n"
+               << "  roughness 0.02\n"
+               << " }\n"
+               << "}}\n";
+        break;
+    case 1://metal
+        break;
+    case 2://glass
+        stream << "#declare Glass_Interior" << this << " = interior {ior 1.5}\n"
+               << "#declare Glass3" << this << " = \n"
+               << "texture {\n"
+               << "pigment { rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << "> }\n"
+               << "finish  { ambient 0.1 diffuse 0.1 reflection 0.1 specular 0.8 roughness 0.0003 phong 1 phong_size 400}\n"
+               << "}\n"
+               << "#declare " << this << " = material {texture {Glass3" << this << "} interior {Glass_Interior" << this << "}}\n";
+        break;
+    }
 
     return stream;
 }

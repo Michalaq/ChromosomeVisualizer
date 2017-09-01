@@ -31,6 +31,9 @@ public:
     float getSpecularExponent() const;
     void setSpecularExponent(qreal e);
 
+    int getFinish() const;
+    void setFinish(int f);
+
     static Material* getDefault();
 
     void paint(QPainter *painter, QRect bounds);
@@ -57,6 +60,7 @@ private:
     float transparency;
     QColor specularColor;
     float specularExponent;
+    int finish;
 
     static Material* dm;
 
