@@ -267,6 +267,10 @@ std::ostream &Material::operator<<(std::ostream &stream) const
                << "#declare " << this << " = material {texture {" << this << "tex}}\n";
         break;
     case 1://metal
+        stream << "#declare Metal" << this << " =\n"
+               << "finish { metallic ambient 0.2 diffuse 0.7 brilliance 6 reflection 0.25 phong 0.75 phong_size 80 }\n"
+               << "#declare " << this << "tex = texture { pigment{ rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << ">} finish{ Metal" << this << " }}\n"
+               << "#declare " << this << " = material {texture {" << this << "tex}}\n";
         break;
     case 2://glass
         stream << "#declare Glass_Interior" << this << " = interior {ior 1.5}\n"
