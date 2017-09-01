@@ -244,8 +244,8 @@ std::ostream &Material::operator<<(std::ostream &stream) const
     switch (finish)
     {
     case 0://custom
-        stream << "#declare " << this << " =\n"
-               << "material{texture {\n"
+        stream << "#declare " << this << "tex =\n"
+               << "texture {\n"
                << " pigment {\n"
                << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
                << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
@@ -263,18 +263,19 @@ std::ostream &Material::operator<<(std::ostream &stream) const
                << "  specular 1.0\n"
                << "  roughness 0.02\n"
                << " }\n"
-               << "}}\n";
+               << "}\n"
+               << "#declare " << this << " = material {texture {" << this << "tex}}\n";
         break;
     case 1://metal
         break;
     case 2://glass
         stream << "#declare Glass_Interior" << this << " = interior {ior 1.5}\n"
-               << "#declare Glass3" << this << " = \n"
+               << "#declare " << this << "tex = \n"
                << "texture {\n"
                << "pigment { rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << "> }\n"
                << "finish  { ambient 0.1 diffuse 0.1 reflection 0.1 specular 0.8 roughness 0.0003 phong 1 phong_size 400}\n"
                << "}\n"
-               << "#declare " << this << " = material {texture {Glass3" << this << "} interior {Glass_Interior" << this << "}}\n";
+               << "#declare " << this << " = material {texture {" << this << "tex} interior {Glass_Interior" << this << "}}\n";
         break;
     }
 

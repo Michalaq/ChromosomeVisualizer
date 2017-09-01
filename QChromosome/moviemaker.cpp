@@ -294,13 +294,13 @@ void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA,
 {
     QVector3D direction = positionB - positionA;
 
-    /*outFile << "cone{"
+    outFile << "cone{"
             << " " << positionA << ", " << radiusA
             << " " << positionB << ", " << radiusB
-            << " texture{gradient" << direction << " texture_map{[0.0 " << colorA << "][1.0 " << colorB << "]}"
+            << " texture{gradient" << direction << " texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
             << " scale " << direction.length()
             << " translate " << positionA
-            << "}}\n";*/
+            << "}}\n";
 }
 
 void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const Material *color)
@@ -314,11 +314,11 @@ void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const M
 
 void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
-    /*outFile << "cone{"
+    outFile << "cone{"
             << " Atom" << idA << "Pos(clock), " << radiusA
             << " Atom" << idB << "Pos(clock), " << radiusB
-            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 " << colorA << "][1.0 " << colorB << "]}"
+            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
-            << "}}\n";*/
+            << "}}\n";
 }
