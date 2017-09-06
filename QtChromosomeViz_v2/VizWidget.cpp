@@ -386,7 +386,11 @@ void VizWidget::paintGL()
         sphereProgram_.setUniformValue("eye", camera->eye);
         sphereProgram_.setUniformValue("cx", camera->x);
         sphereProgram_.setUniformValue("cy", camera->y);
-        sphereProgram_.setUniformValue("cz", sqrt(camera->width()*camera->width()+camera->height()*camera->height()) * camera->focalLength / camera->apertureWidth * camera->z);
+
+        if (camera->width() < camera->aspectRatio * camera->height())
+            sphereProgram_.setUniformValue("cz", camera->focalLength/camera->apertureWidth*qSqrt(1.+1./camera->aspectRatio/camera->aspectRatio)*camera->width() * camera->z);
+        else
+            sphereProgram_.setUniformValue("cz", camera->focalLength/camera->apertureWidth*qSqrt(1.+camera->aspectRatio*camera->aspectRatio)*camera->height() * camera->z);
 
         sphereProgram_.setUniformValue("mvp", modelViewProjection_);
         sphereProgram_.setUniformValue("mv", modelView_);

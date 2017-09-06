@@ -3,8 +3,6 @@
 uniform vec3 eye;
 uniform vec3 cx, cy, cz;
 
-uniform mat4 mvp;
-uniform mat3 mvNormal;
 uniform vec2 uvScreenSize;
 uniform float ufFogDensity;
 uniform float ufFogContribution;
@@ -25,25 +23,22 @@ void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;
     
+    vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
+    
     // Normal
-    mat4 mvp = transpose(mvp);
+    vec3 D = vScreenPos.x * cx + vScreenPos.y * cy - cz;
+    vec3 V = vInstancePosition - eye;
     
-    vec4 a = vPosition.w * mvp[0] - vPosition.x * mvp[3];
-    vec4 b = vPosition.w * mvp[1] - vPosition.y * mvp[3];
-    
-    vec3 c = cross(a.xyz, b.xyz);
-    vec3 d = cross(a.xyw, b.xyw);
-    
-    d = vec3(d.xy, 0.) - c.z * vInstancePosition;
-    
-    float p = dot(c, c);
-    float q = dot(c, d);
-    float r = dot(d, d) - (c.z * fInstanceSize) * (c.z * fInstanceSize);
-    
-    float z = (sqrt(q * q - p * r) - q) / p;
-    
-    vec3 vNormal = normalize(c * z + d);
-    vec3 vFixedNormal = mvNormal * vNormal;
+    float DV = dot(D, V);
+    float D2 = dot(D, D);
+    float SQ = DV*DV-D2*(dot(V, V)-fInstanceSize*fInstanceSize);
+    if(SQ < 0) discard;
+    SQ = sqrt(SQ);
+    float T1 = (DV+SQ)/D2;
+    float T2 = (DV-SQ)/D2;
+    float Result = (T1<T2 ? T1 : T2);
+
+    vec3 vFixedNormal = normalize(Result*D - V);
 
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
@@ -61,7 +56,6 @@ void main() {
                           ufFogContribution);
 
     // Calculate stripes for selected molecules
-    vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
