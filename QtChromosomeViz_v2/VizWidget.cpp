@@ -320,6 +320,8 @@ void VizWidget::initializeGL()
     assert(pickingProgram_.link());
 }
 
+#include "camera.h"
+
 void VizWidget::paintGL()
 {
     if (needVBOUpdate_)
@@ -380,6 +382,11 @@ void VizWidget::paintGL()
 
         vaoSpheres_.bind();
         sphereProgram_.bind();
+
+        sphereProgram_.setUniformValue("eye", camera->eye);
+        sphereProgram_.setUniformValue("cx", camera->x);
+        sphereProgram_.setUniformValue("cy", camera->y);
+        sphereProgram_.setUniformValue("cz", sqrt(camera->width()*camera->width()+camera->height()*camera->height()) * camera->focalLength / camera->apertureWidth * camera->z);
 
         sphereProgram_.setUniformValue("mvp", modelViewProjection_);
         sphereProgram_.setUniformValue("mv", modelView_);
@@ -997,6 +1004,11 @@ void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
     for (auto r : frame->connectedRanges)
         for (int i = r.first; i < r.second; i++)
             MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, materials[i - 1], materials[i]);
+}
+
+void VizWidget::setCamera(const Camera *c)
+{
+    camera = c;
 }
 
 void VizWidget::generateSortedState()

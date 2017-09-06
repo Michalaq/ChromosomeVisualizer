@@ -79,6 +79,8 @@ private:
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
+class Camera;
+
 class VizWidget :   public QOpenGLWidget,
                     protected QOpenGLFunctions_3_3_Core
 {
@@ -143,6 +145,8 @@ public slots:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
+
+    void setCamera(const Camera* c);
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,
@@ -233,6 +237,8 @@ private:
     TreeView* treeView;
 
     QVector<const Material*> materials;
+
+    const Camera* camera;
 };
 
 #endif /* VIZWINDOW_HPP */

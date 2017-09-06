@@ -1,5 +1,8 @@
 #version 330 core
 
+uniform vec3 eye;
+uniform vec3 cx, cy, cz;
+
 uniform mat4 mvp;
 uniform mat3 mvNormal;
 uniform vec2 uvScreenSize;

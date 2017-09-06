@@ -117,6 +117,7 @@ signals:
     void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
 
 friend class CameraSettings;
+friend class VizWidget;
 };
 
 #endif // CAMERA_H
