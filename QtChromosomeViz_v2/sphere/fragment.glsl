@@ -37,19 +37,29 @@ void main() {
     float T1 = (DV+SQ)/D2;
     float T2 = (DV-SQ)/D2;
     float Result = (T1<T2 ? T1 : T2);
-
-    vec3 vFixedNormal = normalize(Result*D - V);
-
-    // Diffuse
-    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
-    vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);
-
-    // Specular
-    vec3 reflected = reflect(-cvLightDirection, vFixedNormal);
-    float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
-    vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
-
-    // Fog
+    
+    vec3 IP = eye+Result*D;
+    vec3 Normal = (IP-vInstancePosition)/fInstanceSize;
+    
+    V = eye-IP;
+    vec3 Refl = reflect(-cvLightDirection,Normal);
+    
+    vec3 Pixel = vec3(0, 0, 0);// Ambient light
+    
+    // Diffuse:
+    float Factor = dot(Normal, cvLightDirection);
+    if (Factor>0)
+        Pixel += vec3(1, 1, 1)*baseColor.rgb*Factor;
+    
+    // Specular:
+    float pa = 0;
+    float ps = 40;
+    Factor = dot(normalize(Refl),cvLightDirection);
+    if (Factor > 0)
+        Pixel += vec3(1, 1, 1)*pow(Factor, ps)*pa;
+    
+    ocColor = vec4(Pixel, 1);
+    /*// Fog
     float linearDistance = length(vViewPosition.rgb);
     float fogFactor = mix(1.0,
                           clamp(exp(-ufFogDensity * linearDistance), 0.0, 1.0),
@@ -61,5 +71,5 @@ void main() {
 
     float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
-    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);*/
 }
