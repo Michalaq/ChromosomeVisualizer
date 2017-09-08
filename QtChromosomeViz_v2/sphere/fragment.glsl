@@ -2,6 +2,7 @@
 
 uniform vec3 eye;
 uniform vec3 cx, cy, cz;
+uniform float ufFocalLength;
 
 uniform vec2 uvScreenSize;
 uniform float ufFogDensity;
@@ -20,13 +21,13 @@ flat in float fInstanceSize;
 out vec4 ocColor;
 
 void main() {
-    vec3 cvLightDirection = normalize(cz);
+    vec3 cvLightDirection = cz;
     vec4 baseColor = cColor;
     
     vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
     
     // Normal
-    vec3 D = vScreenPos.x * cx + vScreenPos.y * cy - cz;
+    vec3 D = vScreenPos.x * cx + vScreenPos.y * cy - ufFocalLength * cz;
     vec3 V = vInstancePosition - eye;
     
     float DV = dot(D, V);
