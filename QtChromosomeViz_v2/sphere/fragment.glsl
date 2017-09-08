@@ -20,7 +20,7 @@ flat in float fInstanceSize;
 out vec4 ocColor;
 
 void main() {
-    const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
+    vec3 cvLightDirection = normalize(cz);
     vec4 baseColor = cColor;
     
     vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;

@@ -62,9 +62,9 @@ void setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
             << "\n";
 
     outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
+            << camera->position() << "," << QColor(Qt::white) << "\n"
             << "parallel\n"
-            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "point_at " << camera->lookAt() << "\n"
             << "}\n";
 }
 
