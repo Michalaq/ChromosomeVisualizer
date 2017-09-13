@@ -19,7 +19,7 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
     QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
     if (renderSettings->antiAliasing())
     {
@@ -47,7 +47,7 @@ void prepareINIFile1(const QString& filename, const RenderSettings * renderSetti
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
     QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
     if (renderSettings->antiAliasing())
     {
