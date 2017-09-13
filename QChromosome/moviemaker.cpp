@@ -109,10 +109,10 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s
 
     if (s)
         outFile << "rotate " << -camera->EulerAngles() << "\n"
-            << "translate " << camera->position() << "\n";
+                << "translate " << camera->position() << "\n";
     else
         outFile << "rotate -MySplineAng(clock)\n"
-            << "translate MySplinePos(clock)\n";
+                << "translate MySplinePos(clock)\n";
 
     outFile << "}\n"
             << "\n";
@@ -124,17 +124,65 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s
             << "}\n";
 }
 
-void set360Camera(std::ofstream& outFile, const Camera* camera, QSize size)
+void set360Camera1(std::ofstream& outFile, const Camera* camera, bool s)
 {
-    outFile << "camera{spherical \n"
-            << "right x*" << size.width() << "/" << size.height() << "\n"
-            << "location " << camera->position() << "\n"
-            << "look_at " << camera->lookAt() << "\n"
-            << "}\n"
-            << "\n";
+    outFile << "#declare odsIPD = 0.065;\n";
 
-    outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
-            << "\n";
+    if (s)
+        outFile << "#declare odsLocationX = " << -camera->position().x() << ";\n"
+                << "#declare odsLocationY = " << camera->position().y() << ";\n"
+                << "#declare odsLocationZ = " << camera->position().z() << ";\n";
+    else
+        outFile << "#declare odsLocationX = MySplinePos(clock).x;\n"
+                << "#declare odsLocationY = MySplinePos(clock).y;\n"
+                << "#declare odsLocationZ = MySplinePos(clock).z;\n";
+
+    outFile << "camera {\n"
+            << "user_defined\n"
+            << "location {\n"
+            << "function {  odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
+            << "function {  odsLocationY }\n"
+            << "function {  odsLocationZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
+            << "}\n"
+            << "direction {\n"
+            << "function {  sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
+            << "function {  sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
+            << "function {  -cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1}\n"
+            << "}\n"
+            << "}\n";
+
+    outFile << "light_source {\n"
+            << QVector3D() << "," << QColor(Qt::white) << "\n"
+            << "parallel\n"
+            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "}\n";
+}
+
+void set360Camera(std::ofstream& outFile, const Camera* camera)
+{
+    outFile << "#declare odsIPD = 0.065;\n"
+            << "#declare odsLocationX = " << -camera->position().x() << ";\n"
+            << "#declare odsLocationY = " << camera->position().y() << ";\n"
+            << "#declare odsLocationZ = " << camera->position().z() << ";\n"
+            << "camera {\n"
+            << "user_defined\n"
+            << "location {\n"
+            << "function {  odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
+            << "function {  odsLocationY }\n"
+            << "function {  odsLocationZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
+            << "}\n"
+            << "direction {\n"
+            << "function {  sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
+            << "function {  sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
+            << "function {  -cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1}\n"
+            << "}\n"
+            << "}\n";
+
+    outFile << "light_source {\n"
+            << QVector3D() << "," << QColor(Qt::white) << "\n"
+            << "parallel\n"
+            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "}\n";
 }
 
 void setBackgroundColor(std::ofstream& outFile, const QColor & color)
@@ -165,7 +213,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         outFile << ip;
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera1(outFile, camera, ip.keys().isEmpty());
     else
         setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
     setBackgroundColor(outFile, scene->backgroundColor());
@@ -252,7 +300,7 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera(outFile, camera);
     else
         setCamera(outFile, camera, renderSettings->outputSize());
     setBackgroundColor(outFile, scene->backgroundColor());
