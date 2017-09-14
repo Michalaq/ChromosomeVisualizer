@@ -78,6 +78,9 @@ public:
     /* Framerate */
     int framerate() const;
 
+    /* Paint overlays */
+    bool overlays() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

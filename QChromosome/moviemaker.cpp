@@ -243,35 +243,38 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     int fw1 = QString::number(total).length();
     int fw2 = QString::number(fend).length();
 
-    QImage img;
-
-    QFont f;
-    f.setFamily("RobotoMono");
-    f.setPixelSize(15);
-
-    QTransform t;
-    t.translate(renderSettings->outputSize().width(), 0);
-    t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
-
-    for (int i = 0; i <= total; i++)
+    if (renderSettings->overlays())
     {
-        QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
+        QImage img;
 
-        file.open(QIODevice::ReadOnly);
-        img.load(&file, "PNG");
-        file.close();
+        QFont f;
+        f.setFamily("RobotoMono");
+        f.setPixelSize(15);
 
-        QPainter p(&img);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setPen(Qt::white);
-        p.setFont(f);
-        p.setTransform(t);
+        QTransform t;
+        t.translate(renderSettings->outputSize().width(), 0);
+        t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
 
-        p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+        for (int i = 0; i <= total; i++)
+        {
+            QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
 
-        file.open(QIODevice::WriteOnly);
-        img.save(&file, "PNG");
-        file.close();
+            file.open(QIODevice::ReadOnly);
+            img.load(&file, "PNG");
+            file.close();
+
+            QPainter p(&img);
+            p.setRenderHint(QPainter::Antialiasing);
+            p.setPen(Qt::white);
+            p.setFont(f);
+            p.setTransform(t);
+
+            p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+
+            file.open(QIODevice::WriteOnly);
+            img.save(&file, "PNG");
+            file.close();
+        }
     }
 
     fr *= renderSettings->framerate();

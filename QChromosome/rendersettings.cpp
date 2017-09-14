@@ -91,6 +91,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
         updateOutputSize();
     });
+
+    connect(ui->cam360CheckBox, &QCheckBox::toggled, [this](bool c) {
+        if (c) ui->checkBox_2->setChecked(false);
+        ui->checkBox_2->setDisabled(c);
+    });
 }
 
 RenderSettings::~RenderSettings()
@@ -206,6 +211,11 @@ bool RenderSettings::openFile() const
 int RenderSettings::framerate() const
 {
     return ui->spinBox->value();
+}
+
+bool RenderSettings::overlays() const
+{
+    return ui->checkBox_2->isChecked();
 }
 
 #include <QMetaMethod>
