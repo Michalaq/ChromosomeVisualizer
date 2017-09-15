@@ -533,37 +533,10 @@ padding-left: 10px;
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="0" column="0" colspan="4">
-            <widget class="QLabel" name="label_29">
-             <property name="styleSheet">
-              <string notr="true">	font: bold;
-	color: #4080d0;
-</string>
-             </property>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Image File Output</string>
-             </property>
-             <property name="class" stdset="0">
-              <string>section</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-             <property name="accelerated">
-              <bool>true</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>1.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100000.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>72.000000000000000</double>
+              <string>Image Resolution:</string>
              </property>
             </widget>
            </item>
@@ -574,22 +547,22 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>320 x 240 px</string>
+           <item row="4" column="2">
+            <widget class="QComboBox" name="comboBox_2">
+             <property name="currentIndex">
+              <number>1</number>
              </property>
+             <item>
+              <property name="text">
+               <string>px/cm (DPC)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>px/in (DPI)</string>
+              </property>
+             </item>
             </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Width</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QCheckBox" name="checkBox"/>
            </item>
            <item row="2" column="1">
             <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
@@ -610,40 +583,18 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox">
-             <property name="accelerated">
-              <bool>true</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>16.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>16000.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>320.000000000000000</double>
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>320 x 240 px</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="2">
-            <widget class="QComboBox" name="comboBox_2">
-             <property name="currentIndex">
-              <number>1</number>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Lock Ratio</string>
              </property>
-             <item>
-              <property name="text">
-               <string>px/cm (DPC)</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>px/in (DPI)</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="1" column="2">
@@ -680,20 +631,77 @@ padding-left: 10px;
              </item>
             </widget>
            </item>
-           <item row="1" column="3" rowspan="4">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+             <property name="accelerated">
+              <bool>true</bool>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
+             <property name="decimals">
+              <number>3</number>
              </property>
-            </spacer>
+             <property name="minimum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100000.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>72.000000000000000</double>
+             </property>
+            </widget>
            </item>
-           <item row="7" column="1">
+           <item row="9" column="0">
+            <widget class="QLabel" name="label_31">
+             <property name="text">
+              <string>File name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="4">
+            <widget class="QLabel" name="label_29">
+             <property name="styleSheet">
+              <string notr="true">	font: bold;
+	color: #4080d0;
+</string>
+             </property>
+             <property name="text">
+              <string>Image File Output</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="checkBox"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Width</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox">
+             <property name="accelerated">
+              <bool>true</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>16.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>16000.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>320.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="1">
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -713,19 +721,18 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Image Resolution:</string>
+           <item row="1" column="3" rowspan="4">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Lock Ratio</string>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
              </property>
-            </widget>
+            </spacer>
            </item>
            <item row="6" column="0" colspan="4">
             <widget class="QLabel" name="label_30">
@@ -739,6 +746,30 @@ padding-left: 10px;
              </property>
              <property name="class" stdset="0">
               <string>section</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="1" colspan="2">
+            <widget class="FileEdit" name="lineEdit_3">
+             <property name="text">
+              <string>untitled</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1" colspan="2">
+            <widget class="QCheckBox" name="checkBox_2">
+             <property name="text">
+              <string>Render</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1" colspan="2">
+            <widget class="QCheckBox" name="checkBox_3">
+             <property name="text">
+              <string>Export to a .pov file</string>
              </property>
             </widget>
            </item>
