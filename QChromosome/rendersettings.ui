@@ -392,6 +392,9 @@ padding-left: 10px;
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
      <widget class="QWidget" name="tabSave">
       <attribute name="title">
        <string>General</string>
@@ -530,58 +533,84 @@ padding-left: 10px;
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_3">
+           <item row="0" column="0" colspan="4">
+            <widget class="QLabel" name="label_29">
+             <property name="styleSheet">
+              <string notr="true">	font: bold;
+	color: #4080d0;
+</string>
+             </property>
              <property name="text">
-              <string>Resolution</string>
+              <string>Image File Output</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Width</string>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+             <property name="accelerated">
+              <bool>true</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100000.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>72.000000000000000</double>
              </property>
             </widget>
            </item>
-           <item row="3" column="2">
-            <widget class="QComboBox" name="comboBox_2">
-             <property name="currentIndex">
-              <number>1</number>
-             </property>
-             <item>
-              <property name="text">
-               <string>px/cm (DPC)</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>px/in (DPI)</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="0" column="3" rowspan="4">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="1" column="0">
+           <item row="2" column="0">
             <widget class="QLabel" name="label_2">
              <property name="text">
               <string>Height</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>320 x 240 px</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Width</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QCheckBox" name="checkBox"/>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+             <property name="accelerated">
+              <bool>true</bool>
+             </property>
+             <property name="decimals">
+              <number>3</number>
+             </property>
+             <property name="minimum">
+              <double>16.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>16000.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>240.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="doubleSpinBox">
              <property name="accelerated">
               <bool>true</bool>
@@ -600,7 +629,24 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="0" column="2">
+           <item row="4" column="2">
+            <widget class="QComboBox" name="comboBox_2">
+             <property name="currentIndex">
+              <number>1</number>
+             </property>
+             <item>
+              <property name="text">
+               <string>px/cm (DPC)</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>px/in (DPI)</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="2">
             <widget class="QComboBox" name="comboBox">
              <item>
               <property name="text">
@@ -634,33 +680,20 @@ padding-left: 10px;
              </item>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Lock Ratio</string>
+           <item row="1" column="3" rowspan="4">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-            </widget>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
-           <item row="3" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-             <property name="accelerated">
-              <bool>true</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>1.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>100000.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>72.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
+           <item row="7" column="1">
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -673,39 +706,39 @@ padding-left: 10px;
              </property>
             </spacer>
            </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
-             <property name="accelerated">
-              <bool>true</bool>
-             </property>
-             <property name="decimals">
-              <number>3</number>
-             </property>
-             <property name="minimum">
-              <double>16.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>16000.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>240.000000000000000</double>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Resolution</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QCheckBox" name="checkBox"/>
-           </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="label_6">
              <property name="text">
               <string>Image Resolution:</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QLabel" name="label_7">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>320 x 240 px</string>
+              <string>Lock Ratio</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="4">
+            <widget class="QLabel" name="label_30">
+             <property name="styleSheet">
+              <string notr="true">	font: bold;
+	color: #4080d0;
+</string>
+             </property>
+             <property name="text">
+              <string>Translator</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
              </property>
             </widget>
            </item>
