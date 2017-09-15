@@ -129,25 +129,46 @@ void set360Camera(std::ofstream& outFile, const Camera* camera, bool s = true)
     outFile << "#declare odsIPD = 0.065;\n";
 
     if (s)
-        outFile << "#declare odsLocationX = " << -camera->position().x() << ";\n"
-                << "#declare odsLocationY = " << camera->position().y() << ";\n"
-                << "#declare odsLocationZ = " << camera->position().z() << ";\n";
+        outFile << "#declare odsLocation = " << camera->position() << ";\n"
+                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
     else
-        outFile << "#declare odsLocationX = MySplinePos(clock).x;\n"
-                << "#declare odsLocationY = MySplinePos(clock).y;\n"
-                << "#declare odsLocationZ = MySplinePos(clock).z;\n";
+        outFile << "#declare odsLocation = MySplinePos(clock);\n"
+                << "#declare odsAngles = MySplineAng(clock);\n";
+
+    outFile << "#declare odsX = <1, 0, 0>;\n"
+            << "#declare odsY = <0, 1, 0>;\n"
+            << "#declare odsZ = <0, 0, 1>;\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+    outFile << "#declare odsLocationX = -odsLocation.x;\n"
+            << "#declare odsLocationY = odsLocation.y;\n"
+            << "#declare odsLocationZ = odsLocation.z;\n"
+            << "#declare odsXX = odsX.x;\n"
+            << "#declare odsXY = odsX.y;\n"
+            << "#declare odsXZ = odsX.z;\n"
+            << "#declare odsYX = odsY.x;\n"
+            << "#declare odsYY = odsY.y;\n"
+            << "#declare odsYZ = odsY.z;\n"
+            << "#declare odsZX = -odsZ.x;\n"
+            << "#declare odsZY = -odsZ.y;\n"
+            << "#declare odsZZ = -odsZ.z;\n";
 
     outFile << "camera {\n"
             << "user_defined\n"
             << "location {\n"
-            << "function {  odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
-            << "function {  odsLocationY }\n"
-            << "function {  odsLocationZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
+            << "function { -(odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXX + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZX) }\n"
+            << "function {   odsLocationY + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXY + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZY  }\n"
+            << "function {   odsLocationZ + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZZ  }\n"
             << "}\n"
             << "direction {\n"
-            << "function {  sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
-            << "function {  sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
-            << "function {  -cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1}\n"
+            << "function { -((sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXX + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYX + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZX) }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXY + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYY + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZY  }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXZ + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYZ + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZZ  }\n"
             << "}\n"
             << "}\n";
 
