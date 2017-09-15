@@ -26,10 +26,11 @@
         <file alias="close">icons/cross_icon.svg</file>
     </qresource>
     <qresource prefix="/render">
-        <file alias="quick">icons/quick_render_icon.svg</file>
         <file alias="gear">icons/gear_icon.svg</file>
         <file alias="camera">icons/camera_icon.svg</file>
         <file alias="camcorder">icons/camcorder_icon.svg</file>
+        <file alias="povray">icons/povray_icon.svg</file>
+        <file alias="ffmpeg">icons/ffmpeg_icon.svg</file>
     </qresource>
     <qresource prefix="/objects">
         <file alias="atom">icons/atom_icon.svg</file>

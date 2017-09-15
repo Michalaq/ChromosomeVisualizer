@@ -9,6 +9,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     ui(new Ui::MaterialBrowser)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 
     ui->listView->setItemDelegate(new MaterialDelegate(this));
 

@@ -1,0 +1,51 @@
+QChromosome/mainwindow.cpp:    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
+QChromosome/mainwindow.cpp:    if (renderSettings->openFile())
+QChromosome/mainwindow.cpp:        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
+QChromosome/mainwindow.cpp:    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
+QChromosome/mainwindow.cpp:    if (renderSettings->openFile())
+QChromosome/mainwindow.cpp:        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
+QChromosome/material.cpp:               << "  ambient " << renderSettings->ambient().toStdString() << "\n"
+QChromosome/material.cpp:               << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
+QChromosome/material.cpp:               << "  phong " << renderSettings->phong().toStdString() << "\n"
+QChromosome/material.cpp:               << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
+QChromosome/material.cpp:               << "  metallic " << renderSettings->metallic().toStdString() << "\n"
+QChromosome/material.cpp:               << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
+QChromosome/material.cpp:               << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
+QChromosome/material.cpp:               << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
+QChromosome/moviemaker.cpp:    QSize size = renderSettings->outputSize();
+QChromosome/moviemaker.cpp:            << "\nQuality=" << renderSettings->quality().toStdString();
+QChromosome/moviemaker.cpp:    if (renderSettings->antiAliasing())
+QChromosome/moviemaker.cpp:                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+QChromosome/moviemaker.cpp:                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+QChromosome/moviemaker.cpp:                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+QChromosome/moviemaker.cpp:        if (renderSettings->aaJitter())
+QChromosome/moviemaker.cpp:                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+QChromosome/moviemaker.cpp:    QSize size = renderSettings->outputSize();
+QChromosome/moviemaker.cpp:            << "\nQuality=" << renderSettings->quality().toStdString();
+QChromosome/moviemaker.cpp:    if (renderSettings->antiAliasing())
+QChromosome/moviemaker.cpp:                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+QChromosome/moviemaker.cpp:                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+QChromosome/moviemaker.cpp:                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+QChromosome/moviemaker.cpp:        if (renderSettings->aaJitter())
+QChromosome/moviemaker.cpp:                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+QChromosome/moviemaker.cpp:            << "\nFinal_Frame=" << (fend - fbeg) * renderSettings->framerate()
+QChromosome/moviemaker.cpp:    QString filename = dir.path() + '/' + renderSettings->saveFile();
+QChromosome/moviemaker.cpp:    if (renderSettings->cam360())
+QChromosome/moviemaker.cpp:        set360Camera(outFile, camera, renderSettings->outputSize());
+QChromosome/moviemaker.cpp:        setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
+QChromosome/moviemaker.cpp:    argv << renderSettings->saveFile() + ".ini"
+QChromosome/moviemaker.cpp:         << renderSettings->saveFile() + ".pov";
+QChromosome/moviemaker.cpp:    int total = (fend - fbeg) * renderSettings->framerate();
+QChromosome/moviemaker.cpp:    t.translate(renderSettings->outputSize().width(), 0);
+QChromosome/moviemaker.cpp:    t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
+QChromosome/moviemaker.cpp:        p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+QChromosome/moviemaker.cpp:    fr *= renderSettings->framerate();
+QChromosome/moviemaker.cpp:         << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
+QChromosome/moviemaker.cpp:         << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
+QChromosome/moviemaker.cpp:    QString filename = dir.path() + "/" + renderSettings->saveFile();
+QChromosome/moviemaker.cpp:    if (renderSettings->cam360())
+QChromosome/moviemaker.cpp:        set360Camera(outFile, camera, renderSettings->outputSize());
+QChromosome/moviemaker.cpp:        setCamera(outFile, camera, renderSettings->outputSize());
+QChromosome/moviemaker.cpp:    argv << renderSettings->saveFile() + ".ini"
+QChromosome/moviemaker.cpp:         << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
+QChromosome/moviemaker.cpp:         << renderSettings->saveFile() + ".pov";

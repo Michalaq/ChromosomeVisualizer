@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QModelIndex>
 #include <QUuid>
+#include <QIcon>
+#include <QProcess>
 
 class Material : public QWidget
 {
@@ -28,6 +30,9 @@ public:
 
     float getSpecularExponent() const;
     void setSpecularExponent(qreal e);
+
+    int getFinish() const;
+    void setFinish(int f);
 
     static Material* getDefault();
 
@@ -55,10 +60,19 @@ private:
     float transparency;
     QColor specularColor;
     float specularExponent;
+    int finish;
 
     static Material* dm;
 
     QList<QPersistentModelIndex> assignment;
+
+    QIcon icon;
+    void updateIcon();
+
+    QIcon::Mode mode = QIcon::Normal;
+    QMap<QWidget*, QRect> updates;
+    QProcess p;
+
 
 signals:
 
@@ -66,5 +80,6 @@ public slots:
 };
 
 std::ostream &operator<<(std::ostream &stream, const Material &mat);
+std::ostream &operator<<(std::ostream &stream, const Material *mat);
 
 #endif // MATERIAL_H

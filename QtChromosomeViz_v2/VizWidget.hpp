@@ -38,6 +38,7 @@ struct VizLink
     unsigned int specularColor[2];
     float specularExponent[2];
     float size[3];
+    unsigned int visible;
 
     void update(const QVector3D & p1, const QVector3D & p2);
 };
@@ -142,6 +143,7 @@ public slots:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
+    void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 signals:
     void selectionChangedIndices(const QList<unsigned int> & selected,

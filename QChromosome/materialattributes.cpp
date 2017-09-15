@@ -36,6 +36,12 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
         emit attributesChanged(selection);
     });
 
+    // set finish
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this] (int index) {
+        selection->setFinish(index);
+        emit attributesChanged(selection);
+    });
+
     connect(this, SIGNAL(attributesChanged(const Material*)), this, SLOT(update()));
 }
 
@@ -67,6 +73,9 @@ void MaterialAttributes::handleSelection(const QList<Material*> &selected)
 
     // set specular color
     ui->widget_2->setValue(selection->getSpecularColor(), false);
+
+    // set finish
+    ui->comboBox->setCurrentIndex(selection->getFinish(), false);
 
     update();
     show();

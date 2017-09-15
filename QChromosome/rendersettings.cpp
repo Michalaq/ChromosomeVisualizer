@@ -30,6 +30,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
     ui(new Ui::RenderSettings)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 
@@ -90,6 +91,11 @@ RenderSettings::RenderSettings(QWidget *parent) :
         ui->doubleSpinBox_3->setValue(value / units[currentResolutionUnit]);
 
         updateOutputSize();
+    });
+
+    connect(ui->cam360CheckBox, &QCheckBox::toggled, [this](bool c) {
+        if (c) ui->checkBox_4->setChecked(false);
+        ui->checkBox_4->setDisabled(c);
     });
 }
 
@@ -201,6 +207,31 @@ bool RenderSettings::cam360() const
 bool RenderSettings::openFile() const
 {
     return ui->openFileCheckBox->isChecked();
+}
+
+int RenderSettings::framerate() const
+{
+    return ui->spinBox->value();
+}
+
+bool RenderSettings::overlays() const
+{
+    return ui->checkBox_4->isChecked();
+}
+
+bool RenderSettings::render() const
+{
+    return ui->checkBox_2->isChecked();
+}
+
+bool RenderSettings::exportPOV() const
+{
+    return ui->checkBox_3->isChecked();
+}
+
+QString RenderSettings::POVfileName() const
+{
+    return ui->lineEdit_3->text();
 }
 
 #include <QMetaMethod>

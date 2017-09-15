@@ -45,6 +45,9 @@
          <height>34</height>
         </size>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true">background: white;</string>
        </property>
@@ -71,6 +74,9 @@
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <widget class="QWidget" name="tab_5">
       <attribute name="title">
        <string>Project</string>
@@ -84,6 +90,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_2">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -266,6 +275,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea_3">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -381,9 +393,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
   <customwidget>
    <class>SpinBox</class>
@@ -391,14 +403,14 @@
    <header>spinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
-  </customwidget>
-  <customwidget>
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
    <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
   </customwidget>
   <customwidget>
    <class>TextEdit</class>
@@ -406,6 +418,19 @@
    <header>textedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>spinBox</tabstop>
+  <tabstop>spinBox_5</tabstop>
+  <tabstop>spinBox_3</tabstop>
+  <tabstop>spinBox_6</tabstop>
+  <tabstop>spinBox_4</tabstop>
+  <tabstop>spinBox_7</tabstop>
+  <tabstop>lineEdit_3</tabstop>
+  <tabstop>textEdit</tabstop>
+  <tabstop>lineEdit_4</tabstop>
+  <tabstop>lineEdit_5</tabstop>
+  <tabstop>lineEdit_6</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>

@@ -5,11 +5,9 @@
         <file>label.frag</file>
         <file>cylinder/fragment.glsl</file>
         <file>cylinder/vertex.glsl</file>
-        <file>material/fragment.glsl</file>
-        <file>material/geometry.glsl</file>
-        <file>material/vertex.glsl</file>
         <file>sphere/fragment.glsl</file>
         <file>sphere/geometry.glsl</file>
         <file>sphere/vertex.glsl</file>
+        <file>cylinder/geometry.glsl</file>
     </qresource>
 </RCC>

@@ -31,6 +31,7 @@ Preferences::Preferences(QWidget *parent) :
     ui(new Ui::Preferences)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::WindowStaysOnTopHint);
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 

@@ -155,3 +155,42 @@ void Simulation::write(QJsonArray &json) const
         json.append(simulationLayer);
     }
 }
+
+#include <QVector3D>
+
+static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
+{
+    return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
+}
+
+void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)
+{
+    int n = getFrame(0)->atoms.size();
+
+    QVector3D** data = new QVector3D*[n];
+
+    for (int i = 0; i < n; i++)
+        data[i] = new QVector3D[fend - fbeg + 1];
+
+    for (int f = fbeg; f <= fend; f++)
+    {
+        auto frame = getFrame(f);
+
+        for (auto a : frame->atoms)
+            data[a.id - 1][f - fbeg] = {a.x, a.y, a.z};
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        stream << "#declare Atom" << i << "Pos = \nspline {\nnatural_spline\n";
+
+        for (int f = fbeg; f <= fend; f++)
+            stream << f << ", " << data[i][f - fbeg] << "\n";
+
+        stream << "}\n";
+
+        delete[] data[i];
+    }
+
+    delete[] data;
+}

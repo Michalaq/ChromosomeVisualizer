@@ -63,7 +63,6 @@ SOURCES += main.cpp\
     material.cpp \
     tagsdelegate.cpp \
     flowlayout.cpp \
-    materialrenderer.cpp \
     materialattributes.cpp \
     materialbrowser.cpp \
     tablemodel.cpp \
@@ -139,7 +138,6 @@ HEADERS  += mainwindow.h\
     material.h \
     tagsdelegate.h \
     flowlayout.h \
-    materialrenderer.h \
     materialattributes.h \
     materialbrowser.h \
     tablemodel.h \
