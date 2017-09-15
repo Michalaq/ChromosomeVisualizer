@@ -392,9 +392,6 @@ padding-left: 10px;
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
      <widget class="QWidget" name="tabSave">
       <attribute name="title">
        <string>General</string>
@@ -756,20 +753,27 @@ padding-left: 10px;
              </property>
             </widget>
            </item>
-           <item row="7" column="1" colspan="2">
-            <widget class="QCheckBox" name="checkBox_2">
+           <item row="7" column="0">
+            <widget class="QLabel" name="label_32">
              <property name="text">
               <string>Render</string>
              </property>
-             <property name="checked">
-              <bool>true</bool>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="label_33">
+             <property name="text">
+              <string>Export to a .pov file</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="1" colspan="2">
-            <widget class="QCheckBox" name="checkBox_3">
-             <property name="text">
-              <string>Export to a .pov file</string>
+           <item row="8" column="1">
+            <widget class="QCheckBox" name="checkBox_3"/>
+           </item>
+           <item row="7" column="1">
+            <widget class="QCheckBox" name="checkBox_2">
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

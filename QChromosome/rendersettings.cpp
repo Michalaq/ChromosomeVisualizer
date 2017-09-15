@@ -208,6 +208,21 @@ int RenderSettings::framerate() const
     return ui->spinBox->value();
 }
 
+bool RenderSettings::render() const
+{
+    return ui->checkBox_2->isChecked();
+}
+
+bool RenderSettings::exportPOV() const
+{
+    return ui->checkBox_3->isChecked();
+}
+
+QString RenderSettings::POVfileName() const
+{
+    return ui->lineEdit_3->text();
+}
+
 #include <QMetaMethod>
 
 void RenderSettings::connectNotify(const QMetaMethod &signal)

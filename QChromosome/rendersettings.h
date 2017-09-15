@@ -78,6 +78,10 @@ public:
     /* Framerate */
     int framerate() const;
 
+    bool render() const;
+    bool exportPOV() const;
+    QString POVfileName() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

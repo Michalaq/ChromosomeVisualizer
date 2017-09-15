@@ -734,7 +734,7 @@ void MainWindow::capture() const
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
 
-    if (renderSettings->openFile())
+    if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
 }
 
@@ -743,7 +743,7 @@ void MainWindow::captureMovie() const
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, ui->camera, ip, suffix, ui->page->ui->spinBox->value());
 
-    if (renderSettings->openFile())
+    if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
 }
 

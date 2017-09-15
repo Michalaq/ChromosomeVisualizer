@@ -178,67 +178,76 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
 
     outFile.flush();
 
-#ifdef __linux__
-    QProcess p;
-    p.setWorkingDirectory(dir.path());
-
-    QStringList argv;
-    argv << renderSettings->saveFile() + ".ini"
-         << "-D"
-         << "+V"
-         << renderSettings->saveFile() + ".pov";
-
-    p.start("povray", argv);
-    p.waitForFinished(-1);
-
-    int total = (fend - fbeg) * renderSettings->framerate();
-    int fw1 = QString::number(total).length();
-    int fw2 = QString::number(fend).length();
-
-    QImage img;
-
-    QFont f;
-    f.setFamily("RobotoMono");
-    f.setPixelSize(15);
-
-    QTransform t;
-    t.translate(renderSettings->outputSize().width(), 0);
-    t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
-
-    for (int i = 0; i <= total; i++)
+    if (renderSettings->exportPOV())
     {
-        QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
-
-        file.open(QIODevice::ReadOnly);
-        img.load(&file, "PNG");
-        file.close();
-
-        QPainter p(&img);
-        p.setRenderHint(QPainter::Antialiasing);
-        p.setPen(Qt::white);
-        p.setFont(f);
-        p.setTransform(t);
-
-        p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
-
-        file.open(QIODevice::WriteOnly);
-        img.save(&file, "PNG");
-        file.close();
+        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
-    fr *= renderSettings->framerate();
+#ifdef __linux__
+    if (renderSettings->render())
+    {
+        QProcess p;
+        p.setWorkingDirectory(dir.path());
 
-    argv.clear();
-    argv << "-y"
-         << "-framerate" << QString::number(fr)
-         << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
-         << "-c:v" << "libx264"
-         << "-r" << QString::number(fr)
-         << "-pix_fmt" << "yuv420p"
-         << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
+        QStringList argv;
+        argv << renderSettings->saveFile() + ".ini"
+             << "-D"
+             << "+V"
+             << renderSettings->saveFile() + ".pov";
 
-    p.start("ffmpeg", argv);
-    p.waitForFinished(-1);
+        p.start("povray", argv);
+        p.waitForFinished(-1);
+
+        int total = (fend - fbeg) * renderSettings->framerate();
+        int fw1 = QString::number(total).length();
+        int fw2 = QString::number(fend).length();
+
+        QImage img;
+
+        QFont f;
+        f.setFamily("RobotoMono");
+        f.setPixelSize(15);
+
+        QTransform t;
+        t.translate(renderSettings->outputSize().width(), 0);
+        t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
+
+        for (int i = 0; i <= total; i++)
+        {
+            QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
+
+            file.open(QIODevice::ReadOnly);
+            img.load(&file, "PNG");
+            file.close();
+
+            QPainter p(&img);
+            p.setRenderHint(QPainter::Antialiasing);
+            p.setPen(Qt::white);
+            p.setFont(f);
+            p.setTransform(t);
+
+            p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+
+            file.open(QIODevice::WriteOnly);
+            img.save(&file, "PNG");
+            file.close();
+        }
+
+        fr *= renderSettings->framerate();
+
+        argv.clear();
+        argv << "-y"
+             << "-framerate" << QString::number(fr)
+             << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
+             << "-c:v" << "libx264"
+             << "-r" << QString::number(fr)
+             << "-pix_fmt" << "yuv420p"
+             << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
+
+        p.start("ffmpeg", argv);
+        p.waitForFinished(-1);
+    }
 #endif
 }
 
@@ -265,19 +274,28 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
 
     outFile.flush();
 
+    if (renderSettings->exportPOV())
+    {
+        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+    }
+
 #ifdef __linux__
-    QProcess p;
-    p.setWorkingDirectory(dir.path());
+    if (renderSettings->render())
+    {
+        QProcess p;
+        p.setWorkingDirectory(dir.path());
 
-    QStringList argv;
-    argv << renderSettings->saveFile() + ".ini"
-         << "-D"
-         << "+V"
-         << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
-         << renderSettings->saveFile() + ".pov";
+        QStringList argv;
+        argv << renderSettings->saveFile() + ".ini"
+             << "-D"
+             << "+V"
+             << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
+             << renderSettings->saveFile() + ".pov";
 
-    p.start("povray", argv);
-    p.waitForFinished(-1);
+        p.start("povray", argv);
+        p.waitForFinished(-1);
+    }
 #endif
 }
 
