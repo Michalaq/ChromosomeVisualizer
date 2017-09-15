@@ -19,7 +19,7 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
     QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
     if (renderSettings->antiAliasing())
     {
@@ -47,7 +47,7 @@ void prepareINIFile1(const QString& filename, const RenderSettings * renderSetti
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
     QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
     if (renderSettings->antiAliasing())
     {
@@ -109,10 +109,10 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s
 
     if (s)
         outFile << "rotate " << -camera->EulerAngles() << "\n"
-            << "translate " << camera->position() << "\n";
+                << "translate " << camera->position() << "\n";
     else
         outFile << "rotate -MySplineAng(clock)\n"
-            << "translate MySplinePos(clock)\n";
+                << "translate MySplinePos(clock)\n";
 
     outFile << "}\n"
             << "\n";
@@ -124,17 +124,59 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s
             << "}\n";
 }
 
-void set360Camera(std::ofstream& outFile, const Camera* camera, QSize size)
+void set360Camera(std::ofstream& outFile, const Camera* camera, bool s = true)
 {
-    outFile << "camera{spherical \n"
-            << "right x*" << size.width() << "/" << size.height() << "\n"
-            << "location " << camera->position() << "\n"
-            << "look_at " << camera->lookAt() << "\n"
-            << "}\n"
-            << "\n";
+    outFile << "#declare odsIPD = 0.065;\n";
 
-    outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
-            << "\n";
+    if (s)
+        outFile << "#declare odsLocation = " << camera->position() << ";\n"
+                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
+    else
+        outFile << "#declare odsLocation = MySplinePos(clock);\n"
+                << "#declare odsAngles = MySplineAng(clock);\n";
+
+    outFile << "#declare odsX = <1, 0, 0>;\n"
+            << "#declare odsY = <0, 1, 0>;\n"
+            << "#declare odsZ = <0, 0, 1>;\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+    outFile << "#declare odsLocationX = -odsLocation.x;\n"
+            << "#declare odsLocationY = odsLocation.y;\n"
+            << "#declare odsLocationZ = odsLocation.z;\n"
+            << "#declare odsXX = odsX.x;\n"
+            << "#declare odsXY = odsX.y;\n"
+            << "#declare odsXZ = odsX.z;\n"
+            << "#declare odsYX = odsY.x;\n"
+            << "#declare odsYY = odsY.y;\n"
+            << "#declare odsYZ = odsY.z;\n"
+            << "#declare odsZX = -odsZ.x;\n"
+            << "#declare odsZY = -odsZ.y;\n"
+            << "#declare odsZZ = -odsZ.z;\n";
+
+    outFile << "camera {\n"
+            << "user_defined\n"
+            << "location {\n"
+            << "function { -(odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXX + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZX) }\n"
+            << "function {   odsLocationY + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXY + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZY  }\n"
+            << "function {   odsLocationZ + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZZ  }\n"
+            << "}\n"
+            << "direction {\n"
+            << "function { -((sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXX + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYX + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZX) }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXY + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYY + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZY  }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXZ + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYZ + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZZ  }\n"
+            << "}\n"
+            << "}\n";
+
+    outFile << "light_source {\n"
+            << QVector3D() << "," << QColor(Qt::white) << "\n"
+            << "parallel\n"
+            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "}\n";
 }
 
 void setBackgroundColor(std::ofstream& outFile, const QColor & color)
@@ -165,7 +207,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         outFile << ip;
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera(outFile, camera, ip.keys().isEmpty());
     else
         setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
     setBackgroundColor(outFile, scene->backgroundColor());
@@ -203,35 +245,38 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         int fw1 = QString::number(total).length();
         int fw2 = QString::number(fend).length();
 
-        QImage img;
-
-        QFont f;
-        f.setFamily("RobotoMono");
-        f.setPixelSize(15);
-
-        QTransform t;
-        t.translate(renderSettings->outputSize().width(), 0);
-        t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
-
-        for (int i = 0; i <= total; i++)
+        if (renderSettings->overlays())
         {
-            QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
+            QImage img;
 
-            file.open(QIODevice::ReadOnly);
-            img.load(&file, "PNG");
-            file.close();
+            QFont f;
+            f.setFamily("RobotoMono");
+            f.setPixelSize(15);
 
-            QPainter p(&img);
-            p.setRenderHint(QPainter::Antialiasing);
-            p.setPen(Qt::white);
-            p.setFont(f);
-            p.setTransform(t);
+            QTransform t;
+            t.translate(renderSettings->outputSize().width(), 0);
+            t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
 
-            p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+            for (int i = 0; i <= total; i++)
+            {
+                QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
 
-            file.open(QIODevice::WriteOnly);
-            img.save(&file, "PNG");
-            file.close();
+                file.open(QIODevice::ReadOnly);
+                img.load(&file, "PNG");
+                file.close();
+
+                QPainter p(&img);
+                p.setRenderHint(QPainter::Antialiasing);
+                p.setPen(Qt::white);
+                p.setFont(f);
+                p.setTransform(t);
+
+                p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+
+                file.open(QIODevice::WriteOnly);
+                img.save(&file, "PNG");
+                file.close();
+            }
         }
 
         fr *= renderSettings->framerate();
@@ -261,7 +306,7 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera(outFile, camera);
     else
         setCamera(outFile, camera, renderSettings->outputSize());
     setBackgroundColor(outFile, scene->backgroundColor());

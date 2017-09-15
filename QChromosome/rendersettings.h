@@ -78,6 +78,9 @@ public:
     /* Framerate */
     int framerate() const;
 
+    /* Paint overlays */
+    bool overlays() const;
+
     bool render() const;
     bool exportPOV() const;
     QString POVfileName() const;
