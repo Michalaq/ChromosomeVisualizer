@@ -734,36 +734,17 @@ void MainWindow::capture() const
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
 
-    system((QString("rm ") + renderSettings->saveFile() + suffix + ".pov " + renderSettings->saveFile() + suffix + ".ini").toUtf8().constData());
-
-    if (renderSettings->openFile())
-        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".png").toUtf8().constData());
+    if (renderSettings->render() && renderSettings->openFile())
+        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
 }
-
-#include <QtConcurrent/QtConcurrentMap>
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, ui->camera, ip, suffix, ui->page->ui->spinBox->value());
 
-    ui->scene->setFrame(ui->horizontalSlider_2->getLowerBound());
-    int frames = ui->horizontalSlider_2->getUpperBound() - ui->horizontalSlider_2->getLowerBound() + 1;
-
-    QList<int> range;
-    for (int i = 1; i <= frames; i++)
-        range << i;
-
-    QtConcurrent::map(range, [=](int i) {
-        MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound() + i - 1, ui->scene, ui->camera, QString::number(i).rightJustified(QString::number(frames).length(), '0'), ip, i, frames);
-    }).waitForFinished();
-
-    MovieMaker::makeMovie(renderSettings->saveFile(), frames, ui->page->ui->spinBox->value(), ui->page->ui->spinBox->value(), suffix);
-
-    system(QString(QString("find . -regextype sed -regex \".*/") + renderSettings->saveFile() + "[0-9]\\{"
-                   + QString::number(QString::number(frames).length()) + "\\}\\.\\(png\\|ini\\|pov\\)\" -delete").toUtf8().constData());
-
-    if (renderSettings->openFile())
-        system(QString(QString("xdg-open ") + renderSettings->saveFile() + suffix + ".mp4").toUtf8().constData());
+    if (renderSettings->render() && renderSettings->openFile())
+        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
 }
 
 void MainWindow::updateLocks()

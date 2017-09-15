@@ -1,5 +1,4 @@
 #include "material.h"
-#include "materialrenderer.h"
 
 Material* Material::dm = nullptr;
 
@@ -14,6 +13,7 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     specularExponent(se)
 {
     setFixedSize(45, 45);
+    updateIcon();
 }
 
 Material::~Material()
@@ -44,7 +44,7 @@ QColor Material::getColor() const
 void Material::setColor(QColor c)
 {
     color = c;
-    update();
+    updateIcon();
 }
 
 float Material::getTransparency() const
@@ -55,7 +55,7 @@ float Material::getTransparency() const
 void Material::setTransparency(float t)
 {
     transparency = t;
-    update();
+    updateIcon();
 }
 
 QColor Material::getSpecularColor() const
@@ -66,7 +66,7 @@ QColor Material::getSpecularColor() const
 void Material::setSpecularColor(QColor c)
 {
     specularColor = c;
-    update();
+    updateIcon();
 }
 
 float Material::getSpecularExponent() const
@@ -77,7 +77,18 @@ float Material::getSpecularExponent() const
 void Material::setSpecularExponent(qreal e)
 {
     specularExponent = e;
-    update();
+    updateIcon();
+}
+
+int Material::getFinish() const
+{
+    return finish;
+}
+
+void Material::setFinish(int f)
+{
+    finish = f;
+    updateIcon();
 }
 
 Material* Material::getDefault()
@@ -85,17 +96,14 @@ Material* Material::getDefault()
     return dm ? dm : (dm = new Material);
 }
 
+#include <QPainter>
+
 void Material::paint(QPainter *painter, QRect bounds)
 {
-    if (!(bounds.width() > 0 && bounds.height() > 0))
-        return;
+    if (p.state() != QProcess::NotRunning)
+        updates[dynamic_cast<QWidget*>(painter->device())] = bounds;
 
-    int size = std::min(bounds.width(), bounds.height());
-
-    QRect b(0, 0, size, size);
-    b.moveCenter(bounds.center());
-
-    MaterialRenderer::getInstance()->paint(painter, b, this);
+    icon.paint(painter, bounds, Qt::AlignCenter, mode);
 }
 
 void Material::assign(const QPersistentModelIndex &ix, bool b)
@@ -110,6 +118,8 @@ const QList<QPersistentModelIndex>& Material::getAssigned() const
 {
     return assignment;
 }
+
+#include <QJsonObject>
 
 void Material::read(const QJsonObject& json)
 {
@@ -165,8 +175,6 @@ void Material::mouseMoveEvent(QMouseEvent *event)
         QWidget::mouseMoveEvent(event);
 }
 
-#include <QPainter>
-
 void Material::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
@@ -175,32 +183,105 @@ void Material::paintEvent(QPaintEvent *event)
     paint(&p, rect());
 }
 
+#include <QTemporaryFile>
+#include <fstream>
+
+void Material::updateIcon()
+{
+    p.disconnect();
+    p.close();
+
+    mode = QIcon::Disabled;
+
+    QTemporaryFile* f = new QTemporaryFile;
+    f->open();
+
+    std::ofstream file(f->fileName().toStdString());
+
+    file << *this
+         << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
+         << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
+         << "sphere {<0, 0, 0>, 2 material { " << this << " }}\n"
+         << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
+
+    file.close();
+
+    QStringList argv;
+    argv << "+W256"
+         << "+H256"
+         << "-GA"
+         << "-D"
+         << "-O-"
+         << "+I\"" + f->fileName() + "\"";
+
+    p.start("povray", argv);
+
+    connect(&p, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), [f, this](int exitCode){
+        if (exitCode == 0)
+        {
+            QImage img;
+            img.loadFromData(p.readAllStandardOutput(), "PNG");
+
+            icon = QIcon(QPixmap::fromImage(img));
+            mode = QIcon::Normal;
+
+            for (auto i = updates.begin(); i != updates.end(); i++)
+                if (i.key()) i.key()->update(i.value());
+
+            updates.clear();
+        }
+
+        f->deleteLater();
+    });
+}
+
 #include "rendersettings.h"
 
 std::ostream &Material::operator<<(std::ostream &stream) const
 {
     auto renderSettings = RenderSettings::getInstance();
 
-    stream << "#declare m" << QString::number(quintptr(this), 16).toStdString() << " =\n"
-           << "texture {\n"
-           << " pigment {\n"
-           << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
-           << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
-           << " }\n"
-           << " finish {\n"
-           << "  ambient " << renderSettings->ambient().toStdString() << "\n"
-           << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
-           << "  phong " << renderSettings->phong().toStdString() << "\n"
-           << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
-           << "  metallic " << renderSettings->metallic().toStdString() << "\n"
-           << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
-           << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
-           << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
-           << "  }\n"
-           << "  specular 1.0\n"
-           << "  roughness 0.02\n"
-           << " }\n"
-           << "}\n";
+    switch (finish)
+    {
+    case 0://custom
+        stream << "#declare " << this << "tex =\n"
+               << "texture {\n"
+               << " pigment {\n"
+               << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
+               << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
+               << " }\n"
+               << " finish {\n"
+               << "  ambient " << renderSettings->ambient().toStdString() << "\n"
+               << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
+               << "  phong " << renderSettings->phong().toStdString() << "\n"
+               << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
+               << "  metallic " << renderSettings->metallic().toStdString() << "\n"
+               << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
+               << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
+               << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
+               << "  }\n"
+               << "  specular 1.0\n"
+               << "  roughness 0.02\n"
+               << " }\n"
+               << "}\n"
+               << "#declare " << this << " = material {texture {" << this << "tex}}\n";
+        break;
+    case 1://metal
+        stream << "#declare Metal" << this << " =\n"
+               << "finish { metallic ambient 0.2 diffuse 0.7 brilliance 6 reflection 0.25 phong 0.75 phong_size 80 }\n"
+               << "#declare " << this << "tex = texture { pigment{ rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << ">} finish{ Metal" << this << " }}\n"
+               << "#declare " << this << " = material {texture {" << this << "tex}}\n";
+        break;
+    case 2://glass
+        stream << "#declare Glass_Interior" << this << " = interior {ior 1.5}\n"
+               << "#declare " << this << "tex = \n"
+               << "texture {\n"
+               << "pigment { rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << "> }\n"
+               << "finish  { ambient 0.1 diffuse 0.1 reflection 0.1 specular 0.8 roughness 0.0003 phong 1 phong_size 400}\n"
+               << "}\n"
+               << "#declare " << this << " = material {texture {" << this << "tex} interior {Glass_Interior" << this << "}}\n";
+        break;
+    }
 
     return stream;
 }
@@ -208,4 +289,9 @@ std::ostream &Material::operator<<(std::ostream &stream) const
 std::ostream &operator<<(std::ostream &stream, const Material &mat)
 {
     return mat << stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Material *mat)
+{
+    return stream << "m" << QString::number(quintptr(mat), 16).toStdString();
 }

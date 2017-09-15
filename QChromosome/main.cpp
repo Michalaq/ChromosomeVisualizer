@@ -5,7 +5,6 @@
 #include <QSplashScreen>
 
 #include "commondata.h"
-#include "materialrenderer.h"
 
 int main(int argc, char *argv[])
 {
@@ -40,7 +39,6 @@ int main(int argc, char *argv[])
 
     delete CommonData::getInstance();
     delete MaterialBrowser::getInstance();
-    delete MaterialRenderer::getInstance();
     delete RenderSettings::getInstance();
 
     delete Material::getDefault();

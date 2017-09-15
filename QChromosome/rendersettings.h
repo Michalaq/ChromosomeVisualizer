@@ -75,6 +75,16 @@ public:
     /* Open File After Rendering  */
     bool openFile() const;
 
+    /* Framerate */
+    int framerate() const;
+
+    /* Paint overlays */
+    bool overlays() const;
+
+    bool render() const;
+    bool exportPOV() const;
+    QString POVfileName() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

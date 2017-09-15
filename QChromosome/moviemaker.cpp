@@ -19,7 +19,7 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
     QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height()
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
     if (renderSettings->antiAliasing())
     {
@@ -41,6 +41,38 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
     {
         outFile << "\nAntialias=off";
     }
+}
+
+void prepareINIFile1(const QString& filename, const RenderSettings * renderSettings, int fbeg, int fend)
+{
+    std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    QSize size = renderSettings->outputSize();
+    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
+            << "\nQuality=" << renderSettings->quality().toStdString();
+    if (renderSettings->antiAliasing())
+    {
+        outFile << "\nAntialias=on"
+                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
+                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
+                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+        if (renderSettings->aaJitter())
+        {
+            outFile << "\nJitter=on"
+                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+        }
+        else
+        {
+            outFile << "\nJitter=off";
+        }
+    }
+    else
+    {
+        outFile << "\nAntialias=off";
+    }
+    outFile << "\nInitial_Frame=" << 0
+            << "\nFinal_Frame=" << (fend - fbeg) * renderSettings->framerate()
+            << "\nInitial_Clock=" << fbeg
+            << "\nFinal_Clock=" << fend;
 }
 
 void createPOVFile(std::ofstream& outFile, std::string filename)
@@ -68,7 +100,7 @@ void setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
             << "}\n";
 }
 
-void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double fn, bool s)
+void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s)
 {
     outFile << "camera{perspective\n"
             << "right x*" << size.width() << "/" << size.height() << "\n"
@@ -77,10 +109,10 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double
 
     if (s)
         outFile << "rotate " << -camera->EulerAngles() << "\n"
-            << "translate " << camera->position() << "\n";
+                << "translate " << camera->position() << "\n";
     else
-        outFile << "rotate -MySplineAng(" << fn << ")\n"
-            << "translate MySplinePos(" << fn << ")\n";
+        outFile << "rotate -MySplineAng(clock)\n"
+                << "translate MySplinePos(clock)\n";
 
     outFile << "}\n"
             << "\n";
@@ -92,17 +124,59 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, double
             << "}\n";
 }
 
-void set360Camera(std::ofstream& outFile, const Camera* camera, QSize size)
+void set360Camera(std::ofstream& outFile, const Camera* camera, bool s = true)
 {
-    outFile << "camera{spherical \n"
-            << "right x*" << size.width() << "/" << size.height() << "\n"
-            << "location " << camera->position() << "\n"
-            << "look_at " << camera->lookAt() << "\n"
-            << "}\n"
-            << "\n";
+    outFile << "#declare odsIPD = 0.065;\n";
 
-    outFile << "light_source {" << camera->position() << " " << "color " << QColor(Qt::white) << "}\n"
-            << "\n";
+    if (s)
+        outFile << "#declare odsLocation = " << camera->position() << ";\n"
+                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
+    else
+        outFile << "#declare odsLocation = MySplinePos(clock);\n"
+                << "#declare odsAngles = MySplineAng(clock);\n";
+
+    outFile << "#declare odsX = <1, 0, 0>;\n"
+            << "#declare odsY = <0, 1, 0>;\n"
+            << "#declare odsZ = <0, 0, 1>;\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+            << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+            << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+            << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+    outFile << "#declare odsLocationX = -odsLocation.x;\n"
+            << "#declare odsLocationY = odsLocation.y;\n"
+            << "#declare odsLocationZ = odsLocation.z;\n"
+            << "#declare odsXX = odsX.x;\n"
+            << "#declare odsXY = odsX.y;\n"
+            << "#declare odsXZ = odsX.z;\n"
+            << "#declare odsYX = odsY.x;\n"
+            << "#declare odsYY = odsY.y;\n"
+            << "#declare odsYZ = odsY.z;\n"
+            << "#declare odsZX = -odsZ.x;\n"
+            << "#declare odsZY = -odsZ.y;\n"
+            << "#declare odsZZ = -odsZ.z;\n";
+
+    outFile << "camera {\n"
+            << "user_defined\n"
+            << "location {\n"
+            << "function { -(odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXX + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZX) }\n"
+            << "function {   odsLocationY + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXY + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZY  }\n"
+            << "function {   odsLocationZ + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZZ  }\n"
+            << "}\n"
+            << "direction {\n"
+            << "function { -((sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXX + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYX + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZX) }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXY + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYY + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZY  }\n"
+            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXZ + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYZ + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZZ  }\n"
+            << "}\n"
+            << "}\n";
+
+    outFile << "light_source {\n"
+            << QVector3D() << "," << QColor(Qt::white) << "\n"
+            << "parallel\n"
+            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "}\n";
 }
 
 void setBackgroundColor(std::ofstream& outFile, const QColor & color)
@@ -120,21 +194,12 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void MovieMaker::makeMovie(QString filename, int frames, float framerate, int fps, QString suffix)
+void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr)
 {
-    QStringList argv;
-    argv << "-framerate " + QString::number(framerate) << "-i " + filename + "%0" + QString::number(QString::number(frames).length()) + ".png" << "-c:v libx264"
-         << "-r " + QString::number(fps) << "-pix_fmt yuv420p" << filename + ".mp4";
-    //QProcess::execute("ffmpeg", argv);
-    QProcess::execute(QString("ffmpeg ") + "-y" + " -framerate " + QString::number(framerate) + " -i " + filename + "%0" + QString::number(QString::number(frames).length()) + "d.png" + " -c:v libx264"
-                      + " -r " + QString::number(fps) + " -pix_fmt yuv420p file:" + filename + suffix + ".mp4");
-}
-
-void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* camera, QString suffix, const Interpolator& ip, int fn, int total)
-{
+    QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = renderSettings->saveFile() + suffix;
-    prepareINIFile(filename, renderSettings);
+    QString filename = dir.path() + '/' + renderSettings->saveFile();
+    prepareINIFile1(filename, renderSettings, fbeg, fend);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
@@ -142,58 +207,106 @@ void MovieMaker::captureScene(int gfn, const VizWidget* scene, const Camera* cam
         outFile << ip;
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera(outFile, camera, ip.keys().isEmpty());
     else
-        setCamera1(outFile, camera, renderSettings->outputSize(), gfn, ip.keys().isEmpty());
+        setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    scene->writePOVFrame(outFile, fn);
+    scene->writePOVFrames(outFile, fbeg, fend);
 
     for (auto & key : scene->getLabels().keys())
         addLabel(outFile, "");
 
     outFile.flush();
 
-    QSettings settings;
+    if (renderSettings->exportPOV())
+    {
+        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+    }
 
 #ifdef __linux__
-    QStringList argv;
-    argv << filename + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
-    QProcess::execute("povray", argv);
-#elif _WIN32
-    qDebug() << "windows povray photo";
-    system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
-#else
-    qDebug() << "platform not supported";
-#endif
+    if (renderSettings->render())
+    {
+        QProcess p;
+        p.setWorkingDirectory(dir.path());
 
-    QImage img;
-    img.load(filename + ".png");
-    QPainter p(&img);
-    p.setRenderHint(QPainter::Antialiasing);
-    p.setPen(Qt::white);
-    QFont f;
-    f.setFamily("RobotoMono");
-    f.setPixelSize(img.height()/20);
-    p.setFont(f);
-    int w = img.width()-10;
-    int h = img.height()/20+20;
-    p.drawText(QRect(0, 0, w, h), QString("Frame %1/%2").arg(QString::number(fn).rightJustified(QString::number(total).length(), '0')).arg(total), Qt::AlignRight | Qt::AlignVCenter);
-    p.drawText(QRect(0, h/2, w, h), QString("Time %1").arg(QString::number(gfn).rightJustified(QString::number(gfn-fn+total).length(), '0')), Qt::AlignRight | Qt::AlignVCenter);
-    img.save(filename + ".png", "PNG");
+        QStringList argv;
+        argv << renderSettings->saveFile() + ".ini"
+             << "-D"
+             << "+V"
+             << renderSettings->saveFile() + ".pov";
+
+        p.start("povray", argv);
+        p.waitForFinished(-1);
+
+        int total = (fend - fbeg) * renderSettings->framerate();
+        int fw1 = QString::number(total).length();
+        int fw2 = QString::number(fend).length();
+
+        if (renderSettings->overlays())
+        {
+            QImage img;
+
+            QFont f;
+            f.setFamily("RobotoMono");
+            f.setPixelSize(15);
+
+            QTransform t;
+            t.translate(renderSettings->outputSize().width(), 0);
+            t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
+
+            for (int i = 0; i <= total; i++)
+            {
+                QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
+
+                file.open(QIODevice::ReadOnly);
+                img.load(&file, "PNG");
+                file.close();
+
+                QPainter p(&img);
+                p.setRenderHint(QPainter::Antialiasing);
+                p.setPen(Qt::white);
+                p.setFont(f);
+                p.setTransform(t);
+
+                p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
+
+                file.open(QIODevice::WriteOnly);
+                img.save(&file, "PNG");
+                file.close();
+            }
+        }
+
+        fr *= renderSettings->framerate();
+
+        argv.clear();
+        argv << "-y"
+             << "-framerate" << QString::number(fr)
+             << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
+             << "-c:v" << "libx264"
+             << "-r" << QString::number(fr)
+             << "-pix_fmt" << "yuv420p"
+             << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
+
+        p.start("ffmpeg", argv);
+        p.waitForFinished(-1);
+    }
+#endif
 }
 
 void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
 {
+    QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = renderSettings->saveFile() + suffix;
+    QString filename = dir.path() + "/" + renderSettings->saveFile();
     prepareINIFile(filename, renderSettings);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, renderSettings->outputSize());
+        set360Camera(outFile, camera);
     else
         setCamera(outFile, camera, renderSettings->outputSize());
     setBackgroundColor(outFile, scene->backgroundColor());
@@ -206,17 +319,28 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
 
     outFile.flush();
 
-    QSettings settings;
+    if (renderSettings->exportPOV())
+    {
+        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+    }
 
 #ifdef __linux__
-    QStringList argv;
-    argv << filename + ".ini" << "-D" << "+V" << "+L" + settings.value("povraypath", "/usr/local/share/povray-3.7").toString() + "/include/" << filename + ".pov";
-    QProcess::execute("povray", argv);
-#elif _WIN32
-    qDebug() << "windows povray photo";
-    system((QString(R"~(""C:\Program Files\POV-Ray\v3.7\bin\pvengine64.exe"" povray.ini -D /RENDER )~") + settings.saveFile() + QString(".pov /EXIT")).toUtf8().constData());
-#else
-    qDebug() << "platform not supported";
+    if (renderSettings->render())
+    {
+        QProcess p;
+        p.setWorkingDirectory(dir.path());
+
+        QStringList argv;
+        argv << renderSettings->saveFile() + ".ini"
+             << "-D"
+             << "+V"
+             << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
+             << renderSettings->saveFile() + ".pov";
+
+        p.start("povray", argv);
+        p.waitForFinished(-1);
+    }
 #endif
 }
 
@@ -225,17 +349,39 @@ void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, fl
     outFile << "sphere {"
             << position << ", "
             << radius << " "
-            << "texture { m" << QString::number(quintptr(color), 16).toStdString() << " }"
+            << "material { " << color << " }"
             << "}\n";
 }
 
-void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radius, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
     QVector3D direction = positionB - positionA;
 
-    outFile << "cylinder{" << positionA << ", " << positionB << ", " << radius
-            << " texture{gradient" << direction.normalized() << " texture_map{[0.0 m" << QString::number(quintptr(colorA), 16).toStdString() << "][1.0 m" << QString::number(quintptr(colorB), 16).toStdString() << "]}"
+    outFile << "cone{"
+            << " " << positionA << ", " << radiusA
+            << " " << positionB << ", " << radiusB
+            << " texture{gradient" << direction << " texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
             << " scale " << direction.length()
             << " translate " << positionA
+            << "}}\n";
+}
+
+void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const Material *color)
+{
+    outFile << "sphere {"
+            << "Atom" << id << "Pos(clock), "
+            << radius << " "
+            << "material { " << color << " }"
+            << "}\n";
+}
+
+void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
+{
+    outFile << "cone{"
+            << " Atom" << idA << "Pos(clock), " << radiusA
+            << " Atom" << idB << "Pos(clock), " << radiusB
+            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
+            << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
+            << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";
 }
