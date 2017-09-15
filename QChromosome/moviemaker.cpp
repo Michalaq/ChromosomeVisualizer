@@ -124,7 +124,7 @@ void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s
             << "}\n";
 }
 
-void set360Camera1(std::ofstream& outFile, const Camera* camera, bool s)
+void set360Camera(std::ofstream& outFile, const Camera* camera, bool s = true)
 {
     outFile << "#declare odsIPD = 0.065;\n";
 
@@ -138,33 +138,6 @@ void set360Camera1(std::ofstream& outFile, const Camera* camera, bool s)
                 << "#declare odsLocationZ = MySplinePos(clock).z;\n";
 
     outFile << "camera {\n"
-            << "user_defined\n"
-            << "location {\n"
-            << "function {  odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
-            << "function {  odsLocationY }\n"
-            << "function {  odsLocationZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
-            << "}\n"
-            << "direction {\n"
-            << "function {  sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
-            << "function {  sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi) }\n"
-            << "function {  -cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1}\n"
-            << "}\n"
-            << "}\n";
-
-    outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
-            << "parallel\n"
-            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
-            << "}\n";
-}
-
-void set360Camera(std::ofstream& outFile, const Camera* camera)
-{
-    outFile << "#declare odsIPD = 0.065;\n"
-            << "#declare odsLocationX = " << -camera->position().x() << ";\n"
-            << "#declare odsLocationY = " << camera->position().y() << ";\n"
-            << "#declare odsLocationZ = " << camera->position().z() << ";\n"
-            << "camera {\n"
             << "user_defined\n"
             << "location {\n"
             << "function {  odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) }\n"
@@ -213,7 +186,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         outFile << ip;
 
     if (renderSettings->cam360())
-        set360Camera1(outFile, camera, ip.keys().isEmpty());
+        set360Camera(outFile, camera, ip.keys().isEmpty());
     else
         setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
     setBackgroundColor(outFile, scene->backgroundColor());
