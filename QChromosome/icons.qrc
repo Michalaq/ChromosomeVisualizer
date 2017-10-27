@@ -50,8 +50,8 @@
         <file alias="browser">icons/browser_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
-        <file alias="splash">stock-photo-cell-nucleus-inside-chromatine-nucleus-nucleolus-human-body-cell-nucleus-of-the-eukaryotic-cell-459376120.png</file>
         <file alias="icon">icons/QChromosome_icon.svg</file>
+        <file alias="splash">misc/splash.png</file>
     </qresource>
     <qresource prefix="/locks">
         <file alias="world">icons/world_icon.svg</file>
