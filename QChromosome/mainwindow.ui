@@ -647,40 +647,12 @@ Label {
         <property name="spacing">
          <number>12</number>
         </property>
-        <item>
-         <widget class="MediaControl" name="record">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #d40000;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/record</normaloff>:/media/record</iconset>
-          </property>
-          <property name="shortcut">
-           <string>Ctrl+F9</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
+        <property name="leftMargin">
+         <number>12</number>
+        </property>
+        <property name="rightMargin">
+         <number>12</number>
+        </property>
         <item>
          <widget class="MediaControl" name="key">
           <property name="minimumSize">
@@ -715,6 +687,40 @@ Label {
           </property>
           <property name="shortcut">
            <string>F9</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="MediaControl" name="record">
+          <property name="minimumSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">:!hover:!checked {
+	background: #d40000;
+}</string>
+          </property>
+          <property name="icon">
+           <iconset resource="icons.qrc">
+            <normaloff>:/media/record</normaloff>:/media/record</iconset>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+F9</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -1098,7 +1104,7 @@ QLineEdit {
   </action>
   <action name="actionQuick_Render">
    <property name="icon">
-    <iconset resource="icons.qrc">
+    <iconset>
      <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
    </property>
    <property name="text">
