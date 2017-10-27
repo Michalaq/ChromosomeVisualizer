@@ -862,6 +862,8 @@ Label {
    <addaction name="actionSnapshot"/>
    <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
+   <addaction name="separator"/>
+   <addaction name="actionContent_Browser"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
@@ -1476,6 +1478,15 @@ QLineEdit {
   <action name="actionMaterial_Browser">
    <property name="text">
     <string>Material Browser</string>
+   </property>
+  </action>
+  <action name="actionContent_Browser">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/browser</normaloff>:/dialogs/browser</iconset>
+   </property>
+   <property name="text">
+    <string>Content Browser</string>
    </property>
   </action>
  </widget>

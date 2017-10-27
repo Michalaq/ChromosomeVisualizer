@@ -91,6 +91,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
     connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
+    connect(ui->actionContent_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
 
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
