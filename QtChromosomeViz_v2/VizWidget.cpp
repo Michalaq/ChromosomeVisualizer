@@ -52,7 +52,7 @@ VizWidget::VizWidget(QWidget *parent)
 
 VizWidget::~VizWidget()
 {
-
+    delete image;
 }
 
 void VizWidget::initializeGL()

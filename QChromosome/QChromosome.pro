@@ -68,7 +68,8 @@ SOURCES += main.cpp\
     materialbrowser.cpp \
     tablemodel.cpp \
     tableview.cpp \
-    moviemaker.cpp
+    moviemaker.cpp \
+    camera1.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -143,7 +144,8 @@ HEADERS  += mainwindow.h\
     materialattributes.h \
     materialbrowser.h \
     tablemodel.h \
-    tableview.h
+    tableview.h \
+    camera1.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
