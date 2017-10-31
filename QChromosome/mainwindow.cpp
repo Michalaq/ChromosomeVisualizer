@@ -245,6 +245,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->treeView, SLOT(updateAttributes(const Material*)));
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
+    connect(ui->actionCamera_2, &QAction::triggered, [this] {
+        ((TreeModel*)ui->treeView->model())->addObject();
+    });
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);

@@ -26,7 +26,9 @@ void NameDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
     if (!name.isEmpty())
     {
         model->setData(index, name);
-        qobject_cast<Attributes*>(parent())->updateName();
+
+        if (index.sibling(index.row(), 1).data() == NodeType::AtomObject)
+            qobject_cast<Attributes*>(parent())->updateName();
     }
 }
 

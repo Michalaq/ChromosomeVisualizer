@@ -58,6 +58,11 @@ void TreeItem::appendChild(TreeItem *item)
     m_childItems.append(item);
 }
 
+void TreeItem::prependChild(TreeItem *item)
+{
+    m_childItems.prepend(item);
+}
+
 TreeItem *TreeItem::child(int row)
 {
     return m_childItems.value(row);

@@ -56,6 +56,10 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
                 icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
                 icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
                 break;
+            case NodeType::CameraObject:
+                icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
+                icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
+                break;
             }
 
             return icon;
@@ -220,14 +224,26 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
     for (auto t : types)
         root->appendChild(t);
 
-    beginInsertRows(QModelIndex(), rowCount(), rowCount() + 1);
+    beginInsertRows(QModelIndex(), 0, 1);
 
-    header->appendChild(root);
+    header->prependChild(root);
 
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
     dumpModel(this, index(rowCount() - 1, 0), indices);
+}
+
+void TreeModel::addObject()
+{
+    int n = 0;
+    TreeItem* root = new TreeItem({QString("Camera") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
+
+    beginInsertRows(QModelIndex(), 0, 1);
+
+    header->prependChild(root);
+
+    endInsertRows();
 }
 
 const QVector<QModelIndex>& TreeModel::getIndices() const

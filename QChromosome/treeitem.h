@@ -51,6 +51,7 @@ public:
     ~TreeItem();
 
     void appendChild(TreeItem *child);
+    void prependChild(TreeItem *child);
 
     TreeItem *child(int row);
     int childCount() const;

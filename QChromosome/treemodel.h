@@ -54,7 +54,8 @@ enum NodeType
     LayerObject,
     ChainObject,
     ResidueObject,
-    AtomObject
+    AtomObject,
+    CameraObject
 };
 
 enum Visibility
@@ -91,6 +92,8 @@ public:
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    void addObject();
 
 private:
     TreeItem *header;

@@ -863,6 +863,8 @@ Label {
    <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
+   <addaction name="actionCamera_2"/>
+   <addaction name="separator"/>
    <addaction name="actionContent_Browser"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -1487,6 +1489,15 @@ QLineEdit {
    </property>
    <property name="text">
     <string>Content Browser</string>
+   </property>
+  </action>
+  <action name="actionCamera_2">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
+   </property>
+   <property name="text">
+    <string>Camera</string>
    </property>
   </action>
  </widget>
