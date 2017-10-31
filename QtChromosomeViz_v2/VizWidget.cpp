@@ -45,14 +45,13 @@ VizWidget::VizWidget(QWidget *parent)
     , backgroundColor_(0, 0, 0)
     , labelTextColor_(255, 255, 255)
     , labelBackgroundColor_(0, 0, 0, 255)
-    , image(nullptr)
 {
     setAcceptDrops(true);
 }
 
 VizWidget::~VizWidget()
 {
-    delete image;
+
 }
 
 void VizWidget::initializeGL()
@@ -759,10 +758,10 @@ void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
     pickSpheres();
 
     auto mask = QPainterPath();
-    mask.addRect(image->rect());
+    mask.addRect(image.rect());
     mask = mask.subtracted(p);
 
-    QPainter(image).fillPath(mask, QColor(0xFFFFFFFFU));
+    QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
 
     QSet<unsigned int> ballIDs;
 
@@ -771,7 +770,7 @@ void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
     {
         for (int x = r.left(); x <= r.right(); x++)
         {
-            auto color = image->pixel(x, y);
+            auto color = image.pixel(x, y);
             if (color != 0xFFFFFFFFU)
                 ballIDs.insert(color);
         }
@@ -1093,13 +1092,8 @@ void VizWidget::pickSpheres()
 
     assert(pickingFramebuffer_->release());
 
-    // Get rendered content
-    // Stupid workaround for avoiding premultiplied alpha
-    auto fboImage = pickingFramebuffer_->toImage();
-
-    delete image;
-    image = new QImage(fboImage.constBits(), fboImage.width(), fboImage.height(),
-                 QImage::Format_ARGB32);
+    // Get rendered content avoiding premultiplied alpha
+    image = pickingFramebuffer_->toImage().convertToFormat(QImage::Format_ARGB32);
 }
 
 void VizWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -1113,7 +1107,7 @@ void VizWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void VizWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (image->pixel(event->pos()) != 0xFFFFFFFF)
+    if (image.pixel(event->pos()) != 0xFFFFFFFF)
         event->acceptProposedAction();
     else
         event->ignore();
@@ -1123,7 +1117,7 @@ void VizWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    auto index = image->pixel(event->pos());
+    auto index = image.pixel(event->pos());
 
     if (currentSelection_.selectedIndices_.contains(index))
         treeView->setMaterial(currentSelection_.selectedIndices_, qobject_cast<Material*>(event->source()));
