@@ -48,7 +48,7 @@ class TreeItem
 {
 public:
     explicit TreeItem(const QVariantList &data = QVariantList(), TreeItem *parentItem = 0);
-    ~TreeItem();
+    virtual ~TreeItem();
 
     void appendChild(TreeItem *child);
     void prependChild(TreeItem *child);
@@ -64,12 +64,44 @@ public:
     int selected_children_count = 0;
     int selected_tag_index = -1;
 
+    virtual void read(const QJsonObject& json);
+    virtual void write(QJsonArray& objects, QJsonObject& json) const;
+
 private:
     QList<TreeItem*> m_childItems;
     QList<QVariant> m_itemData;
     TreeItem *m_parentItem;
 };
 
-//TODO here can follow subclasses of TreeItem, corresponding to variuos types of nodes in tree view
+enum NodeType
+{
+    HeaderObject,
+    LayerObject,
+    ChainObject,
+    ResidueObject,
+    AtomObject,
+    CameraObject
+};
+
+enum Visibility
+{
+    Default,
+    On,
+    Off
+};
+
+#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
+
+class LayerItem : public TreeItem
+{
+public:
+    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem = 0);
+    ~LayerItem();
+
+    void write(QJsonArray& objects, QJsonObject& json) const;
+
+private:
+    std::shared_ptr<SimulationLayerConcatenation> layer;
+};
 
 #endif // TREEITEM_H

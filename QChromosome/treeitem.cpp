@@ -106,3 +106,95 @@ int TreeItem::row() const
 
     return 0;
 }
+
+#include <QJsonObject>
+
+void TreeItem::read(const QJsonObject &json)
+{
+    const QJsonObject object = json["Object"].toObject();
+
+    auto vie = object.find("Visible in editor");
+
+    if (vie != object.end())
+        m_itemData[3] = vie.value().toBool() ? On : Off;
+
+    auto vir = object.find("Visible in renderer");
+
+    if (vir != object.end())
+        m_itemData[4] = vir.value().toBool() ? On : Off;
+
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.begin(); child != children.end(); child++)
+        m_childItems[child.key().toInt()]->read(child.value().toObject());
+}
+
+#include <QJsonArray>
+#include "material.h"
+
+void TreeItem::write(QJsonArray &objects, QJsonObject &json) const
+{
+    QJsonObject object;
+
+    auto vie = (Visibility)m_itemData.value(3).toInt();
+
+    if (vie != Default)
+        object["Visible in editor"] = vie == On;
+
+    auto vir = (Visibility)m_itemData.value(4).toInt();
+
+    if (vir != Default)
+        object["Visible in renderer"] = vir == On;
+
+    auto t = m_itemData.value(5).toList();
+
+    if (!t.empty())
+    {
+        QJsonArray u;
+
+        for (auto i : t)
+            u.append(i.value<Material*>()->getId().toString());
+
+        object["Tags"] = u;
+    }
+
+    if (!object.empty())
+        json["Object"] = object;
+
+    QJsonObject children;
+
+    for (int r = 0; r < m_childItems.size(); r++)
+    {
+        QJsonObject child;
+
+        m_childItems[r]->write(objects, child);
+
+        if (!child.empty())
+            children[QString::number(r)] = child;
+    }
+
+    if (!children.empty())
+        json["Descendants"] = children;
+}
+
+LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
+    TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    layer(slc)
+{
+
+}
+
+LayerItem::~LayerItem()
+{
+
+}
+
+void LayerItem::write(QJsonArray &objects, QJsonObject &json) const
+{
+    QJsonArray simulationLayer;
+    layer->write(simulationLayer);
+
+    objects.append(simulationLayer);
+
+    TreeItem::write(objects, json);
+}

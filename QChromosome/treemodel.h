@@ -46,28 +46,9 @@
 #include <QVariant>
 #include <memory>
 
-#include "../QtChromosomeViz_v2/bartekm_code/common.h"
+#include "treeitem.h"
 
-enum NodeType
-{
-    HeaderObject,
-    LayerObject,
-    ChainObject,
-    ResidueObject,
-    AtomObject,
-    CameraObject
-};
-
-enum Visibility
-{
-    Default,
-    On,
-    Off
-};
-
-class TreeItem;
 class Material;
-#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
 
 class TreeModel : public QAbstractItemModel
 {

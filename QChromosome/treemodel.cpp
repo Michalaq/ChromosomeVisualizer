@@ -17,7 +17,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 7;
+    return 6;
 }
 
 #include <QIcon>
@@ -198,7 +198,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), QVariant::fromValue(slc.get())}, header);
+    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, header);
 
     unsigned int i = 0;
 
@@ -251,91 +251,12 @@ const QVector<QModelIndex>& TreeModel::getIndices() const
     return indices;
 }
 
-#include <QJsonArray>
-#include <QJsonObject>
-
-void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonObject &json)
-{
-    const QJsonObject object = json["Object"].toObject();
-
-    auto vie = object.find("Visible in editor");
-
-    if (vie != object.end())
-        model->setData(root.sibling(root.row(), 3), vie.value().toBool() ? On : Off);
-
-    auto vir = object.find("Visible in renderer");
-
-    if (vir != object.end())
-        model->setData(root.sibling(root.row(), 4), vir.value().toBool() ? On : Off);
-
-    const QJsonObject children = json["Descendants"].toObject();
-
-    for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(model, model->index(child.key().toInt(), 0, root), child.value().toObject());
-}
-
 void TreeModel::read(const QJsonObject &json)
 {
-    dumpModel3(this, QModelIndex(), json);
-}
-
-#include "material.h"
-#include "materialbrowser.h"
-
-void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonArray &objects, QJsonObject &json)
-{
-    if (root.sibling(root.row(), 1).data() == NodeType::LayerObject)
-    {
-        QJsonArray simulationLayer;
-        root.sibling(root.row(), 6).data().value<SimulationLayerConcatenation*>()->write(simulationLayer);
-
-        objects.append(simulationLayer);
-    }
-
-    QJsonObject object;
-
-    auto vie = (Visibility)root.sibling(root.row(), 3).data().toInt();
-
-    if (vie != Default)
-        object["Visible in editor"] = vie == On;
-
-    auto vir = (Visibility)root.sibling(root.row(), 4).data().toInt();
-
-    if (vir != Default)
-        object["Visible in renderer"] = vir == On;
-
-    auto t = root.sibling(root.row(), 5).data().toList();
-
-    if (!t.empty())
-    {
-        QJsonArray u;
-
-        for (auto i : t)
-            u.append(i.value<Material*>()->getId().toString());
-
-        object["Tags"] = u;
-    }
-
-    if (!object.empty())
-        json["Object"] = object;
-
-    QJsonObject children;
-
-    for (int r = 0; r < model->rowCount(root); r++)
-    {
-        QJsonObject child;
-
-        dumpModel2(model, model->index(r, 0, root), objects, child);
-
-        if (!child.empty())
-            children[QString::number(r)] = child;
-    }
-
-    if (!children.empty())
-        json["Descendants"] = children;
+    header->read(json);
 }
 
 void TreeModel::write(QJsonArray &objects, QJsonObject &json) const
 {
-    dumpModel2(this, QModelIndex(), objects, json);
+    header->write(objects, json);
 }
