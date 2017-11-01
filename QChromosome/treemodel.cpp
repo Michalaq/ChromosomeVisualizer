@@ -198,7 +198,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, header);
+    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, n, offset, header);
 
     unsigned int i = 0;
 
@@ -231,7 +231,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(this, index(rowCount() - 1, 0), indices);
+    dumpModel(this, index(0, 0), indices);
 }
 
 void TreeModel::addObject()
@@ -251,12 +251,12 @@ const QVector<QModelIndex>& TreeModel::getIndices() const
     return indices;
 }
 
-void TreeModel::read(const QJsonObject &json)
+void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &json)
 {
     header->read(json);
 }
 
-void TreeModel::write(QJsonArray &objects, QJsonObject &json) const
+void TreeModel::write(QJsonObject &json) const
 {
-    header->write(objects, json);
+    header->write(json);
 }

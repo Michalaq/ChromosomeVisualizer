@@ -352,17 +352,14 @@ void MainWindow::openProject()
         const QJsonObject camera = project["Camera"].toObject();
         ui->page_5->read(camera);
 
-        const QJsonArray layers = project["Layers"].toArray();
-        simulation->read(layers);
+        const QJsonObject objects = project["Objects"].toObject();
+        ui->treeView->read(simulation, objects);
 
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
 
         const QJsonArray materials = project["Materials"].toArray();
         materialBrowser->read(materials);
-
-        const QJsonObject structure = project["Structure"].toObject();
-        ui->treeView->read(structure);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
@@ -427,11 +424,9 @@ void MainWindow::saveProject()
         ui->page_5->write(camera);
         project["Camera"] = camera;
 
-        QJsonArray layers;
-        QJsonObject structure;
-        simulation->getModel()->write(layers, structure);
-        project["Layers"] = layers;
-        project["Structure"] = structure;
+        QJsonObject objects;
+        simulation->getModel()->write(objects);
+        project["Objects"] = objects;
 
         QJsonArray materials;
         materialBrowser->write(materials);

@@ -65,7 +65,7 @@ public:
     int selected_tag_index = -1;
 
     virtual void read(const QJsonObject& json);
-    virtual void write(QJsonArray& objects, QJsonObject& json) const;
+    virtual void write(QJsonObject& json) const;
 
 private:
     QList<TreeItem*> m_childItems;
@@ -95,13 +95,15 @@ enum Visibility
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, int lid, int off, TreeItem *parentItem = 0);
     ~LayerItem();
 
-    void write(QJsonArray& objects, QJsonObject& json) const;
+    void write(QJsonObject& json) const;
 
 private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
+    int layerID;
+    int offset;
 };
 
 #endif // TREEITEM_H

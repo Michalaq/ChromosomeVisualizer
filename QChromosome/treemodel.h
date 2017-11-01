@@ -44,11 +44,11 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
-#include <memory>
 
 #include "treeitem.h"
 
 class Material;
+class Simulation;
 
 class TreeModel : public QAbstractItemModel
 {
@@ -72,8 +72,8 @@ public:
     void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init = true);
     const QVector<QModelIndex>& getIndices() const;
 
-    void read(const QJsonObject& json);
-    void write(QJsonArray& objects, QJsonObject& json) const;
+    void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
+    void write(QJsonObject& json) const;
 
     void addObject();
 
