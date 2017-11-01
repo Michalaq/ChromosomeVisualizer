@@ -67,6 +67,7 @@ enum Visibility
 
 class TreeItem;
 class Material;
+#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
 
 class TreeModel : public QAbstractItemModel
 {
@@ -87,11 +88,11 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init = true);
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init = true);
     const QVector<QModelIndex>& getIndices() const;
 
     void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
+    void write(QJsonArray& objects, QJsonObject& json) const;
 
     void addObject();
 

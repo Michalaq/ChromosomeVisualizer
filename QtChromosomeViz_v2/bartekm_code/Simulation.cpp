@@ -118,7 +118,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     slc->setLayerId(layerId);
    
     auto f = slc->getFrame(0);
-    model->setupModelData(f->atoms, f->connectedRanges, layerId, offset, init);
+    model->setupModelData(slc, f->atoms, f->connectedRanges, layerId, offset, init);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)
@@ -132,16 +132,22 @@ TreeModel* Simulation::getModel()
 }
 
 #include <QJsonArray>
+#include <QStack>
 
 void Simulation::read(const QJsonArray &json)
 {
+    QStack<std::shared_ptr<SimulationLayerConcatenation>> tmp;
+
     for (auto i : json)
     {
         auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
         simulationLayer->read(i.toArray());
 
-        addSimulationLayerConcatenation(simulationLayer, false);
+        tmp.push(simulationLayer);
     }
+
+    while (!tmp.isEmpty())
+        addSimulationLayerConcatenation(tmp.pop(), false);
 }
 
 void Simulation::write(QJsonArray &json) const

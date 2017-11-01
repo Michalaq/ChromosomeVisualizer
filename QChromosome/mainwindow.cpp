@@ -428,16 +428,14 @@ void MainWindow::saveProject()
         project["Camera"] = camera;
 
         QJsonArray layers;
-        simulation->write(layers);
+        QJsonObject structure;
+        simulation->getModel()->write(layers, structure);
         project["Layers"] = layers;
+        project["Structure"] = structure;
 
         QJsonArray materials;
         materialBrowser->write(materials);
         project["Materials"] = materials;
-
-        QJsonObject structure;
-        simulation->getModel()->write(structure);
-        project["Structure"] = structure;
 
         QJsonObject bar;
         ui->scene->write(bar);

@@ -70,4 +70,6 @@ private:
     TreeItem *m_parentItem;
 };
 
+//TODO here can follow subclasses of TreeItem, corresponding to variuos types of nodes in tree view
+
 #endif // TREEITEM_H

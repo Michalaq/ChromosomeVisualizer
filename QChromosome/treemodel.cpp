@@ -17,7 +17,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 6;
+    return 7;
 }
 
 #include <QIcon>
@@ -194,11 +194,11 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
 #include <QBitArray>
 
-void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init)
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
+    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), QVariant::fromValue(slc.get())}, header);
 
     unsigned int i = 0;
 
@@ -276,14 +276,22 @@ void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonO
 
 void TreeModel::read(const QJsonObject &json)
 {
-    dumpModel3(this, index(0, 0), json);
+    dumpModel3(this, QModelIndex(), json);
 }
 
 #include "material.h"
 #include "materialbrowser.h"
 
-void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
+void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonArray &objects, QJsonObject &json)
 {
+    if (root.sibling(root.row(), 1).data() == NodeType::LayerObject)
+    {
+        QJsonArray simulationLayer;
+        root.sibling(root.row(), 6).data().value<SimulationLayerConcatenation*>()->write(simulationLayer);
+
+        objects.append(simulationLayer);
+    }
+
     QJsonObject object;
 
     auto vie = (Visibility)root.sibling(root.row(), 3).data().toInt();
@@ -317,7 +325,7 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
     {
         QJsonObject child;
 
-        dumpModel2(model, model->index(r, 0, root), child);
+        dumpModel2(model, model->index(r, 0, root), objects, child);
 
         if (!child.empty())
             children[QString::number(r)] = child;
@@ -327,7 +335,7 @@ void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonO
         json["Descendants"] = children;
 }
 
-void TreeModel::write(QJsonObject &json) const
+void TreeModel::write(QJsonArray &objects, QJsonObject &json) const
 {
-    dumpModel2(this, index(0, 0), json);
+    dumpModel2(this, QModelIndex(), objects, json);
 }
