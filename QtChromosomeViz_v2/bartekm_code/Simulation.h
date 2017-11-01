@@ -31,7 +31,6 @@ public:
     TreeModel* getModel();
 
     void read(const QJsonArray& json);
-    void write(QJsonArray& json) const;
 
     void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend);
 

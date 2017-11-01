@@ -150,17 +150,6 @@ void Simulation::read(const QJsonArray &json)
         addSimulationLayerConcatenation(tmp.pop(), false);
 }
 
-void Simulation::write(QJsonArray &json) const
-{
-    for (auto i : layerConcatenations_)
-    {
-        QJsonArray simulationLayer;
-        i->write(simulationLayer);
-
-        json.append(simulationLayer);
-    }
-}
-
 #include <QVector3D>
 
 static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
