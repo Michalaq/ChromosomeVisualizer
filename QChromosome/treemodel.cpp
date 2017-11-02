@@ -157,7 +157,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QModelIndex>& id)
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id)
 {
     auto v = root.sibling(root.row(), 2).data();
 
@@ -194,11 +194,15 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 
 #include <QBitArray>
 
-void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
 {
+    auto f = slc->getFrame(0);
+    auto& atoms = f->atoms;
+    auto& connectedRanges = f->connectedRanges;
+
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, header);
+    TreeItem* root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
 
     unsigned int i = 0;
 
@@ -232,6 +236,11 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     dumpModel(this, index(0, 0), indices);
 }
 
+const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
+{
+    return indices;
+}
+
 void TreeModel::addObject()
 {
     int n = 0;
@@ -242,11 +251,6 @@ void TreeModel::addObject()
     header->prependChild(root);
 
     endInsertRows();
-}
-
-const QVector<QModelIndex>& TreeModel::getIndices() const
-{
-    return indices;
 }
 
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"

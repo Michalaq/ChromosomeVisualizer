@@ -69,17 +69,17 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init = true);
-    const QVector<QModelIndex>& getIndices() const;
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init = true);
+    const QVector<QPersistentModelIndex> &getIndices() const;
+
+    void addObject();
 
     void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void addObject();
-
 private:
     TreeItem *header;
-    QVector<QModelIndex> indices;
+    QVector<QPersistentModelIndex> indices;
 };
 
 #endif // TREEMODEL_H
