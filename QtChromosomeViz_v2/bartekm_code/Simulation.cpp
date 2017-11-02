@@ -131,25 +131,6 @@ TreeModel* Simulation::getModel()
     return model;
 }
 
-#include <QJsonArray>
-#include <QStack>
-
-void Simulation::read(const QJsonArray &json)
-{
-    QStack<std::shared_ptr<SimulationLayerConcatenation>> tmp;
-
-    for (auto i : json)
-    {
-        auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-        simulationLayer->read(i.toArray());
-
-        tmp.push(simulationLayer);
-    }
-
-    while (!tmp.isEmpty())
-        addSimulationLayerConcatenation(tmp.pop(), false);
-}
-
 #include <QVector3D>
 
 static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)

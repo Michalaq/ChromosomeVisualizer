@@ -177,11 +177,9 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, int lid, int off, TreeItem *parentItem) :
+LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    layer(slc),
-    layerID(lid),
-    offset(off)
+    layer(slc)
 {
 
 }
@@ -205,8 +203,6 @@ void LayerItem::write(QJsonObject &json) const
 
     object["class"] = "Layer";
     object["paths"] = simulationLayer;
-    object["layerID"] = layerID;
-    object["offset"] = offset;
 
     json["Object"] = object;
 }

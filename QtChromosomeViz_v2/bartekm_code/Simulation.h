@@ -30,8 +30,6 @@ public:
     frameNumber_t getPreviousTime(frameNumber_t time) const;
     TreeModel* getModel();
 
-    void read(const QJsonArray& json);
-
     void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend);
 
 signals:

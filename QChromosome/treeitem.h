@@ -95,15 +95,13 @@ enum Visibility
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, int lid, int off, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem = 0);
     ~LayerItem();
 
     void write(QJsonObject& json) const;
 
 private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
-    int layerID;
-    int offset;
 };
 
 #endif // TREEITEM_H

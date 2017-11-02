@@ -198,7 +198,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 {
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, n, offset, header);
+    TreeItem* root = new LayerItem(QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), slc, header);
 
     unsigned int i = 0;
 
