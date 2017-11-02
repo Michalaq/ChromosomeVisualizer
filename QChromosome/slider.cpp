@@ -4,7 +4,6 @@
 Slider::Slider(QWidget *parent) :
     SoftSlider(parent),
     ip(nullptr),
-    s(new QShortcut(QKeySequence(Qt::Key_Delete), this)),
     pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
 {
     pin.fill("#0066ff");
@@ -20,7 +19,7 @@ Slider::Slider(QWidget *parent) :
 
 Slider::~Slider()
 {
-    delete s;
+
 }
 
 QSize Slider::minimumSizeHint() const
@@ -31,7 +30,6 @@ QSize Slider::minimumSizeHint() const
 void Slider::setInterpolator(Interpolator *_ip)
 {
     ip = _ip;
-    connect(s, SIGNAL(activated()), ip, SLOT(deleteKeyrame()));
 }
 
 #include <QMouseEvent>
@@ -156,4 +154,12 @@ void Slider::paintEvent(QPaintEvent *event)
 
         p.drawImage(tick - 15, -15, pin);
     }
+}
+
+void Slider::keyPressEvent(QKeyEvent *event)
+{
+    QSlider::keyPressEvent(event);
+
+    if (ip && (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace))
+        ip->deleteKeyrame();
 }

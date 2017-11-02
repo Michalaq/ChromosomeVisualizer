@@ -72,6 +72,8 @@ public:
     void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init = true);
     const QVector<QPersistentModelIndex> &getIndices() const;
 
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+
     void addObject();
 
     void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);

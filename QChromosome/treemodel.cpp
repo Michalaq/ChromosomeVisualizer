@@ -228,7 +228,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     for (auto t : types)
         root->appendChild(t);
 
-    beginInsertRows(QModelIndex(), 0, 1);
+    beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
 
@@ -241,15 +241,26 @@ const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
     return indices;
 }
 
+bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    for (int i = row; i < row + count; i++)
+    {
+        if (data(index(i, 1, parent)).toInt() == NodeType::CameraObject)
+        {
+            beginRemoveRows(parent, i, i);
+            (parent.isValid() ? static_cast<LayerItem*>(parent.internalPointer()) : header)->removeRows(i, 1);
+            endRemoveRows();
+        }
+    }
+}
+
 void TreeModel::addObject()
 {
     int n = 0;
     TreeItem* root = new TreeItem({QString("Camera") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
 
-    beginInsertRows(QModelIndex(), 0, 1);
-
+    beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
-
     endInsertRows();
 }
 

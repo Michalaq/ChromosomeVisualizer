@@ -107,6 +107,12 @@ int TreeItem::row() const
     return 0;
 }
 
+void TreeItem::removeRows(int row, int count)
+{
+    for (int i = row; i < row + count; i++)
+        delete m_childItems.takeAt(i);
+}
+
 #include <QJsonObject>
 
 void TreeItem::read(const QJsonObject &json)

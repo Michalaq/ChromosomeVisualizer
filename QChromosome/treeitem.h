@@ -60,6 +60,7 @@ public:
     bool setData(int column, const QVariant& data);
     int row() const;
     TreeItem *parentItem();
+    void removeRows(int row, int count);
 
     int selected_children_count = 0;
     int selected_tag_index = -1;

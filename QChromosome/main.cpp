@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QSplashScreen s(QPixmap(":/application/splash").scaled(595, 335), Qt::WindowStaysOnTopHint);
+    QSplashScreen s(QPixmap(":/application/splash"), Qt::WindowStaysOnTopHint);
     s.show();
 
     QApplication::setOrganizationName("Regulomics");

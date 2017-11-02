@@ -23,13 +23,13 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
     void paintEvent(QPaintEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 public slots:
 
 private:
     Interpolator *ip;
     bool movemarker;
-    QShortcut *s;
     QImage pin;
 };
 

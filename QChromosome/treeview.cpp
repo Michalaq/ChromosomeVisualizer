@@ -388,6 +388,17 @@ void TreeView::paintEvent(QPaintEvent *event)
     p.drawLine(QPoint(x, 0), QPoint(x, height()));
 }
 
+void TreeView::keyPressEvent(QKeyEvent *event)
+{
+    QTreeView::keyPressEvent(event);
+
+    if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
+    {
+        for (auto i : selectionModel()->selectedRows())
+            model()->removeRow(i.row(), i.parent());
+    }
+}
+
 void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     QTreeView::selectionChanged(selected, deselected);
