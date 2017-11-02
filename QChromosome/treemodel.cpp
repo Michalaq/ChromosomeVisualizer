@@ -225,9 +225,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
         root->appendChild(t);
 
     beginInsertRows(QModelIndex(), 0, 1);
-
     header->prependChild(root);
-
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
@@ -251,9 +249,26 @@ const QVector<QModelIndex>& TreeModel::getIndices() const
     return indices;
 }
 
+#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include <QJsonArray>
+#include <QJsonObject>
+
 void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &json)
 {
-    header->read(json);
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
+    {
+        const QJsonObject object = child.value().toObject()["Object"].toObject();
+
+        if (object["class"] == "Layer")
+        {
+            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
+            simulationLayer->read(object["paths"].toArray());
+
+            simulation->addSimulationLayerConcatenation(simulationLayer, false);
+        }
+    }
 }
 
 void TreeModel::write(QJsonObject &json) const

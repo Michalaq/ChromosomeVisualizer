@@ -197,7 +197,7 @@ void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json)
 void TreeView::read(std::shared_ptr<Simulation> simulation, const QJsonObject &json)
 {
     qobject_cast<TreeModel*>(model())->read(simulation, json);
-    dumpModel3(QModelIndex(), json);
+    //dumpModel3(QModelIndex(), json);
 }
 
 void TreeView::updateAttributes(const Material *m)
