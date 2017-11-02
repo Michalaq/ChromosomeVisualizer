@@ -269,6 +269,8 @@ void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &
             simulation->addSimulationLayerConcatenation(simulationLayer, false);
         }
     }
+
+    header->read(json);
 }
 
 void TreeModel::write(QJsonObject &json) const

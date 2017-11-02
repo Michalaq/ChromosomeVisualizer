@@ -37,7 +37,7 @@ public:
     Material* getMaterial(const QList<unsigned int>& indexes) const;
     void setMaterial(const QList<unsigned int>& indexes, Material* m);
 
-    void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
+    void read(const QJsonObject& json);
 
     void materializeTags(const QModelIndex& root = QModelIndex());
 

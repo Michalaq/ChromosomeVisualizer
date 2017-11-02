@@ -353,13 +353,15 @@ void MainWindow::openProject()
         ui->page_5->read(camera);
 
         const QJsonObject objects = project["Objects"].toObject();
-        ui->treeView->read(simulation, objects);
+        simulation->getModel()->read(simulation, objects);
 
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
 
         const QJsonArray materials = project["Materials"].toArray();
         materialBrowser->read(materials);
+
+        ui->treeView->read(objects);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
