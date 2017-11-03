@@ -82,6 +82,8 @@ public:
 private:
     TreeItem *header;
     QVector<QPersistentModelIndex> indices;
+
+    QString next_name() const;
 };
 
 #endif // TREEMODEL_H

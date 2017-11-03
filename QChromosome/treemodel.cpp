@@ -254,10 +254,33 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
     }
 }
 
+#include <QRegularExpression>
+#include <set>
+
+QString TreeModel::next_name() const
+{
+    static const QRegularExpression re("^Camera(.(?<label>[1-9][0-9]*))?$");
+
+    std::set<int> used;
+
+    for (int r = 0; r < rowCount(); r++)
+    {
+        QRegularExpressionMatch match = re.match(index(r, 0).data().toString());
+
+        if (match.hasMatch())
+            used.insert(match.captured("label").toInt());
+    }
+
+    int i = 0;
+
+    for (auto j = used.begin(); j != used.end() && i == *j; i++, j++);
+
+    return i ? QString("Camera.") + QString::number(i) : "Camera";
+}
+
 void TreeModel::addObject()
 {
-    int n = 0;
-    TreeItem* root = new TreeItem({QString("Camera") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
+    TreeItem* root = new TreeItem({next_name(), NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
 
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
