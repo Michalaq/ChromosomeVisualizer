@@ -915,12 +915,28 @@ QTreeView::branch:selected:alternate {
 	background: #1f1f1f;
 }
 
-QTreeView::branch:has-children:!has-siblings:closed, QTreeView::branch:closed:has-children {
-	image: url(:/arrows/bclosed);
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(:/arrows/vline) 0;
 }
 
-QTreeView::branch:open:has-children  {
-	image: url(:/arrows/bopen);
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: url(:/arrows/branch-more) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: url(:/arrows/branch-end) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(:/arrows/branch-closed);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(:/arrows/branch-open);
 }
 
 QLineEdit {

@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file alias="bar">misc/tab_bar.svg</file>
         <file alias="location">icons/location_icon.svg</file>
-        <file alias="sphere">misc/sphere.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
         <file alias="unchecked">misc/checkbox_unchecked.svg</file>
@@ -13,8 +12,11 @@
         <file alias="right">misc/right_arrow.svg</file>
         <file alias="left">misc/left_arrow.svg</file>
         <file alias="down">misc/down_arrow.svg</file>
-        <file alias="bclosed">misc/branch_closed.svg</file>
-        <file alias="bopen">misc/branch_open.svg</file>
+        <file alias="branch-closed">misc/branch_closed.svg</file>
+        <file alias="branch-open">misc/branch_open.svg</file>
+        <file alias="branch-end">misc/branch_end.svg</file>
+        <file alias="branch-more">misc/branch_more.svg</file>
+        <file alias="vline">misc/vline.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
