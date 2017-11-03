@@ -49,9 +49,9 @@ MainWindow::MainWindow(QWidget *parent) :
                 ui->statusBar->showMessage(action->property("cameraStatusTip").toString());
         });
 
-    bindings.insert(Qt::Key_Q, ui->actionMove);
-    bindings.insert(Qt::Key_W, ui->actionRotate);
-    bindings.insert(Qt::Key_E, ui->actionScale);
+    bindings.insert(Qt::Key_E, ui->actionMove);
+    bindings.insert(Qt::Key_R, ui->actionRotate);
+    bindings.insert(Qt::Key_T, ui->actionScale);
 
     modifiers.push_back(ui->actionMove);
 

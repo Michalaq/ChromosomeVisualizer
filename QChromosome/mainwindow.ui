@@ -813,22 +813,41 @@ Label {
     <addaction name="separator"/>
     <addaction name="actionMaterial_Browser"/>
    </widget>
-   <widget class="QMenu" name="menuScene">
-    <property name="title">
-     <string>Scene</string>
-    </property>
-    <addaction name="actionCamera"/>
-    <addaction name="actionViewport"/>
-   </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionInfo"/>
    </widget>
+   <widget class="QMenu" name="menuObject">
+    <property name="title">
+     <string>Objects</string>
+    </property>
+    <widget class="QMenu" name="menuScene">
+     <property name="title">
+      <string>Scene</string>
+     </property>
+     <addaction name="actionCamera_2"/>
+    </widget>
+    <addaction name="menuScene"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionMove"/>
+    <addaction name="actionRotate"/>
+    <addaction name="actionScale"/>
+    <addaction name="separator"/>
+    <addaction name="actionXLock"/>
+    <addaction name="actionYLock"/>
+    <addaction name="actionZLock"/>
+    <addaction name="actionCoordinates"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuScene"/>
+   <addaction name="menuObject"/>
+   <addaction name="menuTools"/>
    <addaction name="menuSelection"/>
    <addaction name="menuAnimation"/>
    <addaction name="menuWindows"/>
@@ -1083,7 +1102,7 @@ QLineEdit {
     <string>Move</string>
    </property>
    <property name="statusTip">
-    <string>Move tool [Shortcut Q]</string>
+    <string>Move tool [Shortcut E]</string>
    </property>
    <property name="cameraStatusTip" stdset="0">
     <string>Move: Click and drag to move the camera.</string>
@@ -1101,7 +1120,7 @@ QLineEdit {
     <string>Rotate</string>
    </property>
    <property name="statusTip">
-    <string>Rotate tool [Shortcut W]</string>
+    <string>Rotate tool [Shortcut R]</string>
    </property>
    <property name="cameraStatusTip" stdset="0">
     <string>Rotate: Click and drag to rotate the camera.</string>
@@ -1119,7 +1138,7 @@ QLineEdit {
     <string>Scale</string>
    </property>
    <property name="statusTip">
-    <string>Scale tool [Shortcut E]</string>
+    <string>Scale tool [Shortcut T]</string>
    </property>
    <property name="cameraStatusTip" stdset="0">
     <string>Scale: Click and drag to move the camera.</string>
@@ -1370,7 +1389,7 @@ QLineEdit {
      <normalon>:/locks/move x</normalon>:/locks/lock x</iconset>
    </property>
    <property name="text">
-    <string>X Axis Lock/Unlock</string>
+    <string>X-Axis / Heading</string>
    </property>
    <property name="statusTip">
     <string>X Axis Lock/Unlock [Shortcut X]</string>
@@ -1392,7 +1411,7 @@ QLineEdit {
      <normalon>:/locks/move y</normalon>:/locks/lock y</iconset>
    </property>
    <property name="text">
-    <string>Y Axis Lock/Unlock</string>
+    <string>Y-Axis / Pitch</string>
    </property>
    <property name="statusTip">
     <string>Y Axis Lock/Unlock [Shortcut Y]</string>
@@ -1414,7 +1433,7 @@ QLineEdit {
      <normalon>:/locks/move z</normalon>:/locks/lock z</iconset>
    </property>
    <property name="text">
-    <string>Z Axis Lock/Unlock</string>
+    <string>Z-Axis / Bank</string>
    </property>
    <property name="statusTip">
     <string>Z Axis Lock/Unlock [Shortcut Z]</string>
@@ -1433,7 +1452,7 @@ QLineEdit {
      <normalon>:/locks/tilt</normalon>:/locks/world</iconset>
    </property>
    <property name="text">
-    <string>Use World/Object Coordinate System</string>
+    <string>Coordinate system</string>
    </property>
    <property name="statusTip">
     <string>Use World/Object Coordinate System [Shortcut W]</string>
@@ -1515,7 +1534,13 @@ QLineEdit {
      <normaloff>:/dialogs/browser</normaloff>:/dialogs/browser</iconset>
    </property>
    <property name="text">
-    <string>Content Browser</string>
+    <string>Open Content Browser [Shortcut Shift+F8]</string>
+   </property>
+   <property name="statusTip">
+    <string>Open Content Browser [Shortcut Shift+F8]</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+F8</string>
    </property>
   </action>
   <action name="actionCamera_2">
@@ -1525,6 +1550,9 @@ QLineEdit {
    </property>
    <property name="text">
     <string>Camera</string>
+   </property>
+   <property name="statusTip">
+    <string>Add Camera Object</string>
    </property>
   </action>
  </widget>
