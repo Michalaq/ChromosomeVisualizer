@@ -144,13 +144,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_4->setBlind(ui->widget_2);
     ui->page_4->setAxis(ui->widget);
 
-    connect(ui->actionCamera, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(4);
-        ui->dockWidget_2->show();
-    });
-
-    ui->page_5->setCamera(ui->camera);
-
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ip.setRecordingState(checked);
         if (checked)
@@ -245,7 +238,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->treeView, SLOT(updateAttributes(const Material*)));
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
-    connect(ui->actionCamera_2, &QAction::triggered, [this] {
+    connect(ui->actionCamera, &QAction::triggered, [this] {
         ((TreeModel*)ui->treeView->model())->addObject();
     });
 
@@ -324,6 +317,8 @@ void MainWindow::newProject()
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
 
+    connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+
     ui->stackedWidget->setCurrentIndex(0);
 }
 
@@ -371,8 +366,6 @@ void MainWindow::openProject()
 
         const QJsonArray keyframes = project["Key frames"].toArray();
         ip.read(keyframes);
-
-        connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     }
 }
 
@@ -395,7 +388,6 @@ void MainWindow::addLayer()
             ui->scene->setSimulation(simulation);
             ui->plot->updateSimulation();
 
-            connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
             ui->treeView->materializeTags();
         }
     } catch (std::exception& e) {
@@ -681,7 +673,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void MainWindow::handleModelSelection()
 {
-    QVector<QList<unsigned int>> id(5);
+    QVector<QList<unsigned int>> id(6);
     QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
@@ -696,17 +688,27 @@ void MainWindow::handleModelSelection()
     auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
 
     ui->scene->setVisibleSelection(selection, false);
+    handleSelection(selection, false);
 
-    if (type.size() == 1 && *type.begin() == NodeType::LayerObject)
+    // handle custom selection types
+    if (type.size() == 1)
     {
-        ui->dockWidget_2->show();
+        if (*type.begin() == NodeType::CameraObject)
+        {
+            ui->page_5->setCamera(ui->camera);
+            ui->stackedWidget->setCurrentIndex(4);
+            ui->dockWidget_2->show();
+        }
 
-        ui->stackedWidget->setCurrentIndex(2);
+        /*if (*type.begin() == NodeType::LayerObject)
+        {
+            ui->dockWidget_2->show();
 
-        ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
+            ui->stackedWidget->setCurrentIndex(2);
+
+            ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
+        }*/
     }
-    else
-        handleSelection(selection, false);
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)

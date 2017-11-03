@@ -827,7 +827,7 @@ Label {
      <property name="title">
       <string>Scene</string>
      </property>
-     <addaction name="actionCamera_2"/>
+     <addaction name="actionCamera"/>
     </widget>
     <addaction name="menuScene"/>
    </widget>
@@ -886,7 +886,7 @@ Label {
    <addaction name="actionFilm"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
-   <addaction name="actionCamera_2"/>
+   <addaction name="actionCamera"/>
    <addaction name="separator"/>
    <addaction name="actionContent_Browser"/>
   </widget>
@@ -1362,15 +1362,6 @@ QLineEdit {
     <string>Shift+V</string>
    </property>
   </action>
-  <action name="actionCamera">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
-   </property>
-   <property name="text">
-    <string>Camera</string>
-   </property>
-  </action>
   <action name="actionInfo">
    <property name="text">
     <string>Info...</string>
@@ -1543,7 +1534,7 @@ QLineEdit {
     <string>Shift+F8</string>
    </property>
   </action>
-  <action name="actionCamera_2">
+  <action name="actionCamera">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
