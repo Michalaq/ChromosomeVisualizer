@@ -105,7 +105,7 @@ private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
 };
 
-#include "camera.h"
+class Camera;
 
 class CameraItem : public TreeItem
 {
@@ -114,6 +114,8 @@ public:
     ~CameraItem();
 
     void write(QJsonObject& json) const;
+
+    Camera* getCamera() const;
 
 private:
     Camera* camera;

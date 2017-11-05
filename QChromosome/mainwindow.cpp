@@ -695,7 +695,7 @@ void MainWindow::handleModelSelection()
     {
         if (*type.begin() == NodeType::CameraObject)
         {
-            ui->page_5->setCamera(ui->camera);
+            ui->page_5->handleSelection(ui->treeView->selectionModel()->selectedRows());
             ui->stackedWidget->setCurrentIndex(4);
             ui->dockWidget_2->show();
         }

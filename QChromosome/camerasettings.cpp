@@ -1,5 +1,6 @@
 #include "camerasettings.h"
 #include "ui_camerasettings.h"
+#include "camera.h"
 
 CameraSettings::CameraSettings(QWidget *parent) :
     QWidget(parent),
@@ -7,10 +8,6 @@ CameraSettings::CameraSettings(QWidget *parent) :
     camera(nullptr)
 {
     ui->setupUi(this);
-
-    // ALERT hide unused controls
-    ui->label_2->hide(); ui->formLayout->removeWidget(ui->label_2);
-    ui->doubleSpinBox_2->hide(); ui->formLayout->removeWidget(ui->doubleSpinBox_2);
 
     // coordinates
     connect(ui->doubleSpinBox_7, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
@@ -81,13 +78,33 @@ CameraSettings::~CameraSettings()
 }
 
 #include <QtMath>
+#include "treeitem.h"
 
-void CameraSettings::setCamera(Camera *c)
+void CameraSettings::handleSelection(const QModelIndexList& selection)
 {
-    if (camera)
-        disconnect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+    /*if (camera)
+        disconnect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);*/
 
-    camera = c;
+    if (!selection.count())
+        return hide();
+
+    // set title
+    title = "Camera Object ";
+
+    if (selection.count() > 1)
+        title += "(" + QString::number(selection.count()) + " elements) ";
+
+    list.clear();
+
+    for (auto i : selection)
+        list += i.data().toString() + ", ";
+
+    list.chop(2);
+
+    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+
+    // cameras
+    camera = static_cast<CameraItem*>(selection.first().internalPointer())->getCamera();
 
     // coordinates
     ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
@@ -117,7 +134,7 @@ void CameraSettings::setCamera(Camera *c)
     // far clipping
     ui->doubleSpinBox_6->setValue(camera->farClipping, false);
 
-    connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+    /*connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
 
     connect(camera, &Camera::projectionChanged, [this] {
         // focal length
@@ -128,12 +145,19 @@ void CameraSettings::setCamera(Camera *c)
 
         // field of view
         ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
-    });
+    });*/
 }
 
 void CameraSettings::setRotationType(int rt)
 {
     ui->comboBox->setCurrentIndex(rt);
+}
+
+void CameraSettings::resizeEvent(QResizeEvent *event)
+{
+    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+
+    QWidget::resizeEvent(event);
 }
 
 #include <QJsonObject>
@@ -156,26 +180,6 @@ void CameraSettings::read(const QJsonObject &json)
     const QJsonObject depthOfField = json["Depth of field"].toObject();
     ui->doubleSpinBox_5->setValue(depthOfField["Near clipping"].toDouble());
     ui->doubleSpinBox_6->setValue(depthOfField["Far clipping"].toDouble());
-    /*const QJsonObject view = json["View"].toObject();
-    ui->checkBox->setChecked(view["Safe frames"].toBool());
-    ui->doubleSpinBox->setValue(view["Opacity"].toDouble());
-    ui->widget->setValue(view["Border color"].toString());
-
-    const QJsonObject editorAxis = json["Editor axis"].toObject();
-    ui->comboBox->setCurrentText(editorAxis["Position"].toString());
-    ui->doubleSpinBox_2->setValue(editorAxis["Scale"].toDouble());
-    ui->checkBox_2->setChecked(editorAxis["Text"].toBool());
-
-    const QJsonObject background = json["Background"].toObject();
-    ui->widget_2->setValue(background["Color"].toString());
-
-    const QJsonObject environment = json["Environment"].toObject();
-    ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
-    ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
-
-    const QJsonObject atomLabels = json["Atom labels"].toObject();
-    ui->widget_3->setValue(atomLabels["Background color"].toString());
-    ui->widget_4->setValue(atomLabels["Text color"].toString());*/
 }
 
 void CameraSettings::write(QJsonObject &json) const

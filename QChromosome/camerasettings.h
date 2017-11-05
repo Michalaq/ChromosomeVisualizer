@@ -2,7 +2,9 @@
 #define CAMERASETTINGS_H
 
 #include <QWidget>
-#include "camera.h"
+#include <QModelIndex>
+
+class Camera;
 
 namespace Ui
 {
@@ -16,11 +18,14 @@ public:
     explicit CameraSettings(QWidget *parent = 0);
     ~CameraSettings();
 
-    void setCamera(Camera *c);
+    void handleSelection(const QModelIndexList& selection);
     void setRotationType(int rt);
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+protected:
+    void resizeEvent(QResizeEvent *event);
 
 signals:
 
@@ -31,6 +36,8 @@ private:
     Ui::CameraSettings *ui;
 
     Camera *camera;
+
+    QString title, list;
 
 friend class MainWindow;
 };
