@@ -15,13 +15,6 @@ public:
     explicit Camera(QWidget *parent = 0);
     ~Camera();
 
-protected:
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
-
-    void connectNotify(const QMetaMethod &signal);
-
-public:
     /* sets new origin */
     void setOrigin(const QVector3D& o);
 
@@ -48,6 +41,9 @@ public:
         RT_Camera
     };
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -62,6 +58,12 @@ public slots:
     void setAspectRatio(qreal ar);
 
     void lockCoordinates(bool x, bool y, bool z);
+
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
+    void connectNotify(const QMetaMethod &signal);
 
 private:
     /* eye position */
@@ -115,6 +117,7 @@ private:
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
     void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
+    void rotationTypeChanged(int);
 
 friend class CameraSettings;
 };

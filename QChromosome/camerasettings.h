@@ -21,9 +21,6 @@ public:
     void handleSelection(const QModelIndexList& selection);
     void setRotationType(int rt);
 
-    void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
-
 protected:
     void resizeEvent(QResizeEvent *event);
 

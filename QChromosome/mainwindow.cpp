@@ -193,10 +193,10 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
-        ui->page_5->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
+        ui->camera->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
     });
 
-    connect(ui->page_5->ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated), [this](int i) {
+    connect(ui->camera, &Camera::rotationTypeChanged, [this](int i) {
         ui->actionCoordinates->setChecked(i == 1);
     });
 
@@ -345,7 +345,7 @@ void MainWindow::openProject()
         ui->page_4->read(viewport);
 
         const QJsonObject camera = project["Camera"].toObject();
-        ui->page_5->read(camera);
+        ui->camera->read(camera);
 
         const QJsonObject objects = project["Objects"].toObject();
         simulation->getModel()->read(simulation, objects);
@@ -415,7 +415,7 @@ void MainWindow::saveProject()
         project["Viewport"] = viewport;
 
         QJsonObject camera;
-        ui->page_5->write(camera);
+        ui->camera->write(camera);
         project["Camera"] = camera;
 
         QJsonObject objects;

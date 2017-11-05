@@ -171,6 +171,8 @@ void Camera::setFieldOfView(qreal fov)
 void Camera::setRotationType(int rt)
 {
     rotationType = rt;
+
+    emit rotationTypeChanged(rt);
 }
 
 void Camera::setNearClipping(qreal nc)
@@ -192,6 +194,61 @@ void Camera::setLookAt(const QVector3D &target)
     auto f = target - eye;
     f.setZ(-f.z());
     setEulerAgnles(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
+}
+
+#include <QJsonObject>
+
+void Camera::read(const QJsonObject &json)
+{
+    const QJsonObject coordinates = json["Coordinates"].toObject();
+    eye.setX(coordinates["X"].toDouble());
+    eye.setY(coordinates["Y"].toDouble());
+    eye.setZ(coordinates["Z"].toDouble());
+    h = coordinates["H"].toDouble();
+    p = coordinates["P"].toDouble();
+    b = coordinates["B"].toDouble();
+
+    const QJsonObject objectProperties = json["Object properties"].toObject();
+    focalLength = objectProperties["Focal length"].toDouble();
+    apertureWidth = objectProperties["Aperture width"].toDouble();
+    rotationType = objectProperties["Rotation type"].toInt();
+
+    const QJsonObject depthOfField = json["Depth of field"].toObject();
+    nearClipping = depthOfField["Near clipping"].toDouble();
+    farClipping = depthOfField["Far clipping"].toDouble();
+
+    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
+
+    x = q.rotatedVector({1,0,0});
+    y = q.rotatedVector({0,1,0});
+    z = q.rotatedVector({0,0,1});
+
+    emit modelViewChanged(updateModelView());
+
+    updateAngles();
+}
+
+void Camera::write(QJsonObject &json) const
+{
+    QJsonObject coordinates;
+    coordinates["X"] = eye.x();
+    coordinates["Y"] = eye.y();
+    coordinates["Z"] = eye.z();
+    coordinates["H"] = h;
+    coordinates["P"] = p;
+    coordinates["B"] = b;
+    json["Coordinates"] = coordinates;
+
+    QJsonObject objectProperties;
+    objectProperties["Focal length"] = focalLength;
+    objectProperties["Aperture width"] = apertureWidth;
+    objectProperties["Rotation type"] = rotationType;
+    json["Object properties"] = objectProperties;
+
+    QJsonObject depthOfField;
+    depthOfField["Near clipping"] = nearClipping;
+    depthOfField["Far clipping"] = farClipping;
+    json["Depth of field"] = depthOfField;
 }
 
 void Camera::rotate(qreal dh, qreal dp, qreal db)
