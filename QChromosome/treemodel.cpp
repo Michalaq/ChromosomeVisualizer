@@ -278,9 +278,9 @@ QString TreeModel::next_name() const
     return i ? QString("Camera.") + QString::number(i) : "Camera";
 }
 
-void TreeModel::addObject()
+void TreeModel::addCamera()
 {
-    TreeItem* root = new TreeItem({next_name(), NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
+    TreeItem* root = new CameraItem(next_name(), header);
 
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);

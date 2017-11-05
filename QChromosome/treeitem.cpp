@@ -212,3 +212,33 @@ void LayerItem::write(QJsonObject &json) const
 
     json["Object"] = object;
 }
+
+CameraItem::CameraItem(const QString &name, TreeItem *parentItem) :
+    TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    camera(new Camera())
+{
+
+}
+
+CameraItem::~CameraItem()
+{
+
+}
+
+void CameraItem::write(QJsonObject &json) const
+{
+    TreeItem::write(json);
+
+    /*QJsonObject object;
+
+    if (json.contains("Object"))
+        object = json["Object"].toObject();
+
+    QJsonArray simulationLayer;
+    layer->write(simulationLayer);
+
+    object["class"] = "Layer";
+    object["paths"] = simulationLayer;
+
+    json["Object"] = object;*/
+}
