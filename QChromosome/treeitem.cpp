@@ -227,22 +227,26 @@ CameraItem::~CameraItem()
 
 }
 
+void CameraItem::read(const QJsonObject &json)
+{
+    TreeItem::read(json);
+
+    camera->read(json["Object"].toObject());
+}
+
 void CameraItem::write(QJsonObject &json) const
 {
     TreeItem::write(json);
 
-    /*QJsonObject object;
+    QJsonObject object;
 
     if (json.contains("Object"))
         object = json["Object"].toObject();
 
-    QJsonArray simulationLayer;
-    layer->write(simulationLayer);
+    object["class"] = "Camera";
+    camera->write(object);
 
-    object["class"] = "Layer";
-    object["paths"] = simulationLayer;
-
-    json["Object"] = object;*/
+    json["Object"] = object;
 }
 
 Camera* CameraItem::getCamera() const

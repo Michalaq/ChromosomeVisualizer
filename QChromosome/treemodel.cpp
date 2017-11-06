@@ -306,6 +306,9 @@ void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &
 
             simulation->addSimulationLayerConcatenation(simulationLayer, false);
         }
+
+        if (object["class"] == "Camera")
+            addCamera();
     }
 
     header->read(json);

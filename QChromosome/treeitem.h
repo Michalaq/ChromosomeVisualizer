@@ -113,6 +113,7 @@ public:
     explicit CameraItem(const QString& name, TreeItem *parentItem = 0);
     ~CameraItem();
 
+    void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;
