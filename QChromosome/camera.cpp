@@ -4,6 +4,10 @@ const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
 const qreal Camera::wheelFactor = 2.00;
 
+bool Camera::lockX = false;
+bool Camera::lockY = false;
+bool Camera::lockZ = false;
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -18,8 +22,7 @@ Camera::Camera(QWidget *parent)
       origin(0, 0, 0),
       rotationType(RT_World),
       nearClipping(.1),
-      farClipping(1000.),
-      lockX(false), lockY(false), lockZ(false)
+      farClipping(1000.)
 {
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 

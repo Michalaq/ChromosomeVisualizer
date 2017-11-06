@@ -751,7 +751,7 @@ void MainWindow::captureMovie() const
 
 void MainWindow::updateLocks()
 {
-    ui->camera->lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
+    Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

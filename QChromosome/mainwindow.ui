@@ -334,7 +334,7 @@ Label {
           <number>1</number>
          </property>
          <item row="0" column="0">
-          <widget class="Camera1" name="camera" native="true">
+          <widget class="Camera" name="camera" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -1573,9 +1573,9 @@ QLineEdit {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Camera1</class>
+   <class>Camera</class>
    <extends>QWidget</extends>
-   <header>camera1.h</header>
+   <header>camera.h</header>
    <container>1</container>
    <slots>
     <signal>modelViewChanged(QMatrix4x4)</signal>

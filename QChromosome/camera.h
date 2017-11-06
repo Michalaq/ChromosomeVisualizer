@@ -57,7 +57,7 @@ public slots:
     /* updates aspect ratio */
     void setAspectRatio(qreal ar);
 
-    void lockCoordinates(bool x, bool y, bool z);
+    static void lockCoordinates(bool x, bool y, bool z);
 
 protected:
     void resizeEvent(QResizeEvent *event);
@@ -112,7 +112,7 @@ private:
     qreal nearClipping;
     qreal farClipping;
 
-    bool lockX, lockY, lockZ;
+    static bool lockX, lockY, lockZ;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
