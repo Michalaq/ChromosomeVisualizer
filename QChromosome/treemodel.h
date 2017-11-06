@@ -74,7 +74,7 @@ public:
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
-    void addCamera();
+    void addCamera(Camera* camera);
 
     void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
     void write(QJsonObject& json) const;

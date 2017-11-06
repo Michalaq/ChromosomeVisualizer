@@ -215,9 +215,9 @@ void LayerItem::write(QJsonObject &json) const
 
 #include "camera.h"
 
-CameraItem::CameraItem(const QString &name, TreeItem *parentItem) :
+CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    camera(new Camera())
+    camera(cam)
 {
 
 }
@@ -225,13 +225,6 @@ CameraItem::CameraItem(const QString &name, TreeItem *parentItem) :
 CameraItem::~CameraItem()
 {
 
-}
-
-void CameraItem::read(const QJsonObject &json)
-{
-    TreeItem::read(json);
-
-    camera->read(json["Object"].toObject());
 }
 
 void CameraItem::write(QJsonObject &json) const

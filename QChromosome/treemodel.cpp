@@ -278,18 +278,20 @@ QString TreeModel::next_name() const
     return i ? QString("Camera.") + QString::number(i) : "Camera";
 }
 
-void TreeModel::addCamera()
+void TreeModel::addCamera(Camera *camera)
 {
-    TreeItem* root = new CameraItem(next_name(), header);
+    TreeItem* root = new CameraItem(next_name(), camera, header);
 
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
 }
 
-#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include <QJsonArray>
 #include <QJsonObject>
+
+#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "camera.h"
 
 void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &json)
 {
@@ -308,7 +310,12 @@ void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &
         }
 
         if (object["class"] == "Camera")
-            addCamera();
+        {
+            auto camera = new Camera();
+            camera->read(object["Object"].toObject());
+
+            addCamera(camera);
+        }
     }
 
     header->read(json);

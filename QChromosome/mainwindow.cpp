@@ -239,7 +239,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        ((TreeModel*)ui->treeView->model())->addCamera();
+        ((TreeModel*)ui->treeView->model())->addCamera(new Camera(*ui->camera));
     });
 
     newProject();

@@ -110,10 +110,9 @@ class Camera;
 class CameraItem : public TreeItem
 {
 public:
-    explicit CameraItem(const QString& name, TreeItem *parentItem = 0);
+    explicit CameraItem(const QString& name, Camera* cam, TreeItem *parentItem = 0);
     ~CameraItem();
 
-    void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;

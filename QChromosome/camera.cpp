@@ -35,6 +35,31 @@ Camera::Camera(QWidget *parent)
     updateAngles();
 }
 
+Camera::Camera(const Camera& camera)
+    : Draggable(),
+      eye(camera.eye),
+      x(1, 0, 0),
+      y(0, 1, 0),
+      z(0, 0, 1),
+      h(camera.h), p(camera.p), b(camera.b),
+      focalLength(camera.focalLength),
+      apertureWidth(camera.apertureWidth),
+      origin(0, 0, 0),
+      rotationType(camera.rotationType),
+      nearClipping(camera.nearClipping),
+      farClipping(camera.farClipping)
+{
+    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
+
+    x = q.rotatedVector(x);
+    y = q.rotatedVector(y);
+    z = q.rotatedVector(z);
+
+    updateModelView();
+
+    updateAngles();
+}
+
 Camera::~Camera()
 {
 
