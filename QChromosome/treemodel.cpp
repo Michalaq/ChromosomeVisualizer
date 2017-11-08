@@ -300,9 +300,9 @@ void TreeModel::setCurrentCamera(QModelIndex index)
         setData(currentCamera, true);
 }
 
-QModelIndex TreeModel::getCurrentCamera() const
+Camera *TreeModel::getCurrentCamera() const
 {
-    return currentCamera;
+    return currentCamera.isValid() ? static_cast<CameraItem*>(currentCamera.internalPointer())->getCamera() : nullptr;
 }
 
 #include <QJsonArray>

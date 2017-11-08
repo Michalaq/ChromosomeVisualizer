@@ -43,6 +43,7 @@ public:
 
 signals:
     void visibilityChanged(VisibilityMode);
+    void cameraChanged(Camera*);
 
 public slots:
     void updateAttributes(const Material* m);
@@ -84,7 +85,8 @@ private:
         NoState,
         ResizeSection,
         ChangeVisibility,
-        DragTag
+        DragTag,
+        SetCamera
     } state;
 
     HeaderView *hv;

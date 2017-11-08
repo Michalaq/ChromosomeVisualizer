@@ -20,7 +20,7 @@ VisibilityDelegate::~VisibilityDelegate()
 }
 
 #include <QPainter>
-#include "treemodel.h"
+#include "treeitem.h"
 
 void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -40,5 +40,5 @@ void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->drawEllipse(QPointF(option.rect.center() + QPoint(0, 6)), 2.5, 2.5);
 
     if (index.sibling(index.row(), 1).data() == NodeType::CameraObject)
-        painter->drawImage(option.rect.center() + QPoint(4, -7), index.sibling(index.row(), 6) == static_cast<const TreeModel*>(index.model())->getCurrentCamera() ? focus2 : focus1);
+        painter->drawImage(option.rect.center() + QPoint(4, -7), index.sibling(index.row(), 6).data().toBool() ? focus2 : focus1);
 }
