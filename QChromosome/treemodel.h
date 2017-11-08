@@ -75,6 +75,8 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
     void addCamera(Camera* camera);
+    void setCurrentCamera(QModelIndex index);
+    QModelIndex getCurrentCamera() const;
 
     void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -82,6 +84,7 @@ public:
 private:
     TreeItem *header;
     QVector<QPersistentModelIndex> indices;
+    QPersistentModelIndex currentCamera;
 
     QString next_name() const;
 };

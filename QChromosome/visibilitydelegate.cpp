@@ -1,8 +1,17 @@
 #include "visibilitydelegate.h"
 
-VisibilityDelegate::VisibilityDelegate(QObject *parent) : QStyledItemDelegate(parent)
+VisibilityDelegate::VisibilityDelegate(QObject *parent) :
+    QStyledItemDelegate(parent),
+    focus1(QSize(16, 16), QImage::Format_ARGB32_Premultiplied),
+    focus2(QSize(16, 16), QImage::Format_ARGB32_Premultiplied)
 {
+    focus1.fill("#767676");
+    focus2.fill(Qt::white);
 
+    QImage alpha = QImage(":/dialogs/focus").alphaChannel().scaled(16, 16);
+
+    focus1.setAlphaChannel(alpha);
+    focus2.setAlphaChannel(alpha);
 }
 
 VisibilityDelegate::~VisibilityDelegate()
@@ -23,12 +32,13 @@ void VisibilityDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     Visibility v;
 
     v = Visibility(index.data().toInt());
-    painter->setPen(Qt::NoPen);
     painter->setBrush(QColor(v == Default ? "#767676" : v == On ? "#6df1af" : "#e65b5b"));
     painter->drawEllipse(QPointF(option.rect.center() - QPoint(0, 4)), 2.5, 2.5);
 
     v = Visibility(index.sibling(index.row(), index.column() + 1).data().toInt());
-    painter->setPen(Qt::NoPen);
     painter->setBrush(QColor(v == Default ? "#767676" : v == On ? "#6df1af" : "#e65b5b"));
-    painter->drawEllipse(QPointF(option.rect.center() + QPoint(0, 4)), 2.5, 2.5);
+    painter->drawEllipse(QPointF(option.rect.center() + QPoint(0, 6)), 2.5, 2.5);
+
+    if (index.sibling(index.row(), 1).data() == NodeType::CameraObject)
+        painter->drawImage(option.rect.center() + QPoint(4, -7), index.sibling(index.row(), 6) == static_cast<const TreeModel*>(index.model())->getCurrentCamera() ? focus2 : focus1);
 }

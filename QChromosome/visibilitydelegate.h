@@ -15,6 +15,9 @@ public:
 signals:
 
 public slots:
+
+private:
+    QImage focus1, focus2;
 };
 
 #endif // VISIBILITYDELEGATE_H

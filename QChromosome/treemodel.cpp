@@ -5,7 +5,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"Model", "", "", "", "", "Tags"}))
+      header(new TreeItem({"Name", "Type", "Id", "ViE", "ViR", "Tags", "Camera"}))
 {
 
 }
@@ -17,7 +17,7 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 6;
+    return 7;
 }
 
 #include <QIcon>
@@ -285,6 +285,24 @@ void TreeModel::addCamera(Camera *camera)
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
+}
+
+void TreeModel::setCurrentCamera(QModelIndex index)
+{
+    auto tmp = currentCamera;
+
+    currentCamera = index;
+
+    if (tmp.isValid())
+        setData(tmp, false);
+
+    if (currentCamera.isValid())
+        setData(currentCamera, true);
+}
+
+QModelIndex TreeModel::getCurrentCamera() const
+{
+    return currentCamera;
 }
 
 #include <QJsonArray>

@@ -48,6 +48,7 @@
         <file alias="diskette">icons/diskette_icon.svg</file>
         <file alias="material">icons/material_icon.svg</file>
         <file alias="browser">icons/browser_icon.svg</file>
+        <file alias="focus">icons/focus_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="icon">icons/QChromosome_icon.svg</file>

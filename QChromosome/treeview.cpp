@@ -255,14 +255,26 @@ void TreeView::mousePressEvent(QMouseEvent *event)
         switch (index.column())
         {
         case 3:
-            state = ChangeVisibility;
-            vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
-            cv = Visibility((getVisibility(index, vm) + 1) % 3);
+            if (event->pos().x() < visualRect(index).center().x() + 4)
+            {
+                state = ChangeVisibility;
+                vm = event->pos().y() < visualRect(index).center().y() + 3 ? Editor : Renderer;
+                cv = Visibility((getVisibility(index, vm) + 1) % 3);
 
-            setVisibility(index, cv, vm);
+                setVisibility(index, cv, vm);
 
-            if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
-                emit visibilityChanged(vm);
+                if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
+                    emit visibilityChanged(vm);
+            }
+            else
+            {
+                auto m = static_cast<TreeModel*>(model());
+
+                if (index.sibling(index.row(), 6).data().toBool())
+                    m->setCurrentCamera(QModelIndex());
+                else
+                    m->setCurrentCamera(index.sibling(index.row(), 6));
+            }
 
             update();
             break;

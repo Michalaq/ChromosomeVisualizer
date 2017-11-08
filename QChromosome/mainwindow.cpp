@@ -316,6 +316,8 @@ void MainWindow::newProject()
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
+    ui->treeView->hideColumn(6);
+    ui->treeView->setColumnWidth(3, 48);
 
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
