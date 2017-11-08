@@ -922,7 +922,7 @@ Label {
 }
 
 QTreeView::item {
-	height: 20px;
+	height: 24px;
 	border: none;
 }
 
@@ -932,18 +932,6 @@ QTreeView::branch:selected {
 
 QTreeView::branch:selected:alternate {
 	background: #1f1f1f;
-}
-
-QTreeView::branch:has-siblings:!adjoins-item {
-    border-image: url(:/arrows/vline) 0;
-}
-
-QTreeView::branch:has-siblings:adjoins-item {
-    border-image: url(:/arrows/branch-more) 0;
-}
-
-QTreeView::branch:!has-children:!has-siblings:adjoins-item {
-    border-image: url(:/arrows/branch-end) 0;
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,

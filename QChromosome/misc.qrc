@@ -14,9 +14,6 @@
         <file alias="down">misc/down_arrow.svg</file>
         <file alias="branch-closed">misc/branch_closed.svg</file>
         <file alias="branch-open">misc/branch_open.svg</file>
-        <file alias="branch-end">misc/branch_end.svg</file>
-        <file alias="branch-more">misc/branch_more.svg</file>
-        <file alias="vline">misc/vline.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
