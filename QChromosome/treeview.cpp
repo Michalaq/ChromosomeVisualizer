@@ -261,7 +261,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
 
             setVisibility(index, cv, vm);
 
-            if (selectionModel()->isSelected(index))
+            if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
                 emit visibilityChanged(vm);
 
             update();
@@ -332,7 +332,7 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
 
         setVisibility(index, cv, vm);
 
-        if (selectionModel()->isSelected(index))
+        if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
             emit visibilityChanged(vm);
 
         update();
