@@ -24,6 +24,8 @@ Camera::Camera(QWidget *parent)
       nearClipping(.1),
       farClipping(1000.)
 {
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
     QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
     x = q.rotatedVector(x);

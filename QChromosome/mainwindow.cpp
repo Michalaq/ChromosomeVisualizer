@@ -285,6 +285,9 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         tmp = Q_NULLPTR;
     }
 
+    if (watched == ui->widget_3 && event->type() == QEvent::Wheel)
+        QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
+
     return QObject::eventFilter(watched, event);
 }
 
