@@ -670,7 +670,7 @@ void MainWindow::handleSelection(const AtomSelection &selection, bool b)
 
     ui->page_2->handleSelection(selection);
 
-    ui->camera->setOrigin(selection.weightCenter());
+    Camera::setOrigin(selection.weightCenter());
 
     if (b) ui->treeView->setSelection(selection.selectedIndices());
 }

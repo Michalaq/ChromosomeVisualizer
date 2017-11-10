@@ -17,7 +17,7 @@ public:
     ~Camera();
 
     /* sets new origin */
-    void setOrigin(const QVector3D& o);
+    static void setOrigin(const QVector3D& o);
 
     QVector3D position() const;
     QVector3D EulerAngles() const;
@@ -89,7 +89,7 @@ private:
     qreal horizontalAngle;
     qreal verticalAngle;
 
-    QVector3D origin;
+    static QVector3D origin;
 
     QMatrix4x4 modelView;
     QMatrix4x4 projection;

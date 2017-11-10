@@ -8,6 +8,8 @@ bool Camera::lockX = false;
 bool Camera::lockY = false;
 bool Camera::lockZ = false;
 
+QVector3D Camera::origin = {0, 0, 0};
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -19,7 +21,6 @@ Camera::Camera(QWidget *parent)
       h(45), p(-20), b(0),
       focalLength(36),
       apertureWidth(36),
-      origin(0, 0, 0),
       rotationType(RT_World),
       nearClipping(.1),
       farClipping(1000.)
@@ -46,7 +47,6 @@ Camera::Camera(const Camera& camera)
       apertureWidth(camera.apertureWidth),
       horizontalAngle(camera.horizontalAngle),
       verticalAngle(camera.verticalAngle),
-      origin(0, 0, 0),
       modelView(camera.modelView),
       projection(camera.projection),
       aspectRatio(camera.aspectRatio),
