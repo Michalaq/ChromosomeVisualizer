@@ -44,6 +44,14 @@ public:
 
     static void lockCoordinates(bool x, bool y, bool z);
 
+    enum Action {
+        CA_Move,
+        CA_Rotate,
+        CA_Scale
+    };
+
+    static void setCurrentAction(Action ca);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -115,6 +123,8 @@ private:
     qreal farClipping;
 
     static bool lockX, lockY, lockZ;
+
+    static Action currentAction;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

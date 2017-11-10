@@ -9,6 +9,7 @@
 #include "interpolator.h"
 #include "preferences.h"
 #include "materialbrowser.h"
+#include "camera.h"
 
 namespace Ui
 {
@@ -86,7 +87,7 @@ private:
     QHash<Qt::Key, QAction*> bindings;
     QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
 
-    QHash<QObject*, const char*> mappedSlot;
+    QHash<QObject*, Camera::Action> mappedSlot;
 
     RenderSettings *renderSettings;
     Preferences *preferences;

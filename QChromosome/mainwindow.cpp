@@ -74,9 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     /* connect actions */
-    mappedSlot[ui->actionMove] = SLOT(move(int,int));
-    mappedSlot[ui->actionRotate] = SLOT(rotate(int,int));
-    mappedSlot[ui->actionScale] = SLOT(scale(int,int));
+    mappedSlot[ui->actionMove] = Camera::CA_Move;
+    mappedSlot[ui->actionRotate] = Camera::CA_Rotate;
+    mappedSlot[ui->actionScale] = Camera::CA_Scale;
 
     ui->actionMove->toggle();
 
@@ -731,14 +731,11 @@ void MainWindow::focusSelection(const AtomSelection& s)
 
 void MainWindow::setBaseAction(bool enabled)
 {
-    //TODO reimplement this
     if (enabled)
     {
         modifiers.last() = qobject_cast<QAction*>(sender());
-        connect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
+        Camera::setCurrentAction(mappedSlot[sender()]);
     }
-    else
-        disconnect(ui->camera, SIGNAL(delta(int,int)), ui->camera, mappedSlot[sender()]);
 }
 
 #include "moviemaker.h"

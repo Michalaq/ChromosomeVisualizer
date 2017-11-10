@@ -10,6 +10,8 @@ bool Camera::lockZ = false;
 
 QVector3D Camera::origin = {0, 0, 0};
 
+Camera::Action Camera::currentAction;
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -36,6 +38,19 @@ Camera::Camera(QWidget *parent)
     updateModelView();
 
     updateAngles();
+
+    connect(this, &Camera::delta, [this](int dx, int dy) {
+        switch (currentAction) {
+        case CA_Move:
+            move(dx, dy);
+            break;
+        case CA_Rotate:
+            rotate(dx, dy);
+        case CA_Scale:
+            scale(dx, dy);
+            break;
+        };
+    });
 }
 
 Camera::Camera(const Camera& camera)
@@ -54,7 +69,18 @@ Camera::Camera(const Camera& camera)
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping)
 {
-
+    connect(this, &Camera::delta, [this](int dx, int dy) {
+        switch (currentAction) {
+        case CA_Move:
+            move(dx, dy);
+            break;
+        case CA_Rotate:
+            rotate(dx, dy);
+        case CA_Scale:
+            scale(dx, dy);
+            break;
+        };
+    });
 }
 
 Camera::~Camera()
@@ -158,6 +184,11 @@ void Camera::lockCoordinates(bool x, bool y, bool z)
     lockX = x;
     lockY = y;
     lockZ = z;
+}
+
+void Camera::setCurrentAction(Action ca)
+{
+    currentAction = ca;
 }
 
 void Camera::move(qreal dx, qreal dy, qreal dz)
