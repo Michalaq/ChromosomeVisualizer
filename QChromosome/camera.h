@@ -65,6 +65,7 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
     void connectNotify(const QMetaMethod &signal);
+    void showEvent(QShowEvent *event);
 
 private:
     /* eye position */

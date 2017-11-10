@@ -40,26 +40,21 @@ Camera::Camera(QWidget *parent)
 Camera::Camera(const Camera& camera)
     : Draggable(),
       eye(camera.eye),
-      x(1, 0, 0),
-      y(0, 1, 0),
-      z(0, 0, 1),
+      x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
       focalLength(camera.focalLength),
       apertureWidth(camera.apertureWidth),
+      horizontalAngle(camera.horizontalAngle),
+      verticalAngle(camera.verticalAngle),
       origin(0, 0, 0),
+      modelView(camera.modelView),
+      projection(camera.projection),
+      aspectRatio(camera.aspectRatio),
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping)
 {
-    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
 
-    x = q.rotatedVector(x);
-    y = q.rotatedVector(y);
-    z = q.rotatedVector(z);
-
-    updateModelView();
-
-    updateAngles();
 }
 
 Camera::~Camera()
@@ -92,6 +87,14 @@ void Camera::connectNotify(const QMetaMethod &signal)
 
     if (signal == QMetaMethod::fromSignal(&Camera::projectionChanged))
         emit projectionChanged(projection);
+}
+
+void Camera::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+
+    emit modelViewChanged(modelView);
+    emit projectionChanged(projection);
 }
 
 void Camera::setOrigin(const QVector3D &o)
