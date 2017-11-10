@@ -43,10 +43,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     for (auto action : actionGroup->actions())
         connect(action, &QAction::toggled, [action, this] (bool checked) {
-            ui->camera->setStatusTip(checked ? action->property("cameraStatusTip").toString() : "");
-
-            if (!ui->statusBar->currentMessage().isEmpty())
-                ui->statusBar->showMessage(action->property("cameraStatusTip").toString());
+            if (checked)
+            {
+                auto text = action->property("cameraStatusTip").toString();
+                ui->canvas->setStatusTip(text);
+                ui->statusBar->showMessage(text);
+            }
         });
 
     bindings.insert(Qt::Key_E, ui->actionMove);
@@ -277,27 +279,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             return true;
     }
 
-    static QObject* tmp = Q_NULLPTR;
-
-    if (event->type() == QEvent::HoverEnter)
-    {
-        auto tip = watched->property("statusTip");
-
-        if (tip.isValid())
-        {
-            ui->statusBar->showMessage(tip.toString());
-            tmp = watched;
-        }
-    }
-
-    if (watched == tmp && event->type() == QEvent::HoverLeave)
-    {
-        ui->statusBar->clearMessage();
-        tmp = Q_NULLPTR;
-    }
-
     if (watched == ui->widget_3 && event->type() == QEvent::Wheel)
+    {
         QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
+        return true;
+    }
 
     return QObject::eventFilter(watched, event);
 }
