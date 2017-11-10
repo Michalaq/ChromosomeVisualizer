@@ -146,6 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_4->setBlind(ui->widget_2);
     ui->page_4->setAxis(ui->widget);
 
+    //TODO reimplement this to work with many cameras
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ip.setRecordingState(checked);
         if (checked)
@@ -195,7 +196,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
-        ui->camera->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
+        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
     });
 
     connect(ui->camera, &Camera::rotationTypeChanged, [this](int i) {
@@ -243,16 +244,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionCamera, &QAction::triggered, [this] {
         auto camera = new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()));
 
+        camera->blockSignals(true);
+
         connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
         connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
         connect(camera, &Camera::modelViewChanged, ui->widget, &Axis::setModelView);
+        connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
+        connect(camera, &Camera::rotationTypeChanged, [this](int i) {
+            ui->actionCoordinates->setChecked(i == 1);
+        });
 
         ui->stackedWidget_2->addWidget(camera);
+
         ((TreeModel*)ui->treeView->model())->addCamera(camera);
     });
 
     connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
-        ui->stackedWidget_2->setCurrentWidget(camera ? camera : ui->camera);
+        if (!camera) camera = ui->camera;
+        ui->stackedWidget_2->currentWidget()->blockSignals(true);
+        camera->blockSignals(false);
+        ui->stackedWidget_2->setCurrentWidget(camera);
     });
 
     newProject();
@@ -715,13 +726,12 @@ void MainWindow::handleModelSelection()
 
 void MainWindow::focusSelection(const AtomSelection& s)
 {
-    auto c = s.weightCenter();
-    ui->camera->setPosition(c + QVector3D(-50, 50, -50));
-    ui->camera->setLookAt(c);
+    qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setLookAt(s.weightCenter());
 }
 
 void MainWindow::setBaseAction(bool enabled)
 {
+    //TODO reimplement this
     if (enabled)
     {
         modifiers.last() = qobject_cast<QAction*>(sender());
@@ -736,7 +746,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(currentFrame, ui->scene, ui->camera, suffix);
+    MovieMaker::captureScene1(currentFrame, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
@@ -745,7 +755,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, ui->camera, ip, suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), ip, suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});

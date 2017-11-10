@@ -42,6 +42,8 @@ public:
         RT_Camera
     };
 
+    static void lockCoordinates(bool x, bool y, bool z);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -57,8 +59,6 @@ public slots:
 
     /* updates aspect ratio */
     void setAspectRatio(qreal ar);
-
-    static void lockCoordinates(bool x, bool y, bool z);
 
 protected:
     void resizeEvent(QResizeEvent *event);

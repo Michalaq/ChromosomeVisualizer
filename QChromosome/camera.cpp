@@ -95,6 +95,7 @@ void Camera::showEvent(QShowEvent *event)
 
     emit modelViewChanged(modelView);
     emit projectionChanged(projection);
+    emit rotationTypeChanged(rotationType);
 }
 
 void Camera::setOrigin(const QVector3D &o)
