@@ -32,7 +32,7 @@ public slots:
 private:
     Ui::CameraSettings *ui;
 
-    Camera *camera;
+    QList<Camera*> cameras;
 
     QString title, list;
 

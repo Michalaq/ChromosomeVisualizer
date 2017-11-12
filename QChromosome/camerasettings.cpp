@@ -4,71 +4,88 @@
 
 CameraSettings::CameraSettings(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::CameraSettings),
-    camera(nullptr)
+    ui(new Ui::CameraSettings)
 {
     ui->setupUi(this);
 
     // coordinates
     connect(ui->doubleSpinBox_7, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        auto pos = camera->eye;
-        pos.setX(val);
-        camera->setPosition(pos);
+        for (auto camera : cameras)
+        {
+            auto pos = camera->eye;
+            pos.setX(val);
+            camera->setPosition(pos);
+        }
     });
 
     connect(ui->doubleSpinBox_8, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        auto pos = camera->eye;
-        pos.setY(val);
-        camera->setPosition(pos);
+        for (auto camera : cameras)
+        {
+            auto pos = camera->eye;
+            pos.setY(val);
+            camera->setPosition(pos);
+        }
     });
 
     connect(ui->doubleSpinBox_9, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        auto pos = camera->eye;
-        pos.setZ(val);
-        camera->setPosition(pos);
+        for (auto camera : cameras)
+        {
+            auto pos = camera->eye;
+            pos.setZ(val);
+            camera->setPosition(pos);
+        }
     });
 
     // angles
     connect(ui->doubleSpinBox_10, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setEulerAgnles(val, camera->p, camera->b);
+        for (auto camera : cameras)
+            camera->setEulerAgnles(val, camera->p, camera->b);
     });
 
     connect(ui->doubleSpinBox_11, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setEulerAgnles(camera->h, val, camera->b);
+        for (auto camera : cameras)
+            camera->setEulerAgnles(camera->h, val, camera->b);
     });
 
     connect(ui->doubleSpinBox_12, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setEulerAgnles(camera->h, camera->p, val);
+        for (auto camera : cameras)
+            camera->setEulerAgnles(camera->h, camera->p, val);
     });
 
     // focal length
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setFocalLength(val);
+        for (auto camera : cameras)
+            camera->setFocalLength(val);
     });
 
     // aperture width
     connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setApertureWidth(val);
+        for (auto camera : cameras)
+            camera->setApertureWidth(val);
     });
 
     // field of view
     connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setFieldOfView(val);
+        for (auto camera : cameras)
+            camera->setFieldOfView(val);
     });
 
     // rotation type
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
-        camera->setRotationType(index);
+        for (auto camera : cameras)
+            camera->setRotationType(index);
     });
 
     // near clipping
     connect(ui->doubleSpinBox_5,static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setNearClipping(val);
+        for (auto camera : cameras)
+            camera->setNearClipping(val);
     });
 
     // far clipping
     connect(ui->doubleSpinBox_6, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        camera->setFarClipping(val);
+        for (auto camera : cameras)
+            camera->setFarClipping(val);
     });
 }
 
@@ -104,7 +121,13 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     // cameras
-    camera = static_cast<CameraItem*>(selection.first().internalPointer())->getCamera();
+    cameras.clear();
+
+    for (auto camera : selection)
+        cameras.append(static_cast<CameraItem*>(camera.internalPointer())->getCamera());
+
+    //TODO
+    auto camera = cameras.first();
 
     // coordinates
     ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
@@ -161,7 +184,7 @@ void CameraSettings::resizeEvent(QResizeEvent *event)
 }
 
 void CameraSettings::updateModelView()
-{
+{/*
     // coordinates
     ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
     ui->doubleSpinBox_8->setValue(camera->eye.y(), false);
@@ -170,5 +193,5 @@ void CameraSettings::updateModelView()
     // angles
     ui->doubleSpinBox_10->setValue(camera->h, false);
     ui->doubleSpinBox_11->setValue(camera->p, false);
-    ui->doubleSpinBox_12->setValue(camera->b, false);
+    ui->doubleSpinBox_12->setValue(camera->b, false);*/
 }
