@@ -330,7 +330,7 @@ void TreeModel::read(std::shared_ptr<Simulation> simulation, const QJsonObject &
         if (object["class"] == "Camera")
         {
             auto camera = new Camera();
-            camera->read(object["Object"].toObject());
+            camera->read(object);
 
             addCamera(camera);
         }
