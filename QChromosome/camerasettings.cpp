@@ -126,37 +126,129 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
     for (auto camera : selection)
         cameras.append(static_cast<CameraItem*>(camera.internalPointer())->getCamera());
 
-    //TODO
     auto camera = cameras.first();
 
     // coordinates
-    ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
-    ui->doubleSpinBox_8->setValue(camera->eye.y(), false);
-    ui->doubleSpinBox_9->setValue(camera->eye.z(), false);
+    double x = camera->position().x();
+
+    for (auto c : cameras)
+        if (c->position().x() != x)
+        {
+            x = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_7->setValue(x, false);
+
+    double y = camera->position().y();
+
+    for (auto c : cameras)
+        if (c->position().y() != y)
+        {
+            y = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_8->setValue(y, false);
+
+    double z = camera->position().z();
+
+    for (auto c : cameras)
+        if (c->position().z() != z)
+        {
+            z = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_9->setValue(z, false);
 
     // angles
-    ui->doubleSpinBox_10->setValue(camera->h, false);
-    ui->doubleSpinBox_11->setValue(camera->p, false);
-    ui->doubleSpinBox_12->setValue(camera->b, false);
+    double h = camera->h;
+
+    for (auto c : cameras)
+        if (c->h != h)
+        {
+            h = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_10->setValue(h, false);
+
+    double p = camera->p;
+
+    for (auto c : cameras)
+        if (c->p != p)
+        {
+            p = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_11->setValue(p, false);
+
+    double b = camera->b;
+
+    for (auto c : cameras)
+        if (c->b != b)
+        {
+            b = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_12->setValue(b, false);
 
     // focal length
-    ui->doubleSpinBox->setValue(camera->focalLength, false);
+    double focalLength = camera->focalLength;
+
+    for (auto c : cameras)
+        if (c->focalLength != focalLength)
+        {
+            focalLength = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox->setValue(focalLength, false);
 
     // aperture width
-    ui->doubleSpinBox_2->setValue(camera->apertureWidth, false);
+    double apertureWidth = camera->apertureWidth;
+
+    for (auto c : cameras)
+        if (c->apertureWidth != apertureWidth)
+        {
+            apertureWidth = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_2->setValue(apertureWidth, false);
 
     // field of view
     ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
 
-    // rotation type
-    ui->comboBox->setCurrentIndex(camera->rotationType, false);
+    // TODO rotation type
+    int rotationType = camera->rotationType;
+
+    for (auto c : cameras)
+        if (c->rotationType != rotationType)
+        {
+            rotationType = std::numeric_limits<int>::lowest();
+            break;
+        }
+    ui->comboBox->setCurrentIndex(rotationType, false);
 
     // near clipping
-    ui->doubleSpinBox_5->setValue(camera->nearClipping, false);
+    double nearClipping = camera->nearClipping;
+
+    for (auto c : cameras)
+        if (c->nearClipping != nearClipping)
+        {
+            nearClipping = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_5->setValue(nearClipping, false);
 
     // far clipping
-    ui->doubleSpinBox_6->setValue(camera->farClipping, false);
+    double farClipping = camera->farClipping;
 
+    for (auto c : cameras)
+        if (c->farClipping != farClipping)
+        {
+            farClipping = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_6->setValue(farClipping, false);
+
+    //TODO
     /*connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
 
     connect(camera, &Camera::projectionChanged, [this] {
