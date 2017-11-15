@@ -13,11 +13,15 @@ public:
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *);
 
 signals:
 
 public slots:
     void setCurrentIndex(int index, bool spontaneous = true);
+
+private:
+    bool multiple;
 };
 
 #endif // COMBOBOX_H
