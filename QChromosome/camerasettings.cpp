@@ -99,8 +99,11 @@ CameraSettings::~CameraSettings()
 
 void CameraSettings::handleSelection(const QModelIndexList& selection)
 {
-    /*if (camera)
-        disconnect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);*/
+    for (auto c : cameras)
+    {
+        disconnect(c, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+        disconnect(c, &Camera::projectionChanged, this, &CameraSettings::updateProjection);
+    }
 
     if (!selection.count())
         return hide();
@@ -126,6 +129,65 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
     for (auto camera : selection)
         cameras.append(static_cast<CameraItem*>(camera.internalPointer())->getCamera());
 
+    updateModelView();
+    updateProjection();
+
+    auto camera = cameras.first();
+
+    // rotation type
+    int rotationType = camera->rotationType;
+
+    for (auto c : cameras)
+        if (c->rotationType != rotationType)
+        {
+            rotationType = std::numeric_limits<int>::lowest();
+            break;
+        }
+    ui->comboBox->setCurrentIndex(rotationType, false);
+
+    // near clipping
+    double nearClipping = camera->nearClipping;
+
+    for (auto c : cameras)
+        if (c->nearClipping != nearClipping)
+        {
+            nearClipping = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_5->setValue(nearClipping, false);
+
+    // far clipping
+    double farClipping = camera->farClipping;
+
+    for (auto c : cameras)
+        if (c->farClipping != farClipping)
+        {
+            farClipping = std::numeric_limits<double>::lowest();
+            break;
+        }
+    ui->doubleSpinBox_6->setValue(farClipping, false);
+
+    for (auto c : cameras)
+    {
+        connect(c, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
+        connect(c, &Camera::projectionChanged, this, &CameraSettings::updateProjection);
+    }
+}
+
+void CameraSettings::setRotationType(int rt)
+{
+    ui->comboBox->setCurrentIndex(rt);
+}
+
+void CameraSettings::resizeEvent(QResizeEvent *event)
+{
+    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+
+    QWidget::resizeEvent(event);
+}
+
+void CameraSettings::updateModelView()
+{
     auto camera = cameras.first();
 
     // coordinates
@@ -189,6 +251,11 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
             break;
         }
     ui->doubleSpinBox_12->setValue(b, false);
+}
+
+void CameraSettings::updateProjection()
+{
+    auto camera = cameras.first();
 
     // focal length
     double focalLength = camera->focalLength;
@@ -214,76 +281,4 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
 
     // field of view
     ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
-
-    // TODO rotation type
-    int rotationType = camera->rotationType;
-
-    for (auto c : cameras)
-        if (c->rotationType != rotationType)
-        {
-            rotationType = std::numeric_limits<int>::lowest();
-            break;
-        }
-    ui->comboBox->setCurrentIndex(rotationType, false);
-
-    // near clipping
-    double nearClipping = camera->nearClipping;
-
-    for (auto c : cameras)
-        if (c->nearClipping != nearClipping)
-        {
-            nearClipping = std::numeric_limits<double>::lowest();
-            break;
-        }
-    ui->doubleSpinBox_5->setValue(nearClipping, false);
-
-    // far clipping
-    double farClipping = camera->farClipping;
-
-    for (auto c : cameras)
-        if (c->farClipping != farClipping)
-        {
-            farClipping = std::numeric_limits<double>::lowest();
-            break;
-        }
-    ui->doubleSpinBox_6->setValue(farClipping, false);
-
-    //TODO
-    /*connect(camera, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
-
-    connect(camera, &Camera::projectionChanged, [this] {
-        // focal length
-        ui->doubleSpinBox->setValue(camera->focalLength, false);
-
-        // aperture width
-        ui->doubleSpinBox_2->setValue(camera->apertureWidth, false);
-
-        // field of view
-        ui->doubleSpinBox_3->setValue((qreal)2.f * qRadiansToDegrees(qAtan(camera->apertureWidth / 2 / camera->focalLength)), false);
-    });*/
-}
-
-void CameraSettings::setRotationType(int rt)
-{
-    ui->comboBox->setCurrentIndex(rt);
-}
-
-void CameraSettings::resizeEvent(QResizeEvent *event)
-{
-    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
-
-    QWidget::resizeEvent(event);
-}
-
-void CameraSettings::updateModelView()
-{/*
-    // coordinates
-    ui->doubleSpinBox_7->setValue(camera->eye.x(), false);
-    ui->doubleSpinBox_8->setValue(camera->eye.y(), false);
-    ui->doubleSpinBox_9->setValue(camera->eye.z(), false);
-
-    // angles
-    ui->doubleSpinBox_10->setValue(camera->h, false);
-    ui->doubleSpinBox_11->setValue(camera->p, false);
-    ui->doubleSpinBox_12->setValue(camera->b, false);*/
 }

@@ -28,6 +28,7 @@ signals:
 
 public slots:
     void updateModelView();
+    void updateProjection();
 
 private:
     Ui::CameraSettings *ui;
