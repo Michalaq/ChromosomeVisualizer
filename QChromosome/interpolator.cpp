@@ -1,26 +1,64 @@
 #include "interpolator.h"
 
 int SplineInterpolator::currentFrame = -1;
+QSet<SplineInterpolator*> SplineInterpolator::interpolators;
 
 SplineInterpolator::SplineInterpolator() :
     needsUpdate(false)
 {
-
+    interpolators.insert(this);
 }
 
 void SplineInterpolator::setFrame(int frame)
 {
     currentFrame = frame;
+
+    for (auto i : interpolators)
+        i->update();
 }
 
 void SplineInterpolator::captureFrame()
 {
-    ;
+    QVector<double> val;
+    val.reserve(getters.size());
+
+    for (auto g : getters)
+        val.push_back(g());
+
+    keys.insert(currentFrame, val);
+
+    needsUpdate = true;
 }
 
 void SplineInterpolator::track(std::function<double ()> getter, std::function<void (double)> setter)
 {
-    ;
+    getters.push_back(getter);
+    setters.push_back(setter);
+    splines.push_back(tk::spline());
+}
+
+void SplineInterpolator::update()
+{
+    if (needsUpdate)
+    {
+        auto k = keys.keys().toVector().toStdVector();
+        auto v = new std::vector<double>[getters.size()];
+
+        for (int i = 0; i < splines.size(); i++)
+            v[i].reserve(keys.size());
+
+        for (auto& r : keys)
+            for (int i = 0; i < getters.size(); i++)
+                v[i].push_back(r[i]);
+
+        for (int i = 0; i < splines.size(); i++)
+            splines[i].set_points(k, v[i]);
+
+        needsUpdate = false;
+    }
+
+    for (int i = 0; i < setters.size(); i++)
+        setters[i](splines[i](currentFrame));
 }
 
 

@@ -13,8 +13,10 @@ public:
 
     static void setFrame(int frame);
 
+    /* captures current frame */
     void captureFrame();
 
+    /* tracks new value */
     void track(std::function<double ()> getter, std::function<void (double)> setter);
 
 private:
@@ -25,7 +27,11 @@ private:
     QVector<std::function<void (double)>> setters;
     QVector<tk::spline> splines;
 
-    QMap<int, QVector<double>> values;
+    void update();
+
+    QMap<double, QVector<double>> keys;
+
+    static QSet<SplineInterpolator*> interpolators;
 };
 
 #include <QMap>
