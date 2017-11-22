@@ -1,12 +1,39 @@
 #include "interpolator.h"
 
+QMap<QString, double>::const_iterator SplineKeyframe::constFind(const QString& key) const
+{
+    return values.constFind(key);
+}
+
+QMap<QString, double>::const_iterator SplineKeyframe::constEnd() const
+{
+    return values.constEnd();
+}
+
+QMap<QString, double>::iterator SplineKeyframe::insert(const QString& key, double value)
+{
+    return values.insert(key, value);
+}
+
+double SplineKeyframe::value(const QString& key, double defaultValue) const
+{
+    return values.value(key, defaultValue);
+}
+
 int SplineInterpolator::currentFrame = -1;
+
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
 
-SplineInterpolator::SplineInterpolator() :
+SplineInterpolator::SplineInterpolator(const QStringList &p) :
+    header(p),
     needsUpdate(false)
 {
     interpolators.insert(this);
+}
+
+SplineInterpolator::~SplineInterpolator()
+{
+
 }
 
 void SplineInterpolator::setFrame(int frame)
@@ -14,51 +41,54 @@ void SplineInterpolator::setFrame(int frame)
     currentFrame = frame;
 
     for (auto i : interpolators)
-        i->update();
+        i->updateFrame();
 }
 
 void SplineInterpolator::captureFrame()
 {
-    QVector<double> val;
-    val.reserve(getters.size());
-
-    for (auto g : getters)
-        val.push_back(g());
-
-    keys.insert(currentFrame, val);
-
+    keys.insert(currentFrame, saveFrame());
     needsUpdate = true;
 }
 
-void SplineInterpolator::track(std::function<double ()> getter, std::function<void (double)> setter)
-{
-    getters.push_back(getter);
-    setters.push_back(setter);
-    splines.push_back(tk::spline());
-}
-
-void SplineInterpolator::update()
+void SplineInterpolator::updateFrame()
 {
     if (needsUpdate)
     {
-        auto k = keys.keys().toVector().toStdVector();
-        auto v = new std::vector<double>[getters.size()];
+        splines.clear();
 
-        for (int i = 0; i < splines.size(); i++)
-            v[i].reserve(keys.size());
+        for (auto& s : header)
+        {
+            std::vector<double> k;
+            std::vector<double> v;
 
-        for (auto& r : keys)
-            for (int i = 0; i < getters.size(); i++)
-                v[i].push_back(r[i]);
+            for (auto i = keys.begin(); i != keys.end(); i++)
+            {
+                auto j = i.value().constFind(s);
 
-        for (int i = 0; i < splines.size(); i++)
-            splines[i].set_points(k, v[i]);
+                if (j != i.value().constEnd())
+                {
+                    k.push_back(i.key());
+                    v.push_back(j.value());
+                }
+            }
+
+            if (k.size() > 1)
+            {
+                auto& spline = splines[s];
+                spline.set_boundary(tk::spline::first_deriv, 0, tk::spline::first_deriv, 0, true);
+                spline.set_points(k, v);
+            }
+        }
 
         needsUpdate = false;
     }
 
-    for (int i = 0; i < setters.size(); i++)
-        setters[i](splines[i](currentFrame));
+    SplineKeyframe f;
+
+    for (auto i = splines.begin(); i != splines.end(); i++)
+        f.insert(i.key(), i.value()(currentFrame));
+
+    loadFrame(f);
 }
 
 

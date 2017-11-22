@@ -16,6 +16,7 @@ Camera::Action Camera::currentAction;
 
 Camera::Camera(QWidget *parent)
     : Draggable(parent),
+      SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
       eye(60, 30, 60),
       x(1, 0, 0),
       y(0, 1, 0),
@@ -55,6 +56,7 @@ Camera::Camera(QWidget *parent)
 
 Camera::Camera(const Camera& camera)
     : Draggable(),
+      SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
       eye(camera.eye),
       x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
@@ -86,6 +88,34 @@ Camera::Camera(const Camera& camera)
 Camera::~Camera()
 {
 
+}
+
+SplineKeyframe Camera::saveFrame() const
+{
+    SplineKeyframe f;
+
+    f.insert("X", eye.x());
+    f.insert("Y", eye.y());
+    f.insert("Z", eye.z());
+    f.insert("H", h);
+    f.insert("P", p);
+    f.insert("B", b);
+
+    return f;
+}
+
+void Camera::loadFrame(const SplineKeyframe &frame)
+{
+    QVector3D _eye;
+    _eye.setX(frame.value("X", eye.x()));
+    _eye.setY(frame.value("Y", eye.y()));
+    _eye.setZ(frame.value("Z", eye.z()));
+    setPosition(_eye);
+
+    double _h = frame.value("H", h);
+    double _p = frame.value("P", p);
+    double _b = frame.value("B", b);
+    setEulerAgnles(_h, _p, _b);
 }
 
 void Camera::resizeEvent(QResizeEvent *event)

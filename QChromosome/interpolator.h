@@ -1,35 +1,48 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 
-#include <functional>
 #include "spline.h"
-#include <QVector>
 #include <QMap>
+
+class SplineKeyframe
+{
+public:
+    QMap<QString, double>::const_iterator constFind(const QString& key) const;
+    QMap<QString, double>::const_iterator constEnd() const;
+    QMap<QString, double>::iterator insert(const QString& key, double value);
+    double value(const QString& key, double defaultValue = double()) const;
+
+private:
+    QMap<QString, double> values;
+};
 
 class SplineInterpolator
 {
 public:
-    SplineInterpolator();
+    SplineInterpolator(const QStringList& p);
+    virtual ~SplineInterpolator();
 
+    /* sets current frame for all interpolated objects */
     static void setFrame(int frame);
 
-    /* captures current frame */
+    /* captures current state */
     void captureFrame();
 
-    /* tracks new value */
-    void track(std::function<double ()> getter, std::function<void (double)> setter);
+    /* creates frame from current state */
+    virtual SplineKeyframe saveFrame() const = 0;
+
+    /* restores current state from frame */
+    virtual void loadFrame(const SplineKeyframe& frame) = 0;
 
 private:
     static int currentFrame;
     bool needsUpdate;
 
-    QVector<std::function<double ()>> getters;
-    QVector<std::function<void (double)>> setters;
-    QVector<tk::spline> splines;
+    const QStringList header;
+    QMap<QString, tk::spline> splines;
+    QMap<int, SplineKeyframe> keys;
 
-    void update();
-
-    QMap<double, QVector<double>> keys;
+    void updateFrame();
 
     static QSet<SplineInterpolator*> interpolators;
 };

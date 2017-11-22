@@ -164,8 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {
-        ip.recordKeyframe();
-        ui->horizontalSlider->update();
+        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
     });
 
     ip.setKey(ui->spinBox);
@@ -500,7 +499,7 @@ void MainWindow::setFrame(int n)
     ui->spinBox->setValue(n);
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
-    ip.setFrame(n);
+    SplineInterpolator::setFrame(n);
     ui->page->ui->spinBox_5->setValue(n, false);
 }
 

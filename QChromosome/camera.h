@@ -2,13 +2,14 @@
 #define CAMERA_H
 
 #include "draggable.h"
+#include "interpolator.h"
 
 #include <QVector3D>
 #include <QMatrix4x4>
 #include <QStack>
 #include <QMetaMethod>
 
-class Camera : public Draggable
+class Camera : public Draggable, public SplineInterpolator
 {
     Q_OBJECT
 public:
@@ -54,6 +55,9 @@ public:
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    SplineKeyframe saveFrame() const;
+    void loadFrame(const SplineKeyframe &frame);
 
 public slots:
     /* handles mouse move event */
