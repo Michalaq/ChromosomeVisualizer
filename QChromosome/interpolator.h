@@ -1,6 +1,33 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 
+#include <functional>
+#include "spline.h"
+#include <QVector>
+#include <QMap>
+
+class SplineInterpolator
+{
+public:
+    SplineInterpolator();
+
+    static void setFrame(int frame);
+
+    void captureFrame();
+
+    void track(std::function<double ()> getter, std::function<void (double)> setter);
+
+private:
+    static int currentFrame;
+    bool needsUpdate;
+
+    QVector<std::function<double ()>> getters;
+    QVector<std::function<void (double)>> setters;
+    QVector<tk::spline> splines;
+
+    QMap<int, QVector<double>> values;
+};
+
 #include <QMap>
 #include <QSet>
 #include <QPair>

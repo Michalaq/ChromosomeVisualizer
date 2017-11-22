@@ -1,5 +1,38 @@
 #include "interpolator.h"
 
+int SplineInterpolator::currentFrame = -1;
+
+SplineInterpolator::SplineInterpolator() :
+    needsUpdate(false)
+{
+
+}
+
+void SplineInterpolator::setFrame(int frame)
+{
+    currentFrame = frame;
+}
+
+void SplineInterpolator::captureFrame()
+{
+    ;
+}
+
+void SplineInterpolator::track(std::function<double ()> getter, std::function<void (double)> setter)
+{
+    ;
+}
+
+
+
+
+
+
+
+
+
+
+
 Interpolator::Interpolator(QObject *parent) : QObject(parent), ignore(0)
 {
     selectedFrame = values.end();
