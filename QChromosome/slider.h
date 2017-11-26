@@ -17,6 +17,8 @@ public:
 
     void setInterpolator(Interpolator *_ip);
 
+    void setSplineInterpolator(SplineInterpolator *si);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -28,6 +30,7 @@ protected:
 public slots:
 
 private:
+    SplineInterpolator *interpolator;
     Interpolator *ip;
     bool movemarker;
     QImage pin;

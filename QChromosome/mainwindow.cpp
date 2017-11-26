@@ -13,14 +13,16 @@
 
 static const char * ext = ".qcs";
 
+Interpolator ip;
+int ignore;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
     renderSettings(RenderSettings::getInstance()),
     preferences(new Preferences),
-    materialBrowser(MaterialBrowser::getInstance()),
-    ignore(0)
+    materialBrowser(MaterialBrowser::getInstance())
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -165,6 +167,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->key, &MediaControl::clicked, [this] {
         qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
+        ui->horizontalSlider->update();
     });
 
     ip.setKey(ui->spinBox);
@@ -263,6 +266,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget_2->currentWidget()->blockSignals(true);
         camera->blockSignals(false);
         ui->stackedWidget_2->setCurrentWidget(camera);
+        ui->horizontalSlider->setSplineInterpolator(camera);
     });
 
     newProject();

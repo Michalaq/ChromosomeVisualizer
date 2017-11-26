@@ -28,6 +28,9 @@ public:
     /* captures current state */
     void captureFrame();
 
+    /* returns a list containing all the keys */
+    QList<int> keys() const;
+
     /* creates frame from current state */
     virtual SplineKeyframe saveFrame() const = 0;
 
@@ -40,7 +43,7 @@ private:
 
     const QStringList header;
     QMap<QString, tk::spline> splines;
-    QMap<int, SplineKeyframe> keys;
+    QMap<int, SplineKeyframe> keyframes;
 
     void updateFrame();
 

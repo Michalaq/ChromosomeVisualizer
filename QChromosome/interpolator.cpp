@@ -20,7 +20,7 @@ double SplineKeyframe::value(const QString& key, double defaultValue) const
     return values.value(key, defaultValue);
 }
 
-int SplineInterpolator::currentFrame = -1;
+int SplineInterpolator::currentFrame = 0;
 
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
 
@@ -46,8 +46,13 @@ void SplineInterpolator::setFrame(int frame)
 
 void SplineInterpolator::captureFrame()
 {
-    keys.insert(currentFrame, saveFrame());
+    keyframes.insert(currentFrame, saveFrame());
     needsUpdate = true;
+}
+
+QList<int> SplineInterpolator::keys() const
+{
+    return keyframes.keys();
 }
 
 void SplineInterpolator::updateFrame()
@@ -61,7 +66,7 @@ void SplineInterpolator::updateFrame()
             std::vector<double> k;
             std::vector<double> v;
 
-            for (auto i = keys.begin(); i != keys.end(); i++)
+            for (auto i = keyframes.begin(); i != keyframes.end(); i++)
             {
                 auto j = i.value().constFind(s);
 

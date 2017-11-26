@@ -6,7 +6,6 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
-#include "interpolator.h"
 #include "preferences.h"
 #include "materialbrowser.h"
 #include "camera.h"
@@ -95,9 +94,6 @@ private:
 
     int softMinimum;
     int softMaximum;
-
-    Interpolator ip;
-    int ignore;
 
     QString currentFile;
 };

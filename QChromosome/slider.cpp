@@ -3,6 +3,7 @@
 
 Slider::Slider(QWidget *parent) :
     SoftSlider(parent),
+    interpolator(nullptr),
     ip(nullptr),
     pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
 {
@@ -25,6 +26,11 @@ Slider::~Slider()
 QSize Slider::minimumSizeHint() const
 {
     return QSize(20, 30);
+}
+
+void Slider::setSplineInterpolator(SplineInterpolator *si)
+{
+    interpolator = si;
 }
 
 void Slider::setInterpolator(Interpolator *_ip)
@@ -90,34 +96,37 @@ void Slider::paintEvent(QPaintEvent *event)
 
     p.drawLine(QPoint(0, 4), QPoint(width(), 4));
 
-    const auto keys = ip->keys();
+    if (interpolator)
+    {
+        const auto keys = interpolator->keys();
 
-    auto it = keys.constBegin();
+        auto it = keys.constBegin();
 
-    while (it != keys.constEnd() && *it < softMinimum) it++;
+        while (it != keys.constEnd() && *it < softMinimum) it++;
 
-    p.setPen("#377c9f");
-    p.setBrush(QBrush("#33576b"));
+        p.setPen("#377c9f");
+        p.setBrush(QBrush("#33576b"));
 
-    qreal dx = (width() - 20) / (softMaximum - softMinimum);
+        qreal dx = (width() - 20) / (softMaximum - softMinimum);
 
-    const auto frame = ip->selectedKeyframe();
+        const auto frame = ip->selectedKeyframe();
 
-    for ( ; it != keys.constEnd() && *it <= softMaximum; it++)
-        if (*it != frame)
+        for ( ; it != keys.constEnd() && *it <= softMaximum; it++)
+            if (*it != frame)
+            {
+                auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, *it, width() - 20) + 10;
+
+                p.drawRect(QRect(tick - dx/2, 4, dx, 8));
+            }
+
+        if (softMinimum <= frame && frame <= softMaximum)
         {
-            auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, *it, width() - 20) + 10;
+            p.setBrush(QBrush("#377c9f"));
+
+            auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, frame, width() - 20) + 10;
 
             p.drawRect(QRect(tick - dx/2, 4, dx, 8));
         }
-
-    if (softMinimum <= frame && frame <= softMaximum)
-    {
-        p.setBrush(QBrush("#377c9f"));
-
-        auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, frame, width() - 20) + 10;
-
-        p.drawRect(QRect(tick - dx/2, 4, dx, 8));
     }
 
     p.setPen(Qt::white);
