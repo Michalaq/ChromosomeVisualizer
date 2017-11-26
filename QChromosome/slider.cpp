@@ -98,21 +98,17 @@ void Slider::paintEvent(QPaintEvent *event)
 
     if (interpolator)
     {
-        const auto keys = interpolator->keys();
-
-        auto it = keys.constBegin();
-
-        while (it != keys.constEnd() && *it < softMinimum) it++;
-
         p.setPen("#377c9f");
 
         qreal dx = (width() - 20) / (softMaximum - softMinimum);
 
-        const auto& frame = interpolator->selectedKeys();
+        auto it = interpolator->keyBegin();
 
-        for ( ; it != keys.constEnd() && *it <= softMaximum; it++)
+        while (it != interpolator->keyEnd() && *it < softMinimum) it++;
+
+        for ( ; it != interpolator->keyEnd() && *it <= softMaximum; it++)
         {
-            p.setBrush(QBrush(frame.contains(*it) ? "#377c9f" : "#33576b"));
+            p.setBrush(QBrush(interpolator->isSelected(*it) ? "#377c9f" : "#33576b"));
             auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, *it, width() - 20) + 10;
             p.drawRect(QRect(tick - dx/2, 4, dx, 8));
         }
@@ -147,7 +143,7 @@ void Slider::paintEvent(QPaintEvent *event)
         auto tick = style()->sliderPositionFromValue(softMinimum, softMaximum, value(), width() - 20) + 10;
 
         p.setPen("#0072bd");
-        p.fillRect(QRect(tick -  8, -12, p.fontMetrics().width(QString::number(value())) + 18, 12), "#262626");
+        p.fillRect(QRect(tick -  7, -12, p.fontMetrics().width(QString::number(value())) + 17, 16), "#262626");
         p.drawText(QRect(tick + 10, -12, 0, 16), Qt::AlignVCenter | Qt::TextDontClip, QString::number(value()));
 
         p.drawImage(tick - 15, -15, pin);

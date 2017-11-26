@@ -50,14 +50,19 @@ void SplineInterpolator::captureFrame()
     needsUpdate = true;
 }
 
-QList<int> SplineInterpolator::keys() const
+QMap<int, SplineKeyframe>::key_iterator SplineInterpolator::keyBegin() const
 {
-    return keyframes.keys();
+    return keyframes.keyBegin();
 }
 
-const QSet<int>& SplineInterpolator::selectedKeys() const
+QMap<int, SplineKeyframe>::key_iterator SplineInterpolator::keyEnd() const
 {
-    return selection;
+    return keyframes.keyEnd();
+}
+
+bool SplineInterpolator::isSelected(int key) const
+{
+    return selection.contains(key);
 }
 
 void SplineInterpolator::updateFrame()

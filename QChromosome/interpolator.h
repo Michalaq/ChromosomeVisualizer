@@ -29,11 +29,12 @@ public:
     /* captures current state */
     void captureFrame();
 
-    /* returns a list containing all the keys */
-    QList<int> keys() const;
+    /* returns a const iterator pointing to the key */
+    QMap<int, SplineKeyframe>::key_iterator keyBegin() const;
+    QMap<int, SplineKeyframe>::key_iterator keyEnd() const;
 
-    /* returns a list containing all selected keys */
-    const QSet<int>& selectedKeys() const;
+    /* returns true if key is selected */
+    bool isSelected(int key) const;
 
     /* creates frame from current state */
     virtual SplineKeyframe saveFrame() const = 0;
