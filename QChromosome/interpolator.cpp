@@ -36,6 +36,26 @@ SplineInterpolator::~SplineInterpolator()
 
 }
 
+void SplineInterpolator::adjust(int delta)
+{
+    if (delta < 0)
+        for (auto i = selection.begin(); i != selection.end(); i++)
+            keyframes.insert(*i + delta, keyframes.take(*i));
+    else
+        for (auto i = selection.rbegin(); i != selection.rend(); i++)
+            keyframes.insert(*i + delta, keyframes.take(*i));
+
+    QSet<int> tmp;
+
+    for (int i : selection)
+        tmp.insert(i + delta);
+
+    selection.swap(tmp);
+
+    needsUpdate = true;
+    updateFrame();
+}
+
 void SplineInterpolator::setFrame(int frame)
 {
     currentFrame = frame;
@@ -63,6 +83,32 @@ QMap<int, SplineKeyframe>::key_iterator SplineInterpolator::keyEnd() const
 bool SplineInterpolator::isSelected(int key) const
 {
     return selection.contains(key);
+}
+
+void SplineInterpolator::remove()
+{
+    for (int key : selection)
+        keyframes.remove(key);
+
+    selection.clear();
+
+    needsUpdate = true;
+    updateFrame();
+}
+
+void SplineInterpolator::select(int key, QItemSelectionModel::SelectionFlags command)
+{
+    if (command & QItemSelectionModel::Clear)
+        selection.clear();
+
+    if (!keyframes.contains(key))
+        return;
+
+    if (command & QItemSelectionModel::Select)
+        selection.insert(key);
+
+    if (command & QItemSelectionModel::Deselect)
+        selection.remove(key);
 }
 
 void SplineInterpolator::updateFrame()

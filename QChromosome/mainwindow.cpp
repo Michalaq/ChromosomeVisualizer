@@ -175,7 +175,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto p = ui->page_5->ui;
     ip.trackValues({ p->doubleSpinBox, p->doubleSpinBox_2, p->doubleSpinBox_3, p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
-    ui->horizontalSlider->setInterpolator(&ip);
+    ui->horizontalSlider->setSplineInterpolator(ui->camera);
     ui->page_6->setInterpolator(&ip);
 
     connect(&ip, &Interpolator::selectionChanged, [this] {

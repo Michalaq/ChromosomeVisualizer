@@ -3,8 +3,6 @@
 
 #include "softslider.h"
 #include "interpolator.h"
-#include <QShortcut>
-#include <QSvgRenderer>
 
 class Slider : public SoftSlider
 {
@@ -31,8 +29,8 @@ public slots:
 
 private:
     SplineInterpolator *interpolator;
-    Interpolator *ip;
     bool movemarker;
+    int lastValue;
     QImage pin;
 };
 

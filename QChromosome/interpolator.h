@@ -4,6 +4,7 @@
 #include "spline.h"
 #include <QMap>
 #include <QSet>
+#include <QItemSelectionModel>
 
 class SplineKeyframe
 {
@@ -23,18 +24,26 @@ public:
     SplineInterpolator(const QStringList& p);
     virtual ~SplineInterpolator();
 
-    /* sets current frame for all interpolated objects */
-    static void setFrame(int frame);
+    void adjust(int delta);
 
     /* captures current state */
     void captureFrame();
+
+    /* returns true if key is selected */
+    bool isSelected(int key) const;
 
     /* returns a const iterator pointing to the key */
     QMap<int, SplineKeyframe>::key_iterator keyBegin() const;
     QMap<int, SplineKeyframe>::key_iterator keyEnd() const;
 
-    /* returns true if key is selected */
-    bool isSelected(int key) const;
+    /* removes selected keys */
+    void remove();
+
+    /* selects key using the specified command */
+    void select(int key, QItemSelectionModel::SelectionFlags command);
+
+    /* sets current frame for all interpolated objects */
+    static void setFrame(int frame);
 
     /* creates frame from current state */
     virtual SplineKeyframe saveFrame() const = 0;

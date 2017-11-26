@@ -1,10 +1,10 @@
 #include "slider.h"
 #include <QPainter>
+#include <QSvgRenderer>
 
 Slider::Slider(QWidget *parent) :
     SoftSlider(parent),
     interpolator(nullptr),
-    ip(nullptr),
     pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
 {
     pin.fill("#0066ff");
@@ -31,15 +31,12 @@ QSize Slider::minimumSizeHint() const
 void Slider::setSplineInterpolator(SplineInterpolator *si)
 {
     interpolator = si;
-}
-
-void Slider::setInterpolator(Interpolator *_ip)
-{
-    ip = _ip;
+    update();
 }
 
 #include <QMouseEvent>
 #include <QStyle>
+//#include <QApplication>
 
 void Slider::mousePressEvent(QMouseEvent *event)
 {
@@ -53,8 +50,14 @@ void Slider::mousePressEvent(QMouseEvent *event)
     else
     {
         movemarker = false;
-        ip->selectKeyframe(sv);
-        update();
+
+        if (interpolator)
+        {
+            //auto km = QApplication::keyboardModifiers();
+            interpolator->select(sv, QItemSelectionModel::ClearAndSelect);
+            lastValue = sv;
+            update();
+        }
     }
 }
 
@@ -65,7 +68,11 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
     if (movemarker)
         setValue(sv);
     else
-        ip->changeKey(sv, false);
+    {
+        interpolator->adjust(sv - lastValue);
+        lastValue = sv;
+        update();
+    }
 }
 
 void Slider::mouseReleaseEvent(QMouseEvent *event)
@@ -75,7 +82,10 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
     if (movemarker)
         setValue(sv);
     else
-        ip->changeKey(sv);
+    {
+        interpolator->adjust(sv - lastValue);
+        update();
+    }
 }
 
 #include <QtMath>
@@ -154,6 +164,9 @@ void Slider::keyPressEvent(QKeyEvent *event)
 {
     QSlider::keyPressEvent(event);
 
-    if (ip && (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace))
-        ip->deleteKeyrame();
+    if (interpolator && (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace))
+    {
+        interpolator->remove();
+        update();
+    }
 }
