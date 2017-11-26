@@ -55,6 +55,11 @@ QList<int> SplineInterpolator::keys() const
     return keyframes.keys();
 }
 
+const QSet<int>& SplineInterpolator::selectedKeys() const
+{
+    return selection;
+}
+
 void SplineInterpolator::updateFrame()
 {
     if (needsUpdate)

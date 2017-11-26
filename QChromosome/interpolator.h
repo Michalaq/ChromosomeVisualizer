@@ -3,6 +3,7 @@
 
 #include "spline.h"
 #include <QMap>
+#include <QSet>
 
 class SplineKeyframe
 {
@@ -31,6 +32,9 @@ public:
     /* returns a list containing all the keys */
     QList<int> keys() const;
 
+    /* returns a list containing all selected keys */
+    const QSet<int>& selectedKeys() const;
+
     /* creates frame from current state */
     virtual SplineKeyframe saveFrame() const = 0;
 
@@ -44,6 +48,7 @@ private:
     const QStringList header;
     QMap<QString, tk::spline> splines;
     QMap<int, SplineKeyframe> keyframes;
+    QSet<int> selection;
 
     void updateFrame();
 
