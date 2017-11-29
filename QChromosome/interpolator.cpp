@@ -40,6 +40,31 @@ bool SplineKeyframe::valueLocked() const
     return _valueLocked;
 }
 
+#include <QJsonObject>
+
+void SplineKeyframe::read(const QJsonObject &json)
+{
+    const QJsonObject keyValues = json["Key values"].toObject();
+
+    for (auto i = keyValues.begin(); i != keyValues.end(); i++)
+        values[i.key()] = i.value().toDouble();
+
+    _timeLocked = json["Lock time"].toBool();
+    _valueLocked = json["Lock value"].toBool();
+}
+
+void SplineKeyframe::write(QJsonObject &json) const
+{
+    QJsonObject keyValues;
+
+    for (auto i = values.begin(); i != values.end(); i++)
+        keyValues[i.key()] = i.value();
+
+    json["Key values"] = keyValues;
+    json["Lock time"] = _timeLocked;
+    json["Lock value"] = _valueLocked;
+}
+
 int SplineInterpolator::currentFrame = 0;
 
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
@@ -241,6 +266,34 @@ void SplineInterpolator::updateFrame()
         f.insert(i.key(), i.value()(currentFrame));
 
     loadFrame(f);
+}
+
+#include <QJsonArray>
+
+void SplineInterpolator::read(const QJsonArray &json)
+{
+    for (auto i : json)
+    {
+        const QJsonObject keyProperties = i.toObject();
+
+        keyframes[keyProperties["Key time"].toInt()].read(keyProperties);
+    }
+
+    needsUpdate = true;
+    updateFrame();
+}
+
+void SplineInterpolator::write(QJsonArray &json) const
+{
+    for (auto i = keyframes.begin(); i != keyframes.end(); i++)
+    {
+        QJsonObject keyProperties;
+        keyProperties["Key time"] = i.key();
+
+        i.value().write(keyProperties);
+
+        json.append(keyProperties);
+    }
 }
 
 

@@ -21,6 +21,9 @@ public:
     bool timeLocked() const;
     bool valueLocked() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject &json) const;
+
 private:
     QMap<QString, double> values;
     bool _timeLocked;
@@ -68,6 +71,9 @@ public:
 
     /* restores current state from frame */
     virtual void loadFrame(const SplineKeyframe& frame) = 0;
+
+    virtual void read(const QJsonArray& json);
+    virtual void write(QJsonArray &json) const;
 
 signals:
     void interpolationChanged();

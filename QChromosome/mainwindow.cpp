@@ -370,9 +370,6 @@ void MainWindow::openProject()
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         ui->page->read(projectSettings);
-
-        const QJsonArray keyframes = project["Key frames"].toArray();
-        ip.read(keyframes);
     }
 }
 
@@ -436,10 +433,6 @@ void MainWindow::saveProject()
         QJsonObject bar;
         ui->scene->write(bar);
         project["bar"] = bar;
-
-        QJsonArray keyframes;
-        ip.write(keyframes);
-        project["Key frames"] = keyframes;
 
         QFile file(currentFile);
         file.open(QIODevice::WriteOnly | QIODevice::Text);

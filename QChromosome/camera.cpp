@@ -290,6 +290,7 @@ void Camera::setLookAt(const QVector3D &target)
 }
 
 #include <QJsonObject>
+#include <QJsonArray>
 
 void Camera::read(const QJsonObject &json)
 {
@@ -319,6 +320,9 @@ void Camera::read(const QJsonObject &json)
     emit modelViewChanged(updateModelView());
 
     updateAngles();
+
+    const QJsonArray keyframes = json["Key frames"].toArray();
+    SplineInterpolator::read(keyframes);
 }
 
 void Camera::write(QJsonObject &json) const
@@ -342,6 +346,10 @@ void Camera::write(QJsonObject &json) const
     depthOfField["Near clipping"] = nearClipping;
     depthOfField["Far clipping"] = farClipping;
     json["Depth of field"] = depthOfField;
+
+    QJsonArray keyframes;
+    SplineInterpolator::write(keyframes);
+    json["Key frames"] = keyframes;
 }
 
 void Camera::rotate(qreal dh, qreal dp, qreal db)
