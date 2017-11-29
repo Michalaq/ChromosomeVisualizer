@@ -26,8 +26,8 @@ public:
 
 private:
     QMap<QString, double> values;
-    bool _timeLocked;
-    bool _valueLocked;
+    bool _timeLocked = false;
+    bool _valueLocked = false;
 };
 
 class SplineInterpolator : public Draggable

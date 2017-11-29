@@ -25,6 +25,8 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *event);
 
+    void read(const QJsonObject& json);
+
 public slots:
     void newProject();
     void openProject();
@@ -96,6 +98,8 @@ private:
     int softMaximum;
 
     QString currentFile;
+
+    void addCamera(Camera *camera);
 };
 
 #endif // MAINWINDOW_H

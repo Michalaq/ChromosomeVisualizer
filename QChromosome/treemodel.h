@@ -78,7 +78,7 @@ public:
     void setCurrentCamera(QModelIndex index);
     Camera* getCurrentCamera() const;
 
-    void read(std::shared_ptr<Simulation> simulation, const QJsonObject& json);
+    void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
 private:

@@ -230,26 +230,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        auto camera = new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()));
-
-        camera->blockSignals(true);
-
-        connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
-        connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
-        connect(camera, &Camera::modelViewChanged, ui->widget, &Axis::setModelView);
-        connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
-        connect(camera, &Camera::rotationTypeChanged, [this](int i) {
-            ui->actionCoordinates->setChecked(i == 1);
-        });
-        connect(camera, &SplineInterpolator::selectionChanged, [=] {
-            ui->page_6->setSplineInterpolator(camera);
-            ui->stackedWidget->setCurrentIndex(5);
-            ui->dockWidget_2->show();
-        });
-
-        ui->stackedWidget_2->addWidget(camera);
-
-        ((TreeModel*)ui->treeView->model())->addCamera(camera);
+        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())));
     });
 
     connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
@@ -291,6 +272,34 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     }
 
     return QObject::eventFilter(watched, event);
+}
+
+#include <QJsonObject>
+
+void MainWindow::read(const QJsonObject &json)
+{
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
+    {
+        const QJsonObject object = child.value().toObject()["Object"].toObject();
+
+        if (object["class"] == "Layer")
+        {
+            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
+            simulationLayer->read(object["paths"].toArray());
+
+            simulation->addSimulationLayerConcatenation(simulationLayer, false);
+        }
+
+        if (object["class"] == "Camera")
+        {
+            auto camera = new Camera();
+            camera->read(object);
+
+            addCamera(camera);
+        }
+    }
 }
 
 void MainWindow::newProject()
@@ -355,7 +364,8 @@ void MainWindow::openProject()
         ui->camera->read(camera);
 
         const QJsonObject objects = project["Objects"].toObject();
-        simulation->getModel()->read(simulation, objects);
+        read(objects);
+        simulation->getModel()->read(objects);
 
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
@@ -801,4 +811,26 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         break;
     }
+}
+
+void MainWindow::addCamera(Camera* camera)
+{
+    camera->blockSignals(true);
+
+    connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
+    connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
+    connect(camera, &Camera::modelViewChanged, ui->widget, &Axis::setModelView);
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
+    connect(camera, &Camera::rotationTypeChanged, [this](int i) {
+        ui->actionCoordinates->setChecked(i == 1);
+    });
+    connect(camera, &SplineInterpolator::selectionChanged, [=] {
+        ui->page_6->setSplineInterpolator(camera);
+        ui->stackedWidget->setCurrentIndex(5);
+        ui->dockWidget_2->show();
+    });
+
+    ui->stackedWidget_2->addWidget(camera);
+
+    ((TreeModel*)ui->treeView->model())->addCamera(camera);
 }
