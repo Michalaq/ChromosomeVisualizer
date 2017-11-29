@@ -176,25 +176,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ip.trackValues({ p->doubleSpinBox, p->doubleSpinBox_2, p->doubleSpinBox_3, p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
     ui->horizontalSlider->setSplineInterpolator(ui->camera);
-    ui->page_6->setInterpolator(&ip);
 
-    connect(&ip, &Interpolator::selectionChanged, [this] {
-        ui->horizontalSlider->update();
-
-        if (ip.selectedKeyframe() >= 0)
-        {
-            ui->stackedWidget->setCurrentIndex(5);
-            ui->dockWidget_2->show();
-            ui->page_6->updateContents();
-            ui->page_6->show();
-        }
-        else
-            ui->page_6->hide();
-    });
-
-    connect(&ip, &Interpolator::interpolationChanged, [this] {
-        setFrame(currentFrame); //TODO hack, odświeżenie widoku
-        ui->horizontalSlider->update();
+    connect(ui->camera, &SplineInterpolator::selectionChanged, [this] {
+        ui->page_6->setSplineInterpolator(ui->camera);
+        ui->stackedWidget->setCurrentIndex(5);
+        ui->dockWidget_2->show();
     });
 
     connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
@@ -254,6 +240,11 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
         connect(camera, &Camera::rotationTypeChanged, [this](int i) {
             ui->actionCoordinates->setChecked(i == 1);
+        });
+        connect(camera, &SplineInterpolator::selectionChanged, [=] {
+            ui->page_6->setSplineInterpolator(camera);
+            ui->stackedWidget->setCurrentIndex(5);
+            ui->dockWidget_2->show();
         });
 
         ui->stackedWidget_2->addWidget(camera);

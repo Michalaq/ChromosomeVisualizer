@@ -20,6 +20,26 @@ double SplineKeyframe::value(const QString& key, double defaultValue) const
     return values.value(key, defaultValue);
 }
 
+void SplineKeyframe::lockTime(bool b)
+{
+    _timeLocked = b;
+}
+
+void SplineKeyframe::lockValue(bool b)
+{
+    _valueLocked = b;
+}
+
+bool SplineKeyframe::timeLocked() const
+{
+    return _timeLocked;
+}
+
+bool SplineKeyframe::valueLocked() const
+{
+    return _valueLocked;
+}
+
 int SplineInterpolator::currentFrame = 0;
 
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
@@ -34,30 +54,68 @@ SplineInterpolator::SplineInterpolator(const QStringList &p, QWidget *parent) :
 
 SplineInterpolator::~SplineInterpolator()
 {
-
+    interpolators.remove(this);
 }
 
-void SplineInterpolator::adjustFrames(int delta)
+void SplineInterpolator::adjustKeys(int delta)
 {
     if (delta == 0)
         return;
 
-    if (delta < 0)
-        for (auto i = selection.begin(); i != selection.end(); i++)
-            keyframes.insert(*i + delta, keyframes.take(*i));
-    else
-        for (auto i = selection.rbegin(); i != selection.rend(); i++)
-            keyframes.insert(*i + delta, keyframes.take(*i));
-
     QSet<int> tmp;
 
-    for (int i : selection)
-        tmp.insert(i + delta);
+    if (delta < 0)
+        for (auto i = selection.begin(); i != selection.end(); i++)
+        {
+            if (!keyframes[*i].timeLocked())
+            {
+                keyframes.insert(*i + delta, keyframes.take(*i));
+                tmp.insert(*i + delta);
+            }
+            else
+                tmp.insert(*i);
+        }
+    else
+        for (auto i = selection.rbegin(); i != selection.rend(); i++)
+        {
+            if (!keyframes[*i].timeLocked())
+            {
+                keyframes.insert(*i + delta, keyframes.take(*i));
+                tmp.insert(*i + delta);
+            }
+            else
+                tmp.insert(*i);
+        }
 
     selection.swap(tmp);
 
     needsUpdate = true;
     updateFrame();
+
+    emit selectionChanged();
+}
+
+void SplineInterpolator::setKey(int key)
+{
+    QSet<int> tmp;
+
+    for (auto i = selection.begin(); i != selection.end(); i++)
+    {
+        if (!keyframes[*i].timeLocked())
+        {
+            keyframes.insert(key, keyframes.take(*i));
+            tmp.insert(key);
+        }
+        else
+            tmp.insert(*i);
+    }
+
+    selection.swap(tmp);
+
+    needsUpdate = true;
+    updateFrame();
+
+    emit selectionChanged();
 }
 
 void SplineInterpolator::setFrame(int frame)
@@ -68,10 +126,35 @@ void SplineInterpolator::setFrame(int frame)
         i->updateFrame();
 }
 
+void SplineInterpolator::lockTime(bool b)
+{
+    for (auto i = selection.begin(); i != selection.end(); i++)
+        keyframes[*i].lockTime(b);
+}
+
+void SplineInterpolator::lockValue(bool b)
+{
+    for (auto i = selection.begin(); i != selection.end(); i++)
+        keyframes[*i].lockValue(b);
+}
+
+QMap<int, SplineKeyframe>::const_iterator SplineInterpolator::selectedFrame() const
+{
+    return selection.isEmpty() ? keyframes.constEnd() : keyframes.find(*selection.constBegin());
+}
+
+QMap<int, SplineKeyframe>::const_iterator SplineInterpolator::constEnd() const
+{
+    return keyframes.constEnd();
+}
+
 void SplineInterpolator::captureFrame()
 {
-    keyframes.insert(currentFrame, saveFrame());
-    needsUpdate = true;
+    if (!keyframes[currentFrame].valueLocked())
+    {
+        keyframes.insert(currentFrame, saveFrame());
+        needsUpdate = true;
+    }
 }
 
 QMap<int, SplineKeyframe>::key_iterator SplineInterpolator::keyBegin() const
@@ -105,14 +188,14 @@ void SplineInterpolator::select(int key, QItemSelectionModel::SelectionFlags com
     if (command & QItemSelectionModel::Clear)
         selection.clear();
 
-    if (!keyframes.contains(key))
-        return;
+    if (keyframes.contains(key))
+    {
+        if (command & QItemSelectionModel::Select)
+            selection.insert(key);
 
-    if (command & QItemSelectionModel::Select)
-        selection.insert(key);
-
-    if (command & QItemSelectionModel::Deselect)
-        selection.remove(key);
+        if (command & QItemSelectionModel::Deselect)
+            selection.remove(key);
+    }
 
     emit selectionChanged();
 }

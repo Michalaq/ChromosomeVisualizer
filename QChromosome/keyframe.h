@@ -17,6 +17,7 @@ public:
     ~Keyframes();
 
     void setInterpolator(Interpolator* _ip);
+    void setSplineInterpolator(SplineInterpolator *si);
 
 signals:
 
@@ -26,6 +27,7 @@ public slots:
 private:
     Ui::Keyframes *ui;
     Interpolator *ip;
+    SplineInterpolator *interpolator;
 };
 
 #endif // KEYFRAME_H

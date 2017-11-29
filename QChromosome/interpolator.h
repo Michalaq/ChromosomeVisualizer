@@ -15,8 +15,16 @@ public:
     QMap<QString, double>::iterator insert(const QString& key, double value);
     double value(const QString& key, double defaultValue = double()) const;
 
+    void lockTime(bool b = true);
+    void lockValue(bool b = true);
+
+    bool timeLocked() const;
+    bool valueLocked() const;
+
 private:
     QMap<QString, double> values;
+    bool _timeLocked;
+    bool _valueLocked;
 };
 
 class SplineInterpolator : public Draggable
@@ -28,7 +36,13 @@ public:
     virtual ~SplineInterpolator();
 
     /* changes key of selected frames */
-    void adjustFrames(int delta);
+    void adjustKeys(int delta);
+
+    void setKey(int key);
+    void lockTime(bool b = true);
+    void lockValue(bool b = true);
+    QMap<int, SplineKeyframe>::const_iterator selectedFrame() const;
+    QMap<int, SplineKeyframe>::const_iterator constEnd() const;
 
     /* captures current state */
     void captureFrame();

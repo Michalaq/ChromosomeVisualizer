@@ -69,7 +69,7 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
     else
         if (interpolator)
         {
-            interpolator->adjustFrames(sv - lastValue);
+            interpolator->adjustKeys(sv - lastValue);
             lastValue = sv;
         }
 }
@@ -82,7 +82,7 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
         setValue(sv);
     else
         if (interpolator)
-            interpolator->adjustFrames(sv - lastValue);
+            interpolator->adjustKeys(sv - lastValue);
 }
 
 #include <QtMath>
