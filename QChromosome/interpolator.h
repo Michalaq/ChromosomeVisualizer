@@ -1,6 +1,7 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 
+#include "draggable.h"
 #include "spline.h"
 #include <QMap>
 #include <QSet>
@@ -18,13 +19,16 @@ private:
     QMap<QString, double> values;
 };
 
-class SplineInterpolator
+class SplineInterpolator : public Draggable
 {
+    Q_OBJECT
+
 public:
-    SplineInterpolator(const QStringList& p);
+    SplineInterpolator(const QStringList& p, QWidget *parent = 0);
     virtual ~SplineInterpolator();
 
-    void adjust(int delta);
+    /* changes key of selected frames */
+    void adjustFrames(int delta);
 
     /* captures current state */
     void captureFrame();
@@ -50,6 +54,10 @@ public:
 
     /* restores current state from frame */
     virtual void loadFrame(const SplineKeyframe& frame) = 0;
+
+signals:
+    void interpolationChanged();
+    void selectionChanged();
 
 private:
     static int currentFrame;

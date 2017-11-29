@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "draggable.h"
 #include "interpolator.h"
 
 #include <QVector3D>
@@ -9,7 +8,7 @@
 #include <QStack>
 #include <QMetaMethod>
 
-class Camera : public Draggable, public SplineInterpolator
+class Camera : public SplineInterpolator
 {
     Q_OBJECT
 public:

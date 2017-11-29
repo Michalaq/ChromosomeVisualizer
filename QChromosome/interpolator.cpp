@@ -24,7 +24,8 @@ int SplineInterpolator::currentFrame = 0;
 
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
 
-SplineInterpolator::SplineInterpolator(const QStringList &p) :
+SplineInterpolator::SplineInterpolator(const QStringList &p, QWidget *parent) :
+    Draggable(parent),
     header(p),
     needsUpdate(false)
 {
@@ -36,8 +37,11 @@ SplineInterpolator::~SplineInterpolator()
 
 }
 
-void SplineInterpolator::adjust(int delta)
+void SplineInterpolator::adjustFrames(int delta)
 {
+    if (delta == 0)
+        return;
+
     if (delta < 0)
         for (auto i = selection.begin(); i != selection.end(); i++)
             keyframes.insert(*i + delta, keyframes.take(*i));
@@ -109,6 +113,8 @@ void SplineInterpolator::select(int key, QItemSelectionModel::SelectionFlags com
 
     if (command & QItemSelectionModel::Deselect)
         selection.remove(key);
+
+    emit selectionChanged();
 }
 
 void SplineInterpolator::updateFrame()
@@ -142,6 +148,8 @@ void SplineInterpolator::updateFrame()
         }
 
         needsUpdate = false;
+
+        emit interpolationChanged();
     }
 
     SplineKeyframe f;

@@ -30,35 +30,34 @@ QSize Slider::minimumSizeHint() const
 
 void Slider::setSplineInterpolator(SplineInterpolator *si)
 {
+    if (interpolator)
+        interpolator->disconnect(this);
+
     interpolator = si;
+
+    connect(interpolator, SIGNAL(interpolationChanged()), this, SLOT(update()));
+    connect(interpolator, SIGNAL(selectionChanged()), this, SLOT(update()));
+
     update();
 }
 
 #include <QMouseEvent>
 #include <QStyle>
-//#include <QApplication>
 
 void Slider::mousePressEvent(QMouseEvent *event)
 {
+    movemarker = event->pos().y() < 20;
+
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
-    if (event->pos().y() < 20)
-    {
-        movemarker = true;
+    if (movemarker)
         setValue(sv);
-    }
     else
-    {
-        movemarker = false;
-
         if (interpolator)
         {
-            //auto km = QApplication::keyboardModifiers();
-            interpolator->select(sv, QItemSelectionModel::ClearAndSelect);
+            interpolator->select(sv, QItemSelectionModel::ClearAndSelect);//QApplication::keyboardModifiers();
             lastValue = sv;
-            update();
         }
-    }
 }
 
 void Slider::mouseMoveEvent(QMouseEvent *event)
@@ -68,11 +67,11 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
     if (movemarker)
         setValue(sv);
     else
-    {
-        interpolator->adjust(sv - lastValue);
-        lastValue = sv;
-        update();
-    }
+        if (interpolator)
+        {
+            interpolator->adjustFrames(sv - lastValue);
+            lastValue = sv;
+        }
 }
 
 void Slider::mouseReleaseEvent(QMouseEvent *event)
@@ -82,10 +81,8 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
     if (movemarker)
         setValue(sv);
     else
-    {
-        interpolator->adjust(sv - lastValue);
-        update();
-    }
+        if (interpolator)
+            interpolator->adjustFrames(sv - lastValue);
 }
 
 #include <QtMath>

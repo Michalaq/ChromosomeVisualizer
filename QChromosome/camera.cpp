@@ -15,8 +15,7 @@ Camera::Action Camera::currentAction;
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
-    : Draggable(parent),
-      SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}, parent),
       eye(60, 30, 60),
       x(1, 0, 0),
       y(0, 1, 0),
@@ -55,8 +54,7 @@ Camera::Camera(QWidget *parent)
 }
 
 Camera::Camera(const Camera& camera)
-    : Draggable(),
-      SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
       eye(camera.eye),
       x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
