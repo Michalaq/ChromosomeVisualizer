@@ -260,12 +260,15 @@ void SplineInterpolator::updateFrame()
         emit interpolationChanged();
     }
 
-    SplineKeyframe f;
+    if (!splines.isEmpty())
+    {
+        SplineKeyframe f;
 
-    for (auto i = splines.begin(); i != splines.end(); i++)
-        f.insert(i.key(), i.value()(currentFrame));
+        for (auto i = splines.begin(); i != splines.end(); i++)
+            f.insert(i.key(), i.value()(currentFrame));
 
-    loadFrame(f);
+        loadFrame(f);
+    }
 }
 
 #include <QJsonArray>

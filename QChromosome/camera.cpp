@@ -15,7 +15,7 @@ Camera::Action Camera::currentAction;
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}, parent),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Aperture width"}, parent),
       eye(60, 30, 60),
       x(1, 0, 0),
       y(0, 1, 0),
@@ -54,7 +54,7 @@ Camera::Camera(QWidget *parent)
 }
 
 Camera::Camera(const Camera& camera)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B"}),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Aperture width"}),
       eye(camera.eye),
       x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
@@ -98,6 +98,8 @@ SplineKeyframe Camera::saveFrame() const
     f.insert("H", h);
     f.insert("P", p);
     f.insert("B", b);
+    f.insert("Focal length", focalLength);
+    f.insert("Aperture width", apertureWidth);
 
     return f;
 }
@@ -114,6 +116,10 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     double _p = frame.value("P", p);
     double _b = frame.value("B", b);
     setEulerAgnles(_h, _p, _b);
+
+    focalLength = frame.value("Focal length", focalLength);
+    apertureWidth = frame.value("Aperture width", apertureWidth);
+    updateAngles();
 }
 
 void Camera::resizeEvent(QResizeEvent *event)
