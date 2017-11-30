@@ -299,6 +299,43 @@ void SplineInterpolator::write(QJsonArray &json) const
     }
 }
 
+void SplineInterpolator::writePOVSpline(std::ostream &stream, std::function<void(std::ostream &, const SplineKeyframe &)> f) const
+{
+    stream << "spline {\cubic_spline\n";
+
+    {
+        auto j = keyframes.begin();
+        auto i = j + 1;
+
+        stream << 2 * j.key() - i.key() << ", ";
+        f(stream, i.value());
+        stream << "\n";
+    }
+
+    for (auto i = keyframes.begin(); i != keyframes.end(); i++)
+    {
+        stream << i.key() << ", ";
+        f(stream, i.value());
+        stream << "\n";
+    }
+
+    {
+        auto j = keyframes.end() - 1;
+        auto i = j - 1;
+
+        stream << 2 * j.key() - i.key() << ", ";
+        f(stream, i.value());
+        stream << "\n";
+    }
+
+    stream << "}\n";
+}
+
+int SplineInterpolator::count() const
+{
+    return keyframes.size();
+}
+
 
 
 

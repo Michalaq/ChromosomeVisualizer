@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QSet>
 #include <QItemSelectionModel>
+#include <functional>
 
 class SplineKeyframe
 {
@@ -74,6 +75,10 @@ public:
 
     virtual void read(const QJsonArray& json);
     virtual void write(QJsonArray &json) const;
+
+    void writePOVSpline(std::ostream &stream, std::function<void(std::ostream &, const SplineKeyframe &)> f) const;
+
+    int count() const;
 
 signals:
     void interpolationChanged();

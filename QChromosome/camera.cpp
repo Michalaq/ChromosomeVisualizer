@@ -447,3 +447,44 @@ void Camera::updateAngles()
 
 }
 // Field of View: (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength))
+
+#include "moviemaker.h"
+
+void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
+{
+    if (interpolate)
+    {
+        stream << "#declare MySplinePos = \n";
+        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+            stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+        });
+
+        stream << "#declare MySplineAng = \n";
+        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+            stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+        });
+
+        stream << "#declare MySplineFov = \n";
+        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Aperture width") / 2 / frame.value("Focal length"))) << ", 0 >";
+        });
+
+        stream << "camera { perspective\n"
+               << "right x * " << aspectRatio << "\n"
+               << "look_at -z\n"
+               << "angle MySplineFov(clock).x\n"
+               << "rotate -MySplineAng(clock)\n"
+               << "translate MySplinePos(clock)\n"
+               << "}\n"
+               << "\n";
+    }
+    else
+        stream << "camera { perspective\n"
+               << "right x * " << aspectRatio << "\n"
+               << "look_at -z\n"
+               << "angle " << horizontalAngle << "\n"
+               << "rotate " << -QVector3D(p, h, b) << "\n"
+               << "translate " << eye << "\n"
+               << "}\n"
+               << "\n";
+}

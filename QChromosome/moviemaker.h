@@ -19,4 +19,8 @@ void addSphere1(std::ostream& outFile, int id, float radius, const Material* col
 void addCylinder1(std::ostream& outFile, int idA, int idB, float radiusA, float radiusB, const Material* colorA, const Material* colorB);
 }
 
+std::ostream& operator<<(std::ostream& out, const QVector3D & vec);
+
+std::ostream& operator<<(std::ostream& out, const QColor & col);
+
 #endif // MOVIEMAKER_H

@@ -5,8 +5,6 @@
 
 #include <QVector3D>
 #include <QMatrix4x4>
-#include <QStack>
-#include <QMetaMethod>
 
 class Camera : public SplineInterpolator
 {
@@ -57,6 +55,8 @@ public:
 
     SplineKeyframe saveFrame() const;
     void loadFrame(const SplineKeyframe &frame);
+
+    void writePOVCamera(std::ostream &stream, bool interpolate) const;
 
 public slots:
     /* handles mouse move event */
