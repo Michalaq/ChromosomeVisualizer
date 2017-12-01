@@ -15,9 +15,10 @@ std::ostream& operator<<(std::ostream& out, const QColor & col)
     return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
-void prepareINIFile(const QString& filename, const RenderSettings * renderSettings)
+void prepareINIFile(const QString& filename)
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    auto renderSettings = RenderSettings::getInstance();
     QSize size = renderSettings->outputSize();
     outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
@@ -43,9 +44,10 @@ void prepareINIFile(const QString& filename, const RenderSettings * renderSettin
     }
 }
 
-void prepareINIFile1(const QString& filename, const RenderSettings * renderSettings, int fbeg, int fend)
+void prepareINIFile1(const QString& filename, int fbeg, int fend)
 {
     std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    auto renderSettings = RenderSettings::getInstance();
     QSize size = renderSettings->outputSize();
     outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
             << "\nQuality=" << renderSettings->quality().toStdString();
@@ -82,40 +84,9 @@ void createPOVFile(std::ofstream& outFile, std::string filename)
             << "global_settings { assumed_gamma 1.0 }\n";
 }
 
-void setCamera(std::ofstream& outFile, const Camera* camera, QSize size)
+void setCamera(std::ofstream& outFile, const Camera* camera, bool s)
 {
-    outFile << "camera{perspective\n"
-            << "right x*" << size.width() << "/" << size.height() << "\n"
-            << "look_at -z\n"
-            << "angle " << camera->angle() << "\n"
-            << "rotate " << -camera->EulerAngles() << "\n"
-            << "translate " << camera->position() << "\n"
-            << "}\n"
-            << "\n";
-
-    outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
-            << "parallel\n"
-            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
-            << "}\n";
-}
-
-void setCamera1(std::ofstream& outFile, const Camera* camera, QSize size, bool s)
-{
-    outFile << "camera{perspective\n"
-            << "right x*" << size.width() << "/" << size.height() << "\n"
-            << "look_at -z\n"
-            << "angle " << camera->angle() << "\n";
-
-    if (s)
-        outFile << "rotate " << -camera->EulerAngles() << "\n"
-                << "translate " << camera->position() << "\n";
-    else
-        outFile << "rotate -MySplineAng(clock)\n"
-                << "translate MySplinePos(clock)\n";
-
-    outFile << "}\n"
-            << "\n";
+    camera->writePOVCamera(outFile, s);
 
     outFile << "light_source {\n"
             << QVector3D() << "," << QColor(Qt::white) << "\n"
@@ -199,7 +170,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + '/' + renderSettings->saveFile();
-    prepareINIFile1(filename, renderSettings, fbeg, fend);
+    prepareINIFile1(filename, fbeg, fend);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
@@ -209,7 +180,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     if (renderSettings->cam360())
         set360Camera(outFile, camera, ip.keys().isEmpty());
     else
-        setCamera1(outFile, camera, renderSettings->outputSize(), ip.keys().isEmpty());
+        setCamera(outFile, camera, camera->count() > 1);
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
@@ -301,14 +272,14 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + "/" + renderSettings->saveFile();
-    prepareINIFile(filename, renderSettings);
+    prepareINIFile(filename);
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
         set360Camera(outFile, camera);
     else
-        setCamera(outFile, camera, renderSettings->outputSize());
+        setCamera(outFile, camera, false);
     setBackgroundColor(outFile, scene->backgroundColor());
     setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 

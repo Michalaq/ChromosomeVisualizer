@@ -180,16 +180,6 @@ void Camera::setPosition(const QVector3D &p)
     emit modelViewChanged(updateModelView());
 }
 
-QVector3D Camera::lookAt() const
-{
-    return eye - z;
-}
-
-qreal Camera::angle() const
-{
-    return horizontalAngle;
-}
-
 void Camera::move(int dx, int dy)
 {
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
@@ -464,9 +454,11 @@ void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
             stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
         });
 
+        qreal d = aspectRatio / qSqrt(1. + aspectRatio * aspectRatio);
+
         stream << "#declare MySplineFov = \n";
-        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
-            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Aperture width") / 2 / frame.value("Focal length"))) << ", 0 >";
+        writePOVSpline(stream, [=](std::ostream &stream, const SplineKeyframe &frame) {
+            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Aperture width") * d / 2 / frame.value("Focal length"))) << ", 0 >";
         });
 
         stream << "camera { perspective\n"

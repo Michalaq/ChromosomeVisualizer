@@ -301,7 +301,7 @@ void SplineInterpolator::write(QJsonArray &json) const
 
 void SplineInterpolator::writePOVSpline(std::ostream &stream, std::function<void(std::ostream &, const SplineKeyframe &)> f) const
 {
-    stream << "spline {\cubic_spline\n";
+    stream << "spline { cubic_spline\n";
 
     {
         auto j = keyframes.begin();
