@@ -338,6 +338,35 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
              << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
              << renderSettings->saveFile() + ".pov";
 
+        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
+        QByteArray buffer;
+
+        int last = -1;
+
+        p.connect(&p, &QProcess::readyReadStandardError, [&] {
+            buffer += p.readAllStandardError();
+
+            int offset = 0;
+            auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
+
+            while (match.hasMatch())
+            {
+                int a = match.captured(1).toInt();
+                int b = match.captured(2).toInt();
+                int c = 100 * a / b;
+
+                if (last < c)
+                    qDebug() << (last = c) << "%";
+
+                match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
+            }
+
+            if (match.hasPartialMatch())
+                buffer = buffer.right(match.capturedLength());
+            else
+                buffer.clear();
+        });
+
         p.start("povray", argv);
         p.waitForFinished(-1);
     }
