@@ -13,8 +13,6 @@ public:
 
     QSize minimumSizeHint() const;
 
-    void setInterpolator(Interpolator *_ip);
-
     void setSplineInterpolator(SplineInterpolator *si);
 
 protected:

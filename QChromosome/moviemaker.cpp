@@ -95,16 +95,16 @@ void setCamera(std::ofstream& outFile, const Camera* camera, bool s)
             << "}\n";
 }
 
-void set360Camera(std::ofstream& outFile, const Camera* camera, bool s = true)
+void set360Camera(std::ofstream& outFile, const Camera* camera, bool s)
 {
     outFile << "#declare odsIPD = 0.065;\n";
 
     if (s)
-        outFile << "#declare odsLocation = " << camera->position() << ";\n"
-                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
-    else
         outFile << "#declare odsLocation = MySplinePos(clock);\n"
                 << "#declare odsAngles = MySplineAng(clock);\n";
+    else
+        outFile << "#declare odsLocation = " << camera->position() << ";\n"
+                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
 
     outFile << "#declare odsX = <1, 0, 0>;\n"
             << "#declare odsY = <0, 1, 0>;\n"
@@ -165,7 +165,7 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, const Interpolator& ip, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -174,11 +174,8 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
     std::ofstream outFile;
     createPOVFile(outFile, filename.toStdString());
 
-    if (!ip.keys().isEmpty())
-        outFile << ip;
-
     if (renderSettings->cam360())
-        set360Camera(outFile, camera, ip.keys().isEmpty());
+        set360Camera(outFile, camera, camera->count() > 1);
     else
         setCamera(outFile, camera, camera->count() > 1);
     setBackgroundColor(outFile, scene->backgroundColor());
@@ -277,7 +274,7 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
     createPOVFile(outFile, filename.toStdString());
 
     if (renderSettings->cam360())
-        set360Camera(outFile, camera);
+        set360Camera(outFile, camera, false);
     else
         setCamera(outFile, camera, false);
     setBackgroundColor(outFile, scene->backgroundColor());

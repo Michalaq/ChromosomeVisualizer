@@ -5,16 +5,12 @@
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
-#include <QKeyEvent>
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
 #include "tagsdelegate.h"
 #include <QtConcurrent/QtConcurrentRun>
 
 static const char * ext = ".qcs";
-
-Interpolator ip;
-int ignore;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -157,11 +153,6 @@ MainWindow::MainWindow(QWidget *parent) :
         qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
         ui->horizontalSlider->update();
     });
-
-    ip.setKey(ui->spinBox);
-
-    auto p = ui->page_5->ui;
-    ip.trackValues({ p->doubleSpinBox, p->doubleSpinBox_2, p->doubleSpinBox_3, p->doubleSpinBox_7, p->doubleSpinBox_8, p->doubleSpinBox_9, p->doubleSpinBox_10, p->doubleSpinBox_11, p->doubleSpinBox_12 });
 
     ui->horizontalSlider->setSplineInterpolator(ui->camera);
 
@@ -737,7 +728,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), ip, suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});

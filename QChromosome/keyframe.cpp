@@ -1,5 +1,6 @@
 #include "keyframe.h"
 #include "ui_keyframe.h"
+#include "interpolator.h"
 
 Keyframes::Keyframes(QWidget *parent) :
     QWidget(parent),
@@ -33,11 +34,6 @@ Keyframes::~Keyframes()
     delete ui;
 }
 
-void Keyframes::setInterpolator(Interpolator *_ip)
-{
-    ip = _ip;
-}
-
 void Keyframes::setSplineInterpolator(SplineInterpolator *si)
 {
     interpolator = si;
@@ -52,11 +48,4 @@ void Keyframes::setSplineInterpolator(SplineInterpolator *si)
     ui->checkBox_2->setChecked(i.value().valueLocked());
 
     show();
-}
-
-void Keyframes::updateContents()
-{
-    ui->spinBox->setValue(ip->selectedKeyframe(), false);
-    ui->checkBox->setChecked(ip->isKeyLocked());
-    ui->checkBox_2->setChecked(ip->isValueLocked(ip->selectedKeyframe()));
 }
