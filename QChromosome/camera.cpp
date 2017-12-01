@@ -12,6 +12,8 @@ QVector3D Camera::origin = {0, 0, 0};
 
 Camera::Action Camera::currentAction;
 
+bool Camera::automaticKeyframing = false;
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -185,16 +187,34 @@ void Camera::move(int dx, int dy)
     const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
 
     move(scale * dx, -scale * dy, 0.);
+
+    if (automaticKeyframing)
+    {
+        captureFrame();
+        emit interpolationChanged();
+    }
 }
 
 void Camera::rotate(int dx, int dy)
 {
     rotate(-angleFactor * dx, -angleFactor * dy, 0.);
+
+    if (automaticKeyframing)
+    {
+        captureFrame();
+        emit interpolationChanged();
+    }
 }
 
 void Camera::scale(int dx, int)
 {
     move(0., 0., distanceFactor * dx);
+
+    if (automaticKeyframing)
+    {
+        captureFrame();
+        emit interpolationChanged();
+    }
 }
 
 void Camera::setAspectRatio(qreal ar)
@@ -479,4 +499,9 @@ void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
                << "translate " << eye << "\n"
                << "}\n"
                << "\n";
+}
+
+void Camera::setAutomaticKeyframing(bool b)
+{
+    automaticKeyframing = b;
 }

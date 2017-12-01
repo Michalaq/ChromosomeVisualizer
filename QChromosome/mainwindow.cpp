@@ -148,21 +148,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->page_4->setBlind(ui->widget_2);
     ui->page_4->setAxis(ui->widget);
 
-    //TODO reimplement this to work with many cameras
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
-        ip.setRecordingState(checked);
-        if (checked)
-        {
-            ui->canvas->setStyleSheet("background: #d40000;");
-            connect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
-            connect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
-        }
-        else
-        {
-            ui->canvas->setStyleSheet("background: #4d4d4d;");
-            disconnect(ui->camera, &Camera::modelViewChanged, &ip, &Interpolator::recordKeyframe);
-            disconnect(ui->camera, &Camera::projectionChanged, &ip, &Interpolator::recordKeyframe);
-        }
+        ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
+        Camera::setAutomaticKeyframing(checked);
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {

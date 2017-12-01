@@ -54,6 +54,8 @@ public:
 
     void writePOVCamera(std::ostream &stream, bool interpolate) const;
 
+    static void setAutomaticKeyframing(bool b = true);
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -124,6 +126,8 @@ private:
     static bool lockX, lockY, lockZ;
 
     static Action currentAction;
+
+    static bool automaticKeyframing;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
