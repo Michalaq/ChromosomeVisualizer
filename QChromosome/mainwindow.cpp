@@ -9,6 +9,7 @@
 #include "namedelegate.h"
 #include "tagsdelegate.h"
 #include <QtConcurrent/QtConcurrentRun>
+#include "itemselectionmodel.h"
 
 static const char * ext = ".qcs";
 
@@ -306,6 +307,7 @@ void MainWindow::newProject()
     ui->page_3->setSimulation(simulation);
 
     ui->treeView->setModel(simulation->getModel());
+    ui->treeView->setSelectionModel(new ItemSelectionModel(simulation->getModel()));
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
