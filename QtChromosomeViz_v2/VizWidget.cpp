@@ -105,7 +105,7 @@ void VizWidget::initializeGL()
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
-        nullptr
+        (void*)offsetof(VizBallInstance, position)
     );
 
     glEnableVertexAttribArray(3);
@@ -728,15 +728,11 @@ QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
 void VizWidget::updateWholeFrameData()
 {
     atomPositions_.bind();
-    auto * data = (VizBallInstance*)atomPositions_.map(QOpenGLBuffer::WriteOnly);
-    memcpy(data, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
-    atomPositions_.unmap();
+    atomPositions_.write(0, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    auto * data2 = (VizLink*)cylinderPositions_.map(QOpenGLBuffer::WriteOnly);
-    memcpy(data2, linksState_.constData(), linksState_.size() * sizeof(VizLink));
-    cylinderPositions_.unmap();
+    cylinderPositions_.write(0, linksState_.constData(), linksState_.size() * sizeof(VizLink));
     cylinderPositions_.release();
 }
 

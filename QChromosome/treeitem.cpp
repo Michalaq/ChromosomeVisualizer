@@ -246,3 +246,27 @@ Camera* CameraItem::getCamera() const
 {
     return camera;
 }
+
+QVector<VizBallInstance1> AtomItem::buffer;
+
+AtomItem::AtomItem(const QString& name, int id, TreeItem *parentItem) :
+    TreeItem({name, NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    id(id)
+{
+
+}
+
+AtomItem::~AtomItem()
+{
+
+}
+
+VizBallInstance1& AtomItem::getInstance()
+{
+    return buffer[id];
+}
+
+const QVector<VizBallInstance1>& AtomItem::getBuffer()
+{
+    return buffer;
+}

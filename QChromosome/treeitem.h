@@ -121,4 +121,32 @@ private:
     Camera* camera;
 };
 
+#include <QVector3D>
+
+struct VizBallInstance1
+{
+    QVector3D position;
+    unsigned int flags;
+    unsigned int atomID;
+    unsigned int color;
+    unsigned int specularColor;
+    float specularExponent;
+    float size;
+};
+
+class AtomItem : public TreeItem
+{
+public:
+    explicit AtomItem(const QString& name, int id, TreeItem *parentItem = 0);
+    ~AtomItem();
+
+    VizBallInstance1& getInstance();
+
+    static const QVector<VizBallInstance1>& getBuffer();
+
+private:
+    int id;
+    static QVector<VizBallInstance1> buffer;
+};
+
 #endif // TREEITEM_H
