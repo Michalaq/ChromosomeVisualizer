@@ -19,17 +19,6 @@ struct VizVertex
     VizVertex rotated(const QQuaternion & q) const;
 };
 
-struct VizBallInstance
-{
-    QVector3D position;
-    unsigned int flags;
-    unsigned int atomID;
-    unsigned int color;
-    unsigned int specularColor;
-    float specularExponent;
-    float size;
-};
-
 struct VizLink
 {
     QVector3D position;
@@ -40,7 +29,7 @@ struct VizLink
     float size[3];
     unsigned int visible;
 
-    void update(const QVector3D & p1, const QVector3D & p2);
+    void update(const float q1[3], const float q2[3]);
 };
 
 class VizWidget;

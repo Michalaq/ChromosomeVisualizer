@@ -25,8 +25,10 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
     };
 }
 
-void VizLink::update(const QVector3D & p1, const QVector3D & p2)
+void VizLink::update(const float q1[3], const float q2[3])
 {
+    auto p1 = QVector3D(q1[0], q1[1], q1[2]);
+    auto p2 = QVector3D(q2[0], q2[1], q2[2]);
     position = (p1 + p2) * 0.5f;
     rotation = QQuaternion::rotationTo(QVector3D(0.f, 0.f, 1.f), (p2 - p1).normalized());
     size[2] = (p1 - p2).length() * 0.5f;
@@ -421,7 +423,7 @@ void VizWidget::paintLabels()
             continue;
 
         auto position = frameState_[it2.key()].position;
-        auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
+        auto transformedPosition = modelViewProjection_ * QVector4D(position[0], position[1], position[2], 1.f);
         if (transformedPosition.z() >= 0.f)
         {
             QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
@@ -534,7 +536,9 @@ void VizWidget::setFrame(frameNumber_t frame)
     auto diff = simulation_->getFrame(frameNumber_);
     for (const auto & a : diff->atoms)
     {
-        frameState_[a.id - 1].position = QVector3D(a.x, a.y, a.z);
+        frameState_[a.id - 1].position[0] = a.x;
+        frameState_[a.id - 1].position[1] = a.y;
+        frameState_[a.id - 1].position[2] = a.z;
         frameState_[a.id - 1].flags = 0;
         if (selectedBitmap_[a.id - 1])
             frameState_[a.id - 1].flags |= SELECTED_FLAG;
@@ -1024,9 +1028,9 @@ void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
         float z1 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(a.position, 1.f));
+            QVector4D(a.position[0], a.position[1], a.position[2], 1.f));
         float z2 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(b.position, 1.f));
+            QVector4D(b.position[0], b.position[1], b.position[2], 1.f));
         return z1 > z2;
     };
 
@@ -1244,28 +1248,28 @@ QVariant AtomSelection::getLabel() const
 
 std::tuple<int, int, int> AtomSelection::getCoordinates() const
 {
-    int x = widget_->frameState_[selectedIndices_.front()].position.x();
+    int x = widget_->frameState_[selectedIndices_.front()].position[0];
 
     for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.x() != x)
+        if (widget_->frameState_[i].position[0] != x)
         {
             x = std::numeric_limits<int>::lowest();
             break;
         }
 
-    int y = widget_->frameState_[selectedIndices_.front()].position.y();
+    int y = widget_->frameState_[selectedIndices_.front()].position[1];
 
     for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.y() != y)
+        if (widget_->frameState_[i].position[1] != y)
         {
             y = std::numeric_limits<int>::lowest();
             break;
         }
 
-    int z = widget_->frameState_[selectedIndices_.front()].position.z();
+    int z = widget_->frameState_[selectedIndices_.front()].position[2];
 
     for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.z() != z)
+        if (widget_->frameState_[i].position[2] != z)
         {
             z = std::numeric_limits<int>::lowest();
             break;
