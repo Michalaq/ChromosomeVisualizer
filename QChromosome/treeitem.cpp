@@ -270,3 +270,21 @@ const QVector<VizBallInstance>& AtomItem::getBuffer()
 {
     return buffer;
 }
+
+void AtomItem::resizeBuffer(int count)
+{
+    int offset = buffer.size();
+
+    buffer.resize(offset + count);
+
+    VizBallInstance dummy;
+    dummy.position[0] = dummy.position[1] = dummy.position[2] = 0.f;
+    dummy.flags = VISIBLE_FLAG;
+    dummy.atomID = 0;
+    dummy.color = 0xFF777777;
+    dummy.specularColor = 0xFFFFFFFF;
+    dummy.specularExponent = 10.f;
+    dummy.size = 1.f;
+
+    std::fill(buffer.begin() + offset, buffer.end(), dummy);
+}

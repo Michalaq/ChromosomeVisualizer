@@ -132,6 +132,12 @@ struct VizBallInstance
     float size;
 };
 
+enum VizBallFlags : unsigned int
+{
+    SELECTED_FLAG = 1 << 2,
+    VISIBLE_FLAG = 1 << 3,
+};
+
 class AtomItem : public TreeItem
 {
 public:
@@ -141,6 +147,7 @@ public:
     VizBallInstance& getInstance();
 
     static const QVector<VizBallInstance>& getBuffer();
+    static void resizeBuffer(int count);
 
 private:
     int id;

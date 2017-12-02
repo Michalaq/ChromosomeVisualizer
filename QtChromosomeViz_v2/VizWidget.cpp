@@ -4,8 +4,6 @@
 #include "VizWidget.hpp"
 
 static const float EPSILON = 1e-4;
-static const int SELECTED_FLAG = 1 << 2;
-static const int VISIBLE_FLAG = 1 << 3;
 
 inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
 {
@@ -1034,7 +1032,7 @@ void VizWidget::generateSortedState()
         return z1 > z2;
     };
 
-    sortedState_ = frameState_;
+    sortedState_ = AtomItem::getBuffer();
     qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
 }
 
