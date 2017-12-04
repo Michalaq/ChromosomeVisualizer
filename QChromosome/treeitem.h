@@ -141,13 +141,14 @@ enum VizBallFlags : unsigned int
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const QString& name, int id, TreeItem *parentItem = 0);
+    explicit AtomItem(const Atom *atom, int id, TreeItem *parentItem = 0);
     ~AtomItem();
 
     VizBallInstance& getInstance();
 
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
+    static void setFrame(std::shared_ptr<Frame> frame);
 
 private:
     int id;

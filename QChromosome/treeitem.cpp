@@ -249,11 +249,13 @@ Camera* CameraItem::getCamera() const
 
 QVector<VizBallInstance> AtomItem::buffer;
 
-AtomItem::AtomItem(const QString& name, int id, TreeItem *parentItem) :
-    TreeItem({name, NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+AtomItem::AtomItem(const Atom *atom, int id, TreeItem *parentItem) :
+    TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     id(id)
 {
-
+    buffer[id].position[0] = atom->x;
+    buffer[id].position[1] = atom->y;
+    buffer[id].position[2] = atom->z;
 }
 
 AtomItem::~AtomItem()
@@ -278,13 +280,30 @@ void AtomItem::resizeBuffer(int count)
     buffer.resize(offset + count);
 
     VizBallInstance dummy;
-    dummy.position[0] = dummy.position[1] = dummy.position[2] = 0.f;
     dummy.flags = VISIBLE_FLAG;
-    dummy.atomID = 0;
-    dummy.color = 0xFF777777;
-    dummy.specularColor = 0xFFFFFFFF;
-    dummy.specularExponent = 10.f;
+    dummy.color = 0xFF777777;//TODO usunąć
+    dummy.specularColor = 0xFFFFFFFF;//TODO usunąć
+    dummy.specularExponent = 10.f;//TODO usunąć
     dummy.size = 1.f;
 
     std::fill(buffer.begin() + offset, buffer.end(), dummy);
+
+    for (int i = offset; i < buffer.size(); i++)
+        buffer[i].atomID = i;
+}
+
+void AtomItem::setFrame(std::shared_ptr<Frame> frame)
+{
+    assert(frame->atoms.size() == buffer.size());
+
+    auto& atoms = frame->atoms;
+
+    for (int i = 0; i < atoms.size(); i++)
+    {
+        auto& atom = atoms[i];
+        auto* buff = buffer[i].position;
+        buff[0] = atom.x;
+        buff[1] = atom.y;
+        buff[2] = atom.z;
+    }
 }

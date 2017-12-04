@@ -183,7 +183,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         if (!types.contains(t))
             types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
 
-        types[t]->appendChild(new AtomItem(QString("Atom.%1").arg(atom->id), atom->id - 1 + offset, types[t]));
+        types[t]->appendChild(new AtomItem(atom, atom->id - 1 + offset, types[t]));
     }
 
     for (auto t : types)
@@ -204,6 +204,8 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     TreeItem* root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
 
+    AtomItem::resizeBuffer(atoms.size());
+
     unsigned int i = 0;
 
     for (auto range : connectedRanges)
@@ -222,7 +224,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
             if (!types.contains(t))
                 types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
 
-            types[t]->appendChild(new AtomItem(QString("Atom.%1").arg(atoms[i].id), atoms[i].id - 1 + offset, types[t]));
+            types[t]->appendChild(new AtomItem(&atoms[i], atoms[i].id - 1 + offset, types[t]));
         }
 
     for (auto t : types)
@@ -231,8 +233,6 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
-
-    AtomItem::resizeBuffer(atoms.size());
 
     indices.resize(offset + atoms.size() + 1);
     dumpModel(this, index(0, 0), indices);

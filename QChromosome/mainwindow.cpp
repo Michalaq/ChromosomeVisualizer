@@ -479,6 +479,7 @@ void MainWindow::setFrame(int n)
     ui->scene->setFrame(n);
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
+    AtomItem::setFrame(simulation->getFrame(n));
     ui->page->ui->spinBox_5->setValue(n, false);
 }
 
