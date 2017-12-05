@@ -147,8 +147,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->scene->update();
     });
 
-    ui->page_4->setAxis(ui->widget);
-
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
         Camera::setAutomaticKeyframing(checked);
@@ -803,7 +801,6 @@ void MainWindow::addCamera(Camera* camera)
 
     connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
     connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
-    connect(camera, &Camera::modelViewChanged, ui->widget, &Axis::setModelView);
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &Camera::rotationTypeChanged, [this](int i) {
         ui->actionCoordinates->setChecked(i == 1);

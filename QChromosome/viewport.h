@@ -3,12 +3,18 @@
 
 #include <QWidget>
 
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
-#include "axis.h"
-
 namespace Ui {
     class Viewport;
 }
+
+enum AxisPosition
+{
+    Off_,
+    BottomLeft,
+    BottomRight,
+    TopLeft,
+    TopRight
+};
 
 class Viewport : public QWidget
 {
@@ -25,8 +31,9 @@ public:
     bool getSFVisible() const;
     double getFogDensity() const;
     double getFogContribution() const;
-
-    void setAxis(Axis *axis);
+    AxisPosition getAxisPosition() const;
+    double getAxisScale() const;
+    bool getAxisTextVisible() const;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -38,9 +45,6 @@ public slots:
 
 private:
     Ui::Viewport *ui;
-
-    VizWidget* vizWidget_;
-    Axis *axis_;
 };
 
 #endif // VIEWPORT_H

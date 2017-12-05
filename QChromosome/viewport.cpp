@@ -26,19 +26,13 @@ Viewport::Viewport(QWidget *parent) :
     connect(ui->widget, &Picker::valueChanged, [this] { emit viewportChanged(); });
 
     // editor axis position
-    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
-        axis_->setPosition(index);
-    });
+    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this] { emit viewportChanged(); });
 
     // editor axis scale
-    connect(ui->doubleSpinBox_2, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        axis_->setScale(value / 100);
-    });
+    connect(ui->doubleSpinBox_2, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
 
     // editor axis text
-    connect(ui->checkBox_2, &QCheckBox::toggled, [this] (bool czy) {
-        axis_->setTextVisible(czy);
-    });
+    connect(ui->checkBox_2, &QCheckBox::toggled, [this] { emit viewportChanged(); });
 
     // background color
     connect(ui->widget_2, &Picker::valueChanged, [this] { emit viewportChanged(); });
@@ -101,10 +95,22 @@ double Viewport::getFogContribution() const
     return ui->doubleSpinBox_4->value() / 100;
 }
 
-void Viewport::setAxis(Axis *axis)
+AxisPosition Viewport::getAxisPosition() const
 {
-    axis_ = axis;
+    return static_cast<AxisPosition>(ui->comboBox->currentIndex());
 }
+
+double Viewport::getAxisScale() const
+{
+    return ui->doubleSpinBox_2->value() / 100;
+}
+
+bool Viewport::getAxisTextVisible() const
+{
+    return ui->checkBox_2->isChecked();
+}
+
+#include <QJsonObject>
 
 void Viewport::read(const QJsonObject &json)
 {
