@@ -14,6 +14,8 @@ Camera::Action Camera::currentAction;
 
 bool Camera::automaticKeyframing = false;
 
+Viewport* Camera::viewport = nullptr;
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -124,6 +126,11 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     updateAngles();
 }
 
+void Camera::setViewport(Viewport *vp)
+{
+    viewport = vp;
+}
+
 void Camera::resizeEvent(QResizeEvent *event)
 {
     emit projectionChanged(updateProjection());
@@ -158,6 +165,35 @@ void Camera::showEvent(QShowEvent *event)
     emit modelViewChanged(modelView);
     emit projectionChanged(projection);
     emit rotationTypeChanged(rotationType);
+}
+
+#include <QPainter>
+#include "viewport.h"
+
+void Camera::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    if (viewport->getSFVisible())
+    {
+        int w = std::min(width(), int(qreal(height()) * aspectRatio + 0.5));
+        int h = std::min(height(), int(qreal(width()) / aspectRatio + 0.5));
+
+        QRect view(0, 0, w, h);
+        view.moveCenter(rect().center());
+
+        auto opacity = viewport->getSFOpacity();
+        auto color = viewport->getSFColor();
+
+        QPainter p(this);
+        p.setOpacity(opacity);
+
+        p.fillRect(QRect(rect().topLeft(), view.bottomLeft() - QPoint(1, 0)), color);
+        p.fillRect(QRect(rect().topLeft(), view.topRight() - QPoint(0, 1)), color);
+
+        p.fillRect(QRect(view.topRight() + QPoint(1, 0), rect().bottomRight()), color);
+        p.fillRect(QRect(view.bottomLeft() + QPoint(0, 1), rect().bottomRight()), color);
+    }
 }
 
 void Camera::setOrigin(const QVector3D &o)

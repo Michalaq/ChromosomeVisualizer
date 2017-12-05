@@ -6,6 +6,8 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
+class Viewport;
+
 class Camera : public SplineInterpolator
 {
     Q_OBJECT
@@ -13,6 +15,8 @@ public:
     explicit Camera(QWidget *parent = 0);
     Camera(const Camera& camera);
     ~Camera();
+
+    static void setViewport(Viewport* vp);
 
     /* sets new origin */
     static void setOrigin(const QVector3D& o);
@@ -76,6 +80,8 @@ protected:
     void connectNotify(const QMetaMethod &signal);
     void showEvent(QShowEvent *event);
 
+    void paintEvent(QPaintEvent *event);
+
 private:
     /* eye position */
     QVector3D eye;
@@ -128,6 +134,8 @@ private:
     static Action currentAction;
 
     static bool automaticKeyframing;
+
+    static Viewport* viewport;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

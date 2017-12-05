@@ -13,21 +13,17 @@ Viewport::Viewport(QWidget *parent) :
     ui->widget_2->setValue(QColor(Qt::black));
     ui->widget_3->setValue(QColor(Qt::black));
     ui->widget_4->setValue(QColor(Qt::white));
+    ui->doubleSpinBox_3->setValue(10);
+    ui->doubleSpinBox_4->setValue(80);
 
     // safe frames
-    connect(ui->checkBox, &QCheckBox::toggled, [this] (bool czy) {
-        blind_->setVisible(czy);
-    });
+    connect(ui->checkBox, &QCheckBox::toggled, [this] { emit viewportChanged(); });
 
     // opacity
-    connect(ui->doubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        blind_->setOpacity(value / 100);
-    });
+    connect(ui->doubleSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
 
     // border color
-    connect(ui->widget, &Picker::valueChanged, [this] (QColor color) {
-        blind_->setColor(color);
-    });
+    connect(ui->widget, &Picker::valueChanged, [this] { emit viewportChanged(); });
 
     // editor axis position
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
@@ -45,29 +41,19 @@ Viewport::Viewport(QWidget *parent) :
     });
 
     // background color
-    connect(ui->widget_2, &Picker::valueChanged, [this] (QColor color) {
-        vizWidget_->setBackgroundColor(color);
-    });
+    connect(ui->widget_2, &Picker::valueChanged, [this] { emit viewportChanged(); });
 
     // fog density
-    connect(ui->doubleSpinBox_3, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        vizWidget_->setFogDensity(value * DISPLAYED_TO_INTERNAL_FOG_DENSITY);
-    });
+    connect(ui->doubleSpinBox_3, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
 
     // fog contribution
-    connect(ui->doubleSpinBox_4, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        vizWidget_->setFogContribution(value / 100);
-    });
+    connect(ui->doubleSpinBox_4, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
 
     // labels background
-    connect(ui->widget_3, &Picker::valueChanged, [this] (QColor color) {
-        vizWidget_->setLabelBackgroundColor(color);
-    });
+    connect(ui->widget_3, &Picker::valueChanged, [this] { emit viewportChanged(); });
 
     // labels text
-    connect(ui->widget_4, &Picker::valueChanged, [this] (QColor color) {
-        vizWidget_->setLabelTextColor(color);
-    });
+    connect(ui->widget_4, &Picker::valueChanged, [this] { emit viewportChanged(); });
 }
 
 Viewport::~Viewport()
@@ -75,14 +61,44 @@ Viewport::~Viewport()
     delete ui;
 }
 
-void Viewport::setVizWidget(VizWidget *vizWidget)
+QColor Viewport::getBackgroundColor() const
 {
-    vizWidget_ = vizWidget;
+    return ui->widget_2->value();
 }
 
-void Viewport::setBlind(Blind *blind)
+QColor Viewport::getLabelTextColor() const
 {
-    blind_ = blind;
+    return ui->widget_4->value();
+}
+
+QColor Viewport::getLabelBackgroundColor() const
+{
+    return ui->widget_3->value();
+}
+
+double Viewport::getSFOpacity() const
+{
+    return ui->doubleSpinBox->value() / 100;
+}
+
+QColor Viewport::getSFColor() const
+{
+    return ui->widget->value();
+}
+
+bool Viewport::getSFVisible() const
+{
+    return ui->checkBox->isChecked();
+}
+
+double Viewport::getFogDensity() const
+{
+    return ui->doubleSpinBox_3->value() * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
+}
+
+double Viewport::getFogContribution() const
+{
+    return ui->doubleSpinBox_4->value() / 100;
 }
 
 void Viewport::setAxis(Axis *axis)

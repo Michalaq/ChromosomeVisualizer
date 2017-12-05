@@ -351,9 +351,6 @@ Label {
           <widget class="Selection" name="widget_3" native="true"/>
          </item>
          <item row="0" column="0">
-          <widget class="Blind" name="widget_2" native="true"/>
-         </item>
-         <item row="0" column="0">
           <widget class="Axis" name="widget" native="true"/>
          </item>
         </layout>
@@ -1510,6 +1507,7 @@ QLineEdit {
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
     <slot>setSelectingState(bool)</slot>
+    <slot>setSelectionPath(QPainterPath,QItemSelectionModel::SelectionFlags)</slot>
     <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
    </slots>
   </customwidget>
@@ -1556,12 +1554,6 @@ QLineEdit {
    <class>ToolBar</class>
    <extends>QToolBar</extends>
    <header>toolbar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Blind</class>
-   <extends>QWidget</extends>
-   <header>blind.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ProjectSettings</class>
@@ -1620,6 +1612,7 @@ QLineEdit {
    <header>selection.h</header>
    <container>1</container>
    <slots>
+    <signal>selectionPathChanged(QPainterPath,QItemSelectionModel::SelectionFlags)</signal>
     <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
     <slot>enableSelecting(bool)</slot>
    </slots>

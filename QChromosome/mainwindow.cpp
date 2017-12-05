@@ -79,7 +79,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMove->toggle();
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
-    connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
@@ -140,8 +139,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    ui->page_4->setVizWidget(ui->scene);
-    ui->page_4->setBlind(ui->widget_2);
+    ui->scene->setViewport(ui->page_4);
+    Camera::setViewport(ui->page_4);
+
+    connect(ui->page_4, &Viewport::viewportChanged, [this] {
+        ui->stackedWidget_2->currentWidget()->update();
+        ui->scene->update();
+    });
+
     ui->page_4->setAxis(ui->widget);
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
@@ -719,7 +724,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(currentFrame, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    MovieMaker::captureScene1(currentFrame, ui->page_4, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
@@ -728,7 +733,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->page_4, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});

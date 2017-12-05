@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     legend.cpp \
     toolbar.cpp \
     rendersettings.cpp \
-    blind.cpp \
     projectsettings.cpp \
     slider.cpp \
     softslider.cpp \
@@ -87,7 +86,6 @@ HEADERS  += mainwindow.h\
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
-    blind.h \
     projectsettings.h \
     slider.h \
     softslider.h \

@@ -4,7 +4,6 @@
 #include <QWidget>
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
-#include "blind.h"
 #include "axis.h"
 
 namespace Ui {
@@ -18,14 +17,22 @@ public:
     explicit Viewport(QWidget *parent = 0);
     ~Viewport();
 
-    void setVizWidget(VizWidget* vizWidget);
-    void setBlind(Blind *blind);
+    QColor getBackgroundColor() const;
+    QColor getLabelTextColor() const;
+    QColor getLabelBackgroundColor() const;
+    double getSFOpacity() const;
+    QColor getSFColor() const;
+    bool getSFVisible() const;
+    double getFogDensity() const;
+    double getFogContribution() const;
+
     void setAxis(Axis *axis);
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
 signals:
+    void viewportChanged();
 
 public slots:
 
@@ -33,7 +40,6 @@ private:
     Ui::Viewport *ui;
 
     VizWidget* vizWidget_;
-    Blind *blind_;
     Axis *axis_;
 };
 

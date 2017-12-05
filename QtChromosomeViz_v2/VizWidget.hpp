@@ -79,6 +79,8 @@ private:
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
+class Viewport;
+
 class VizWidget :   public QOpenGLWidget,
                     protected QOpenGLFunctions_3_3_Core
 {
@@ -95,6 +97,7 @@ public:
 
     void setSimulation(std::shared_ptr<Simulation> dp);
     void setTreeView(TreeView* tv);
+    void setViewport(Viewport* vp);
 
     std::shared_ptr<Frame> currentFrame() const;
     void nextInterestingFrame();
@@ -123,21 +126,7 @@ public slots:
 
     void setVisibleSelection(AtomSelection s, bool e = true);
 
-    void setBackgroundColor(QColor color);
-    QColor backgroundColor() const;
-
-    void setLabelTextColor(QColor color);
-    QColor labelTextColor() const;
-
-    void setLabelBackgroundColor(QColor color);
-    QColor labelBackgroundColor() const;
-
     const QMap<unsigned int, QString> & getLabels() const;
-
-    void setFogDensity(float intensity);
-    void setFogContribution(float contribution);
-    float fogDensity() const;
-    float fogContribution() const;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -196,9 +185,6 @@ private:
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
 
-    float fogDensity_;
-    float fogContribution_;
-
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
     unsigned int sphereCount_;
@@ -226,8 +212,7 @@ private:
 
     LabelRenderer labelRenderer_;
 
-    QColor backgroundColor_;
-    QColor labelTextColor_, labelBackgroundColor_;
+    Viewport* viewport_;
 
     QMap<unsigned int, QVariantMap> changes;
 
