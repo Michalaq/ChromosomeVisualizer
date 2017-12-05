@@ -738,6 +738,8 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.release();
 }
 
+#include "itemselection.h"
+
 void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
 {
     const bool ctrl = m & Qt::ControlModifier;
@@ -798,6 +800,7 @@ void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
     emit selectionChangedIndices(newIndices, oldIndices);
     emit selectionChanged(selectedSpheres(), oldAtoms);
     emit selectionChangedObject(selectedSpheresObject());
+    //emit itemSelectionChaned();
 }
 
 QList<unsigned int> VizWidget::selectedSphereIndices() const

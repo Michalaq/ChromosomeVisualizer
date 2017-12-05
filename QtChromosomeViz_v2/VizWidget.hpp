@@ -68,6 +68,8 @@ private:
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
+class ItemSelection;
+
 class VizWidget :   public QOpenGLWidget,
                     protected QOpenGLFunctions_3_3_Core
 {
@@ -140,6 +142,7 @@ signals:
     void selectionChanged(const QList<Atom> & selected,
                           const QList<Atom> & deselected);
     void selectionChangedObject(const AtomSelection & selection);
+    void itemSelectionChaned(const ItemSelection &selection, QItemSelectionModel::SelectionFlags command);
 
 protected:
     void paintLabels();
