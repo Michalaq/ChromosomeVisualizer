@@ -103,6 +103,7 @@ private:
     void addCamera(Camera *camera);
 
     PickWidget* pw;
+    QLabel* msg;
 };
 
 #endif // MAINWINDOW_H
