@@ -851,17 +851,13 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="ComboBox" name="comboBox_5">
-               <item>
-                <property name="text">
-                 <string>Mono</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Symmetrical</string>
-                </property>
-               </item>
+              <widget class="PickWidget" name="lineEdit_2">
+               <property name="dragEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -886,17 +882,13 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="ComboBox" name="comboBox_6">
-               <item>
-                <property name="text">
-                 <string>Mono</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Symmetrical</string>
-                </property>
-               </item>
+              <widget class="PickWidget" name="lineEdit_3">
+               <property name="dragEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
@@ -907,17 +899,13 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="ComboBox" name="comboBox_7">
-               <item>
-                <property name="text">
-                 <string>Mono</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Symmetrical</string>
-                </property>
-               </item>
+              <widget class="PickWidget" name="lineEdit_4">
+               <property name="dragEnabled">
+                <bool>true</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
             </layout>
@@ -970,6 +958,11 @@
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
    <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PickWidget</class>
+   <extends>QLineEdit</extends>
+   <header>pickwidget.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
