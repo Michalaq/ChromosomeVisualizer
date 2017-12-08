@@ -42,7 +42,7 @@ QDockWidget {
 }
 
 QTabWidget::pane {
-	background: url(&quot;:/bar&quot;) repeat-x;
+	background: url(&quot;:/tabwidget/bar&quot;) repeat-x;
 	border-top: 1px solid #4d4d4d;
 	padding-top: 5px;
 }
