@@ -9,6 +9,7 @@
 #include "preferences.h"
 #include "materialbrowser.h"
 #include "camera.h"
+#include "pickwidget.h"
 
 namespace Ui
 {
@@ -100,6 +101,8 @@ private:
     QString currentFile;
 
     void addCamera(Camera *camera);
+
+    PickWidget* pw;
 };
 
 #endif // MAINWINDOW_H

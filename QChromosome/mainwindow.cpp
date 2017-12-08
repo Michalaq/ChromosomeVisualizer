@@ -18,7 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup(new QActionGroup(this)),
     renderSettings(RenderSettings::getInstance()),
     preferences(new Preferences),
-    materialBrowser(MaterialBrowser::getInstance())
+    materialBrowser(MaterialBrowser::getInstance()),
+    pw(nullptr)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -223,6 +224,11 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->horizontalSlider->setSplineInterpolator(camera);
     });
 
+    connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
+        pw = qobject_cast<PickWidget*>(object);
+        statusBar()->showMessage("Pick mode: Click on an object, material, tag ...");
+    });
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);
@@ -238,6 +244,14 @@ MainWindow::~MainWindow()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+    if (pw && event->type() == QEvent::MouseButtonPress)
+    {
+        auto tmp = dynamic_cast<Pickable*>(watched);
+        pw->pick(tmp ? tmp->pick(reinterpret_cast<QMouseEvent*>(event)->pos()) : QModelIndex());
+        pw = nullptr;
+        return true;
+    }
+
     if (Draggable::pressedButton() != Qt::NoButton)
     {
         if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
