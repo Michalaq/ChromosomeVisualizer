@@ -256,11 +256,20 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         QApplication::restoreOverrideCursor();
         msg->hide();
 
-        auto tmp = dynamic_cast<Pickable*>(watched);
+        auto p = ui->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
 
-        if (tmp)
+        if (ui->treeView->rect().contains(p))
         {
-            pw->pick(tmp->pick(reinterpret_cast<QMouseEvent*>(event)->pos()));
+            pw->pick(ui->treeView->pick(p));
+            pw = nullptr;
+            return true;
+        }
+
+        auto q = ui->scene->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
+
+        if (ui->scene->rect().contains(q))
+        {
+            pw->pick(ui->scene->pick(q));
             pw = nullptr;
             return true;
         }

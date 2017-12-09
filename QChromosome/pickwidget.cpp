@@ -12,9 +12,13 @@ const QSignalMapper& PickWidget::getSignalMapper()
     return sm;
 }
 
-void PickWidget::pick(QModelIndex object)
+void PickWidget::pick(QPersistentModelIndex object)
 {
-    obj = object;
+    if (object.isValid())
+    {
+        obj = object;
+        update();
+    }
 }
 
 void PickWidget::mousePressEvent(QMouseEvent *event)

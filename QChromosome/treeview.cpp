@@ -510,3 +510,10 @@ void TreeView::materializeTags(const QModelIndex &root)
         m->assign(root.sibling(root.row(), 5));
     }
 }
+
+QPersistentModelIndex TreeView::pick(const QPoint& pos)
+{
+    auto index = indexAt(pos);
+
+    return index.sibling(index.row(), 1).data().toInt() == NodeType::AtomObject ? index.sibling(index.row(), 0) : QModelIndex();
+}

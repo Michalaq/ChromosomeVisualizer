@@ -13,7 +13,7 @@ public:
 
     static const QSignalMapper& getSignalMapper();
 
-    void pick(QModelIndex object);
+    void pick(QPersistentModelIndex object);
 
 signals:
     void picked();
@@ -25,13 +25,15 @@ protected:
 
 private:
     static QSignalMapper sm;
-    QModelIndex obj;
+    QPersistentModelIndex obj;
 };
 
 class Pickable
 {
 public:
-    virtual QModelIndex pick(QPoint pos) const = 0;
+    virtual QPersistentModelIndex pick(const QPoint& pos) = 0;
 };
+
+Q_DECLARE_INTERFACE(Pickable, "Pickable")
 
 #endif // PICKWIDGET_H

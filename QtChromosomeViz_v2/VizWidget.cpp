@@ -482,6 +482,15 @@ void VizWidget::nextInterestingFrame()
     setFrame(next);
 }
 
+QPersistentModelIndex VizWidget::pick(const QPoint &pos)
+{
+    pickSpheres();
+
+    auto color = image.pixel(pos);
+
+    return color != 0xFFFFFFFFU ? simulation_->getModel()->getIndices()[color] : QPersistentModelIndex();
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);

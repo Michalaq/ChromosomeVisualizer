@@ -5,7 +5,7 @@
 #include <QHeaderView>
 #include "treemodel.h"
 #include "material.h"
-#include <functional>
+#include "pickwidget.h"
 
 class VizWidget;
 
@@ -18,9 +18,10 @@ enum VisibilityMode
 class HeaderView;
 class Simulation;
 
-class TreeView : public QTreeView
+class TreeView : public QTreeView, public Pickable
 {
     Q_OBJECT
+    Q_INTERFACES(Pickable)
 public:
     explicit TreeView(QWidget *parent = 0);
     ~TreeView();
@@ -40,6 +41,8 @@ public:
     void read(const QJsonObject& json);
 
     void materializeTags(const QModelIndex& root = QModelIndex());
+
+    QPersistentModelIndex pick(const QPoint &pos);
 
 signals:
     void visibilityChanged(VisibilityMode);

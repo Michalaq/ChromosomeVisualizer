@@ -79,12 +79,15 @@ private:
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
+#include "pickwidget.h"
 class Viewport;
 
 class VizWidget :   public QOpenGLWidget,
-                    protected QOpenGLFunctions_3_3_Core
+                    protected QOpenGLFunctions_3_3_Core,
+                    public Pickable
 {
     Q_OBJECT
+    Q_INTERFACES(Pickable)
     friend class AtomSelection;
 
 public:
@@ -101,6 +104,8 @@ public:
 
     std::shared_ptr<Frame> currentFrame() const;
     void nextInterestingFrame();
+
+    QPersistentModelIndex pick(const QPoint& pos);
 
 public slots:
     void advanceFrame();
