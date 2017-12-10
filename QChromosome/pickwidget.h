@@ -4,6 +4,7 @@
 #include "lineedit.h"
 #include <QSignalMapper>
 #include <QModelIndex>
+#include <QWidgetAction>
 
 class PickWidget : public LineEdit
 {
@@ -21,11 +22,12 @@ signals:
 public slots:
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
     static QSignalMapper sm;
     QPersistentModelIndex obj;
+    QAction* icon;
 };
 
 class Pickable

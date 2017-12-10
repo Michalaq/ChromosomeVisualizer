@@ -16,6 +16,7 @@
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
+        <file alias="pick">icons/select_point_icon.svg</file>
     </qresource>
     <qresource prefix="/fonts">
         <file alias="Roboto-Regular">fonts/Roboto-Regular.ttf</file>
