@@ -33,32 +33,12 @@ const QSignalMapper& PickWidget::getSignalMapper()
     return sm;
 }
 
-#include "treeitem.h"
-
 void PickWidget::pick(QPersistentModelIndex object)
 {
     if (!indexValidator(object))
         return;
 
-    //TODO zaimplementować ikonę jako część itemu
-    switch (object.sibling(object.row(), 1).data().toInt())
-    {
-    case NodeType::LayerObject:
-        icon->setIcon(QIcon(":/objects/layer"));
-        break;
-    case NodeType::ChainObject:
-        icon->setIcon(QIcon(":/objects/chain"));
-        break;
-    case NodeType::ResidueObject:
-        icon->setIcon(QIcon(":/objects/residue"));
-        break;
-    case NodeType::AtomObject:
-        icon->setIcon(QIcon(":/objects/atom"));
-        break;
-    case NodeType::CameraObject:
-        icon->setIcon(QIcon(":/dialogs/film camera"));
-        break;
-    }
+    icon->setIcon(object.data(Qt::DecorationRole).value<QIcon>());
 
     setText(object.data().toString());
 

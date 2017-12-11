@@ -41,11 +41,32 @@
 #include <QStringList>
 
 #include "treeitem.h"
+#include <QIcon>
 
 TreeItem::TreeItem(const QVariantList &data, TreeItem *parent)
 {
     m_parentItem = parent;
     m_itemData = data;
+
+    QIcon icon;
+
+    switch (data[1].toInt())
+    {
+    case NodeType::ChainObject:
+        icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
+        icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
+        break;
+    case NodeType::ResidueObject:
+        icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
+        icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
+        break;
+    case NodeType::AtomObject:
+        icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
+        icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
+        break;
+    }
+
+    decoration = icon;
 }
 
 TreeItem::~TreeItem()
@@ -187,7 +208,10 @@ LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcate
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     layer(slc)
 {
-
+    QIcon icon;
+    icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
+    decoration = icon;
 }
 
 LayerItem::~LayerItem()
@@ -219,7 +243,10 @@ CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
     camera(cam)
 {
-
+    QIcon icon;
+    icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
+    decoration = icon;
 }
 
 CameraItem::~CameraItem()
