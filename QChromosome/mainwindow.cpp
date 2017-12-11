@@ -167,14 +167,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
-    });
-
-    connect(ui->camera, &Camera::rotationTypeChanged, [this](int i) {
-        ui->actionCoordinates->setChecked(i == 1);
-    });
-
     connect(ui->actionFocus, &QAction::triggered, [this] {
         focusSelection(ui->scene->selectedSpheresObject());
     });
@@ -842,9 +834,6 @@ void MainWindow::addCamera(Camera* camera)
     connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
     connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
-    connect(camera, &Camera::rotationTypeChanged, [this](int i) {
-        ui->actionCoordinates->setChecked(i == 1);
-    });
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         ui->page_6->setSplineInterpolator(camera);
         ui->stackedWidget->setCurrentIndex(5);

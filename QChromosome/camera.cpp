@@ -166,7 +166,6 @@ void Camera::showEvent(QShowEvent *event)
 
     emit modelViewChanged(modelView);
     emit projectionChanged(projection);
-    emit rotationTypeChanged(rotationType);
 }
 
 #include <QPainter>
@@ -363,8 +362,6 @@ void Camera::setFieldOfView(qreal fov)
 void Camera::setRotationType(int rt)
 {
     rotationType = rt;
-
-    emit rotationTypeChanged(rt);
 }
 
 void Camera::setNearClipping(qreal nc)

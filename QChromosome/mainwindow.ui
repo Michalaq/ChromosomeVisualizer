@@ -805,7 +805,6 @@ Label {
     <addaction name="actionXLock"/>
     <addaction name="actionYLock"/>
     <addaction name="actionZLock"/>
-    <addaction name="actionCoordinates"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -843,7 +842,6 @@ Label {
    <addaction name="actionXLock"/>
    <addaction name="actionYLock"/>
    <addaction name="actionZLock"/>
-   <addaction name="actionCoordinates"/>
    <addaction name="separator"/>
    <addaction name="actionSnapshot"/>
    <addaction name="actionFilm"/>
@@ -1384,25 +1382,6 @@ QLineEdit {
     <string>Z</string>
    </property>
   </action>
-  <action name="actionCoordinates">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/locks/world</normaloff>
-     <normalon>:/locks/tilt</normalon>:/locks/world</iconset>
-   </property>
-   <property name="text">
-    <string>Coordinate system</string>
-   </property>
-   <property name="statusTip">
-    <string>Use World/Object Coordinate System [Shortcut W]</string>
-   </property>
-   <property name="shortcut">
-    <string>W</string>
-   </property>
-  </action>
   <action name="actionFocus">
    <property name="icon">
     <iconset resource="icons.qrc">
@@ -1473,7 +1452,7 @@ QLineEdit {
   <action name="actionContent_Browser">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/dialogs/browser</normaloff>:/dialogs/browser</iconset>
+     <normaloff>:/dialogs/world</normaloff>:/dialogs/world</iconset>
    </property>
    <property name="text">
     <string>Open Content Browser [Shortcut Shift+F8]</string>

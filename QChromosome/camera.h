@@ -140,7 +140,6 @@ private:
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
     void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
-    void rotationTypeChanged(int);
 
 friend class CameraSettings;
 };
