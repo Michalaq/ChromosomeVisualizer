@@ -5,6 +5,7 @@
 #include <QSignalMapper>
 #include <QModelIndex>
 #include <QWidgetAction>
+#include <functional>
 
 class PickWidget : public LineEdit
 {
@@ -15,6 +16,7 @@ public:
     static const QSignalMapper& getSignalMapper();
 
     void pick(QPersistentModelIndex object);
+    void setIndexValidator(std::function<bool(const QPersistentModelIndex&)> iv);
 
 signals:
     void picked();
@@ -28,6 +30,7 @@ private:
     static QSignalMapper sm;
     QPersistentModelIndex obj;
     QAction* icon;
+    std::function<bool(const QPersistentModelIndex&)> indexValidator;
 };
 
 class Pickable

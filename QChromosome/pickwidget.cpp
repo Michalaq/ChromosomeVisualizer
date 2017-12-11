@@ -5,7 +5,8 @@ QSignalMapper PickWidget::sm;
 
 PickWidget::PickWidget(QWidget *parent) :
     LineEdit(parent),
-    icon(new QAction(this))
+    icon(new QAction(this)),
+    indexValidator([](const QPersistentModelIndex& i) { return i.isValid(); })
 {
     addAction(icon, QLineEdit::LeadingPosition);
 
@@ -36,9 +37,10 @@ const QSignalMapper& PickWidget::getSignalMapper()
 
 void PickWidget::pick(QPersistentModelIndex object)
 {
-    if (!object.isValid())
+    if (!indexValidator(object))
         return;
 
+    //TODO zaimplementować ikonę jako część itemu
     switch (object.sibling(object.row(), 1).data().toInt())
     {
     case NodeType::LayerObject:
@@ -63,6 +65,11 @@ void PickWidget::pick(QPersistentModelIndex object)
     obj = object;
 
     update();
+}
+
+void PickWidget::setIndexValidator(std::function<bool (const QPersistentModelIndex &)> iv)
+{
+    indexValidator = iv;
 }
 
 void PickWidget::mouseDoubleClickEvent(QMouseEvent *event)
