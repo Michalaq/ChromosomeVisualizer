@@ -270,6 +270,22 @@ QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
 }
 
+QRadioButton {
+	color: lightgray;
+}
+
+QRadioButton:disabled {
+	color: gray;
+}
+
+QRadioButton::indicator:unchecked {
+    image: url(:/radio/unchecked);
+}
+
+QRadioButton::indicator:checked {
+    image: url(:/radio/checked);
+}
+
 QLineEdit, QTextEdit {
 	background: #2d2d2d;
 	border: 1px solid #2d2d2d;

@@ -29,4 +29,8 @@
         <file alias="scroll-right">misc/scroll_right.svg</file>
         <file alias="scroll-left">misc/scroll_left.svg</file>
     </qresource>
+    <qresource prefix="/radio">
+        <file alias="checked">misc/radio_checked.svg</file>
+        <file alias="unchecked">misc/radio_unchecked.svg</file>
+    </qresource>
 </RCC>
