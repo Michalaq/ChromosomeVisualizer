@@ -176,13 +176,13 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
-        if (checked)
-            ui->widget_3->setSelectionType(SelectionType::RECTANGULAR_SELECTION);
+        ui->stackedWidget_2->setAttribute(Qt::WA_TransparentForMouseEvents, checked);
+        Selection::setSelectionType(checked ? RECTANGULAR_SELECTION : NO_SELECTION);
     });
 
     connect(ui->actionCustom, &QAction::toggled, [this](bool checked) {
-        if (checked)
-            ui->widget_3->setSelectionType(SelectionType::CUSTOM_SHAPE_SELECTION);
+        ui->stackedWidget_2->setAttribute(Qt::WA_TransparentForMouseEvents, checked);
+        Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
 
     connect(ui->actionSnapshot, &QAction::triggered, [this] {
@@ -245,7 +245,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
             return true;
     }
 
-    if (watched == ui->widget_3 && event->type() == QEvent::Wheel)
+    if (watched == ui->scene && event->type() == QEvent::Wheel)
     {
         QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
         return true;

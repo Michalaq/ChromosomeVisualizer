@@ -70,7 +70,9 @@ using VizSegment = QPair<VizVertex, VizVertex>;
 
 class ItemSelection;
 
-class VizWidget :   public QOpenGLWidget,
+#include "selection.h"
+
+class VizWidget :   public Selection,
                     protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
@@ -97,8 +99,6 @@ public slots:
 
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);
-
-    void setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m);
 
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
@@ -167,6 +167,8 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
+
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     QOpenGLBuffer sphereModel_;

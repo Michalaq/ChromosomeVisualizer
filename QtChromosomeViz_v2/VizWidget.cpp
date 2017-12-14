@@ -33,7 +33,7 @@ void VizLink::update(const float q1[3], const float q2[3])
 }
 
 VizWidget::VizWidget(QWidget *parent)
-    : QOpenGLWidget(parent)
+    : Selection(parent)
     , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
     , fogDensity_(0.01f)
@@ -738,71 +738,6 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.release();
 }
 
-#include "itemselection.h"
-
-void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
-{
-    const bool ctrl = m & Qt::ControlModifier;
-    const bool shift = m & Qt::ShiftModifier;
-
-    if (!(ctrl || shift))
-    {
-        // Clear old selection
-        for (auto & sphere : selectedBitmap_)
-            sphere = false;
-    }
-
-    auto oldAtoms = selectedSpheres();
-    auto oldIndices = selectedSphereIndices();
-
-    pickSpheres();
-
-    auto mask = QPainterPath();
-    mask.addRect(image.rect());
-    mask = mask.subtracted(p);
-
-    QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
-
-    QSet<unsigned int> ballIDs;
-
-    const auto r = p.boundingRect();
-    for (int y = r.top(); y <= r.bottom(); y++)
-    {
-        for (int x = r.left(); x <= r.right(); x++)
-        {
-            auto color = image.pixel(x, y);
-            if (color != 0xFFFFFFFFU)
-                ballIDs.insert(color);
-        }
-    }
-
-    auto pickedIndices = ballIDs.toList();
-
-    // New selection
-    for (const auto & id : pickedIndices)
-        selectedBitmap_[id] = !ctrl;
-
-    // Now we can get the real list of all selected atoms
-    QList<unsigned int> newIndices;
-    for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
-    {
-        if (selectedBitmap_[i])
-            newIndices.push_back(i);
-    }
-
-    AtomSelection nuSelectionObject(newIndices, this);
-    qSwap(currentSelection_, nuSelectionObject);
-
-    // That's a hack, but it forces updating the flags
-    setFrame(frameNumber_);
-    update();
-
-    emit selectionChangedIndices(newIndices, oldIndices);
-    emit selectionChanged(selectedSpheres(), oldAtoms);
-    emit selectionChangedObject(selectedSpheresObject());
-    //emit itemSelectionChaned();
-}
-
 QList<unsigned int> VizWidget::selectedSphereIndices() const
 {
     return currentSelection_.selectedIndices();
@@ -1124,6 +1059,74 @@ void VizWidget::dropEvent(QDropEvent *event)
         treeView->setMaterial(currentSelection_.selectedIndices_, qobject_cast<Material*>(event->source()));
     else
         treeView->setMaterial({index}, qobject_cast<Material*>(event->source()));
+}
+
+void VizWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    Selection::mouseReleaseEvent(event);
+
+    auto m = event->modifiers();
+    auto& p = getSelectionPath();
+
+    const bool ctrl = m & Qt::ControlModifier;
+    const bool shift = m & Qt::ShiftModifier;
+
+    if (!(ctrl || shift))
+    {
+        // Clear old selection
+        for (auto & sphere : selectedBitmap_)
+            sphere = false;
+    }
+
+    auto oldAtoms = selectedSpheres();
+    auto oldIndices = selectedSphereIndices();
+
+    pickSpheres();
+
+    auto mask = QPainterPath();
+    mask.addRect(image.rect());
+    mask = mask.subtracted(p);
+
+    QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
+
+    QSet<unsigned int> ballIDs;
+
+    const auto r = p.boundingRect();
+    for (int y = r.top(); y <= r.bottom(); y++)
+    {
+        for (int x = r.left(); x <= r.right(); x++)
+        {
+            auto color = image.pixel(x, y);
+            if (color != 0xFFFFFFFFU)
+                ballIDs.insert(color);
+        }
+    }
+
+    auto pickedIndices = ballIDs.toList();
+
+    // New selection
+    for (const auto & id : pickedIndices)
+        selectedBitmap_[id] = !ctrl;
+
+    // Now we can get the real list of all selected atoms
+    QList<unsigned int> newIndices;
+    for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
+    {
+        if (selectedBitmap_[i])
+            newIndices.push_back(i);
+    }
+
+    AtomSelection nuSelectionObject(newIndices, this);
+    qSwap(currentSelection_, nuSelectionObject);
+
+    // That's a hack, but it forces updating the flags
+    setFrame(frameNumber_);
+    update();
+
+    emit selectionChangedIndices(newIndices, oldIndices);
+    emit selectionChanged(selectedSpheres(), oldAtoms);
+    emit selectionChangedObject(selectedSpheresObject());
+    //emit itemSelectionChaned();
 }
 
 AtomSelection::AtomSelection(VizWidget * widget)

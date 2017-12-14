@@ -1,8 +1,12 @@
 #include "selection.h"
 
-Selection::Selection(QWidget *parent) : QWidget(parent), isSelecting(false), isSelectingState(false)
+SelectionType Selection::st = NO_SELECTION;
+
+Selection::Selection(QWidget *parent) :
+    QOpenGLWidget(parent),
+    isSelecting(false)
 {
-    setAttribute(Qt::WA_TransparentForMouseEvents);
+
 }
 
 Selection::~Selection()
@@ -15,11 +19,18 @@ void Selection::setSelectionType(SelectionType t)
     st = t;
 }
 
+const QPainterPath& Selection::getSelectionPath() const
+{
+    return path;
+}
+
 #include <QPaintEvent>
 #include <QPainter>
 
-void Selection::paintEvent(QPaintEvent *)
+void Selection::paintEvent(QPaintEvent *event)
 {
+    QOpenGLWidget::paintEvent(event);
+
     if (isSelecting)
     {
         QPainter p(this);
@@ -59,8 +70,6 @@ void Selection::mousePressEvent(QMouseEvent *event)
 
     isSelecting = true;
     update();
-
-    event->accept();
 }
 
 QPoint inbounds(QPoint p, QRect r)
@@ -90,8 +99,6 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
     }
 
     update();
-
-    event->accept();
 }
 
 void Selection::mouseReleaseEvent(QMouseEvent *event)
@@ -106,16 +113,6 @@ void Selection::mouseReleaseEvent(QMouseEvent *event)
         path.addRect(sr);
     }
 
-    emit selectionPathChanged(path, event->modifiers());
-
     isSelecting = false;
     update();
-
-    event->accept();
-}
-
-void Selection::enableSelecting(bool b)
-{
-    isSelectingState = b;
-    setAttribute(Qt::WA_TransparentForMouseEvents, !b);
 }

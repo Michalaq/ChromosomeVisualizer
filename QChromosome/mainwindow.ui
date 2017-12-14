@@ -348,9 +348,6 @@ Label {
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="Selection" name="widget_3" native="true"/>
-         </item>
-         <item row="0" column="0">
           <widget class="Blind" name="widget_2" native="true"/>
          </item>
          <item row="0" column="0">
@@ -1615,16 +1612,6 @@ QLineEdit {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Selection</class>
-   <extends>QWidget</extends>
-   <header>selection.h</header>
-   <container>1</container>
-   <slots>
-    <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
-    <slot>enableSelecting(bool)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>TreeView</class>
    <extends>QTreeView</extends>
    <header>treeview.h</header>
@@ -1669,22 +1656,6 @@ QLineEdit {
     <hint type="destinationlabel">
      <x>117</x>
      <y>205</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSelect</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widget_3</receiver>
-   <slot>enableSelecting(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>131</y>
     </hint>
    </hints>
   </connection>
@@ -2137,22 +2108,6 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>widget_3</sender>
-   <signal>selectionPathChanged(QPainterPath,Qt::KeyboardModifiers)</signal>
-   <receiver>scene</receiver>
-   <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>286</x>
-     <y>131</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>131</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionZLock</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
@@ -2165,22 +2120,6 @@ QLineEdit {
     <hint type="destinationlabel">
      <x>423</x>
      <y>248</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionCustom</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>widget_3</receiver>
-   <slot>enableSelecting(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>131</y>
     </hint>
    </hints>
   </connection>
