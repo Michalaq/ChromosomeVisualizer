@@ -34,7 +34,6 @@ public:
     Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
     void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
 
-    Material* getMaterial(const QList<unsigned int>& indexes) const;
     void setMaterial(const QList<unsigned int>& indexes, Material* m);
 
     void read(const QJsonObject& json);
@@ -73,7 +72,6 @@ private:
     Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
 
-    Material* getMaterial(const QModelIndex& root) const;
     void setMaterial(const QModelIndex& root, Material* m, int pos = INT_MAX);
 
     Material* takeSelectedMaterial();

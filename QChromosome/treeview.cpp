@@ -133,11 +133,11 @@ void TreeView::setVisibility(const QModelIndex &root, Visibility v, VisibilityMo
         scene->customSelection(id).setVisible_(getVisibility(root_, m) == On);
 }
 
-Material* TreeView::getMaterial(const QModelIndex &root) const
+Material* getMaterial(const QModelIndex &root)
 {
     if (root.isValid())
     {
-        auto list = model()->data(root.sibling(root.row(), 5)).toList();
+        auto list = root.model()->data(root.sibling(root.row(), 5)).toList();
         if (list.isEmpty())
             return nullptr;
         else
@@ -145,6 +145,20 @@ Material* TreeView::getMaterial(const QModelIndex &root) const
     }
     else
         return Material::getDefault();
+}
+
+void propagateMaterial(const QModelIndex &root, Material *m)
+{
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < root.model()->rowCount(root); r++)
+    {
+        auto c = root.child(r, 0);
+
+        if (!getMaterial(c))
+            propagateMaterial(c, m);
+    }
 }
 
 void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
@@ -157,12 +171,7 @@ void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
     model()->setData(index, list);
 
     if (pos >= list.length() - 1)
-    {
-        QList<unsigned int> id;
-        dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
-
-        scene->customSelection(id).setMaterial(m);
-    }
+        propagateMaterial(root.sibling(root.row(), 0), m);
 
     m->assign(index);
 }
