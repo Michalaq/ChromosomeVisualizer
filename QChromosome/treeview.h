@@ -39,8 +39,6 @@ public:
 
     void read(const QJsonObject& json);
 
-    void materializeTags(const QModelIndex& root = QModelIndex());
-
 signals:
     void visibilityChanged(VisibilityMode);
     void cameraChanged(Camera*);

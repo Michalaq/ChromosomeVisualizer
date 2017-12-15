@@ -157,15 +157,26 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id)
-{
-    auto v = root.sibling(root.row(), 2).data();
+#include "material.h"
 
-    if (v.canConvert<uint>())
-        id[v.toUInt()] = root;
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
+{
+    // update current material
+    auto list = root.sibling(root.row(), 5).data().toList();
+
+    if (!list.isEmpty())
+        m = qobject_cast<Material*>(list.last().value<QObject*>());
+
+    // update index buffer
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+    {
+        id[root.sibling(root.row(), 2).data().toUInt()] = root;
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+        m->assign(root.sibling(root.row(), 5));
+    }
 
     for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), id);
+        dumpModel(model, model->index(r, 0, root), id, m);
 }
 
 #include "defaults.h"
@@ -235,7 +246,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(this, index(0, 0), indices);
+    dumpModel(this, index(0, 0), indices, Material::getDefault());
 }
 
 const QVector<QPersistentModelIndex>& TreeModel::getIndices() const

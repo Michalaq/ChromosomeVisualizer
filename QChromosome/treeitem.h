@@ -138,6 +138,8 @@ enum VizBallFlags : unsigned int
     VISIBLE_FLAG = 1 << 3,
 };
 
+#include "material.h"
+
 class AtomItem : public TreeItem
 {
 public:
@@ -149,6 +151,8 @@ public:
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
     static void setFrame(std::shared_ptr<Frame> frame);
+
+    void setMaterial(Material* material);
 
 private:
     int id;

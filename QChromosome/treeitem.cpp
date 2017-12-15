@@ -307,3 +307,16 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
         buff[2] = atom.z;
     }
 }
+
+void AtomItem::setMaterial(Material *material)
+{
+    unsigned int alpha = 255 * (1. - material->getTransparency());
+    unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);
+    unsigned int code2 = material->getSpecularColor().rgba();
+    float exponent = material->getSpecularExponent();
+
+    auto& buff = buffer[id];
+    buff.color = code1;
+    buff.specularColor = code2;
+    buff.specularExponent = exponent;
+}

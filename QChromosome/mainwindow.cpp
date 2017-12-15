@@ -381,8 +381,6 @@ void MainWindow::addLayer()
 
             ui->scene->setSimulation(simulation);
             ui->plot->updateSimulation();
-
-            ui->treeView->materializeTags();
         }
     } catch (std::exception& e) {
         QMessageBox::critical(0, "Error occured.", e.what());
