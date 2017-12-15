@@ -268,16 +268,19 @@ void TreeView::mousePressEvent(QMouseEvent *event)
             }
             else
             {
-                state = SetCamera;
+                if (index.sibling(index.row(), 1).data().toInt() == CameraObject)
+                {
+                    state = SetCamera;
 
-                auto m = static_cast<TreeModel*>(model());
+                    auto m = static_cast<TreeModel*>(model());
 
-                if (index.sibling(index.row(), 6).data().toBool())
-                    m->setCurrentCamera(QModelIndex());
-                else
-                    m->setCurrentCamera(index.sibling(index.row(), 6));
+                    if (index.sibling(index.row(), 6).data().toBool())
+                        m->setCurrentCamera(QModelIndex());
+                    else
+                        m->setCurrentCamera(index.sibling(index.row(), 6));
 
-                emit cameraChanged(m->getCurrentCamera());
+                    emit cameraChanged(m->getCurrentCamera());
+                }
             }
 
             update();
