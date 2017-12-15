@@ -308,7 +308,7 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
     }
 }
 
-void AtomItem::setMaterial(Material *material)
+void AtomItem::setMaterial(const Material *material)
 {
     unsigned int alpha = 255 * (1. - material->getTransparency());
     unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);

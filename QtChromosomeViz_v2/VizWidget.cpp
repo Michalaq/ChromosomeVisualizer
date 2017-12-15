@@ -1055,10 +1055,16 @@ void VizWidget::dropEvent(QDropEvent *event)
 
     auto index = image.pixel(event->pos());
 
+    //TODO reimplement after changing selection
+    auto model = simulation_->getModel();
+    auto indices = model->getIndices();
+    auto material = qobject_cast<Material*>(event->source());
+
     if (currentSelection_.selectedIndices_.contains(index))
-        treeView->setMaterial(currentSelection_.selectedIndices_, qobject_cast<Material*>(event->source()));
+        for (auto i : currentSelection_.selectedIndices_)
+            model->setMaterial(indices[i], material);
     else
-        treeView->setMaterial({index}, qobject_cast<Material*>(event->source()));
+        model->setMaterial(indices[index], material);
 }
 
 void VizWidget::mouseReleaseEvent(QMouseEvent *event)

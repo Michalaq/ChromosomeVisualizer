@@ -85,16 +85,6 @@ void TreeView::setVisibility(const QList<unsigned int> &indexes, Visibility v, V
     update();
 }
 
-void TreeView::setMaterial(const QList<unsigned int> &indexes, Material *m)
-{
-    auto indices = static_cast<TreeModel*>(model())->getIndices();
-
-    for (unsigned int i : indexes)
-        setMaterial(indices[i], m);
-
-    update();
-}
-
 void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
 {
     bool ok;
@@ -145,35 +135,6 @@ Material* getMaterial(const QModelIndex &root)
     }
     else
         return Material::getDefault();
-}
-
-void propagateMaterial(const QModelIndex &root, Material *m)
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
-
-    for (int r = 0; r < root.model()->rowCount(root); r++)
-    {
-        auto c = root.child(r, 0);
-
-        if (!getMaterial(c))
-            propagateMaterial(c, m);
-    }
-}
-
-void TreeView::setMaterial(const QModelIndex &root, Material *m, int pos)
-{
-    auto index = root.sibling(root.row(), 5);
-
-    auto list = index.data().toList();
-    list.insert(pos, QVariant::fromValue(m));
-
-    model()->setData(index, list);
-
-    if (pos >= list.length() - 1)
-        propagateMaterial(root.sibling(root.row(), 0), m);
-
-    m->assign(index);
 }
 
 #include "materialbrowser.h"
@@ -489,7 +450,7 @@ void TreeView::dropEvent(QDropEvent *event)
     if (n < 0) n = 0;
     if (n > l || event->source() != this) n = l;
 
-    setMaterial(index, mat, n);
+    qobject_cast<TreeModel*>(model())->setMaterial(index, mat, n);
 
     model()->setData(selectedTag, -1, Qt::UserRole + 1);
     model()->setData(selectedTag = index, n, Qt::UserRole + 1);

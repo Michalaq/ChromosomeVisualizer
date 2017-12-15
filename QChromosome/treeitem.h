@@ -152,7 +152,7 @@ public:
     static void resizeBuffer(int count);
     static void setFrame(std::shared_ptr<Frame> frame);
 
-    void setMaterial(Material* material);
+    void setMaterial(const Material* material);
 
 private:
     int id;

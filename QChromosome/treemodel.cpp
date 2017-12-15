@@ -318,6 +318,35 @@ Camera *TreeModel::getCurrentCamera() const
     return currentCamera.isValid() ? static_cast<CameraItem*>(currentCamera.internalPointer())->getCamera() : nullptr;
 }
 
+void propagateMaterial(const QModelIndex &index, const Material* m)
+{
+    if (index.sibling(index.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(index.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < index.model()->rowCount(index); r++)
+    {
+        auto c = index.child(r, 0);
+
+        if (c.sibling(c.row(), 5).data().toList().isEmpty())
+            propagateMaterial(c, m);
+    }
+}
+
+void TreeModel::setMaterial(const QModelIndex &root, Material *m, int position)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    list.insert(position, QVariant::fromValue(m));
+
+    setData(index, list);
+
+    if (position >= list.length() - 1)
+        propagateMaterial(root, m);
+
+    m->assign(index);
+}
+
 void TreeModel::read(const QJsonObject &json)
 {
     header->read(json);

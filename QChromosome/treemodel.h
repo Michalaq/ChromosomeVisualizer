@@ -78,6 +78,8 @@ public:
     void setCurrentCamera(QModelIndex index);
     Camera* getCurrentCamera() const;
 
+    void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
