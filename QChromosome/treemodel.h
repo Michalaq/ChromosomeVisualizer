@@ -84,6 +84,9 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
+public slots:
+    void updateAttributes(const Material* m);
+
 private:
     TreeItem *header;
     QVector<QPersistentModelIndex> indices;

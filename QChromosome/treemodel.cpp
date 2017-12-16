@@ -159,14 +159,16 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
     auto list = root.sibling(root.row(), 5).data().toList();
 
     if (!list.isEmpty())
+    {
         m = qobject_cast<Material*>(list.last().value<QObject*>());
+        m->assign(root.sibling(root.row(), 5));
+    }
 
     // update index buffer
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
     {
         id[root.sibling(root.row(), 2).data().toUInt()] = root;
         reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
-        m->assign(root.sibling(root.row(), 5));
     }
 
     for (int r = 0; r < model->rowCount(root); r++)
@@ -408,4 +410,13 @@ void TreeModel::read(const QJsonObject &json)
 void TreeModel::write(QJsonObject &json) const
 {
     header->write(json);
+}
+
+void TreeModel::updateAttributes(const Material *m)
+{
+    for (auto i : m->getAssigned())
+        if (i.sibling(i.row(), 5).data().toList().last().value<Material*>() == m)
+            propagateMaterial(i.sibling(i.row(), 0), m);
+
+    emit propertyChanged();
 }

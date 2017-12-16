@@ -38,9 +38,6 @@ signals:
     void visibilityChanged(VisibilityMode);
     void cameraChanged(Camera*);
 
-public slots:
-    void updateAttributes(const Material* m);
-
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
