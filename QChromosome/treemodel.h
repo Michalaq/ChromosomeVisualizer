@@ -79,6 +79,7 @@ public:
     Camera* getCurrentCamera() const;
 
     void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
+    Material* removeMaterial(const QModelIndex& root, int position);
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -89,6 +90,9 @@ private:
     QPersistentModelIndex currentCamera;
 
     QString next_name() const;
+
+signals:
+    void propertyChanged();
 };
 
 #endif // TREEMODEL_H

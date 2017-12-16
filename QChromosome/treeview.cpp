@@ -184,26 +184,9 @@ void TreeView::updateAttributes(const Material *m)
 
 Material* TreeView::takeSelectedMaterial()
 {
-    auto list = selectedTag.data().toList();
-    auto ans = (Material*)list.takeAt(selectedTag.data(Qt::UserRole + 1).toInt()).value<QObject*>();
+    auto ans = qobject_cast<TreeModel*>(model())->removeMaterial(selectedTag, selectedTag.data(Qt::UserRole + 1).toInt());
 
-    ans->assign(selectedTag, false);
-
-    model()->setData(selectedTag, list, Qt::DisplayRole);
     model()->setData(selectedTag, -1, Qt::UserRole + 1);
-
-    update();
-
-    QModelIndex root = selectedTag;
-
-    while (!getMaterial(root))
-        root = root.parent();
-
-    QList<unsigned int> id;
-    dumpModel(selectedTag.sibling(selectedTag.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
-
-    scene->customSelection(id).setMaterial(getMaterial(root));
-
     selectedTag = QModelIndex();
 
     return ans;

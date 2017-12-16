@@ -342,9 +342,48 @@ void TreeModel::setMaterial(const QModelIndex &root, Material *m, int position)
     setData(index, list);
 
     if (position >= list.length() - 1)
-        propagateMaterial(root, m);
+        propagateMaterial(root.sibling(root.row(), 0), m);
 
     m->assign(index);
+
+    emit propertyChanged();
+}
+
+Material *TreeModel::removeMaterial(const QModelIndex &root, int position)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    auto m = list.takeAt(position).value<Material*>();
+
+    setData(index, list);
+
+    if (position == list.length())
+    {
+        auto index = root.sibling(root.row(), 0);
+        auto m = Material::getDefault();
+
+        while (index.isValid())
+        {
+            auto list = index.sibling(index.row(), 5).data().toList();
+
+            if (!list.isEmpty())
+            {
+                m = list.last().value<Material*>();
+                break;
+            }
+
+            index = index.parent();
+        }
+
+        propagateMaterial(root.sibling(root.row(), 0), m);
+    }
+
+    m->assign(index, false);
+
+    emit propertyChanged();
+
+    return m;
 }
 
 void TreeModel::read(const QJsonObject &json)

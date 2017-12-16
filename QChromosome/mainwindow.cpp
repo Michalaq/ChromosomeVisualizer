@@ -316,6 +316,11 @@ void MainWindow::newProject()
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
     ui->stackedWidget->setCurrentIndex(0);
+
+    connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
+        ui->treeView->update();
+        ui->scene->update();
+    });
 }
 
 #include <QStandardPaths>
