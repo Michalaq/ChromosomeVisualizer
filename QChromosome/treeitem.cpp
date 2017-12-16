@@ -114,6 +114,8 @@ void TreeItem::removeRows(int row, int count)
 }
 
 #include <QJsonObject>
+#include <QJsonArray>
+#include "materialbrowser.h"
 
 void TreeItem::read(const QJsonObject &json)
 {
@@ -129,14 +131,23 @@ void TreeItem::read(const QJsonObject &json)
     if (vir != object.end())
         m_itemData[4] = vir.value().toBool() ? On : Off;
 
+    auto t = object.find("Tags");
+
+    if (t != object.end())
+    {
+        QVariantList u;
+
+        for (auto i : t.value().toArray())
+            u.append(QVariant::fromValue(MaterialBrowser::getMaterialById(i.toString())));
+
+        m_itemData[5] = u;
+    }
+
     const QJsonObject children = json["Descendants"].toObject();
 
     for (auto child = children.begin(); child != children.end(); child++)
         m_childItems[child.key().toInt()]->read(child.value().toObject());
 }
-
-#include <QJsonArray>
-#include "material.h"
 
 void TreeItem::write(QJsonObject &json) const
 {

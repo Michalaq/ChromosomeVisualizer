@@ -91,6 +91,9 @@ private:
 
     QString next_name() const;
 
+    void propagateMaterial(const QModelIndex &root, const Material* m);
+    void updateMaterial(const QModelIndex &root, const Material* m);
+
 signals:
     void propertyChanged();
 };

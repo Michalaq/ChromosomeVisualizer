@@ -127,46 +127,12 @@ Material* getMaterial(const QModelIndex &root)
 {
     if (root.isValid())
     {
-        auto list = root.model()->data(root.sibling(root.row(), 5)).toList();
-        if (list.isEmpty())
-            return nullptr;
-        else
-            return qobject_cast<Material*>(list.last().value<QObject*>());
+        auto list = root.sibling(root.row(), 5).data().toList();
+
+        return list.isEmpty() ? nullptr : qobject_cast<Material*>(list.last().value<QObject*>());
     }
     else
         return Material::getDefault();
-}
-
-#include "materialbrowser.h"
-
-void TreeView::dumpModel3(const QModelIndex& root, const QJsonObject &json)
-{
-    const QJsonObject children = json["Descendants"].toObject();
-
-    for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(model()->index(child.key().toInt(), 0, root), child.value().toObject());
-
-    const QJsonArray t = json["Object"].toObject()["Tags"].toArray();
-
-    if (!t.isEmpty())
-    {
-        QVariantList u;
-
-        for (auto i : t)
-            u.push_back(QVariant::fromValue(MaterialBrowser::getMaterialById(i.toString())));
-
-        model()->setData(root.sibling(root.row(), 5), u);
-
-        QList<unsigned int> id;
-        dumpModel(root.sibling(root.row(), 0), id, [=](const QModelIndex& c) { return getMaterial(c) == nullptr; });
-
-        scene->customSelection(id).setMaterial(u.last().value<Material*>());
-    }
-}
-
-void TreeView::read(const QJsonObject &json)
-{
-    dumpModel3(QModelIndex(), json);
 }
 
 void TreeView::updateAttributes(const Material *m)

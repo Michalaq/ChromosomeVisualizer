@@ -145,16 +145,10 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
 
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    TreeItem *parentItem;
     if (parent.column() > 0)
         return 0;
 
-    if (!parent.isValid())
-        parentItem = header;
-    else
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
-
-    return parentItem->childCount();
+    return (parent.isValid() ? static_cast<TreeItem*>(parent.internalPointer()) : header)->childCount();
 }
 
 #include "material.h"
@@ -318,14 +312,14 @@ Camera *TreeModel::getCurrentCamera() const
     return currentCamera.isValid() ? static_cast<CameraItem*>(currentCamera.internalPointer())->getCamera() : nullptr;
 }
 
-void propagateMaterial(const QModelIndex &index, const Material* m)
+void TreeModel::propagateMaterial(const QModelIndex &root, const Material* m)
 {
-    if (index.sibling(index.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(index.internalPointer())->setMaterial(m);
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
 
-    for (int r = 0; r < index.model()->rowCount(index); r++)
+    for (int r = 0; r < rowCount(root); r++)
     {
-        auto c = index.child(r, 0);
+        auto c = index(r, 0, root);
 
         if (c.sibling(c.row(), 5).data().toList().isEmpty())
             propagateMaterial(c, m);
@@ -386,9 +380,29 @@ Material *TreeModel::removeMaterial(const QModelIndex &root, int position)
     return m;
 }
 
+void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
+{
+    auto list = root.sibling(root.row(), 5).data().toList();
+
+    if (!list.isEmpty())
+    {
+        auto n = list.last().value<Material*>();
+        n->assign(root);
+        m = n;
+    }
+
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < rowCount(root); r++)
+        updateMaterial(index(r, 0, root), m);
+}
+
 void TreeModel::read(const QJsonObject &json)
 {
     header->read(json);
+
+    updateMaterial(QModelIndex(), Material::getDefault());
 }
 
 void TreeModel::write(QJsonObject &json) const

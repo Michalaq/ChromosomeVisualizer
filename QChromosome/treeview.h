@@ -34,8 +34,6 @@ public:
     Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
     void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
 
-    void read(const QJsonObject& json);
-
 signals:
     void visibilityChanged(VisibilityMode);
     void cameraChanged(Camera*);
@@ -65,7 +63,6 @@ private:
     VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
-    void dumpModel3(const QModelIndex& root, const QJsonObject &json);
 
     Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);

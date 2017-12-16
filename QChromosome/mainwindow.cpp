@@ -348,17 +348,15 @@ void MainWindow::openProject()
         const QJsonObject camera = project["Camera"].toObject();
         ui->camera->read(camera);
 
+        const QJsonArray materials = project["Materials"].toArray();
+        materialBrowser->read(materials);
+
         const QJsonObject objects = project["Objects"].toObject();
         read(objects);
         simulation->getModel()->read(objects);
 
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
-
-        const QJsonArray materials = project["Materials"].toArray();
-        materialBrowser->read(materials);
-
-        ui->treeView->read(objects);
 
         const QJsonObject bar = project["bar"].toObject();
         ui->scene->read(bar);
@@ -415,13 +413,13 @@ void MainWindow::saveProject()
         ui->camera->write(camera);
         project["Camera"] = camera;
 
-        QJsonObject objects;
-        simulation->getModel()->write(objects);
-        project["Objects"] = objects;
-
         QJsonArray materials;
         materialBrowser->write(materials);
         project["Materials"] = materials;
+
+        QJsonObject objects;
+        simulation->getModel()->write(objects);
+        project["Objects"] = objects;
 
         QJsonObject bar;
         ui->scene->write(bar);
