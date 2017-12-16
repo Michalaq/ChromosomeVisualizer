@@ -25,12 +25,9 @@ public:
     QVariant getName(const QList<unsigned int>& indexes) const;
     void setName(const QList<unsigned int>& indexes, const QString& name);
 
-    Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
-    void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
-
 signals:
-    void visibilityChanged(VisibilityMode);
     void cameraChanged(Camera*);
+    void visibilityChanged(VisibilityMode);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -54,9 +51,6 @@ private:
     VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
-
-    Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
-    void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
 
     Material* takeSelectedMaterial();
 

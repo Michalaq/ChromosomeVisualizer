@@ -1211,7 +1211,12 @@ void AtomSelection::setLabel(const QString & label)
 
 void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
 {
-    widget_->treeView->setVisibility(selectedIndices_, visible, m);
+    //TODO reimplement after changing selection
+    auto model = widget_->simulation_->getModel();
+    auto indices = model->getIndices();
+
+    for (auto i : selectedIndices_)
+        model->setVisibility(indices[i], visible, m);
 }
 
 void AtomSelection::setVisible_(bool visible)
@@ -1290,7 +1295,16 @@ std::tuple<int, int, int> AtomSelection::getCoordinates() const
 
 Visibility AtomSelection::getVisibility(VisibilityMode m) const
 {
-    return widget_->treeView->getVisibility(selectedIndices_, m);
+    //TODO reimplement after changing selection
+    auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
+
+    auto ans = indices[selectedIndices_.first()].isValid() ? (Visibility)indices[selectedIndices_.first()].sibling(indices[selectedIndices_.first()].row(), m).data().toInt() : On;
+
+    for (unsigned int i : selectedIndices_)
+        if ((indices[i].isValid() ? (Visibility)indices[i].sibling(indices[i].row(), m).data().toInt() : On) != ans)
+            return Default;
+
+    return ans;
 }
 
 unsigned int AtomSelection::atomCount() const
