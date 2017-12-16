@@ -9,12 +9,6 @@
 
 class VizWidget;
 
-enum VisibilityMode
-{
-    Editor = 3,
-    Renderer = 4
-};
-
 class HeaderView;
 class Simulation;
 

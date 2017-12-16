@@ -153,6 +153,7 @@ public:
     static void setFrame(std::shared_ptr<Frame> frame);
 
     void setMaterial(const Material* material);
+    void setVisibility(bool visible);
 
 private:
     int id;

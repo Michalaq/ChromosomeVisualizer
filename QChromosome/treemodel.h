@@ -50,6 +50,12 @@
 class Material;
 class Simulation;
 
+enum VisibilityMode
+{
+    Editor = 3,
+    Renderer = 4
+};
+
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -81,6 +87,8 @@ public:
     void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
     Material* removeMaterial(const QModelIndex& root, int position);
 
+    void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -96,6 +104,8 @@ private:
 
     void propagateMaterial(const QModelIndex &root, const Material* m);
     void updateMaterial(const QModelIndex &root, const Material* m);
+
+    void propagateVisibility(const QModelIndex &root, bool v);
 
 signals:
     void propertyChanged();

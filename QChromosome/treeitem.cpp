@@ -331,3 +331,11 @@ void AtomItem::setMaterial(const Material *material)
     buff.specularColor = code2;
     buff.specularExponent = exponent;
 }
+
+void AtomItem::setVisibility(bool visible)
+{
+    if (visible)
+        buffer[id].flags |= VISIBLE_FLAG;
+    else
+        buffer[id].flags &= ~VISIBLE_FLAG;
+}
