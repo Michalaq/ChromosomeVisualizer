@@ -359,9 +359,6 @@ void MainWindow::openProject()
         ui->scene->setSimulation(simulation);
         ui->plot->updateSimulation();
 
-        const QJsonObject bar = project["bar"].toObject();
-        ui->scene->read(bar);
-
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         ui->page->read(projectSettings);
     }
@@ -421,10 +418,6 @@ void MainWindow::saveProject()
         QJsonObject objects;
         simulation->getModel()->write(objects);
         project["Objects"] = objects;
-
-        QJsonObject bar;
-        ui->scene->write(bar);
-        project["bar"] = bar;
 
         QFile file(currentFile);
         file.open(QIODevice::WriteOnly | QIODevice::Text);

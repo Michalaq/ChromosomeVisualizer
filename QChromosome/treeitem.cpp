@@ -319,6 +319,26 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
     }
 }
 
+void AtomItem::setLabel(const QString& l)
+{
+    label = l;
+}
+
+const QString& AtomItem::getLabel() const
+{
+    return label;
+}
+
+void AtomItem::setRadius(float r)
+{
+    buffer[id].size = r;
+}
+
+float AtomItem::getRadius() const
+{
+    return buffer[id].size;
+}
+
 void AtomItem::setMaterial(const Material *material)
 {
     unsigned int alpha = 255 * (1. - material->getTransparency());
@@ -346,4 +366,37 @@ void AtomItem::setSelected(bool selected)
         buffer[id].flags |= SELECTED_FLAG;
     else
         buffer[id].flags &= ~SELECTED_FLAG;
+}
+
+void AtomItem::read(const QJsonObject &json)
+{
+    TreeItem::read(json);
+
+    const QJsonObject object = json["Object"].toObject();
+
+    auto rad = object.find("Radius");
+    if (rad != object.end()) buffer[id].size = (*rad).toDouble();
+
+    auto lab = object.find("Label");
+    if (lab != object.end()) label = (*lab).toString();
+}
+
+void AtomItem::write(QJsonObject &json) const
+{
+    TreeItem::write(json);
+
+    QJsonObject object;
+
+    if (json.contains("Object"))
+        object = json["Object"].toObject();
+
+    object["class"] = "Atom";
+
+    if (buffer[id].size != 1)
+        object["Radius"] = buffer[id].size;
+
+    if (!label.isEmpty())
+        object["Label"] = label;
+
+    json["Object"] = object;
 }

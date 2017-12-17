@@ -152,13 +152,23 @@ public:
     static void resizeBuffer(int count);
     static void setFrame(std::shared_ptr<Frame> frame);
 
+    void setLabel(const QString& l);
+    const QString& getLabel() const;
+
+    void setRadius(float r);
+    float getRadius() const;
+
     void setMaterial(const Material* material);
     void setVisibility(bool visible);
     void setSelected(bool selected);
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     int id;
     static QVector<VizBallInstance> buffer;
+    QString label;
 };
 
 #endif // TREEITEM_H

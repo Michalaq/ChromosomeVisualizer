@@ -125,9 +125,6 @@ public slots:
     float fogDensity() const;
     float fogContribution() const;
 
-    void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
-
     void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
     void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
@@ -210,8 +207,6 @@ private:
 
     QColor backgroundColor_;
     QColor labelTextColor_, labelBackgroundColor_;
-
-    QMap<unsigned int, QVariantMap> changes;
 
     QVector<const Material*> materials;
 };

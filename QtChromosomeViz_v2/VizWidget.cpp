@@ -842,33 +842,6 @@ float VizWidget::fogContribution() const
     return fogContribution_;
 }
 
-void VizWidget::read(const QJsonObject& json)
-{
-    for (auto i = json.begin(); i != json.end(); i++)
-        changes[i.key().toInt()] = i.value().toObject().toVariantMap();
-
-    for (auto i = changes.begin(); i != changes.end(); i++)
-    {
-        unsigned int id = i.key();
-        QVariantMap& map = i.value();
-
-        auto j = map.find("Radius");
-        if (j != map.end()) frameState_[id].size = (*j).toFloat();
-
-        j = map.find("Label");
-        if (j != map.end()) { labelRenderer_.addRef((*j).toString()); atomLabels_[id] = (*j).toString(); }
-    }
-
-    needVBOUpdate_ = true;
-    update();
-}
-
-void VizWidget::write(QJsonObject& json) const
-{
-    for (auto i = changes.begin(); i != changes.end(); i++)
-        json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
-}
-
 #include "moviemaker.h"
 
 constexpr QVector3D vec3(const Atom& a)
@@ -1115,11 +1088,10 @@ void AtomSelection::setMaterial(const Material *material)
 
 void AtomSelection::setSize(float size)
 {
+    //TODO reimplement after changing selection
+    auto& buf = widget_->simulation_->getModel()->getIndices();
     for (unsigned int i : selectedIndices_)
-    {
-        widget_->frameState_[i].size = size;
-        widget_->changes[i]["Radius"] = size;
-    }
+        reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setRadius(size);
 
     widget_->needVBOUpdate_ = true;
     widget_->update();
@@ -1137,13 +1109,15 @@ void AtomSelection::setName(const QString &name)
 
 void AtomSelection::setLabel(const QString & label)
 {
+    //TODO reimplement after changing selection
+    auto& buf = widget_->simulation_->getModel()->getIndices();
     if (label == "")
     {
         for (unsigned int i : selectedIndices_)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_.remove(i);
-            widget_->changes[i].remove("Label");
+            reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setLabel(label);
         }
     }
     else
@@ -1154,7 +1128,7 @@ void AtomSelection::setLabel(const QString & label)
         {
             widget_->labelRenderer_.release(widget_->atomLabels_[i]);
             widget_->atomLabels_[i] = label;
-            widget_->changes[i]["Label"] = label;
+            reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setLabel(label);
         }
     }
 
