@@ -9,7 +9,6 @@
 
 #include "bartekm_code/Simulation.h"
 #include "LabelRenderer.hpp"
-#include "treeview.h"
 
 struct VizVertex
 {
@@ -87,7 +86,6 @@ public:
     virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
-    void setTreeView(TreeView* tv);
 
     std::shared_ptr<Frame> currentFrame() const;
     void nextInterestingFrame();
@@ -224,8 +222,6 @@ private:
     QColor labelTextColor_, labelBackgroundColor_;
 
     QMap<unsigned int, QVariantMap> changes;
-
-    TreeView* treeView;
 
     QVector<const Material*> materials;
 };

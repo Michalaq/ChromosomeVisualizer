@@ -461,11 +461,6 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
     setFirstFrame();
 }
 
-void VizWidget::setTreeView(TreeView *tv)
-{
-    treeView = tv;
-}
-
 std::shared_ptr<Frame> VizWidget::currentFrame() const
 {
     return simulation_->getFrame(frameNumber_);
