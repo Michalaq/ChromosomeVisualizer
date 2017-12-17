@@ -135,7 +135,7 @@ public slots:
     void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 signals:
-    void selectionChanged(const QSet<QPersistentModelIndex> &selected, const QSet<QPersistentModelIndex> &deselected);
+    void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
 
 protected:
     void paintLabels();
@@ -219,8 +219,6 @@ private:
     QMap<unsigned int, QVariantMap> changes;
 
     QVector<const Material*> materials;
-
-    QSet<QPersistentModelIndex> current;
 };
 
 #endif /* VIZWINDOW_HPP */

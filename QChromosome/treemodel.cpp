@@ -444,6 +444,22 @@ void TreeModel::setVisibility(const QModelIndex &root, Visibility v, VisibilityM
     emit propertyChanged();
 }
 
+void TreeModel::propagateSelected(const QModelIndex &root, bool s)
+{
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setSelected(s);
+
+    for (int r = 0; r < rowCount(root); r++)
+        propagateSelected(index(r, 0, root), s);
+}
+
+void TreeModel::setSelected(const QModelIndex &root, bool s)
+{
+    propagateSelected(root, s);
+
+    emit propertyChanged();
+}
+
 void TreeModel::read(const QJsonObject &json)
 {
     header->read(json);

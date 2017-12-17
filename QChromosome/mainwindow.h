@@ -53,8 +53,8 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomSelection &selection, bool b = true);
-    void handleModelSelection();
+    void handleSceneSelection(const QItemSelection &selected, QItemSelectionModel::SelectionFlags flags);
+    void handleModelSelection(const QItemSelection &selected, const QItemSelection &deselected);
     void focusSelection(const AtomSelection &s);
 
     /* actions */

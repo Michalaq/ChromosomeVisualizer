@@ -1506,8 +1506,6 @@ QLineEdit {
     <slot>setModelView(QMatrix4x4)</slot>
     <slot>setProjection(QMatrix4x4)</slot>
     <slot>setFrame(int)</slot>
-    <slot>setSelectingState(bool)</slot>
-    <slot>setSelectionPath(QPainterPath,Qt::KeyboardModifiers)</slot>
    </slots>
   </customwidget>
   <customwidget>
@@ -1764,22 +1762,6 @@ QLineEdit {
     <hint type="sourcelabel">
      <x>263</x>
      <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scene</sender>
-   <signal>selectionChangedObject(AtomSelection)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>handleSelection(AtomSelection)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>249</x>
-     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

@@ -312,6 +312,7 @@ void MainWindow::newProject()
     ui->treeView->setColumnWidth(3, 48);
 
     connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
     ui->stackedWidget->setCurrentIndex(0);
 
@@ -638,17 +639,9 @@ void MainWindow::selectAll()
     ui->scene->setVisibleSelection(ui->scene->allSelection());
 }
 
-void MainWindow::handleSelection(const AtomSelection &selection, bool b)
+void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelectionModel::SelectionFlags flags)
 {
-    ui->dockWidget_2->show();
-
-    ui->stackedWidget->setCurrentIndex(1);
-
-    ui->page_2->handleSelection(selection);
-
-    Camera::setOrigin(selection.weightCenter());
-
-    if (b) ui->treeView->setSelection(selection.selectedIndices());
+    ui->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
 void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
@@ -663,24 +656,26 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
         dumpModel(model, model->index(r, 0, root), id);
 }
 
-void MainWindow::handleModelSelection()
+void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
+    auto model = qobject_cast<TreeModel*>(simulation->getModel());
+
+    for (auto i : deselected.indexes())
+        model->setSelected(i, false);
+
+    for (auto i : selected.indexes())
+        model->setSelected(i, true);
+
     QVector<QList<unsigned int>> id(6);
     QSet<int> type;
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
     {
-        auto t = r.sibling(r.row(), 1).data().toInt();
-
-        type.insert(t);
-
+        type.insert(r.sibling(r.row(), 1).data().toInt());
         dumpModel(ui->treeView->model(), r, id);
     }
 
     auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
-
-    ui->scene->setVisibleSelection(selection, false);
-    handleSelection(selection, false);
 
     // handle custom selection types
     if (type.size() == 1)
@@ -690,6 +685,7 @@ void MainWindow::handleModelSelection()
             ui->page_5->handleSelection(ui->treeView->selectionModel()->selectedRows());
             ui->stackedWidget->setCurrentIndex(4);
             ui->dockWidget_2->show();
+            return;
         }
 
         /*if (*type.begin() == NodeType::LayerObject)
@@ -701,6 +697,12 @@ void MainWindow::handleModelSelection()
             ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
         }*/
     }
+
+    ui->page_2->handleSelection(selection);
+    ui->stackedWidget->setCurrentIndex(1);
+    ui->dockWidget_2->show();
+
+    Camera::setOrigin(selection.weightCenter());
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)

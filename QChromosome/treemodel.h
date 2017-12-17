@@ -89,6 +89,8 @@ public:
 
     void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
 
+    void setSelected(const QModelIndex& root, bool s);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -106,6 +108,8 @@ private:
     void updateMaterial(const QModelIndex &root, const Material* m);
 
     void propagateVisibility(const QModelIndex &root, bool v);
+
+    void propagateSelected(const QModelIndex &root, bool s);
 
 signals:
     void propertyChanged();

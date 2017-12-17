@@ -154,6 +154,7 @@ public:
 
     void setMaterial(const Material* material);
     void setVisibility(bool visible);
+    void setSelected(bool selected);
 
 private:
     int id;

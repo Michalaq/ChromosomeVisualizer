@@ -798,14 +798,14 @@ void VizWidget::setVisibleSelection(AtomSelection s, bool e)
     for (const auto & id : currentSelection_.selectedIndices())
         selectedBitmap_[id] = true;
 
-    if (e)
+    /*if (e)
     {
         emit selectionChangedIndices(
                     currentSelection_.selectedIndices(),
                     s.selectedIndices());
         emit selectionChanged(selectedSpheres(), oldAtoms);
         emit selectionChangedObject(selectedSpheresObject());
-    }
+    }*/
 
     setFrame(frameNumber_);
     update();
@@ -1066,10 +1066,6 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     Selection::mouseReleaseEvent(event);
 
-    auto m = event->modifiers();
-    const bool ctrl = m & Qt::ControlModifier;
-    const bool shift = m & Qt::ShiftModifier;
-
     pickSpheres();
 
     auto& p = getSelectionPath();
@@ -1080,9 +1076,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 
     QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
 
-    auto& buffer = simulation_->getModel()->getIndices();
-
-    QList<QPersistentModelIndex> selected;
+    QList<unsigned> tmp;
 
     const auto r = p.boundingRect();
     for (int y = r.top(); y <= r.bottom(); y++)
@@ -1091,31 +1085,30 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
         {
             auto color = image.pixel(x, y);
             if (color != 0xFFFFFFFFU)
-                selected.append(buffer[color]);
+                tmp.append(color);
         }
     }
 
-    QSet<QPersistentModelIndex> tmp = selected.toSet();
+    auto& buffer = simulation_->getModel()->getIndices();
 
-    if (ctrl || shift)
-    {
-        if (ctrl)
-        {
-            emit selectionChanged({}, tmp.intersect(current));
-            current.subtract(tmp);
-        }
+    QItemSelection selected;
 
-        if (shift)
-        {
-            emit selectionChanged(tmp.subtract(current), {});
-            current.unite(tmp);
-        }
-    }
-    else
-    {
-        emit selectionChanged(tmp.subtract(current), current.subtract(tmp));
-        current.swap(tmp);
-    }
+    for (auto i : tmp.toSet())
+        selected.select(buffer[i], buffer[i]);
+
+    QItemSelectionModel::SelectionFlags flags;
+
+    auto m = event->modifiers();
+
+    const bool ctrl = m & Qt::ControlModifier;
+    const bool shift = m & Qt::ShiftModifier;
+
+    if (!(ctrl || shift))
+        flags.setFlag(QItemSelectionModel::Clear);
+
+    flags.setFlag(ctrl ? QItemSelectionModel::Deselect : QItemSelectionModel::Select);
+
+    emit selectionChanged(selected, flags);
 }
 
 AtomSelection::AtomSelection(VizWidget * widget)

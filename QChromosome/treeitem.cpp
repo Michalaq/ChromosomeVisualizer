@@ -339,3 +339,11 @@ void AtomItem::setVisibility(bool visible)
     else
         buffer[id].flags &= ~VISIBLE_FLAG;
 }
+
+void AtomItem::setSelected(bool selected)
+{
+    if (selected)
+        buffer[id].flags |= SELECTED_FLAG;
+    else
+        buffer[id].flags &= ~SELECTED_FLAG;
+}
