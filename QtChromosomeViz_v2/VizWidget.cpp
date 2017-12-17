@@ -1067,22 +1067,12 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     Selection::mouseReleaseEvent(event);
 
     auto m = event->modifiers();
-    auto& p = getSelectionPath();
-
     const bool ctrl = m & Qt::ControlModifier;
     const bool shift = m & Qt::ShiftModifier;
 
-    if (!(ctrl || shift))
-    {
-        // Clear old selection
-        for (auto & sphere : selectedBitmap_)
-            sphere = false;
-    }
-
-    auto oldAtoms = selectedSpheres();
-    auto oldIndices = selectedSphereIndices();
-
     pickSpheres();
+
+    auto& p = getSelectionPath();
 
     auto mask = QPainterPath();
     mask.addRect(image.rect());
@@ -1090,7 +1080,9 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 
     QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
 
-    QSet<unsigned int> ballIDs;
+    auto& buffer = simulation_->getModel()->getIndices();
+
+    QList<QPersistentModelIndex> selected;
 
     const auto r = p.boundingRect();
     for (int y = r.top(); y <= r.bottom(); y++)
@@ -1099,35 +1091,31 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
         {
             auto color = image.pixel(x, y);
             if (color != 0xFFFFFFFFU)
-                ballIDs.insert(color);
+                selected.append(buffer[color]);
         }
     }
 
-    auto pickedIndices = ballIDs.toList();
+    QSet<QPersistentModelIndex> tmp = selected.toSet();
 
-    // New selection
-    for (const auto & id : pickedIndices)
-        selectedBitmap_[id] = !ctrl;
-
-    // Now we can get the real list of all selected atoms
-    QList<unsigned int> newIndices;
-    for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
+    if (ctrl || shift)
     {
-        if (selectedBitmap_[i])
-            newIndices.push_back(i);
+        if (ctrl)
+        {
+            emit selectionChanged({}, tmp.intersect(current));
+            current.subtract(tmp);
+        }
+
+        if (shift)
+        {
+            emit selectionChanged(tmp.subtract(current), {});
+            current.unite(tmp);
+        }
     }
-
-    AtomSelection nuSelectionObject(newIndices, this);
-    qSwap(currentSelection_, nuSelectionObject);
-
-    // That's a hack, but it forces updating the flags
-    setFrame(frameNumber_);
-    update();
-
-    emit selectionChangedIndices(newIndices, oldIndices);
-    emit selectionChanged(selectedSpheres(), oldAtoms);
-    emit selectionChangedObject(selectedSpheresObject());
-    //emit itemSelectionChaned();
+    else
+    {
+        emit selectionChanged(tmp.subtract(current), current.subtract(tmp));
+        current.swap(tmp);
+    }
 }
 
 AtomSelection::AtomSelection(VizWidget * widget)

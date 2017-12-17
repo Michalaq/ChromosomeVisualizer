@@ -135,12 +135,7 @@ public slots:
     void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 signals:
-    void selectionChangedIndices(const QList<unsigned int> & selected,
-                                 const QList<unsigned int> & deselected);
-    void selectionChanged(const QList<Atom> & selected,
-                          const QList<Atom> & deselected);
-    void selectionChangedObject(const AtomSelection & selection);
-    void itemSelectionChaned(const ItemSelection &selection, QItemSelectionModel::SelectionFlags command);
+    void selectionChanged(const QSet<QPersistentModelIndex> &selected, const QSet<QPersistentModelIndex> &deselected);
 
 protected:
     void paintLabels();
@@ -224,6 +219,8 @@ private:
     QMap<unsigned int, QVariantMap> changes;
 
     QVector<const Material*> materials;
+
+    QSet<QPersistentModelIndex> current;
 };
 
 #endif /* VIZWINDOW_HPP */

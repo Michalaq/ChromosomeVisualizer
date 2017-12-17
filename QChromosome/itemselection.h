@@ -6,7 +6,6 @@
 class ItemSelection : public QItemSelection
 {
 public:
-
 };
 
 #endif // ITEMSELECTION_H
