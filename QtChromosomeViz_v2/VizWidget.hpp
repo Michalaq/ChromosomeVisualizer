@@ -45,7 +45,6 @@ public:
     void setName(const QString & name);
     void setLabel(const QString & label);
     void setVisible(Visibility visible, VisibilityMode m);
-    void setVisible_(bool visible = true);
 
     double getSize() const;
     QVariant getName() const;
@@ -199,8 +198,6 @@ private:
 
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
     AtomSelection currentSelection_;
-    QVector<bool> selectedBitmap_;
-    QVector<bool> visibleBitmap_;
 
     QImage image;
     void pickSpheres();

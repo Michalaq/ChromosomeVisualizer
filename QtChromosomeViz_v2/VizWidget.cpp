@@ -498,9 +498,6 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
     cylinderPositions_.release();
 
-    selectedBitmap_.fill(false, sphereCount_);
-    visibleBitmap_.fill(true, sphereCount_);
-
     VizBallInstance dummy;
     dummy.color = 0xFF777777;
     dummy.specularColor = 0xFFFFFFFF;
@@ -533,10 +530,6 @@ void VizWidget::setFrame(frameNumber_t frame)
         frameState_[a.id - 1].position[1] = a.y;
         frameState_[a.id - 1].position[2] = a.z;
         frameState_[a.id - 1].flags = 0;
-        if (selectedBitmap_[a.id - 1])
-            frameState_[a.id - 1].flags |= SELECTED_FLAG;
-        if (visibleBitmap_[a.id - 1])
-            frameState_[a.id - 1].flags |= VISIBLE_FLAG;
         frameState_[a.id - 1].atomID = a.id - 1;
     }
 
@@ -557,16 +550,19 @@ void VizWidget::setFrame(frameNumber_t frame)
                 continue;
             }*/
 
-            link.update(frameState_[i].position, frameState_[i + 1].position);
-            link.color[0] = frameState_[i].color;
-            link.color[1] = frameState_[i + 1].color;
-            link.specularColor[0] = frameState_[i].specularColor;
-            link.specularColor[1] = frameState_[i + 1].specularColor;
-            link.specularExponent[0] = frameState_[i].specularExponent;
-            link.specularExponent[1] = frameState_[i + 1].specularExponent;
-            link.size[0] = frameState_[i].size;
-            link.size[1] = frameState_[i + 1].size;
-            link.visible = visibleBitmap_[i] && visibleBitmap_[i + 1];
+            auto a = AtomItem::getBuffer()[i];
+            auto b = AtomItem::getBuffer()[i + 1];
+
+            link.update(a.position, b.position);
+            link.color[0] = a.color;
+            link.color[1] = b.color;
+            link.specularColor[0] = a.specularColor;
+            link.specularColor[1] = b.specularColor;
+            link.specularExponent[0] = a.specularExponent;
+            link.specularExponent[1] = b.specularExponent;
+            link.size[0] = a.size;
+            link.size[1] = b.size;
+            link.visible = (a.flags & VISIBLE_FLAG) && (b.flags & VISIBLE_FLAG);
         }
     }
 
@@ -1173,15 +1169,6 @@ void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
 
     for (auto i : selectedIndices_)
         model->setVisibility(indices[i], visible, m);
-}
-
-void AtomSelection::setVisible_(bool visible)
-{
-    for (unsigned int i : selectedIndices_)
-        widget_->visibleBitmap_[i] = visible;
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
 }
 
 double AtomSelection::getSize() const

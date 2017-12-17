@@ -16,18 +16,6 @@ LayerAttributes::LayerAttributes(QWidget *parent) :
     });
 
     // set vie
-    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        switch (i) {
-        case 0: // default
-            break;
-        case 1: // on
-            vizWidget_->selectedSpheresObject().setVisible_(true);
-            break;
-        case 2: // off
-            vizWidget_->selectedSpheresObject().setVisible_(false);
-            break;
-        }
-    });
 
     // set vir
 
