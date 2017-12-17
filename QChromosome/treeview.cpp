@@ -32,29 +32,6 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
     blockSignals(b);
 }
 
-QVariant TreeView::getName(const QList<unsigned int> &indexes) const
-{
-    auto indices = static_cast<TreeModel*>(model())->getIndices();
-
-    auto ans = model()->data(indices[indexes.first()]).toString();
-
-    for (unsigned int i : indexes)
-        if (model()->data(indices[i]).toString() != ans)
-            return QVariant();
-
-    return ans;
-}
-
-void TreeView::setName(const QList<unsigned int> &indexes, const QString &name)
-{
-    auto indices = static_cast<TreeModel*>(model())->getIndices();
-
-    for (unsigned int i : indexes)
-        model()->setData(indices[i], name);
-
-    update();
-}
-
 void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
 {
     bool ok;

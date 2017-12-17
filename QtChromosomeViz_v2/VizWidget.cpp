@@ -1180,7 +1180,12 @@ void AtomSelection::setSize(float size)
 
 void AtomSelection::setName(const QString &name)
 {
-    widget_->treeView->setName(selectedIndices_, name);
+    //TODO reimplement after changing selection
+    auto model = widget_->simulation_->getModel();
+    auto indices = model->getIndices();
+
+    for (auto i : selectedIndices_)
+        model->setData(indices[i], name);
 }
 
 void AtomSelection::setLabel(const QString & label)
@@ -1244,7 +1249,16 @@ double AtomSelection::getSize() const
 
 QVariant AtomSelection::getName() const
 {
-    return widget_->treeView->getName(selectedIndices_);
+    //TODO reimplement after changing selection
+    auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
+
+    auto ans = indices[selectedIndices_.first()].data().toString();
+
+    for (unsigned int i : selectedIndices_)
+        if (indices[i].data().toString() != ans)
+            return QVariant();
+
+    return ans;
 }
 
 QVariant AtomSelection::getLabel() const
@@ -1298,13 +1312,13 @@ Visibility AtomSelection::getVisibility(VisibilityMode m) const
     //TODO reimplement after changing selection
     auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
 
-    auto ans = indices[selectedIndices_.first()].isValid() ? (Visibility)indices[selectedIndices_.first()].sibling(indices[selectedIndices_.first()].row(), m).data().toInt() : On;
+    auto ans = indices[selectedIndices_.first()].sibling(indices[selectedIndices_.first()].row(), m).data().toInt();
 
     for (unsigned int i : selectedIndices_)
-        if ((indices[i].isValid() ? (Visibility)indices[i].sibling(indices[i].row(), m).data().toInt() : On) != ans)
+        if (indices[i].sibling(indices[i].row(), m).data().toInt() != ans)
             return Default;
 
-    return ans;
+    return (Visibility)ans;
 }
 
 unsigned int AtomSelection::atomCount() const

@@ -3,9 +3,9 @@
 
 #include <QTreeView>
 #include <QHeaderView>
-#include "treemodel.h"
-#include "material.h"
 #include <functional>
+#include "camera.h"
+#include "treemodel.h"
 
 class HeaderView;
 class Simulation;
@@ -18,9 +18,6 @@ public:
     ~TreeView();
 
     void setSelection(const QList<unsigned int>& indexes);
-
-    QVariant getName(const QList<unsigned int>& indexes) const;
-    void setName(const QList<unsigned int>& indexes, const QString& name);
 
 signals:
     void cameraChanged(Camera*);
