@@ -1,5 +1,4 @@
 #include "treeview.h"
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 TreeView::TreeView(QWidget *parent) :
     QTreeView(parent),
@@ -31,12 +30,6 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
     bool b = blockSignals(true);
     selectionModel()->select(m, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     blockSignals(b);
-}
-
-void TreeView::setScene(VizWidget *s)
-{
-    scene = s;
-    scene->setTreeView(this);
 }
 
 QVariant TreeView::getName(const QList<unsigned int> &indexes) const
@@ -185,6 +178,9 @@ void TreeView::mousePressEvent(QMouseEvent *event)
     }
 }
 
+#include <QDrag>
+#include <QMimeData>
+
 void TreeView::mouseMoveEvent(QMouseEvent *event)
 {
     auto index = indexAt(event->pos());
@@ -254,6 +250,8 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
 
     state = NoState;
 }
+
+#include <QPainter>
 
 void TreeView::paintEvent(QPaintEvent *event)
 {

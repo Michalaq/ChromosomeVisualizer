@@ -7,8 +7,6 @@
 #include "material.h"
 #include <functional>
 
-class VizWidget;
-
 class HeaderView;
 class Simulation;
 
@@ -20,7 +18,6 @@ public:
     ~TreeView();
 
     void setSelection(const QList<unsigned int>& indexes);
-    void setScene(VizWidget* s);
 
     QVariant getName(const QList<unsigned int>& indexes) const;
     void setName(const QList<unsigned int>& indexes, const QString& name);
@@ -47,8 +44,6 @@ protected:
 private:
     Visibility cv;
     VisibilityMode vm;
-
-    VizWidget* scene;
 
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
 
