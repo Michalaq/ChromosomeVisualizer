@@ -110,8 +110,6 @@ public slots:
     AtomSelection atomTypeSelection(const std::string & s);
     AtomSelection customSelection(const QList<unsigned int> & indices);
 
-    void setVisibleSelection(AtomSelection s, bool e = true);
-
     void setBackgroundColor(QColor color);
     QColor backgroundColor() const;
 

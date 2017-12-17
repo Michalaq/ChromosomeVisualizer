@@ -636,7 +636,7 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    ui->scene->setVisibleSelection(ui->scene->allSelection());
+    ui->treeView->selectAll();
 }
 
 void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelectionModel::SelectionFlags flags)
