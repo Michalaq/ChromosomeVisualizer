@@ -9,7 +9,6 @@
 #include "namedelegate.h"
 #include "tagsdelegate.h"
 #include <QtConcurrent/QtConcurrentRun>
-#include "itemselection.h"
 
 static const char * ext = ".qcs";
 
@@ -637,16 +636,13 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
     ui->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QList<unsigned int>>& id)
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QModelIndexList& atoms)
 {
-    auto t = root.sibling(root.row(), 1).data().toInt();
-    auto v = root.sibling(root.row(), 2).data();
-
-    if (v.canConvert<uint>())
-        id[t].append(v.toUInt());
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        atoms.append(root);
 
     for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), id);
+        dumpModel(model, model->index(r, 0, root), atoms);
 }
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
@@ -659,16 +655,21 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     for (auto i : selected.indexes())
         model->setSelected(i, true);
 
-    QVector<QList<unsigned int>> id(6);
-    QSet<int> type;
+    QModelIndexList selectedAtoms;
+
+    auto index = ui->treeView->selectionModel()->selectedRows().first();
+
+    int selectionType = index.sibling(index.row(), 1).data().toInt();
 
     for (auto r : ui->treeView->selectionModel()->selectedRows())
     {
-        type.insert(r.sibling(r.row(), 1).data().toInt());
-        dumpModel(ui->treeView->model(), r, id);
+        if (selectionType != r.sibling(r.row(), 1).data().toInt())
+            selectionType = -1;
+
+        dumpModel(ui->treeView->model(), r, selectedAtoms);
     }
 
-    auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
+    /*auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
 
     // handle custom selection types
     if (type.size() == 1)
@@ -689,13 +690,16 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
             ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
         }*/
-    }
+    /*}
 
     ui->page_2->handleSelection(selection);
     ui->stackedWidget->setCurrentIndex(1);
     ui->dockWidget_2->show();
 
-    Camera::setOrigin(selection.weightCenter());
+    Camera::setOrigin(selection.weightCenter());*/
+
+    ui->stackedWidget->setCurrentIndex(7);
+    ui->dockWidget_2->show();
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)

@@ -69,7 +69,7 @@ SOURCES += main.cpp\
     tablemodel.cpp \
     tableview.cpp \
     moviemaker.cpp \
-    itemselection.cpp
+    attributes.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -145,7 +145,7 @@ HEADERS  += mainwindow.h\
     materialbrowser.h \
     tablemodel.h \
     tableview.h \
-    itemselection.h
+    attributes.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -159,7 +159,8 @@ FORMS    += mainwindow.ui \
     defaults.ui \
     preferences.ui \
     materialattributes.ui \
-    materialbrowser.ui
+    materialbrowser.ui \
+    attributes.ui
 
 CONFIG += c++14
 
