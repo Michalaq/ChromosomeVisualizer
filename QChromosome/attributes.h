@@ -23,6 +23,8 @@ private:
 
     QModelIndexList rows;
     QModelIndexList atoms;
+
+    void updateTitle();
 };
 
 #endif // ATTRIBUTES_H
