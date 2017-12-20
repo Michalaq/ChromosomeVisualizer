@@ -655,18 +655,40 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     for (auto i : selected.indexes())
         model->setSelected(i, true);
 
-    QModelIndexList selectedAtoms;
+    QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows(), selectedAtoms;
 
-    auto index = ui->treeView->selectionModel()->selectedRows().first();
+    if (selectedRows.isEmpty())
+    {
+        ui->page_8->hide();
+        ui->stackedWidget->setCurrentIndex(7);
+        ui->dockWidget_2->show();
+        return;
+    }
+
+    auto index = selectedRows.first();
 
     int selectionType = index.sibling(index.row(), 1).data().toInt();
 
-    for (auto r : ui->treeView->selectionModel()->selectedRows())
+    for (const auto& r : selectedRows)
     {
         if (selectionType != r.sibling(r.row(), 1).data().toInt())
             selectionType = -1;
 
         dumpModel(ui->treeView->model(), r, selectedAtoms);
+    }
+
+    switch (selectionType) {
+    //case LayerObject:
+    //case ChainObject:
+    //case ResidueObject:
+    //case AtomObject:
+    //case CameraObject:
+    default:
+        ui->page_8->setSelection(selectedRows, selectedAtoms);
+        ui->page_8->show();
+        ui->stackedWidget->setCurrentIndex(7);
+        ui->dockWidget_2->show();
+        break;
     }
 
     /*auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
@@ -694,12 +716,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
     ui->page_2->handleSelection(selection);
     ui->stackedWidget->setCurrentIndex(1);
-    ui->dockWidget_2->show();
-
-    Camera::setOrigin(selection.weightCenter());*/
-
-    ui->stackedWidget->setCurrentIndex(7);
-    ui->dockWidget_2->show();
+    ui->dockWidget_2->show();*/
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)

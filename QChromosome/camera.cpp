@@ -48,6 +48,7 @@ Camera::Camera(QWidget *parent)
             break;
         case CA_Rotate:
             rotate(dx, dy);
+            break;
         case CA_Scale:
             scale(dx, dy);
             break;
@@ -78,6 +79,7 @@ Camera::Camera(const Camera& camera)
             break;
         case CA_Rotate:
             rotate(dx, dy);
+            break;
         case CA_Scale:
             scale(dx, dy);
             break;
