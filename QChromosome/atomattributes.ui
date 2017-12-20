@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Attributes</class>
- <widget class="QWidget" name="Attributes">
+ <class>AtomAttributes</class>
+ <widget class="QWidget" name="AtomAttributes">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -233,7 +233,7 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-36</y>
+            <y>0</y>
             <width>362</width>
             <height>228</height>
            </rect>

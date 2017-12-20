@@ -944,7 +944,7 @@ QLineEdit {
      <item row="0" column="0">
       <widget class="QStackedWidget" name="stackedWidget">
        <widget class="ProjectSettings" name="page"/>
-       <widget class="Attributes" name="page_2"/>
+       <widget class="AtomAttributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
        <widget class="CameraSettings" name="page_5"/>
@@ -1580,9 +1580,9 @@ QLineEdit {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Attributes</class>
+   <class>AtomAttributes</class>
    <extends>QWidget</extends>
-   <header>attributes.h</header>
+   <header>atomattributes.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

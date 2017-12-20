@@ -1,20 +1,20 @@
-#ifndef ATTRIBUTES_H
-#define ATTRIBUTES_H
+#ifndef ATOMATTRIBUTES_H
+#define ATOMATTRIBUTES_H
 
 #include <QWidget>
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 
 namespace Ui {
-    class Attributes;
+    class AtomAttributes;
 }
 
-class Attributes : public QWidget
+class AtomAttributes : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Attributes(QWidget *parent = 0);
-    ~Attributes();
+    explicit AtomAttributes(QWidget *parent = 0);
+    ~AtomAttributes();
 
     void setVizWidget(VizWidget* vizWidget);
 
@@ -30,11 +30,11 @@ public slots:
     void updateVisibility(VisibilityMode m);
 
 private:
-    Ui::Attributes *ui;
+    Ui::AtomAttributes *ui;
 
     VizWidget* vizWidget_;
 
     QString title, list;
 };
 
-#endif // ATTRIBUTES_H
+#endif // ATOMATTRIBUTES_H

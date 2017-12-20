@@ -40,7 +40,7 @@ SOURCES += main.cpp\
     treeitem.cpp \
     treemodel.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
-    attributes.cpp \
+    atomattributes.cpp \
     picker.cpp \
     layerattributes.cpp \
     viewport.cpp \
@@ -115,7 +115,7 @@ HEADERS  += mainwindow.h\
     treeitem.h \
     treemodel.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
-    attributes.h \
+    atomattributes.h \
     picker.h \
     ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
@@ -151,7 +151,7 @@ FORMS    += mainwindow.ui \
     dockwidget.ui \
     projectsettings.ui \
     rendersettings.ui \
-    attributes.ui \
+    atomattributes.ui \
     layerattributes.ui \
     viewport.ui \
     camerasettings.ui \

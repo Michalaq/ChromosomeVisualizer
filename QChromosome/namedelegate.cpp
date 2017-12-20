@@ -17,7 +17,7 @@ void NameDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
     qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
 }
 
-#include "attributes.h"
+#include "atomattributes.h"
 
 void NameDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
@@ -28,7 +28,7 @@ void NameDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
         model->setData(index, name);
 
         if (index.sibling(index.row(), 1).data() == NodeType::AtomObject)
-            qobject_cast<Attributes*>(parent())->updateName();
+            qobject_cast<AtomAttributes*>(parent())->updateName();
     }
 }
 

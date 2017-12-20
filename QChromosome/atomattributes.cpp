@@ -1,9 +1,9 @@
-#include "attributes.h"
-#include "ui_attributes.h"
+#include "atomattributes.h"
+#include "ui_atomattributes.h"
 
-Attributes::Attributes(QWidget *parent) :
+AtomAttributes::AtomAttributes(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Attributes)
+    ui(new Ui::AtomAttributes)
 {
     ui->setupUi(this);
 
@@ -43,17 +43,17 @@ Attributes::Attributes(QWidget *parent) :
 
 }
 
-Attributes::~Attributes()
+AtomAttributes::~AtomAttributes()
 {
     delete ui;
 }
 
-void Attributes::setVizWidget(VizWidget *vizWidget)
+void AtomAttributes::setVizWidget(VizWidget *vizWidget)
 {
     vizWidget_ = vizWidget;
 }
 
-void Attributes::handleSelection(const AtomSelection &selection)
+void AtomAttributes::handleSelection(const AtomSelection &selection)
 {
     if (!selection.atomCount())
         return hide();
@@ -102,20 +102,20 @@ void Attributes::handleSelection(const AtomSelection &selection)
     show();
 }
 
-void Attributes::resizeEvent(QResizeEvent *event)
+void AtomAttributes::resizeEvent(QResizeEvent *event)
 {
     ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
 
     QWidget::resizeEvent(event);
 }
 
-void Attributes::updateName()
+void AtomAttributes::updateName()
 {
     auto l = vizWidget_->selectedSpheresObject().getName();
     ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
 }
 
-void Attributes::updateVisibility(VisibilityMode m)
+void AtomAttributes::updateVisibility(VisibilityMode m)
 {
     if (m == Editor)
         ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Editor), false);
