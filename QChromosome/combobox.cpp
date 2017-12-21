@@ -27,6 +27,7 @@ void ComboBox::setCurrentIndex(int index, bool spontaneous)
         QComboBox::setCurrentIndex(index);
     else
     {
+        QComboBox::setCurrentIndex(-1);
         multiple = true;
         update();
     }

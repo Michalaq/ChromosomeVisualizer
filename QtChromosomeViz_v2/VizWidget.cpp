@@ -1221,6 +1221,7 @@ std::tuple<int, int, int> AtomSelection::getCoordinates() const
 
 Visibility AtomSelection::getVisibility(VisibilityMode m) const
 {
+    return Default;
     //TODO reimplement after changing selection
     auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
 

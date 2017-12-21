@@ -36,7 +36,43 @@ void Attributes::setSelection(QModelIndexList &selectedRows, QModelIndexList &se
 
     ui->label->setContents(title, list);
 
-    // set name
+    auto fst = rows.first();
+
+    // set name TODO
+    QString name = fst.data().toString();
+
+    for (const auto& r : rows)
+        if (name != r.data().toString())
+        {
+            name.clear();
+            break;
+        }
+
+    ui->lineEdit->setText(name);
+
+    // set vie
+    int vie = fst.sibling(fst.row(), 3).data().toInt();
+
+    for (const auto& r : rows)
+        if (vie != r.sibling(r.row(), 3).data().toInt())
+        {
+            vie = std::numeric_limits<int>::lowest();
+            break;
+        }
+
+    ui->comboBox->setCurrentIndex(vie);
+
+    // set vir
+    int vir = fst.sibling(fst.row(), 4).data().toInt();
+
+    for (const auto& r : rows)
+        if (vir != r.sibling(r.row(), 4).data().toInt())
+        {
+            vir = std::numeric_limits<int>::lowest();
+            break;
+        }
+
+    ui->comboBox_2->setCurrentIndex(vir);
 
     // set coordinates and camera origin
     QVector3D g;
