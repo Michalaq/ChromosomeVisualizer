@@ -1,11 +1,24 @@
 #include "attributes.h"
 #include "ui_attributes.h"
+#include "treemodel.h"
 
 Attributes::Attributes(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Attributes)
 {
     ui->setupUi(this);
+
+    // connect vie
+    connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        for (auto& r : rows)
+            model->setVisibility(r, (Visibility)index, Editor);
+    });
+
+    // connect vir
+    connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        for (auto& r : rows)
+            model->setVisibility(r, (Visibility)index, Renderer);
+    });
 }
 
 Attributes::~Attributes()
@@ -16,11 +29,12 @@ Attributes::~Attributes()
 #include "treeitem.h"
 #include "camera.h"
 
-void Attributes::setSelection(QModelIndexList &selectedRows, QModelIndexList &selectedAtoms)
+void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms)
 {
     if (selectedRows.isEmpty())
         return hide();
 
+    model = selectedModel;
     rows.swap(selectedRows);
     atoms.swap(selectedAtoms);
 
@@ -60,7 +74,7 @@ void Attributes::setSelection(QModelIndexList &selectedRows, QModelIndexList &se
             break;
         }
 
-    ui->comboBox->setCurrentIndex(vie);
+    ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
     int vir = fst.sibling(fst.row(), 4).data().toInt();
@@ -72,7 +86,7 @@ void Attributes::setSelection(QModelIndexList &selectedRows, QModelIndexList &se
             break;
         }
 
-    ui->comboBox_2->setCurrentIndex(vir);
+    ui->comboBox_2->setCurrentIndex(vir, false);
 
     // set coordinates and camera origin
     QVector3D g;

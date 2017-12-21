@@ -8,6 +8,8 @@ namespace Ui {
 class Attributes;
 }
 
+class TreeModel;
+
 class Attributes : public QWidget
 {
     Q_OBJECT
@@ -16,11 +18,12 @@ public:
     explicit Attributes(QWidget *parent = 0);
     ~Attributes();
 
-    void setSelection(QModelIndexList& selectedRows, QModelIndexList& selectedAtoms);
+    void setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms);
 
 private:
     Ui::Attributes *ui;
 
+    TreeModel *model;
     QModelIndexList rows;
     QModelIndexList atoms;
 

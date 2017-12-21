@@ -659,7 +659,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
     if (selectedRows.isEmpty())
     {
-        ui->page_8->setSelection(selectedRows, selectedRows);
+        ui->page_8->setSelection(simulation->getModel(), selectedRows, selectedRows);
         ui->stackedWidget->setCurrentIndex(7);
         ui->dockWidget_2->show();
         return;
@@ -684,7 +684,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     //case AtomObject:
     //case CameraObject:
     default:
-        ui->page_8->setSelection(selectedRows, selectedAtoms);
+        ui->page_8->setSelection(simulation->getModel(), selectedRows, selectedAtoms);
         ui->stackedWidget->setCurrentIndex(7);
         ui->dockWidget_2->show();
         break;
