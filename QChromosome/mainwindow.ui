@@ -293,8 +293,10 @@ QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 
 Label {
 	min-width: 125px;
-	min-height: 30px;
-    max-height: 30px;
+}
+
+.heading {
+	color: lightgray;
 }
 
 .section {
@@ -302,8 +304,9 @@ Label {
 	color: #4080d0;
 }
 
-.label {
+.item {
 	min-height: 30px;
+	color: lightgray;
 }</string>
   </property>
   <property name="dockNestingEnabled">

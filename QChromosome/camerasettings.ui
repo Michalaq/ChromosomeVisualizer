@@ -13,12 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">.QLabel, .Label, .label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -67,6 +61,9 @@
        </property>
        <property name="text">
         <string>Camera</string>
+       </property>
+       <property name="class" stdset="0">
+        <string>heading</string>
        </property>
       </widget>
      </item>
@@ -132,7 +129,7 @@
                   <string>X</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -142,7 +139,7 @@
                   <string>Y</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -152,7 +149,7 @@
                   <string>Z</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -220,7 +217,7 @@
                   <string>H</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -230,7 +227,7 @@
                   <string>P</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -240,7 +237,7 @@
                   <string>B</string>
                  </property>
                  <property name="class" stdset="0">
-                  <string>label</string>
+                  <string>item</string>
                  </property>
                 </widget>
                </item>
@@ -364,6 +361,9 @@
                <property name="text">
                 <string>Focal length</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="0" column="1">
@@ -383,6 +383,9 @@
               <widget class="Label" name="label_2">
                <property name="text">
                 <string>Aperture width</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -404,6 +407,9 @@
                <property name="text">
                 <string>Field of view</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="1">
@@ -423,6 +429,9 @@
               <widget class="Label" name="label_5">
                <property name="text">
                 <string>Rotation</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -507,12 +516,18 @@
                <property name="text">
                 <string>Near clipping</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_17">
                <property name="text">
                 <string>Far clipping</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -574,9 +589,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>DoubleSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>doublespinbox.h</header>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>
@@ -584,9 +599,9 @@
    <header>combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

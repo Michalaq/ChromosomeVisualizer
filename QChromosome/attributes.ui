@@ -10,12 +10,6 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="styleSheet">
-   <string notr="true">.Label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -29,14 +23,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>32</width>
-         <height>32</height>
+         <width>34</width>
+         <height>34</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>32</width>
-         <height>32</height>
+         <width>34</width>
+         <height>34</height>
         </size>
        </property>
        <property name="focusPolicy">
@@ -53,8 +47,8 @@
      </item>
      <item>
       <widget class="TitleLabel" name="label">
-       <property name="styleSheet">
-        <string notr="true">color: lightgray;</string>
+       <property name="class" stdset="0">
+        <string>heading</string>
        </property>
       </widget>
      </item>
@@ -67,6 +61,12 @@
        <string>Basic</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
        <item row="0" column="0">
         <widget class="QScrollArea" name="scrollArea">
          <property name="widgetResizable">
@@ -77,8 +77,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>358</width>
-            <height>194</height>
+            <width>376</width>
+            <height>192</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -99,6 +99,9 @@
                <property name="text">
                 <string>Name</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
@@ -106,12 +109,18 @@
                <property name="text">
                 <string>Visible in editor</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
               <widget class="Label" name="label_5">
                <property name="text">
                 <string>Visible in renderer</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -181,6 +190,138 @@
       <attribute name="title">
        <string>Coord</string>
       </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>376</width>
+            <height>192</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Coordinates</string>
+             </property>
+             <property name="class" stdset="0">
+              <string>section</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QFormLayout" name="formLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>P . X</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>P . Y</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>P . Z</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="SpinBox" name="spinBox">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string> Å</string>
+               </property>
+               <property name="minimum">
+                <number>-2147483647</number>
+               </property>
+               <property name="maximum">
+                <number>2147483647</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="SpinBox" name="spinBox_2">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string> Å</string>
+               </property>
+               <property name="minimum">
+                <number>-2147483647</number>
+               </property>
+               <property name="maximum">
+                <number>2147483647</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="SpinBox" name="spinBox_3">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="suffix">
+                <string> Å</string>
+               </property>
+               <property name="minimum">
+                <number>-2147483647</number>
+               </property>
+               <property name="maximum">
+                <number>2147483647</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>43</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>
@@ -193,9 +334,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>Label</class>
@@ -206,6 +347,11 @@
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
    <header>lineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
   </customwidget>
   <customwidget>
    <class>TitleLabel</class>

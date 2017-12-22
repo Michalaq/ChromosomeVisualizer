@@ -9,7 +9,8 @@ class TitleLabel : public QLabel
 public:
     explicit TitleLabel(QWidget *parent = nullptr);
 
-    void setContents(const QString &t, const QString &l);
+    void setTitle(const QString& t);
+    void setElements(const QString& e);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -19,7 +20,7 @@ signals:
 public slots:
 
 private:
-    QString title, list;
+    QString title, elements;
 };
 
 #endif // TITLELABEL_H

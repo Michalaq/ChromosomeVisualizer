@@ -13,12 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">.QLabel, .Label, .label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -68,6 +62,9 @@
        <property name="text">
         <string>Viewport</string>
        </property>
+       <property name="class" stdset="0">
+        <string>heading</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -102,7 +99,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>286</height>
+            <height>288</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -136,12 +133,18 @@
                <property name="text">
                 <string>Safe frames</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_2">
                <property name="text">
                 <string>Opacity</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -162,6 +165,9 @@
               <widget class="Label" name="label_3">
                <property name="text">
                 <string>Border color</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -225,6 +231,9 @@
                <property name="text">
                 <string>Position</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
@@ -232,12 +241,18 @@
                <property name="text">
                 <string>Scale</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
               <widget class="Label" name="label_8">
                <property name="text">
                 <string>Text</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -366,6 +381,9 @@
                <property name="text">
                 <string>Color</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="0" column="1">
@@ -428,12 +446,18 @@
                <property name="text">
                 <string>Fog density</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_13">
                <property name="text">
                 <string>Fog contribution</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -530,12 +554,18 @@
                <property name="text">
                 <string>Background color</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_17">
                <property name="text">
                 <string>Text color</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -621,9 +651,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>DoubleSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>doublespinbox.h</header>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>
@@ -631,9 +661,9 @@
    <header>combobox.h</header>
   </customwidget>
   <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
   <customwidget>
    <class>Picker</class>

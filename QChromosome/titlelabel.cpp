@@ -5,17 +5,21 @@ TitleLabel::TitleLabel(QWidget *parent) : QLabel(parent)
 
 }
 
-void TitleLabel::setContents(const QString &t, const QString &l)
+void TitleLabel::setTitle(const QString &t)
 {
     title = t;
-    list = l;
+    update();
+}
+
+void TitleLabel::setElements(const QString &e)
+{
+    elements = e;
     update();
 }
 
 #include <QPainter>
 
-void TitleLabel::paintEvent(QPaintEvent *event)
+void TitleLabel::paintEvent(QPaintEvent *)
 {
-    Q_UNUSED(event)
-    QPainter(this).drawText(0, 0, width(), height(), alignment(), title + "[" + fontMetrics().elidedText(list, Qt::ElideRight, width() - fontMetrics().width(title + "[]")) + "]");
+    QPainter(this).drawText(0, 0, width(), height(), alignment(), title + "[" + fontMetrics().elidedText(elements, Qt::ElideRight, width() - fontMetrics().width(title + "[]")) + "]");
 }

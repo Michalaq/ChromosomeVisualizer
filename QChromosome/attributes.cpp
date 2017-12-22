@@ -48,7 +48,8 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
 
     list.chop(2);
 
-    ui->label->setContents(title, list);
+    ui->label->setTitle(title);
+    ui->label->setElements(list);
 
     updateSelection();
 
