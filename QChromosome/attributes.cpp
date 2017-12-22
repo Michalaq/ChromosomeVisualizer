@@ -50,6 +50,26 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
 
     ui->label->setContents(title, list);
 
+    updateSelection();
+
+    // set coordinates and camera origin
+    QVector3D g;
+
+    for (const auto& a : atoms)
+    {
+        const float* pos = reinterpret_cast<AtomItem*>(a.internalPointer())->getInstance().position;
+        g += { pos[0], pos[1], pos[2] };
+    }
+
+    g /= atoms.count();
+
+    Camera::setOrigin(g);
+
+    show();
+}
+
+void Attributes::updateSelection()
+{
     auto fst = rows.first();
 
     // set name TODO
@@ -87,19 +107,4 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
         }
 
     ui->comboBox_2->setCurrentIndex(vir, false);
-
-    // set coordinates and camera origin
-    QVector3D g;
-
-    for (const auto& a : atoms)
-    {
-        const float* pos = reinterpret_cast<AtomItem*>(a.internalPointer())->getInstance().position;
-        g += { pos[0], pos[1], pos[2] };
-    }
-
-    g /= atoms.count();
-
-    Camera::setOrigin(g);
-
-    show();
 }

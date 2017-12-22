@@ -21,7 +21,6 @@ public:
 
 signals:
     void cameraChanged(Camera*);
-    void visibilityChanged(VisibilityMode);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

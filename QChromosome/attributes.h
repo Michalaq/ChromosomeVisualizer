@@ -20,6 +20,9 @@ public:
 
     void setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms);
 
+public slots:
+    void updateSelection();
+
 private:
     Ui::Attributes *ui;
 

@@ -17,19 +17,14 @@ void NameDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
     qobject_cast<QLineEdit*>(editor)->setText(index.data().toString());
 }
 
-#include "atomattributes.h"
+#include "treemodel.h"
 
 void NameDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     QString name = qobject_cast<QLineEdit*>(editor)->text();
 
     if (!name.isEmpty())
-    {
-        model->setData(index, name);
-
-        if (index.sibling(index.row(), 1).data() == NodeType::AtomObject)
-            qobject_cast<AtomAttributes*>(parent())->updateName();
-    }
+        qobject_cast<TreeModel*>(model)->setName(index, name);
 }
 
 void NameDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const

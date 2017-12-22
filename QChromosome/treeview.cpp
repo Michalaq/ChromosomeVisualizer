@@ -94,9 +94,6 @@ void TreeView::mousePressEvent(QMouseEvent *event)
                 cv = Visibility((index.sibling(index.row(), vm).data().toInt() + 1) % 3);
 
                 qobject_cast<TreeModel*>(model())->setVisibility(index, cv, vm);
-
-                if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
-                    emit visibilityChanged(vm);
             }
             else
             {
@@ -185,9 +182,6 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
             setCursor(Qt::DragCopyCursor);
 
         qobject_cast<TreeModel*>(model())->setVisibility(index, cv, vm);
-
-        if (selectionModel()->isSelected(index) && index.sibling(index.row(), 1).data() < NodeType::CameraObject)
-            emit visibilityChanged(vm);
 
         update();
         break;

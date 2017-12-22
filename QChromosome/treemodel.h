@@ -91,6 +91,8 @@ public:
 
     void setSelected(const QModelIndex& root, bool s);
 
+    void setName(const QModelIndex& root, const QString& name);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -113,6 +115,7 @@ private:
 
 signals:
     void propertyChanged();
+    void attributeChanged();
 };
 
 #endif // TREEMODEL_H

@@ -198,8 +198,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->plot->followSlider(ui->horizontalSlider);
 
-    connect(ui->treeView, SIGNAL(visibilityChanged(VisibilityMode)), ui->page_2, SLOT(updateVisibility(VisibilityMode)));
-
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
         ui->stackedWidget->setCurrentIndex(6);
@@ -321,6 +319,8 @@ void MainWindow::newProject()
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
+
+    connect(simulation->getModel(), &TreeModel::attributeChanged, ui->page_8, &Attributes::updateSelection);
 }
 
 #include <QStandardPaths>

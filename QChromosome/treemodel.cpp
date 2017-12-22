@@ -442,6 +442,7 @@ void TreeModel::setVisibility(const QModelIndex &root, Visibility v, VisibilityM
     }
 
     emit propertyChanged();
+    emit attributeChanged();
 }
 
 void TreeModel::propagateSelected(const QModelIndex &root, bool s)
@@ -458,6 +459,13 @@ void TreeModel::setSelected(const QModelIndex &root, bool s)
     propagateSelected(root, s);
 
     emit propertyChanged();
+}
+
+void TreeModel::setName(const QModelIndex &root, const QString &name)
+{
+    setData(root.sibling(root.row(), 0), name);
+
+    emit attributeChanged();
 }
 
 void TreeModel::read(const QJsonObject &json)

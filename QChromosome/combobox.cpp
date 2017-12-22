@@ -5,10 +5,6 @@
 ComboBox::ComboBox(QWidget *parent) : QComboBox(parent), multiple(false)
 {
     setItemDelegate(new QStyledItemDelegate(this));
-
-    connect(this, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this] {
-        multiple = false;
-    });
 }
 
 ComboBox::~ComboBox()
@@ -24,7 +20,10 @@ void ComboBox::setCurrentIndex(int index, bool spontaneous)
         b = blockSignals(true);
 
     if (index > std::numeric_limits<int>::lowest())
+    {
         QComboBox::setCurrentIndex(index);
+        multiple = false;
+    }
     else
     {
         QComboBox::setCurrentIndex(-1);
