@@ -21,14 +21,13 @@ void ComboBox::setCurrentIndex(int index, bool spontaneous)
 
     if (index > std::numeric_limits<int>::lowest())
     {
-        QComboBox::setCurrentIndex(index);
         multiple = false;
+        QComboBox::setCurrentIndex(index);
     }
     else
     {
-        QComboBox::setCurrentIndex(-1);
         multiple = true;
-        update();
+        QComboBox::setCurrentIndex(-1);
     }
 
     if (!spontaneous)

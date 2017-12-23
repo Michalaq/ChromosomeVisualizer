@@ -99,7 +99,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>288</height>
+            <height>278</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -172,29 +172,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="Picker" name="widget" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
-               </property>
-              </widget>
+              <widget class="Picker" name="widget"/>
              </item>
             </layout>
            </item>
@@ -387,29 +365,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="Picker" name="widget_2" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
-               </property>
-              </widget>
+              <widget class="Picker" name="widget_2"/>
              </item>
             </layout>
            </item>
@@ -570,54 +526,10 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="Picker" name="widget_3" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
-               </property>
-              </widget>
+              <widget class="Picker" name="widget_3"/>
              </item>
              <item row="1" column="1">
-              <widget class="Picker" name="widget_4" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
-               </property>
-              </widget>
+              <widget class="Picker" name="widget_4"/>
              </item>
             </layout>
            </item>
@@ -667,7 +579,7 @@
   </customwidget>
   <customwidget>
    <class>Picker</class>
-   <extends>QWidget</extends>
+   <extends>QComboBox</extends>
    <header>picker.h</header>
    <container>1</container>
   </customwidget>
@@ -675,15 +587,11 @@
  <tabstops>
   <tabstop>checkBox</tabstop>
   <tabstop>doubleSpinBox</tabstop>
-  <tabstop>widget</tabstop>
   <tabstop>comboBox</tabstop>
   <tabstop>doubleSpinBox_2</tabstop>
   <tabstop>checkBox_2</tabstop>
-  <tabstop>widget_2</tabstop>
   <tabstop>doubleSpinBox_3</tabstop>
   <tabstop>doubleSpinBox_4</tabstop>
-  <tabstop>widget_3</tabstop>
-  <tabstop>widget_4</tabstop>
  </tabstops>
  <resources>
   <include location="icons.qrc"/>
