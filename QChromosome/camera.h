@@ -60,6 +60,15 @@ public:
 
     static void setAutomaticKeyframing(bool b = true);
 
+    void setBase(const QModelIndex& index);
+    const QModelIndex& getBase() const;
+
+    void setTarget(const QModelIndex& index);
+    const QModelIndex& getTarget() const;
+
+    void setUp(const QModelIndex& index);
+    const QModelIndex& getUp() const;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -136,6 +145,8 @@ private:
     static bool automaticKeyframing;
 
     static Viewport* viewport;
+
+    QPersistentModelIndex base, target, up;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

@@ -589,3 +589,33 @@ void Camera::setAutomaticKeyframing(bool b)
 {
     automaticKeyframing = b;
 }
+
+void Camera::setBase(const QModelIndex& index)
+{
+    base = index;
+}
+
+const QModelIndex& Camera::getBase() const
+{
+    return base;
+}
+
+void Camera::setTarget(const QModelIndex& index)
+{
+    target = index;
+}
+
+const QModelIndex& Camera::getTarget() const
+{
+    return target;
+}
+
+void Camera::setUp(const QModelIndex& index)
+{
+    up = index;
+}
+
+const QModelIndex& Camera::getUp() const
+{
+    return up;
+}
