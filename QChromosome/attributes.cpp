@@ -38,6 +38,8 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
     rows.swap(selectedRows);
     atoms.swap(selectedAtoms);
 
+    connect(model, &TreeModel::attributeChanged, this, &Attributes::updateSelection);
+
     // set title
     QString title = QString::number(rows.count()) + " elements ";
 
@@ -69,11 +71,17 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
     show();
 }
 
+void Attributes::unsetSelection()
+{
+    if (model)
+        model->disconnect(this);
+}
+
 void Attributes::updateSelection()
 {
     auto fst = rows.first();
 
-    // set name TODO
+    // set name
     QString name = fst.data().toString();
 
     for (const auto& r : rows)
@@ -83,7 +91,10 @@ void Attributes::updateSelection()
             break;
         }
 
-    ui->lineEdit->setText(name);
+    if (name.isEmpty())
+        ui->lineEdit->setMultipleValues();
+    else
+        ui->lineEdit->setText(name);
 
     // set vie
     int vie = fst.sibling(fst.row(), 3).data().toInt();
@@ -91,11 +102,14 @@ void Attributes::updateSelection()
     for (const auto& r : rows)
         if (vie != r.sibling(r.row(), 3).data().toInt())
         {
-            vie = std::numeric_limits<int>::lowest();
+            vie = -1;
             break;
         }
 
-    ui->comboBox->setCurrentIndex(vie, false);
+    if (vie == -1)
+        ui->comboBox->setMultipleValues();
+    else
+        ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
     int vir = fst.sibling(fst.row(), 4).data().toInt();
@@ -103,9 +117,12 @@ void Attributes::updateSelection()
     for (const auto& r : rows)
         if (vir != r.sibling(r.row(), 4).data().toInt())
         {
-            vir = std::numeric_limits<int>::lowest();
+            vir = -1;
             break;
         }
 
-    ui->comboBox_2->setCurrentIndex(vir, false);
+    if (vir == -1)
+        ui->comboBox_2->setMultipleValues();
+    else
+        ui->comboBox_2->setCurrentIndex(vir, false);
 }

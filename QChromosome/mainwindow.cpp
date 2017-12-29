@@ -319,8 +319,6 @@ void MainWindow::newProject()
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
-
-    connect(simulation->getModel(), &TreeModel::attributeChanged, ui->page_8, &Attributes::updateSelection);
 }
 
 #include <QStandardPaths>
@@ -676,6 +674,8 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
         dumpModel(ui->treeView->model(), r, selectedAtoms);
     }
+
+    ui->page_8->unsetSelection();
 
     switch (selectionType) {
     //case LayerObject:

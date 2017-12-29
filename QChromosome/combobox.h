@@ -10,6 +10,8 @@ public:
     explicit ComboBox(QWidget *parent = 0);
     ~ComboBox();
 
+    void setMultipleValues();
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);

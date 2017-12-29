@@ -12,6 +12,16 @@ ComboBox::~ComboBox()
 
 }
 
+void ComboBox::setMultipleValues()
+{
+    bool b = blockSignals(true);
+
+    multiple = true;
+    QComboBox::setCurrentIndex(-1);
+
+    blockSignals(b);
+}
+
 void ComboBox::setCurrentIndex(int index, bool spontaneous)
 {
     bool b;
@@ -19,16 +29,8 @@ void ComboBox::setCurrentIndex(int index, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    if (index > std::numeric_limits<int>::lowest())
-    {
-        multiple = false;
-        QComboBox::setCurrentIndex(index);
-    }
-    else
-    {
-        multiple = true;
-        QComboBox::setCurrentIndex(-1);
-    }
+    multiple = false;
+    QComboBox::setCurrentIndex(index);
 
     if (!spontaneous)
         blockSignals(b);

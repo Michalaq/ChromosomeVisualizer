@@ -19,9 +19,10 @@ public:
     ~Attributes();
 
     void setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms);
+    void unsetSelection();
 
 public slots:
-    void updateSelection();
+
 
 private:
     Ui::Attributes *ui;
@@ -30,7 +31,7 @@ private:
     QModelIndexList rows;
     QModelIndexList atoms;
 
-    void updateTitle();
+    void updateSelection();
 };
 
 #endif // ATTRIBUTES_H
