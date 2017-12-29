@@ -33,9 +33,12 @@ const QSignalMapper& PickWidget::getSignalMapper()
     return sm;
 }
 
-void PickWidget::pick(QPersistentModelIndex object)
+void PickWidget::pick(QPersistentModelIndex object, bool spontaneous)
 {
     if (!indexValidator(object))
+        object = QPersistentModelIndex();
+
+    if (!object.isValid() && spontaneous)
         return;
 
     icon->setIcon(object.data(Qt::DecorationRole).value<QIcon>());
@@ -44,7 +47,8 @@ void PickWidget::pick(QPersistentModelIndex object)
 
     obj = object;
 
-    update();
+    if (spontaneous)
+        emit picked(obj);
 }
 
 void PickWidget::setIndexValidator(std::function<bool (const QPersistentModelIndex &)> iv)

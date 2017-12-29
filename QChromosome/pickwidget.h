@@ -15,11 +15,11 @@ public:
 
     static const QSignalMapper& getSignalMapper();
 
-    void pick(QPersistentModelIndex object);
+    void pick(QPersistentModelIndex object, bool spontaneous = true);
     void setIndexValidator(std::function<bool(const QPersistentModelIndex&)> iv);
 
 signals:
-    void picked();
+    void picked(QPersistentModelIndex);
 
 public slots:
 
