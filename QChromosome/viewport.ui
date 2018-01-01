@@ -150,6 +150,9 @@
              </item>
              <item row="1" column="1">
               <widget class="DoubleSpinBox" name="doubleSpinBox">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="suffix">
                 <string>%</string>
                </property>
@@ -249,6 +252,9 @@
              </item>
              <item row="1" column="1">
               <widget class="DoubleSpinBox" name="doubleSpinBox_2">
+               <property name="accelerated">
+                <bool>true</bool>
+               </property>
                <property name="suffix">
                 <string>%</string>
                </property>

@@ -36,15 +36,10 @@ VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
-    , fogDensity_(0.01f)
-    , fogContribution_(0.8f)
     , pickingFramebuffer_(nullptr)
     , currentSelection_(this)
     , ballQualityParameters_(0, 0)
     , labelRenderer_(QSizeF(800, 600))
-    , backgroundColor_(0, 0, 0)
-    , labelTextColor_(255, 255, 255)
-    , labelBackgroundColor_(0, 0, 0, 255)
 {
     setAcceptDrops(true);
 }
@@ -319,6 +314,8 @@ void VizWidget::initializeGL()
     assert(pickingProgram_.link());
 }
 
+#include "viewport.h"
+
 void VizWidget::paintGL()
 {
     if (needVBOUpdate_)
@@ -347,6 +344,8 @@ void VizWidget::paintGL()
 
     glEnable(GL_DEPTH_TEST);
 
+    auto backgroundColor_ = viewport_->getBackgroundColor();
+
     glClearColor(backgroundColor_.redF(),
                  backgroundColor_.greenF(),
                  backgroundColor_.blueF(),
@@ -356,6 +355,9 @@ void VizWidget::paintGL()
     // If there are no spheres, my driver crashes
     if (sphereCount_ > 0)
     {
+        float fogDensity_ = viewport_->getFogDensity();
+        float fogContribution_ = viewport_->getFogContribution();
+
         vaoCylinders_.bind();
         cylinderProgram_.bind();
 
@@ -414,6 +416,9 @@ void VizWidget::paintLabels()
 {
     labelRenderer_.begin();
 
+    auto labelTextColor_ = viewport_->getLabelTextColor();
+    auto labelBackgroundColor_ = viewport_->getLabelBackgroundColor();
+
     for (auto it = sortedState_.begin(); it != sortedState_.end(); ++it)
     {
         auto it2 = atomLabels_.find(it->atomID);
@@ -470,6 +475,15 @@ void VizWidget::nextInterestingFrame()
 {
     auto next = simulation_->getNextTime(frameNumber_);
     setFrame(next);
+}
+
+QPersistentModelIndex VizWidget::pick(const QPoint &pos)
+{
+    pickSpheres();
+
+    auto color = image.pixel(pos);
+
+    return color != 0xFFFFFFFFU ? simulation_->getModel()->getIndices()[color] : QPersistentModelIndex();
 }
 
 void VizWidget::advanceFrame()
@@ -782,64 +796,14 @@ AtomSelection VizWidget::customSelection(const QList<unsigned int> &indices)
     return AtomSelection(indices, this);
 }
 
-void VizWidget::setBackgroundColor(QColor color)
-{
-    backgroundColor_ = color;
-    update();
-}
-
-QColor VizWidget::backgroundColor() const
-{
-    return backgroundColor_;
-}
-
-void VizWidget::setLabelTextColor(QColor color)
-{
-    labelTextColor_ = color;
-    update();
-}
-
-QColor VizWidget::labelTextColor() const
-{
-    return labelTextColor_;
-}
-
-void VizWidget::setLabelBackgroundColor(QColor color)
-{
-    labelBackgroundColor_ = color;
-    update();
-}
-
-QColor VizWidget::labelBackgroundColor() const
-{
-    return labelBackgroundColor_;
-}
-
 const QMap<unsigned int, QString> & VizWidget::getLabels() const
 {
     return atomLabels_;
 }
 
-void VizWidget::setFogDensity(float intensity)
+void VizWidget::setViewport(Viewport* vp)
 {
-    fogDensity_ = intensity;
-    update();
-}
-
-void VizWidget::setFogContribution(float contribution)
-{
-    fogContribution_ = contribution;
-    update();
-}
-
-float VizWidget::fogDensity() const
-{
-    return fogDensity_;
-}
-
-float VizWidget::fogContribution() const
-{
-    return fogContribution_;
+    viewport_ = vp;
 }
 
 #include "moviemaker.h"

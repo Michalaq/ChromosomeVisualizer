@@ -42,7 +42,7 @@ QDockWidget {
 }
 
 QTabWidget::pane {
-	background: url(&quot;:/bar&quot;) repeat-x;
+	background: url(&quot;:/tabwidget/bar&quot;) repeat-x;
 	border-top: 1px solid #4d4d4d;
 	padding-top: 5px;
 }
@@ -271,6 +271,22 @@ QCheckBox::indicator:checked {
     image: url(:/checkbox/checked);
 }
 
+QRadioButton {
+	color: lightgray;
+}
+
+QRadioButton:disabled {
+	color: gray;
+}
+
+QRadioButton::indicator:unchecked {
+    image: url(:/radio/unchecked);
+}
+
+QRadioButton::indicator:checked {
+    image: url(:/radio/checked);
+}
+
 QLineEdit, QTextEdit {
 	background: #2d2d2d;
 	border: 1px solid #2d2d2d;
@@ -350,12 +366,6 @@ Label {
            </property>
            <widget class="Camera" name="camera"/>
           </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="Blind" name="widget_2" native="true"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="Axis" name="widget" native="true"/>
          </item>
         </layout>
        </widget>
@@ -796,7 +806,6 @@ Label {
     <addaction name="actionXLock"/>
     <addaction name="actionYLock"/>
     <addaction name="actionZLock"/>
-    <addaction name="actionCoordinates"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -834,7 +843,6 @@ Label {
    <addaction name="actionXLock"/>
    <addaction name="actionYLock"/>
    <addaction name="actionZLock"/>
-   <addaction name="actionCoordinates"/>
    <addaction name="separator"/>
    <addaction name="actionSnapshot"/>
    <addaction name="actionFilm"/>
@@ -1376,25 +1384,6 @@ QLineEdit {
     <string>Z</string>
    </property>
   </action>
-  <action name="actionCoordinates">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/locks/world</normaloff>
-     <normalon>:/locks/tilt</normalon>:/locks/world</iconset>
-   </property>
-   <property name="text">
-    <string>Coordinate system</string>
-   </property>
-   <property name="statusTip">
-    <string>Use World/Object Coordinate System [Shortcut W]</string>
-   </property>
-   <property name="shortcut">
-    <string>W</string>
-   </property>
-  </action>
   <action name="actionFocus">
    <property name="icon">
     <iconset resource="icons.qrc">
@@ -1465,7 +1454,7 @@ QLineEdit {
   <action name="actionContent_Browser">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/dialogs/browser</normaloff>:/dialogs/browser</iconset>
+     <normaloff>:/dialogs/world</normaloff>:/dialogs/world</iconset>
    </property>
    <property name="text">
     <string>Open Content Browser [Shortcut Shift+F8]</string>
@@ -1544,24 +1533,9 @@ QLineEdit {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Axis</class>
-   <extends>QWidget</extends>
-   <header>axis.h</header>
-   <container>1</container>
-   <slots>
-    <slot>setModelView(QMatrix4x4)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>ToolBar</class>
    <extends>QToolBar</extends>
    <header>toolbar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Blind</class>
-   <extends>QWidget</extends>
-   <header>blind.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ProjectSettings</class>
@@ -1841,22 +1815,6 @@ QLineEdit {
     <hint type="destinationlabel">
      <x>423</x>
      <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>camera</sender>
-   <signal>modelViewChanged(QMatrix4x4)</signal>
-   <receiver>widget</receiver>
-   <slot>setModelView(QMatrix4x4)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>224</x>
-     <y>154</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>224</x>
-     <y>154</y>
     </hint>
    </hints>
   </connection>

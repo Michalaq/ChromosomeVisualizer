@@ -6,6 +6,8 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
+class Viewport;
+
 class Camera : public SplineInterpolator
 {
     Q_OBJECT
@@ -13,6 +15,8 @@ public:
     explicit Camera(QWidget *parent = 0);
     Camera(const Camera& camera);
     ~Camera();
+
+    static void setViewport(Viewport* vp);
 
     /* sets new origin */
     static void setOrigin(const QVector3D& o);
@@ -56,6 +60,15 @@ public:
 
     static void setAutomaticKeyframing(bool b = true);
 
+    void setBase(const QModelIndex& index);
+    const QModelIndex& getBase() const;
+
+    void setTarget(const QModelIndex& index);
+    const QModelIndex& getTarget() const;
+
+    void setUp(const QModelIndex& index);
+    const QModelIndex& getUp() const;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -75,6 +88,8 @@ protected:
 
     void connectNotify(const QMetaMethod &signal);
     void showEvent(QShowEvent *event);
+
+    void paintEvent(QPaintEvent *event);
 
 private:
     /* eye position */
@@ -129,10 +144,13 @@ private:
 
     static bool automaticKeyframing;
 
+    static Viewport* viewport;
+
+    QPersistentModelIndex base, target, up;
+
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
     void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
-    void rotationTypeChanged(int);
 
 friend class CameraSettings;
 };

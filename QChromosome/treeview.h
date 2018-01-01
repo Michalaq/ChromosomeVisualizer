@@ -6,18 +6,22 @@
 #include <functional>
 #include "camera.h"
 #include "treemodel.h"
+#include "pickwidget.h"
 
 class HeaderView;
 class Simulation;
 
-class TreeView : public QTreeView
+class TreeView : public QTreeView, public Pickable
 {
     Q_OBJECT
+    Q_INTERFACES(Pickable)
 public:
     explicit TreeView(QWidget *parent = 0);
     ~TreeView();
 
     void setSelection(const QList<unsigned int>& indexes);
+
+    QPersistentModelIndex pick(const QPoint &pos);
 
 signals:
     void cameraChanged(Camera*);

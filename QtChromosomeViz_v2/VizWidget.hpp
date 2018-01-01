@@ -66,14 +66,16 @@ private:
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
-class ItemSelection;
-
 #include "selection.h"
+#include "pickwidget.h"
+class Viewport;
 
 class VizWidget :   public Selection,
-                    protected QOpenGLFunctions_3_3_Core
+                    protected QOpenGLFunctions_3_3_Core,
+                    public Pickable
 {
     Q_OBJECT
+    Q_INTERFACES(Pickable)
     friend class AtomSelection;
 
 public:
@@ -85,9 +87,12 @@ public:
     virtual void resizeGL(int w, int h) override;
 
     void setSimulation(std::shared_ptr<Simulation> dp);
+    void setViewport(Viewport* vp);
 
     std::shared_ptr<Frame> currentFrame() const;
     void nextInterestingFrame();
+
+    QPersistentModelIndex pick(const QPoint& pos);
 
 public slots:
     void advanceFrame();
@@ -109,21 +114,7 @@ public slots:
     AtomSelection atomTypeSelection(const std::string & s);
     AtomSelection customSelection(const QList<unsigned int> & indices);
 
-    void setBackgroundColor(QColor color);
-    QColor backgroundColor() const;
-
-    void setLabelTextColor(QColor color);
-    QColor labelTextColor() const;
-
-    void setLabelBackgroundColor(QColor color);
-    QColor labelBackgroundColor() const;
-
     const QMap<unsigned int, QString> & getLabels() const;
-
-    void setFogDensity(float intensity);
-    void setFogContribution(float contribution);
-    float fogDensity() const;
-    float fogContribution() const;
 
     void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
     void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
@@ -177,9 +168,6 @@ private:
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
 
-    float fogDensity_;
-    float fogContribution_;
-
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
     unsigned int sphereCount_;
@@ -205,8 +193,7 @@ private:
 
     LabelRenderer labelRenderer_;
 
-    QColor backgroundColor_;
-    QColor labelTextColor_, labelBackgroundColor_;
+    Viewport* viewport_;
 
     QVector<const Material*> materials;
 };

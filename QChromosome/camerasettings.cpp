@@ -87,6 +87,24 @@ CameraSettings::CameraSettings(QWidget *parent) :
         for (auto camera : cameras)
             camera->setFarClipping(val);
     });
+
+    // base
+    connect(ui->lineEdit_2, &PickWidget::picked, [this](QPersistentModelIndex index) {
+        for (auto camera : cameras)
+            camera->setBase(index);
+    });
+
+    // target
+    connect(ui->lineEdit_3, &PickWidget::picked, [this](QPersistentModelIndex index) {
+        for (auto camera : cameras)
+            camera->setTarget(index);
+    });
+
+    // up
+    connect(ui->lineEdit_4, &PickWidget::picked, [this](QPersistentModelIndex index) {
+        for (auto camera : cameras)
+            camera->setUp(index);
+    });
 }
 
 CameraSettings::~CameraSettings()
@@ -172,6 +190,39 @@ void CameraSettings::handleSelection(const QModelIndexList& selection)
         connect(c, &Camera::modelViewChanged, this, &CameraSettings::updateModelView);
         connect(c, &Camera::projectionChanged, this, &CameraSettings::updateProjection);
     }
+
+    // base
+    auto base = camera->base;
+
+    for (auto c : cameras)
+        if (c->base != base)
+        {
+            base = QPersistentModelIndex();
+            break;
+        }
+    ui->lineEdit_2->pick(base, false);
+
+    // target
+    auto target = camera->target;
+
+    for (auto c : cameras)
+        if (c->target != target)
+        {
+            target = QPersistentModelIndex();
+            break;
+        }
+    ui->lineEdit_3->pick(target, false);
+
+    // up
+    auto up = camera->up;
+
+    for (auto c : cameras)
+        if (c->up != up)
+        {
+            up = QPersistentModelIndex();
+            break;
+        }
+    ui->lineEdit_4->pick(up, false);
 }
 
 void CameraSettings::setRotationType(int rt)

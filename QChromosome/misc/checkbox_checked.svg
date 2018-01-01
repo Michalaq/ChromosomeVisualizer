@@ -14,8 +14,8 @@
    viewBox="0 0 24 24"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r"
-   sodipodi:docname="checkbox_on.svg">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="checkbox_checked.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -26,14 +26,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="20.3"
-     inkscape:cx="7.6875001"
+     inkscape:cx="0.64316512"
      inkscape:cy="14.574996"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
      inkscape:window-width="1600"
-     inkscape:window-height="848"
+     inkscape:window-height="835"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,13 +57,13 @@
     <rect
        style="opacity:1;fill:#333333;fill-opacity:1;stroke:none;stroke-width:2.79999995;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:36.54000092;stroke-opacity:1"
        id="rect4219"
-       width="15"
-       height="15"
-       x="4.5"
-       y="1032.8622" />
+       width="16"
+       height="16"
+       x="3.9999998"
+       y="1032.3622" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#cbcbcb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 8.913,1040.7366 2.123,2.1196 4.481241,-5.9127"
+       style="fill:none;fill-rule:evenodd;stroke:#cbcbcb;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 8.7071999,1040.7616 2.2645331,2.2609 4.779991,-6.3069"
        id="path4217"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc" />

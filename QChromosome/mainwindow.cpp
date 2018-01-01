@@ -18,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     actionGroup(new QActionGroup(this)),
     renderSettings(RenderSettings::getInstance()),
     preferences(new Preferences),
-    materialBrowser(MaterialBrowser::getInstance())
+    materialBrowser(MaterialBrowser::getInstance()),
+    pw(nullptr),
+    msg(new QLabel("Pick mode: Click on an object, material, tag ..."))
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -79,7 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionMove->toggle();
 
     connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
-    connect(renderSettings, SIGNAL(aspectRatioChanged(qreal)), ui->widget_2, SLOT(setAspectRatio(qreal)));
 
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
@@ -140,9 +141,13 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    ui->page_4->setVizWidget(ui->scene);
-    ui->page_4->setBlind(ui->widget_2);
-    ui->page_4->setAxis(ui->widget);
+    ui->scene->setViewport(ui->page_4);
+    Camera::setViewport(ui->page_4);
+
+    connect(ui->page_4, &Viewport::viewportChanged, [this] {
+        ui->stackedWidget_2->currentWidget()->update();
+        ui->scene->update();
+    });
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
@@ -160,14 +165,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->page_6->setSplineInterpolator(ui->camera);
         ui->stackedWidget->setCurrentIndex(5);
         ui->dockWidget_2->show();
-    });
-
-    connect(ui->actionCoordinates, &QAction::toggled, [this](bool c) {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setRotationType(c ? Camera::RT_Camera : Camera::RT_World);
-    });
-
-    connect(ui->camera, &Camera::rotationTypeChanged, [this](int i) {
-        ui->actionCoordinates->setChecked(i == 1);
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
@@ -217,6 +214,17 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->horizontalSlider->setSplineInterpolator(camera);
     });
 
+    msg->setStyleSheet("padding-left: 1px; padding-top: -1px; color: white;");
+    msg->hide();
+
+    statusBar()->addPermanentWidget(msg, 1);
+
+    connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
+        pw = qobject_cast<PickWidget*>(object);
+        msg->show();
+        QApplication::setOverrideCursor(Qt::WhatsThisCursor);
+    });
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);
@@ -231,6 +239,33 @@ MainWindow::~MainWindow()
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+    if (pw && event->type() == QEvent::MouseButtonPress)
+    {
+        QApplication::restoreOverrideCursor();
+        msg->hide();
+
+        auto p = ui->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
+
+        if (ui->treeView->rect().contains(p))
+        {
+            pw->pick(ui->treeView->pick(p));
+            pw = nullptr;
+            return true;
+        }
+
+        auto q = ui->scene->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
+
+        if (ui->scene->rect().contains(q))
+        {
+            pw->pick(ui->scene->pick(q));
+            pw = nullptr;
+            return true;
+        }
+
+        pw->pick(QModelIndex());
+        pw = nullptr;
+    }
+
     if (Draggable::pressedButton() != Qt::NoButton)
     {
         if (event->type() == QEvent::MouseButtonPress && event->spontaneous())
@@ -737,7 +772,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(currentFrame, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    MovieMaker::captureScene1(currentFrame, ui->page_4, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
@@ -746,7 +781,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), ui->page_4, ui->scene, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
@@ -816,11 +851,7 @@ void MainWindow::addCamera(Camera* camera)
 
     connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
     connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
-    connect(camera, &Camera::modelViewChanged, ui->widget, &Axis::setModelView);
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
-    connect(camera, &Camera::rotationTypeChanged, [this](int i) {
-        ui->actionCoordinates->setChecked(i == 1);
-    });
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         ui->page_6->setSplineInterpolator(camera);
         ui->stackedWidget->setCurrentIndex(5);

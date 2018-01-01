@@ -165,7 +165,7 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, Viewport* viewport, const VizWidget* scene, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -178,8 +178,8 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
         set360Camera(outFile, camera, camera->count() > 1);
     else
         setCamera(outFile, camera, camera->count() > 1);
-    setBackgroundColor(outFile, scene->backgroundColor());
-    setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
+    setBackgroundColor(outFile, viewport->getBackgroundColor());
+    setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
     scene->writePOVFrames(outFile, fbeg, fend);
 
@@ -296,7 +296,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const VizWidget* scene, const 
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, Viewport* viewport, const VizWidget* scene, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -309,8 +309,8 @@ void MovieMaker::captureScene1(int fn, const VizWidget* scene, const Camera* cam
         set360Camera(outFile, camera, false);
     else
         setCamera(outFile, camera, false);
-    setBackgroundColor(outFile, scene->backgroundColor());
-    setFog(outFile, scene->backgroundColor(), 1.f / scene->fogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
+    setBackgroundColor(outFile, viewport->getBackgroundColor());
+    setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
     scene->writePOVFrame(outFile, fn);
 

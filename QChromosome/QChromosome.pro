@@ -24,11 +24,9 @@ SOURCES += main.cpp\
     spinbox.cpp \
     ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
-    axis.cpp \
     legend.cpp \
     toolbar.cpp \
     rendersettings.cpp \
-    blind.cpp \
     projectsettings.cpp \
     slider.cpp \
     softslider.cpp \
@@ -70,7 +68,8 @@ SOURCES += main.cpp\
     tableview.cpp \
     moviemaker.cpp \
     attributes.cpp \
-    titlelabel.cpp
+    titlelabel.cpp \
+    pickwidget.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -84,12 +83,10 @@ HEADERS  += mainwindow.h\
     spinbox.h \
     ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
-    axis.h \
     legend.h \
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
-    blind.h \
     projectsettings.h \
     slider.h \
     softslider.h \
@@ -147,7 +144,8 @@ HEADERS  += mainwindow.h\
     tablemodel.h \
     tableview.h \
     attributes.h \
-    titlelabel.h
+    titlelabel.h \
+    pickwidget.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

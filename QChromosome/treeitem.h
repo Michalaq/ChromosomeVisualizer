@@ -64,6 +64,7 @@ public:
 
     int selected_children_count = 0;
     int selected_tag_index = -1;
+    QVariant decoration;
 
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;

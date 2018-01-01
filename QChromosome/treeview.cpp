@@ -326,3 +326,9 @@ bool TreeView::event(QEvent *event)
 
     return QTreeView::event(event);
 }
+
+QPersistentModelIndex TreeView::pick(const QPoint& pos)
+{
+    auto ans = indexAt(pos);
+    return ans.isValid() ? ans.sibling(ans.row(), 0) : ans;
+}

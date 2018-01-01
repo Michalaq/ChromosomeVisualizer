@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="bar">misc/tab_bar.svg</file>
         <file alias="location">icons/location_icon.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
@@ -17,10 +16,21 @@
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
+        <file alias="pick">icons/select_point_icon.svg</file>
     </qresource>
     <qresource prefix="/fonts">
         <file alias="Roboto-Regular">fonts/Roboto-Regular.ttf</file>
         <file alias="RobotoMono-Regular">fonts/RobotoMono-Regular.ttf</file>
         <file alias="Roboto-Bold">fonts/Roboto-Bold.ttf</file>
+    </qresource>
+    <qresource prefix="/tabwidget">
+        <file alias="tear">misc/tear_indicator.svg</file>
+        <file alias="bar">misc/tab_bar.svg</file>
+        <file alias="scroll-right">misc/scroll_right.svg</file>
+        <file alias="scroll-left">misc/scroll_left.svg</file>
+    </qresource>
+    <qresource prefix="/radio">
+        <file alias="checked">misc/radio_checked.svg</file>
+        <file alias="unchecked">misc/radio_unchecked.svg</file>
     </qresource>
 </RCC>

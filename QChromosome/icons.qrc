@@ -47,17 +47,15 @@
         <file alias="import">icons/file_import_icon.svg</file>
         <file alias="diskette">icons/diskette_icon.svg</file>
         <file alias="material">icons/material_icon.svg</file>
-        <file alias="browser">icons/browser_icon.svg</file>
         <file alias="focus">icons/focus_icon.svg</file>
         <file alias="primitives">icons/primitives_icon.svg</file>
+        <file alias="world">icons/world_icon.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="icon">icons/QChromosome_icon.svg</file>
         <file alias="splash">misc/splash.png</file>
     </qresource>
     <qresource prefix="/locks">
-        <file alias="world">icons/world_icon.svg</file>
-        <file alias="tilt">icons/tilt_icon.svg</file>
         <file alias="move x">icons/move_x_icon.svg</file>
         <file alias="move y">icons/move_y_icon.svg</file>
         <file alias="move z">icons/move_z_icon.svg</file>

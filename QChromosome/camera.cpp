@@ -14,6 +14,8 @@ Camera::Action Camera::currentAction;
 
 bool Camera::automaticKeyframing = false;
 
+Viewport* Camera::viewport = nullptr;
+
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
@@ -126,6 +128,11 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     updateAngles();
 }
 
+void Camera::setViewport(Viewport *vp)
+{
+    viewport = vp;
+}
+
 void Camera::resizeEvent(QResizeEvent *event)
 {
     emit projectionChanged(updateProjection());
@@ -159,7 +166,80 @@ void Camera::showEvent(QShowEvent *event)
 
     emit modelViewChanged(modelView);
     emit projectionChanged(projection);
-    emit rotationTypeChanged(rotationType);
+}
+
+#include <QPainter>
+#include "viewport.h"
+
+void Camera::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    if (viewport->getSFVisible())
+    {
+        int w = std::min(width(), int(qreal(height()) * aspectRatio + 0.5));
+        int h = std::min(height(), int(qreal(width()) / aspectRatio + 0.5));
+
+        QRect view(0, 0, w, h);
+        view.moveCenter(rect().center());
+
+        auto opacity = viewport->getSFOpacity();
+        auto color = viewport->getSFColor();
+
+        QPainter p(this);
+        p.setOpacity(opacity);
+
+        p.fillRect(QRect(rect().topLeft(), view.bottomLeft() - QPoint(1, 0)), color);
+        p.fillRect(QRect(rect().topLeft(), view.topRight() - QPoint(0, 1)), color);
+
+        p.fillRect(QRect(view.topRight() + QPoint(1, 0), rect().bottomRight()), color);
+        p.fillRect(QRect(view.bottomLeft() + QPoint(0, 1), rect().bottomRight()), color);
+    }
+
+    auto position = viewport->getAxisPosition();
+
+    if (position != Off_)
+    {
+        struct
+        {
+            QVector3D vector;
+            Qt::GlobalColor color;
+            QChar label;
+        }
+        axis[] =
+        {
+            {modelView.mapVector({1, 0, 0}), Qt::red,   'X'},
+            {modelView.mapVector({0, 1, 0}), Qt::green, 'Y'},
+            {modelView.mapVector({0, 0, 1}), Qt::blue,  'Z'}
+        };
+
+        if (axis[0].vector.z() > axis[1].vector.z()) std::swap(axis[0], axis[1]);
+        if (axis[1].vector.z() > axis[2].vector.z()) std::swap(axis[1], axis[2]);
+        if (axis[0].vector.z() > axis[1].vector.z()) std::swap(axis[0], axis[1]);
+
+        QRectF r(0, 0, 20, 20);
+
+        QPainter p(this);
+        p.setRenderHint(QPainter::Antialiasing);
+
+        auto scale = viewport->getAxisScale();
+
+        p.translate(position == TopLeft || position == BottomLeft ? 50 * scale : width() - 50 * scale,
+                    position == TopLeft || position == TopRight ? 50 * scale : height() - 50 * scale);
+        p.scale(scale, scale);
+
+        for (auto a : axis)
+        {
+            p.setPen(QPen(a.color, 2, Qt::SolidLine, Qt::RoundCap));
+            p.drawLine({0,0}, QPointF(a.vector.x(), -a.vector.y()) * 30);
+
+            if (viewport->getAxisTextVisible())
+            {
+                r.moveCenter(QPointF(a.vector.x(), -a.vector.y()) * 40);
+                p.drawText(r, Qt::AlignCenter, a.label);
+            }
+        }
+    }
 }
 
 void Camera::setOrigin(const QVector3D &o)
@@ -282,8 +362,6 @@ void Camera::setFieldOfView(qreal fov)
 void Camera::setRotationType(int rt)
 {
     rotationType = rt;
-
-    emit rotationTypeChanged(rt);
 }
 
 void Camera::setNearClipping(qreal nc)
@@ -422,7 +500,11 @@ QMatrix4x4& Camera::updateModelView()
     modelView.translate(eye);
     modelView.rotate(QQuaternion::fromAxes(x, y, z));
 
-    return modelView = modelView.inverted();
+    modelView = modelView.inverted();
+
+    update();
+
+    return modelView;
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -506,4 +588,34 @@ void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
 void Camera::setAutomaticKeyframing(bool b)
 {
     automaticKeyframing = b;
+}
+
+void Camera::setBase(const QModelIndex& index)
+{
+    base = index;
+}
+
+const QModelIndex& Camera::getBase() const
+{
+    return base;
+}
+
+void Camera::setTarget(const QModelIndex& index)
+{
+    target = index;
+}
+
+const QModelIndex& Camera::getTarget() const
+{
+    return target;
+}
+
+void Camera::setUp(const QModelIndex& index)
+{
+    up = index;
+}
+
+const QModelIndex& Camera::getUp() const
+{
+    return up;
 }

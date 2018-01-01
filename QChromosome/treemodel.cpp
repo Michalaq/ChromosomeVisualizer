@@ -34,36 +34,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return item->data(index.column());
     case Qt::DecorationRole:
-        if (index.column() == 0)
-        {
-            QIcon icon;
-
-            switch (item->data(1).toInt())
-            {
-            case NodeType::LayerObject:
-                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
-                break;
-            case NodeType::ChainObject:
-                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
-                break;
-            case NodeType::ResidueObject:
-                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
-                break;
-            case NodeType::AtomObject:
-                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
-                break;
-            case NodeType::CameraObject:
-                icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
-                break;
-            }
-
-            return icon;
-        }
+        return item->decoration;
     case Qt::UserRole:
         return item->selected_children_count;
     case Qt::UserRole + 1:
@@ -82,6 +53,9 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
     switch (role)
     {
+    case Qt::DecorationRole:
+        item->decoration = value;
+        return true;
     case Qt::UserRole:
         item->selected_children_count = value.toInt();
         return true;
