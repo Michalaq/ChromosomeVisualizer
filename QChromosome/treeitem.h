@@ -172,4 +172,18 @@ private:
     QString label;
 };
 
+class ChainItem : public TreeItem
+{
+public:
+    explicit ChainItem(const QString& name, TreeItem *parentItem = 0);
+    ~ChainItem();
+};
+
+class ResidueItem : public TreeItem
+{
+public:
+    explicit ResidueItem(const QString& name, TreeItem *parentItem = 0);
+    ~ResidueItem();
+};
+
 #endif // TREEITEM_H

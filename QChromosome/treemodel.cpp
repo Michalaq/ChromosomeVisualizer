@@ -153,7 +153,7 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parent);
+    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), parent);
 
     QMap<int, TreeItem*> types;
 
@@ -162,7 +162,12 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
+        {
+            types[t] = new ResidueItem(Defaults::typename2label(t), root);
+
+            if (init)
+                types[t]->setData(5, Defaults::typename2color(t));
+        }
 
         types[t]->appendChild(new AtomItem(atom, atom->id - 1 + offset, types[t]));
     }
@@ -203,7 +208,12 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
+            {
+                types[t] = new ResidueItem(Defaults::typename2label(t), root);
+
+                if (init)
+                    types[t]->setData(5, Defaults::typename2color(t));
+            }
 
             types[t]->appendChild(new AtomItem(&atoms[i], atoms[i].id - 1 + offset, types[t]));
         }

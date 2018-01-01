@@ -38,35 +38,12 @@
 **
 ****************************************************************************/
 
-#include <QStringList>
-
 #include "treeitem.h"
-#include <QIcon>
 
 TreeItem::TreeItem(const QVariantList &data, TreeItem *parent)
 {
     m_parentItem = parent;
     m_itemData = data;
-
-    QIcon icon;
-
-    switch (data[1].toInt())
-    {
-    case NodeType::ChainObject:
-        icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
-        icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
-        break;
-    case NodeType::ResidueObject:
-        icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
-        icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
-        break;
-    case NodeType::AtomObject:
-        icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
-        icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
-        break;
-    }
-
-    decoration = icon;
 }
 
 TreeItem::~TreeItem()
@@ -291,6 +268,11 @@ AtomItem::AtomItem(const Atom *atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     id(id)
 {
+    QIcon icon;
+    icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
+    decoration = icon;
+
     buffer[id].position[0] = atom->x;
     buffer[id].position[1] = atom->y;
     buffer[id].position[2] = atom->z;
@@ -426,4 +408,32 @@ void AtomItem::write(QJsonObject &json) const
         object["Label"] = label;
 
     json["Object"] = object;
+}
+
+ChainItem::ChainItem(const QString& name, TreeItem *parentItem) :
+    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+{
+    QIcon icon;
+    icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
+    decoration = icon;
+}
+
+ChainItem::~ChainItem()
+{
+
+}
+
+ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :
+    TreeItem({name, NodeType::AtomObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+{
+    QIcon icon;
+    icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
+    decoration = icon;
+}
+
+ResidueItem::~ResidueItem()
+{
+
 }
