@@ -111,6 +111,13 @@ void TreeItem::removeRows(int row, int count)
         delete m_childItems.takeAt(i);
 }
 
+#include <QVector3D>
+
+QVector3D TreeItem::getPosition() const
+{
+    return QVector3D(0, 0, 0);
+}
+
 #include <QJsonObject>
 #include <QJsonArray>
 #include "materialbrowser.h"
@@ -242,6 +249,16 @@ CameraItem::~CameraItem()
 
 }
 
+QVector3D CameraItem::getPosition() const
+{
+    return camera->position();
+}
+
+void CameraItem::setPosition(const QVector3D& p)
+{
+    camera->setPosition(p);
+}
+
 void CameraItem::write(QJsonObject &json) const
 {
     TreeItem::write(json);
@@ -293,6 +310,12 @@ const QVector<VizBallInstance>& AtomItem::getBuffer()
     return buffer;
 }
 
+QVector3D AtomItem::getPosition() const
+{
+    auto buff = buffer[id].position;
+    return QVector3D(buff[0], buff[1], buff[2]);
+}
+
 void AtomItem::resizeBuffer(int count)
 {
     int offset = buffer.size();
@@ -301,9 +324,6 @@ void AtomItem::resizeBuffer(int count)
 
     VizBallInstance dummy;
     dummy.flags = VISIBLE_FLAG;
-    dummy.color = 0xFF777777;//TODO usunąć
-    dummy.specularColor = 0xFFFFFFFF;//TODO usunąć
-    dummy.specularExponent = 10.f;//TODO usunąć
     dummy.size = 1.f;
 
     std::fill(buffer.begin() + offset, buffer.end(), dummy);

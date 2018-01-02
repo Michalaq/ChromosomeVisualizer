@@ -18,7 +18,7 @@ public:
     explicit Attributes(QWidget *parent = 0);
     ~Attributes();
 
-    void setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms);
+    void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
 
 public slots:
@@ -29,7 +29,6 @@ private:
 
     TreeModel *model;
     QModelIndexList rows;
-    QModelIndexList atoms;
 
     void updateSelection();
 };

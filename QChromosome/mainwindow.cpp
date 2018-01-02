@@ -688,29 +688,27 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     for (auto i : selected.indexes())
         model->setSelected(i, true);
 
-    QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows(), selectedAtoms;
+    ui->page_8->unsetSelection();
+
+    QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows();
+
+    int selectionType;
 
     if (selectedRows.isEmpty())
+        selectionType = -1;
+    else
     {
-        ui->page_8->setSelection(simulation->getModel(), selectedRows, selectedRows);
-        ui->stackedWidget->setCurrentIndex(7);
-        ui->dockWidget_2->show();
-        return;
+        auto index = selectedRows.first();
+
+        selectionType = index.sibling(index.row(), 1).data().toInt();
+
+        for (const auto& r : selectedRows)
+            if (selectionType != r.sibling(r.row(), 1).data().toInt())
+            {
+                selectionType = -1;
+                break;
+            }
     }
-
-    auto index = selectedRows.first();
-
-    int selectionType = index.sibling(index.row(), 1).data().toInt();
-
-    for (const auto& r : selectedRows)
-    {
-        if (selectionType != r.sibling(r.row(), 1).data().toInt())
-            selectionType = -1;
-
-        dumpModel(ui->treeView->model(), r, selectedAtoms);
-    }
-
-    ui->page_8->unsetSelection();
 
     switch (selectionType) {
     //case LayerObject:
@@ -719,7 +717,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     //case AtomObject:
     //case CameraObject:
     default:
-        ui->page_8->setSelection(simulation->getModel(), selectedRows, selectedAtoms);
+        ui->page_8->setSelection(simulation->getModel(), selectedRows);
         ui->stackedWidget->setCurrentIndex(7);
         ui->dockWidget_2->show();
         break;

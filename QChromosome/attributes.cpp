@@ -4,7 +4,8 @@
 
 Attributes::Attributes(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Attributes)
+    ui(new Ui::Attributes),
+    model(nullptr)
 {
     ui->setupUi(this);
 
@@ -29,14 +30,13 @@ Attributes::~Attributes()
 #include "treeitem.h"
 #include "camera.h"
 
-void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selectedRows, QModelIndexList& selectedAtoms)
+void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
     if (selectedRows.isEmpty())
         return hide();
 
     model = selectedModel;
-    rows.swap(selectedRows);
-    atoms.swap(selectedAtoms);
+    rows = selectedRows;
 
     connect(model, &TreeModel::attributeChanged, this, &Attributes::updateSelection);
 
@@ -58,13 +58,10 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
     // set coordinates and camera origin
     QVector3D g;
 
-    for (const auto& a : atoms)
-    {
-        const float* pos = reinterpret_cast<AtomItem*>(a.internalPointer())->getInstance().position;
-        g += { pos[0], pos[1], pos[2] };
-    }
+    for (const auto& r : rows)
+        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
 
-    g /= atoms.count();
+    g /= rows.count();
 
     Camera::setOrigin(g);
 
@@ -73,8 +70,8 @@ void Attributes::setSelection(TreeModel* selectedModel, QModelIndexList& selecte
 
 void Attributes::unsetSelection()
 {
-    if (model)
-        model->disconnect(this);
+    if (model) model->disconnect(this);
+    model = nullptr;
 }
 
 void Attributes::updateSelection()

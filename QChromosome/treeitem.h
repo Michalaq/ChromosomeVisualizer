@@ -66,6 +66,8 @@ public:
     int selected_tag_index = -1;
     QVariant decoration;
 
+    virtual QVector3D getPosition() const;
+
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
@@ -113,6 +115,9 @@ class CameraItem : public TreeItem
 public:
     explicit CameraItem(const QString& name, Camera* cam, TreeItem *parentItem = 0);
     ~CameraItem();
+
+    QVector3D getPosition() const;
+    void setPosition(const QVector3D& p);
 
     void write(QJsonObject& json) const;
 
@@ -162,6 +167,8 @@ public:
     void setMaterial(const Material* material);
     void setVisibility(bool visible);
     void setSelected(bool selected);
+
+    QVector3D getPosition() const;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
