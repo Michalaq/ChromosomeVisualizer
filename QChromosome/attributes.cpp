@@ -38,24 +38,18 @@ void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &s
     model = selectedModel;
     rows = selectedRows;
 
-    connect(model, &TreeModel::attributeChanged, this, &Attributes::updateSelection);
+    connect(model, &TreeModel::attributeChanged, this, &Attributes::updateModelSelection);
 
     // set title
     QString title = QString::number(rows.count()) + " elements ";
 
-    QString list;
-
-    for (const auto& r : rows)
-        list += r.data().toString() + ", ";
-
-    list.chop(2);
-
     ui->label->setTitle(title);
-    ui->label->setElements(list);
 
-    updateSelection();
+    updateModelSelection();
 
-    // set coordinates and camera origin
+    updatePosition();
+
+    // set camera origin
     QVector3D g;
 
     for (const auto& r : rows)
@@ -74,8 +68,18 @@ void Attributes::unsetSelection()
     model = nullptr;
 }
 
-void Attributes::updateSelection()
+void Attributes::updateModelSelection()
 {
+    // set elements
+    QString list;
+
+    for (const auto& r : rows)
+        list += r.data().toString() + ", ";
+
+    list.chop(2);
+
+    ui->label->setElements(list);
+
     auto fst = rows.first();
 
     // set name
@@ -122,4 +126,54 @@ void Attributes::updateSelection()
         ui->comboBox_2->setMultipleValues();
     else
         ui->comboBox_2->setCurrentIndex(vir, false);
+}
+
+void Attributes::updatePosition()
+{
+    auto fst = rows.first();
+
+    // set P.X
+    double x = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().x();
+
+    for (const auto& r : rows)
+        if (x != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().x())
+        {
+            x = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(x))
+        ;
+    else
+        ui->spinBox->setValue(x, false);
+
+    // set P.Y
+    double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
+
+    for (const auto& r : rows)
+        if (y != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().y())
+        {
+            y = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(y))
+        ;
+    else
+        ui->spinBox_2->setValue(y, false);
+
+    // set P.Z
+    double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
+
+    for (const auto& r : rows)
+        if (z != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().z())
+        {
+            z = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(z))
+        ;
+    else
+        ui->spinBox_3->setValue(z, false);
 }

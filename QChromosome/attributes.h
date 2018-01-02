@@ -30,7 +30,8 @@ private:
     TreeModel *model;
     QModelIndexList rows;
 
-    void updateSelection();
+    void updateModelSelection();
+    void updatePosition();
 };
 
 #endif // ATTRIBUTES_H
