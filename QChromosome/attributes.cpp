@@ -136,9 +136,9 @@ void Attributes::updatePosition()
         }
 
     if (qIsNaN(x))
-        ;
+        ui->doubleSpinBox->setMultipleValues();
     else
-        ui->spinBox->setValue(x, false);
+        ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
     double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
@@ -151,9 +151,9 @@ void Attributes::updatePosition()
         }
 
     if (qIsNaN(y))
-        ;
+        ui->doubleSpinBox_2->setMultipleValues();
     else
-        ui->spinBox_2->setValue(y, false);
+        ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
     double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
@@ -166,9 +166,9 @@ void Attributes::updatePosition()
         }
 
     if (qIsNaN(z))
-        ;
+        ui->doubleSpinBox_3->setMultipleValues();
     else
-        ui->spinBox_3->setValue(z, false);
+        ui->doubleSpinBox_3->setValue(z, false);
 
     // set camera origin
     QVector3D g;

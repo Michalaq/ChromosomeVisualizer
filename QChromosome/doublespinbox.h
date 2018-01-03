@@ -2,6 +2,15 @@
 #define DOUBLESPINBOX_H
 
 #include <QDoubleSpinBox>
+#include "lineedit.h"
+
+class RegularExpressionValidator : public QRegularExpressionValidator
+{
+public:
+    RegularExpressionValidator(const QRegularExpression &rx, QObject *parent = 0);
+
+    State validate(QString &input, int &pos) const;
+};
 
 class DoubleSpinBox : public QDoubleSpinBox
 {
@@ -12,6 +21,9 @@ public:
 
     QValidator::State validate(QString &input, int &pos) const;
     double valueFromText(const QString &text) const;
+    QString textFromValue(double val) const;
+
+    void setMultipleValues();
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -23,7 +35,9 @@ public slots:
     void setValue(double val, bool spontaneous = true);
 
 private:
-    QRegularExpression re;
+    RegularExpressionValidator validator;
+    LineEdit* edit;
+    bool multiple;
 };
 
 #endif // DOUBLESPINBOX_H

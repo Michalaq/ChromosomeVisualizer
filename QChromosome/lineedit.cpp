@@ -12,12 +12,12 @@ LineEdit::~LineEdit()
 
 }
 
-void LineEdit::setMultipleValues()
+void LineEdit::setMultipleValues(bool enabled)
 {
     bool b = blockSignals(true);
 
-    multiple = true;
-    clear();
+    if (multiple = enabled)
+        clear();
 
     blockSignals(b);
 }
@@ -51,7 +51,7 @@ void LineEdit::paintEvent(QPaintEvent *event)
 {
     QLineEdit::paintEvent(event);
 
-    if (multiple && !hasFocus() && placeholderText().isEmpty())
+    if (multiple && (!hasFocus() || isReadOnly()) && placeholderText().isEmpty())
     {
         QPainter p(this);
 
@@ -79,10 +79,11 @@ void LineEdit::paintEvent(QPaintEvent *event)
         }
         QRect lineRect(r.x() + 2, vscroll, r.width() - contentsMargins().left() - 4, fm.height());
 
-        int minLB = qMax(0, -fm.minLeftBearing());
+        //int minLB = qMax(0, -fm.minLeftBearing());
 
         //lineRect.adjust(minLB, 0, 0, 0);
         QString elidedText = fm.elidedText("<< multiple values >>", Qt::ElideRight, lineRect.width());
+        p.fillRect(lineRect, palette().background());
         p.drawText(lineRect, va, elidedText);
     }
 }

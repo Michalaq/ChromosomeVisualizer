@@ -10,7 +10,7 @@ public:
     explicit LineEdit(QWidget *parent = 0);
     ~LineEdit();
 
-    void setMultipleValues();
+    void setMultipleValues(bool enabled = true);
 
 protected:
     void focusInEvent(QFocusEvent *event);
