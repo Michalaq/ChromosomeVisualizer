@@ -51,20 +51,30 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
+    bool ans;
+
     switch (role)
     {
     case Qt::DecorationRole:
         item->decoration = value;
-        return true;
+        ans = true;
+        break;
     case Qt::UserRole:
         item->selected_children_count = value.toInt();
-        return true;
+        ans = true;
+        break;
     case Qt::UserRole + 1:
         item->selected_tag_index = value.toInt();
-        return true;
+        ans = true;
+        break;
     default:
-        return item->setData(index.column(), value);
+        ans = item->setData(index.column(), value);
     }
+
+    if (ans)
+        emit dataChanged(index, index, {role});
+
+    return ans;
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -398,31 +408,39 @@ void TreeModel::propagateVisibility(const QModelIndex &root, bool v)
     }
 }
 
-void TreeModel::setVisibility(const QModelIndex &root, Visibility v, VisibilityMode m)
+void TreeModel::setVisibility(const QModelIndex &index, Visibility v, VisibilityMode m)
 {
-    auto index = root.sibling(root.row(), m);
+    setVisibility(QModelIndexList({index}), v, m);
+}
 
-    setData(index, v);
-
-    if (m == Editor)
+void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, VisibilityMode m)
+{
+    for (const auto& i : indices)
     {
-        auto index = root.sibling(root.row(), 0);
-        auto v = On;
+        auto index = i.sibling(i.row(), m);
 
-        while (index.isValid())
+        setData(index, v);
+
+        if (m == Editor)
         {
-            Visibility w = (Visibility)index.sibling(index.row(), m).data().toInt();
+            auto index = i.sibling(i.row(), 0);
+            auto v = On;
 
-            if (w != Default)
+            while (index.isValid())
             {
-                v = w;
-                break;
+                Visibility w = (Visibility)index.sibling(index.row(), m).data().toInt();
+
+                if (w != Default)
+                {
+                    v = w;
+                    break;
+                }
+
+                index = index.parent();
             }
 
-            index = index.parent();
+            propagateVisibility(i.sibling(i.row(), 0), v == On);
         }
-
-        propagateVisibility(root.sibling(root.row(), 0), v == On);
     }
 
     emit propertyChanged();
@@ -438,16 +456,24 @@ void TreeModel::propagateSelected(const QModelIndex &root, bool s)
         propagateSelected(index(r, 0, root), s);
 }
 
-void TreeModel::setSelected(const QModelIndex &root, bool s)
+void TreeModel::setSelected(const QModelIndexList &indices, bool s)
 {
-    propagateSelected(root, s);
+    for (const auto& i : indices)
+        propagateSelected(i, s);
 
     emit propertyChanged();
 }
 
-void TreeModel::setName(const QModelIndex &root, const QString &name)
+void TreeModel::setName(const QModelIndex &index, const QString &name)
 {
-    setData(root.sibling(root.row(), 0), name);
+    setName(QModelIndexList({index}), name);
+}
+
+void TreeModel::setName(const QModelIndexList &indices, const QString &name)
+{
+    if (!name.isEmpty())
+        for (const auto& i : indices)
+            setData(i.sibling(i.row(), 0), name);
 
     emit attributeChanged();
 }

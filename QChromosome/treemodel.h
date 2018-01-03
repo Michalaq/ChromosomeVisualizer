@@ -87,11 +87,13 @@ public:
     void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
     Material* removeMaterial(const QModelIndex& root, int position);
 
-    void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
+    void setVisibility(const QModelIndex& index, Visibility v, VisibilityMode m);
+    void setVisibility(const QModelIndexList& indices, Visibility v, VisibilityMode m);
 
-    void setSelected(const QModelIndex& root, bool s);
+    void setSelected(const QModelIndexList& indices, bool s);
 
-    void setName(const QModelIndex& root, const QString& name);
+    void setName(const QModelIndex& index, const QString& name);
+    void setName(const QModelIndexList& indices, const QString& name);
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;

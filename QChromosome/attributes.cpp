@@ -9,16 +9,19 @@ Attributes::Attributes(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // connect name
+    connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
+        model->setName(rows, ui->lineEdit->text());
+    });
+
     // connect vie
     connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
-        for (auto& r : rows)
-            model->setVisibility(r, (Visibility)index, Editor);
+        model->setVisibility(rows, (Visibility)index, Editor);
     });
 
     // connect vir
     connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
-        for (auto& r : rows)
-            model->setVisibility(r, (Visibility)index, Renderer);
+        model->setVisibility(rows, (Visibility)index, Renderer);
     });
 }
 
@@ -48,16 +51,6 @@ void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &s
     updateModelSelection();
 
     updatePosition();
-
-    // set camera origin
-    QVector3D g;
-
-    for (const auto& r : rows)
-        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
-
-    g /= rows.count();
-
-    Camera::setOrigin(g);
 
     show();
 }
@@ -95,7 +88,7 @@ void Attributes::updateModelSelection()
     if (name.isEmpty())
         ui->lineEdit->setMultipleValues();
     else
-        ui->lineEdit->setText(name);
+        ui->lineEdit->setText(name, false);
 
     // set vie
     int vie = fst.sibling(fst.row(), 3).data().toInt();
@@ -176,4 +169,14 @@ void Attributes::updatePosition()
         ;
     else
         ui->spinBox_3->setValue(z, false);
+
+    // set camera origin
+    QVector3D g;
+
+    for (const auto& r : rows)
+        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
+
+    g /= rows.count();
+
+    Camera::setOrigin(g);
 }

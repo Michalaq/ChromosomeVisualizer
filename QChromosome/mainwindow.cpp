@@ -682,11 +682,8 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 {
     auto model = qobject_cast<TreeModel*>(simulation->getModel());
 
-    for (auto i : deselected.indexes())
-        model->setSelected(i, false);
-
-    for (auto i : selected.indexes())
-        model->setSelected(i, true);
+    model->setSelected(deselected.indexes(), false);
+    model->setSelected(selected.indexes(), true);
 
     ui->page_8->unsetSelection();
 
