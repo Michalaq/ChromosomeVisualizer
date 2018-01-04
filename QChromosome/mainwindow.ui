@@ -959,7 +959,7 @@ QLineEdit {
        <widget class="AtomAttributes" name="page_2"/>
        <widget class="LayerAttributes" name="page_3"/>
        <widget class="Viewport" name="page_4"/>
-       <widget class="CameraSettings" name="page_5"/>
+       <widget class="CameraAttributes" name="page_5"/>
        <widget class="Keyframes" name="page_6"/>
        <widget class="MaterialAttributes" name="page_7"/>
        <widget class="Attributes" name="page_8"/>
@@ -1577,12 +1577,6 @@ QLineEdit {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CameraSettings</class>
-   <extends>QWidget</extends>
-   <header>camerasettings.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>Keyframes</class>
    <extends>QWidget</extends>
    <header>keyframe.h</header>
@@ -1603,6 +1597,12 @@ QLineEdit {
    <class>Attributes</class>
    <extends>QWidget</extends>
    <header>attributes.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraAttributes</class>
+   <extends>QWidget</extends>
+   <header>cameraattributes.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

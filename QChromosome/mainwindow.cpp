@@ -703,7 +703,11 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     //case ChainObject:
     //case ResidueObject:
     //case AtomObject:
-    //case CameraObject:
+    case CameraObject:
+        //ui->page_5->setSelection(simulation->getModel(), selectedRows);
+        ui->stackedWidget->setCurrentIndex(4);
+        ui->dockWidget_2->show();
+        break;
     default:
         ui->page_8->setSelection(simulation->getModel(), selectedRows);
         ui->stackedWidget->setCurrentIndex(7);
@@ -716,14 +720,6 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     // handle custom selection types
     if (type.size() == 1)
     {
-        if (*type.begin() == NodeType::CameraObject)
-        {
-            ui->page_5->handleSelection(ui->treeView->selectionModel()->selectedRows());
-            ui->stackedWidget->setCurrentIndex(4);
-            ui->dockWidget_2->show();
-            return;
-        }
-
         /*if (*type.begin() == NodeType::LayerObject)
         {
             ui->dockWidget_2->show();

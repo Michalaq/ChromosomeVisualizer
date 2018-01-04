@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     moviemaker.cpp \
     attributes.cpp \
     titlelabel.cpp \
-    pickwidget.cpp
+    pickwidget.cpp \
+    cameraattributes.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -145,7 +146,8 @@ HEADERS  += mainwindow.h\
     tableview.h \
     attributes.h \
     titlelabel.h \
-    pickwidget.h
+    pickwidget.h \
+    cameraattributes.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -160,7 +162,8 @@ FORMS    += mainwindow.ui \
     preferences.ui \
     materialattributes.ui \
     materialbrowser.ui \
-    attributes.ui
+    attributes.ui \
+    cameraattributes.ui
 
 CONFIG += c++14
 
