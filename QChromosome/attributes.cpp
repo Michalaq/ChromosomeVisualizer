@@ -35,8 +35,7 @@ Attributes::~Attributes()
 
 void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
-    if (selectedRows.isEmpty())
-        return hide();
+    Q_ASSERT(!selectedRows.empty());
 
     model = selectedModel;
     rows = selectedRows;
@@ -51,8 +50,6 @@ void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &s
     updateModelSelection();
 
     updatePosition();
-
-    show();
 }
 
 void Attributes::unsetSelection()
