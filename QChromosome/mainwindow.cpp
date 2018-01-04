@@ -669,15 +669,6 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
     ui->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QModelIndexList& atoms)
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        atoms.append(root);
-
-    for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), atoms);
-}
-
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
     auto model = qobject_cast<TreeModel*>(simulation->getModel());

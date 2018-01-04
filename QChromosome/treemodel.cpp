@@ -459,7 +459,8 @@ void TreeModel::propagateSelected(const QModelIndex &root, bool s)
 void TreeModel::setSelected(const QModelIndexList &indices, bool s)
 {
     for (const auto& i : indices)
-        propagateSelected(i, s);
+        if (i.column() == 0)
+            propagateSelected(i, s);
 
     emit propertyChanged();
 }

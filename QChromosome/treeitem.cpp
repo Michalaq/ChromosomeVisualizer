@@ -445,7 +445,7 @@ ChainItem::~ChainItem()
 }
 
 ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :
-    TreeItem({name, NodeType::AtomObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+    TreeItem({name, NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
