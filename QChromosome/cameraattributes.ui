@@ -207,8 +207,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>400</width>
+            <height>178</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -223,93 +223,170 @@
             </widget>
            </item>
            <item>
-            <layout class="QFormLayout" name="formLayout_2">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>P . X</string>
-               </property>
-               <property name="class" stdset="0">
-                <string>item</string>
-               </property>
-              </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <layout class="QFormLayout" name="formLayout_2">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_7">
+                 <property name="text">
+                  <string>P . X</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>P . Y</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox_2">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>P . Z</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox_3">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>P . Y</string>
-               </property>
-               <property name="class" stdset="0">
-                <string>item</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>P . Z</string>
-               </property>
-               <property name="class" stdset="0">
-                <string>item</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="DoubleSpinBox" name="doubleSpinBox">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string> Å</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-2147483647.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>2147483647.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="DoubleSpinBox" name="doubleSpinBox_2">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string> Å</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-2147483647.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>2147483647.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="DoubleSpinBox" name="doubleSpinBox_3">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-               <property name="suffix">
-                <string> Å</string>
-               </property>
-               <property name="decimals">
-                <number>3</number>
-               </property>
-               <property name="minimum">
-                <double>-2147483647.000000000000000</double>
-               </property>
-               <property name="maximum">
-                <double>2147483647.000000000000000</double>
-               </property>
-              </widget>
+             <item>
+              <layout class="QFormLayout" name="formLayout_3">
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>R . H</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>R . P</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>R . B</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox_4">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox_5">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="DoubleSpinBox" name="doubleSpinBox_6">
+                 <property name="suffix">
+                  <string> Å</string>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-2147483647.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>2147483647.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>

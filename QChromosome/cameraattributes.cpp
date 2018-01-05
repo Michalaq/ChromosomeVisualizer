@@ -182,6 +182,51 @@ void CameraAttributes::updateModelView()
     else
         ui->doubleSpinBox_3->setValue(z, false);
 
+    // set R.H
+    double h = fst->EulerAngles().y();
+
+    for (const auto c : cameras)
+        if (h != c->EulerAngles().y())
+        {
+            h = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(h))
+        ui->doubleSpinBox_4->setMultipleValues();
+    else
+        ui->doubleSpinBox_4->setValue(h, false);
+
+    // set R.P
+    double p = fst->EulerAngles().x();
+
+    for (const auto c : cameras)
+        if (p != c->EulerAngles().x())
+        {
+            p = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(p))
+        ui->doubleSpinBox_5->setMultipleValues();
+    else
+        ui->doubleSpinBox_5->setValue(p, false);
+
+    // set R.B
+    double b = fst->EulerAngles().z();
+
+    for (const auto c : cameras)
+        if (b != c->EulerAngles().z())
+        {
+            b = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(b))
+        ui->doubleSpinBox_6->setMultipleValues();
+    else
+        ui->doubleSpinBox_6->setValue(b, false);
+
     // set camera origin
     QVector3D g;
 
