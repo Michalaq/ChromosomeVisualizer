@@ -30,9 +30,6 @@ Attributes::~Attributes()
     delete ui;
 }
 
-#include "treeitem.h"
-#include "camera.h"
-
 void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
     Q_ASSERT(!selectedRows.empty());
@@ -117,6 +114,9 @@ void Attributes::updateModelSelection()
     else
         ui->comboBox_2->setCurrentIndex(vir, false);
 }
+
+#include "treeitem.h"
+#include "camera.h"
 
 void Attributes::updatePosition()
 {

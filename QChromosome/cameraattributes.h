@@ -9,6 +9,7 @@ class CameraAttributes;
 }
 
 class TreeModel;
+class Camera;
 
 class CameraAttributes : public QWidget
 {
@@ -29,9 +30,10 @@ private:
 
     TreeModel *model;
     QModelIndexList rows;
+    QList<Camera*> cameras;
 
     void updateModelSelection();
-    void updatePosition();
+    void updateModelView();
 };
 
 #endif // CAMERAATTRIBUTES_H

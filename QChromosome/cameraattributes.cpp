@@ -40,7 +40,16 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
     model = selectedModel;
     rows = selectedRows;
 
+    cameras.clear();
+    cameras.reserve(selectedRows.size());
+
+    for (const auto& i : selectedRows)
+        cameras.append(reinterpret_cast<CameraItem*>(i.internalPointer())->getCamera());
+
     connect(model, &TreeModel::attributeChanged, this, &CameraAttributes::updateModelSelection);
+
+    for (const auto c : cameras)
+        connect(c, &Camera::modelViewChanged, this, &CameraAttributes::updateModelView);
 
     // set title
     QString title("Camera object ");
@@ -52,13 +61,16 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
 
     updateModelSelection();
 
-    updatePosition();
+    updateModelView();
 }
 
 void CameraAttributes::unsetSelection()
 {
     if (model) model->disconnect(this);
     model = nullptr;
+
+    for (const auto c : cameras)
+        c->disconnect(this);
 }
 
 void CameraAttributes::updateModelSelection()
@@ -121,15 +133,15 @@ void CameraAttributes::updateModelSelection()
         ui->comboBox_2->setCurrentIndex(vir, false);
 }
 
-void CameraAttributes::updatePosition()
+void CameraAttributes::updateModelView()
 {
-    auto fst = rows.first();
+    const auto fst = cameras.first();
 
     // set P.X
-    double x = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().x();
+    double x = fst->position().x();
 
-    for (const auto& r : rows)
-        if (x != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().x())
+    for (const auto c : cameras)
+        if (x != c->position().x())
         {
             x = qSNaN();
             break;
@@ -141,10 +153,10 @@ void CameraAttributes::updatePosition()
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
-    double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
+    double y = fst->position().y();
 
-    for (const auto& r : rows)
-        if (y != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().y())
+    for (const auto c : cameras)
+        if (y != c->position().y())
         {
             y = qSNaN();
             break;
@@ -156,10 +168,10 @@ void CameraAttributes::updatePosition()
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
-    double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
+    double z = fst->position().z();
 
-    for (const auto& r : rows)
-        if (z != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().z())
+    for (const auto c : cameras)
+        if (z != c->position().z())
         {
             z = qSNaN();
             break;
@@ -173,8 +185,8 @@ void CameraAttributes::updatePosition()
     // set camera origin
     QVector3D g;
 
-    for (const auto& r : rows)
-        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
+    for (const auto c : cameras)
+        g += c->position();
 
     g /= rows.count();
 
