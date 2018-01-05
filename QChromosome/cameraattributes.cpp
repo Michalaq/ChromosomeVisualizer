@@ -1,6 +1,7 @@
 #include "cameraattributes.h"
 #include "ui_cameraattributes.h"
 #include "treemodel.h"
+#include "camera.h"
 
 CameraAttributes::CameraAttributes(QWidget *parent) :
     QWidget(parent),
@@ -23,6 +24,63 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         model->setVisibility(rows, (Visibility)index, Renderer);
     });
+
+    //connect P.X
+    connect(ui->doubleSpinBox, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto pos = c->position();
+            pos.setX(val);
+            c->setPosition(pos);
+        }
+    });
+
+    //connect P.Y
+    connect(ui->doubleSpinBox_2, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto pos = c->position();
+            pos.setY(val);
+            c->setPosition(pos);
+        }
+    });
+
+    //connect P.Z
+    connect(ui->doubleSpinBox_3, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto pos = c->position();
+            pos.setZ(val);
+            c->setPosition(pos);
+        }
+    });
+
+    //connect R.H
+    connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto ang = c->EulerAngles();
+            c->setEulerAgnles(val, ang.x(), ang.z());
+        }
+    });
+
+    //connect R.P
+    connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto ang = c->EulerAngles();
+            c->setEulerAgnles(ang.y(), val, ang.z());
+        }
+    });
+
+    //connect R.B
+    connect(ui->doubleSpinBox_6, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+        {
+            auto ang = c->EulerAngles();
+            c->setEulerAgnles(ang.y(), ang.x(), val);
+        }
+    });
 }
 
 CameraAttributes::~CameraAttributes()
@@ -31,7 +89,6 @@ CameraAttributes::~CameraAttributes()
 }
 
 #include "treeitem.h"
-#include "camera.h"
 
 void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
