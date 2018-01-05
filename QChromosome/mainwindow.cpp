@@ -701,7 +701,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     //case ResidueObject:
     //case AtomObject:
     case CameraObject:
-        //ui->page_5->setSelection(simulation->getModel(), selectedRows);
+        ui->page_5->setSelection(simulation->getModel(), selectedRows);
         ui->stackedWidget->setCurrentIndex(4);
         break;
     default:
