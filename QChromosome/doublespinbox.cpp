@@ -58,7 +58,19 @@ double DoubleSpinBox::valueFromText(const QString &text) const
 
 QString DoubleSpinBox::textFromValue(double val) const
 {
-    return multiple ? "" : QDoubleSpinBox::textFromValue(val);
+    if (multiple)
+        return "";
+
+    auto ans = locale().toString(val, 'f', decimals());
+
+    for (int i = 0; i < decimals() - 1; i++)
+        if (ans.endsWith("0"))
+            ans.chop(1);
+
+    if (ans.endsWith("0"))
+        ans.chop(2);
+
+    return ans;
 }
 
 void DoubleSpinBox::setMultipleValues()

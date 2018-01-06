@@ -53,7 +53,7 @@ QTabWidget::tab-bar {
 
 QTabBar::tab {
 	border: 1px solid #4d4d4d;
-	width: 75px;
+	width: 85px;
 	height: 27px;
 	color: lightgrey;
 }
@@ -308,7 +308,7 @@ QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 }
 
 Label {
-	min-width: 125px;
+	min-width: 135px;
 }
 
 .heading {
