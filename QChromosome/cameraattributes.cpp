@@ -333,4 +333,34 @@ void CameraAttributes::updateProjection()
         ui->doubleSpinBox_8->setMultipleValues();
     else
         ui->doubleSpinBox_8->setValue(ss, false);
+
+    // set horizontal angle
+    double ha = fst->getHorizontalAngle();
+
+    for (const auto c : cameras)
+        if (ha != c->getHorizontalAngle())
+        {
+            ha = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(ha))
+        ui->doubleSpinBox_9->setMultipleValues();
+    else
+        ui->doubleSpinBox_9->setValue(ha, false);
+
+    // set vertical angle
+    double va = fst->getVerticalAngle();
+
+    for (const auto c : cameras)
+        if (va != c->getVerticalAngle())
+        {
+            va = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(va))
+        ui->doubleSpinBox_10->setMultipleValues();
+    else
+        ui->doubleSpinBox_10->setValue(va, false);
 }

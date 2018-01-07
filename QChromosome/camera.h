@@ -25,6 +25,8 @@ public:
     QVector3D EulerAngles() const;
     qreal getFocalLength() const;
     qreal getSensorSize() const;
+    qreal getHorizontalAngle() const;
+    qreal getVerticalAngle() const;
 
     void setPosition(const QVector3D& p);
     void setEulerAgnles(qreal h_, qreal p_, qreal b_);
@@ -110,7 +112,8 @@ private:
     void rotate(qreal dh, qreal dp, qreal db);
 
     qreal focalLength;
-    qreal apertureWidth;
+    qreal apertureWidth;//TODO usunąć
+    qreal sensorSize;
 
     qreal horizontalAngle;
     qreal verticalAngle;

@@ -19,14 +19,14 @@ Viewport* Camera::viewport = nullptr;
 #include <QtMath>
 
 Camera::Camera(QWidget *parent)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Aperture width"}, parent),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
       eye(60, 30, 60),
       x(1, 0, 0),
       y(0, 1, 0),
       z(0, 0, 1),
       h(45), p(-20), b(0),
       focalLength(36),
-      apertureWidth(36),
+      sensorSize(36),
       rotationType(RT_World),
       nearClipping(.1),
       farClipping(1000.)
@@ -59,12 +59,12 @@ Camera::Camera(QWidget *parent)
 }
 
 Camera::Camera(const Camera& camera)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Aperture width"}),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}),
       eye(camera.eye),
       x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
       focalLength(camera.focalLength),
-      apertureWidth(camera.apertureWidth),
+      sensorSize(camera.sensorSize),
       horizontalAngle(camera.horizontalAngle),
       verticalAngle(camera.verticalAngle),
       modelView(camera.modelView),
@@ -105,7 +105,7 @@ SplineKeyframe Camera::saveFrame() const
     f.insert("P", p);
     f.insert("B", b);
     f.insert("Focal length", focalLength);
-    f.insert("Aperture width", apertureWidth);
+    f.insert("Sensor size", sensorSize);
 
     return f;
 }
@@ -124,7 +124,7 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     setEulerAgnles(_h, _p, _b);
 
     focalLength = frame.value("Focal length", focalLength);
-    apertureWidth = frame.value("Aperture width", apertureWidth);
+    sensorSize = frame.value("Sensor size", sensorSize);
     updateAngles();
 }
 
@@ -264,7 +264,17 @@ qreal Camera::getFocalLength() const
 
 qreal Camera::getSensorSize() const
 {
-    return apertureWidth;
+    return sensorSize;
+}
+
+qreal Camera::getHorizontalAngle() const
+{
+    return horizontalAngle;
+}
+
+qreal Camera::getVerticalAngle() const
+{
+    return verticalAngle;
 }
 
 void Camera::setPosition(const QVector3D &p)
@@ -410,7 +420,7 @@ void Camera::read(const QJsonObject &json)
 
     const QJsonObject objectProperties = json["Object properties"].toObject();
     focalLength = objectProperties["Focal length"].toDouble();
-    apertureWidth = objectProperties["Aperture width"].toDouble();
+    sensorSize = objectProperties["Sensor size"].toDouble();
     rotationType = objectProperties["Rotation type"].toInt();
 
     const QJsonObject depthOfField = json["Depth of field"].toObject();
@@ -444,7 +454,7 @@ void Camera::write(QJsonObject &json) const
 
     QJsonObject objectProperties;
     objectProperties["Focal length"] = focalLength;
-    objectProperties["Aperture width"] = apertureWidth;
+    objectProperties["Sensor size"] = sensorSize;
     objectProperties["Rotation type"] = rotationType;
     json["Object properties"] = objectProperties;
 
@@ -539,18 +549,14 @@ QMatrix4x4& Camera::updateProjection()
 
 void Camera::updateAngles()
 {
-    qreal d = qSqrt(1. + aspectRatio * aspectRatio);
-
-    qreal w = apertureWidth * aspectRatio / d;
-    qreal h = apertureWidth / d;
+    qreal w = sensorSize;
+    qreal h = sensorSize / aspectRatio;
 
     horizontalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(w / 2 / focalLength));
     verticalAngle = (qreal)2.f * qRadiansToDegrees(qAtan(h / 2 / focalLength));
 
     emit projectionChanged(updateProjection());
-
 }
-// Field of View: (qreal)2.f * qRadiansToDegrees(qAtan(apertureWidth / 2 / focalLength))
 
 #include "moviemaker.h"
 
@@ -568,11 +574,9 @@ void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
             stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
         });
 
-        qreal d = aspectRatio / qSqrt(1. + aspectRatio * aspectRatio);
-
         stream << "#declare MySplineFov = \n";
-        writePOVSpline(stream, [=](std::ostream &stream, const SplineKeyframe &frame) {
-            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Aperture width") * d / 2 / frame.value("Focal length"))) << ", 0 >";
+        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
         });
 
         stream << "camera { perspective\n"
