@@ -23,6 +23,8 @@ public:
 
     QVector3D position() const;
     QVector3D EulerAngles() const;
+    qreal getFocalLength() const;
+    qreal getSensorSize() const;
 
     void setPosition(const QVector3D& p);
     void setEulerAgnles(qreal h_, qreal p_, qreal b_);

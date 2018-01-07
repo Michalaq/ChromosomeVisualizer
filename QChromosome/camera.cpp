@@ -257,6 +257,16 @@ QVector3D Camera::EulerAngles() const
     return QVector3D(p, h, b);
 }
 
+qreal Camera::getFocalLength() const
+{
+    return focalLength;
+}
+
+qreal Camera::getSensorSize() const
+{
+    return apertureWidth;
+}
+
 void Camera::setPosition(const QVector3D &p)
 {
     eye = p;

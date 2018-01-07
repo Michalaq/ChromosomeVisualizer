@@ -34,6 +34,7 @@ private:
 
     void updateModelSelection();
     void updateModelView();
+    void updateProjection();
 };
 
 #endif // CAMERAATTRIBUTES_H

@@ -106,7 +106,10 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
     connect(model, &TreeModel::attributeChanged, this, &CameraAttributes::updateModelSelection);
 
     for (const auto c : cameras)
+    {
         connect(c, &Camera::modelViewChanged, this, &CameraAttributes::updateModelView);
+        connect(c, &Camera::projectionChanged, this, &CameraAttributes::updateProjection);
+    }
 
     // set title
     QString title("Camera object ");
@@ -119,6 +122,8 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
     updateModelSelection();
 
     updateModelView();
+
+    updateProjection();
 }
 
 void CameraAttributes::unsetSelection()
@@ -293,4 +298,39 @@ void CameraAttributes::updateModelView()
     g /= rows.count();
 
     Camera::setOrigin(g);
+}
+
+void CameraAttributes::updateProjection()
+{
+    const auto fst = cameras.first();
+
+    // set focal length
+    double fl = fst->getFocalLength();
+
+    for (const auto c : cameras)
+        if (fl != c->getFocalLength())
+        {
+            fl = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(fl))
+        ui->doubleSpinBox_7->setMultipleValues();
+    else
+        ui->doubleSpinBox_7->setValue(fl, false);
+
+    // set sensor size
+    double ss = fst->getSensorSize();
+
+    for (const auto c : cameras)
+        if (ss != c->getSensorSize())
+        {
+            ss = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(ss))
+        ui->doubleSpinBox_8->setMultipleValues();
+    else
+        ui->doubleSpinBox_8->setValue(ss, false);
 }
