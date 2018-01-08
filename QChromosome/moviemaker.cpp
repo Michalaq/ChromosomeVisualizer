@@ -103,8 +103,8 @@ void set360Camera(std::ofstream& outFile, const Camera* camera, bool s)
         outFile << "#declare odsLocation = MySplinePos(clock);\n"
                 << "#declare odsAngles = MySplineAng(clock);\n";
     else
-        outFile << "#declare odsLocation = " << camera->position() << ";\n"
-                << "#declare odsAngles = " << camera->EulerAngles() << ";\n";
+        outFile << "#declare odsLocation = " << camera->getPosition() << ";\n"
+                << "#declare odsAngles = " << camera->getRotation() << ";\n";
 
     outFile << "#declare odsX = <1, 0, 0>;\n"
             << "#declare odsY = <0, 1, 0>;\n"

@@ -37,7 +37,7 @@ CameraSettings::CameraSettings(QWidget *parent) :
     });
 
     // angles
-    connect(ui->doubleSpinBox_10, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+    /*connect(ui->doubleSpinBox_10, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
         for (auto camera : cameras)
             camera->setEulerAgnles(val, camera->p, camera->b);
     });
@@ -50,7 +50,7 @@ CameraSettings::CameraSettings(QWidget *parent) :
     connect(ui->doubleSpinBox_12, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
         for (auto camera : cameras)
             camera->setEulerAgnles(camera->h, camera->p, val);
-    });
+    });*/
 
     // focal length
     connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
@@ -242,7 +242,7 @@ void CameraSettings::updateModelView()
     auto camera = cameras.first();
 
     // coordinates
-    double x = camera->position().x();
+    /*double x = camera->position().x();
 
     for (auto c : cameras)
         if (c->position().x() != x)
@@ -270,7 +270,7 @@ void CameraSettings::updateModelView()
             z = std::numeric_limits<double>::lowest();
             break;
         }
-    ui->doubleSpinBox_9->setValue(z, false);
+    ui->doubleSpinBox_9->setValue(z, false);*/
 
     // angles
     double h = camera->h;

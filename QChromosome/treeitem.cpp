@@ -251,7 +251,7 @@ CameraItem::~CameraItem()
 
 QVector3D CameraItem::getPosition() const
 {
-    return camera->position();
+    return camera->getPosition();
 }
 
 void CameraItem::setPosition(const QVector3D& p)

@@ -29,7 +29,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto pos = c->position();
+            auto pos = c->getPosition();
             pos.setX(val);
             c->setPosition(pos);
         }
@@ -39,7 +39,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_2, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto pos = c->position();
+            auto pos = c->getPosition();
             pos.setY(val);
             c->setPosition(pos);
         }
@@ -49,7 +49,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_3, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto pos = c->position();
+            auto pos = c->getPosition();
             pos.setZ(val);
             c->setPosition(pos);
         }
@@ -59,8 +59,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->EulerAngles();
-            c->setEulerAgnles(val, ang.x(), ang.z());
+            auto ang = c->getRotation();
+            c->setRotation(val, ang.x(), ang.z());
         }
     });
 
@@ -68,8 +68,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->EulerAngles();
-            c->setEulerAgnles(ang.y(), val, ang.z());
+            auto ang = c->getRotation();
+            c->setRotation(ang.y(), val, ang.z());
         }
     });
 
@@ -77,8 +77,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_6, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->EulerAngles();
-            c->setEulerAgnles(ang.y(), ang.x(), val);
+            auto ang = c->getRotation();
+            c->setRotation(ang.y(), ang.x(), val);
         }
     });
 }
@@ -200,10 +200,10 @@ void CameraAttributes::updateModelView()
     const auto fst = cameras.first();
 
     // set P.X
-    double x = fst->position().x();
+    double x = fst->getPosition().x();
 
     for (const auto c : cameras)
-        if (x != c->position().x())
+        if (x != c->getPosition().x())
         {
             x = qSNaN();
             break;
@@ -215,10 +215,10 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
-    double y = fst->position().y();
+    double y = fst->getPosition().y();
 
     for (const auto c : cameras)
-        if (y != c->position().y())
+        if (y != c->getPosition().y())
         {
             y = qSNaN();
             break;
@@ -230,10 +230,10 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
-    double z = fst->position().z();
+    double z = fst->getPosition().z();
 
     for (const auto c : cameras)
-        if (z != c->position().z())
+        if (z != c->getPosition().z())
         {
             z = qSNaN();
             break;
@@ -245,10 +245,10 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_3->setValue(z, false);
 
     // set R.H
-    double h = fst->EulerAngles().y();
+    double h = fst->getRotation().y();
 
     for (const auto c : cameras)
-        if (h != c->EulerAngles().y())
+        if (h != c->getRotation().y())
         {
             h = qSNaN();
             break;
@@ -260,10 +260,10 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_4->setValue(h, false);
 
     // set R.P
-    double p = fst->EulerAngles().x();
+    double p = fst->getRotation().x();
 
     for (const auto c : cameras)
-        if (p != c->EulerAngles().x())
+        if (p != c->getRotation().x())
         {
             p = qSNaN();
             break;
@@ -275,10 +275,10 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_5->setValue(p, false);
 
     // set R.B
-    double b = fst->EulerAngles().z();
+    double b = fst->getRotation().z();
 
     for (const auto c : cameras)
-        if (b != c->EulerAngles().z())
+        if (b != c->getRotation().z())
         {
             b = qSNaN();
             break;
@@ -293,7 +293,7 @@ void CameraAttributes::updateModelView()
     QVector3D g;
 
     for (const auto c : cameras)
-        g += c->position();
+        g += c->getPosition();
 
     g /= rows.count();
 

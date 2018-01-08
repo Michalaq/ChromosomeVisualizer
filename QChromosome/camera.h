@@ -21,8 +21,8 @@ public:
     /* sets new origin */
     static void setOrigin(const QVector3D& o);
 
-    QVector3D position() const;
-    QVector3D EulerAngles() const;
+    QVector3D getPosition() const;
+    QVector3D getRotation() const;
     qreal getFocalLength() const;
     qreal getSensorSize() const;
     qreal getHorizontalAngle() const;
@@ -31,7 +31,7 @@ public:
     qreal getFarClipping() const;
 
     void setPosition(const QVector3D& p);
-    void setEulerAgnles(qreal h_, qreal p_, qreal b_);
+    void setRotation(qreal h_, qreal p_, qreal b_);
     void setFocalLength(qreal fl);
     void setApertureWidth(qreal aw);
     void setFieldOfView(qreal fov);

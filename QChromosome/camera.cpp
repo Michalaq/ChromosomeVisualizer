@@ -121,7 +121,7 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     double _h = frame.value("H", h);
     double _p = frame.value("P", p);
     double _b = frame.value("B", b);
-    setEulerAgnles(_h, _p, _b);
+    setRotation(_h, _p, _b);
 
     focalLength = frame.value("Focal length", focalLength);
     sensorSize = frame.value("Sensor size", sensorSize);
@@ -247,12 +247,12 @@ void Camera::setOrigin(const QVector3D &o)
     origin = o;
 }
 
-QVector3D Camera::position() const
+QVector3D Camera::getPosition() const
 {
     return eye;
 }
 
-QVector3D Camera::EulerAngles() const
+QVector3D Camera::getRotation() const
 {
     return QVector3D(p, h, b);
 }
@@ -363,7 +363,7 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     emit modelViewChanged(updateModelView());
 }
 
-void Camera::setEulerAgnles(qreal h_, qreal p_, qreal b_)
+void Camera::setRotation(qreal h_, qreal p_, qreal b_)
 {
     int cp = RotationType::RT_Camera;
     std::swap(rotationType, cp);
@@ -412,7 +412,7 @@ void Camera::setLookAt(const QVector3D &target)
 {
     auto f = target - eye;
     f.setZ(-f.z());
-    setEulerAgnles(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
+    setRotation(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
 }
 
 #include <QJsonObject>
