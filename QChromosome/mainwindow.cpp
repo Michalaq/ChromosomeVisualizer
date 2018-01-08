@@ -676,11 +676,15 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
 
-    //ui->page_5->unsetSelection();
+    ui->page_5->unsetSelection();
     ui->page_8->unsetSelection();
 
     if (!ui->treeView->selectionModel()->hasSelection())
-        return ui->stackedWidget->setCurrentIndex(8);
+    {
+        Camera::setOrigin(QVector3D());
+        ui->stackedWidget->setCurrentIndex(8);
+        return;
+    }
 
     QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows();
 
