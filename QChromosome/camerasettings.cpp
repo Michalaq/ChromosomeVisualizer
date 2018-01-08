@@ -59,16 +59,16 @@ CameraSettings::CameraSettings(QWidget *parent) :
     });
 
     // aperture width
-    connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+    /*connect(ui->doubleSpinBox_2, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
         for (auto camera : cameras)
             camera->setApertureWidth(val);
-    });
+    });*/
 
     // field of view
-    connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+    /*connect(ui->doubleSpinBox_3, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
         for (auto camera : cameras)
             camera->setFieldOfView(val);
-    });
+    });*/
 
     // rotation type
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {

@@ -377,16 +377,24 @@ void Camera::setFocalLength(qreal fl)
     updateAngles();
 }
 
-void Camera::setApertureWidth(qreal aw)
+void Camera::setSensorSize(qreal ss)
 {
-    apertureWidth = aw;
+    sensorSize = ss;
     updateAngles();
 }
 
-void Camera::setFieldOfView(qreal fov)
+void Camera::setHorizontalAngle(qreal ha)
 {
-    focalLength = apertureWidth / 2 / qTan(qDegreesToRadians(fov) / 2);
-    updateAngles();
+    qreal w = sensorSize;
+
+    setFocalLength(w / 2 / qTan(qDegreesToRadians(ha / 2)));
+}
+
+void Camera::setVerticalAngle(qreal va)
+{
+    qreal h = sensorSize / aspectRatio;
+
+    setFocalLength(h / 2 / qTan(qDegreesToRadians(va / 2)));
 }
 
 void Camera::setRotationType(int rt)

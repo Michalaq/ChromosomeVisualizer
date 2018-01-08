@@ -81,6 +81,46 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             c->setRotation(ang.y(), ang.x(), val);
         }
     });
+
+    //connect focal length
+    connect(ui->doubleSpinBox_7, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setFocalLength(val);
+        updateProjection();
+    });
+
+    //connect sensor size
+    connect(ui->doubleSpinBox_8, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setSensorSize(val);
+        updateProjection();
+    });
+
+    //connect field of view (horizontal)
+    connect(ui->doubleSpinBox_9, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setHorizontalAngle(val);
+        updateProjection();
+    });
+
+    //connect field of view (vertical)
+    connect(ui->doubleSpinBox_10, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setVerticalAngle(val);
+        updateProjection();
+    });
+
+    //connect near clippping
+    connect(ui->doubleSpinBox_11, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setNearClipping(val);
+    });
+
+    //connect far clippping
+    connect(ui->doubleSpinBox_12, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setFarClipping(val);
+    });
 }
 
 CameraAttributes::~CameraAttributes()

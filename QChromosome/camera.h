@@ -33,11 +33,13 @@ public:
     void setPosition(const QVector3D& p);
     void setRotation(qreal h_, qreal p_, qreal b_);
     void setFocalLength(qreal fl);
-    void setApertureWidth(qreal aw);
-    void setFieldOfView(qreal fov);
-    void setRotationType(int rt);
+    void setSensorSize(qreal ss);
+    void setHorizontalAngle(qreal ha);
+    void setVerticalAngle(qreal va);
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
+
+    void setRotationType(int rt);
     void setLookAt(const QVector3D& target);
 
     enum RotationType
