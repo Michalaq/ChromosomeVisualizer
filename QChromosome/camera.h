@@ -27,6 +27,8 @@ public:
     qreal getSensorSize() const;
     qreal getHorizontalAngle() const;
     qreal getVerticalAngle() const;
+    qreal getNearClipping() const;
+    qreal getFarClipping() const;
 
     void setPosition(const QVector3D& p);
     void setEulerAgnles(qreal h_, qreal p_, qreal b_);

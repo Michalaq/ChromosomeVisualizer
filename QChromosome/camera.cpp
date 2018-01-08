@@ -277,6 +277,16 @@ qreal Camera::getVerticalAngle() const
     return verticalAngle;
 }
 
+qreal Camera::getNearClipping() const
+{
+    return nearClipping;
+}
+
+qreal Camera::getFarClipping() const
+{
+    return farClipping;
+}
+
 void Camera::setPosition(const QVector3D &p)
 {
     eye = p;

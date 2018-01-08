@@ -363,4 +363,34 @@ void CameraAttributes::updateProjection()
         ui->doubleSpinBox_10->setMultipleValues();
     else
         ui->doubleSpinBox_10->setValue(va, false);
+
+    // set near clipping
+    double nc = fst->getNearClipping();
+
+    for (const auto c : cameras)
+        if (nc != c->getNearClipping())
+        {
+            nc = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(nc))
+        ui->doubleSpinBox_11->setMultipleValues();
+    else
+        ui->doubleSpinBox_11->setValue(nc, false);
+
+    // set far clipping
+    double fc = fst->getFarClipping();
+
+    for (const auto c : cameras)
+        if (fc != c->getFarClipping())
+        {
+            fc = qSNaN();
+            break;
+        }
+
+    if (qIsNaN(fc))
+        ui->doubleSpinBox_12->setMultipleValues();
+    else
+        ui->doubleSpinBox_12->setValue(fc, false);
 }
