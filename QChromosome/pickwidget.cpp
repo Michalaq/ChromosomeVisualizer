@@ -47,6 +47,17 @@ void PickWidget::pick(const QPersistentModelIndex &object, bool spontaneous)
         emit picked(obj);
 }
 
+void PickWidget::setMultipleValues(bool enabled)
+{
+    LineEdit::setMultipleValues(enabled);
+
+    if (enabled)
+    {
+        icon->setIcon(QIcon());
+        obj = QModelIndex();
+    }
+}
+
 void PickWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     if (obj.isValid())

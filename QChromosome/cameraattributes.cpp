@@ -122,6 +122,24 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             c->setFarClipping(val);
     });
 
+    //connect base
+    connect(ui->lineEdit_2, &PickWidget::picked, [this](const QPersistentModelIndex& index) {
+        for (auto c : cameras)
+            c->setBase(index);
+    });
+
+    //connect target object
+    connect(ui->lineEdit_3, &PickWidget::picked, [this](const QPersistentModelIndex& index) {
+        for (auto c : cameras)
+            c->setTarget(index);
+    });
+
+    //connect up
+    connect(ui->lineEdit_4, &PickWidget::picked, [this](const QPersistentModelIndex& index) {
+        for (auto c : cameras)
+            c->setUp(index);
+    });
+
     //connect item selection
     connect(ui->lineEdit_2, &PickWidget::selected, [this](const QPersistentModelIndex& index) {
         emit selected(index);
@@ -177,6 +195,57 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
     updateModelView();
 
     updateProjection();
+
+    auto fst = cameras.first();
+    bool multiple;
+
+    // set base
+    QModelIndex b = fst->getBase();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (b != c->getBase())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->lineEdit_2->setMultipleValues();
+    else
+        ui->lineEdit_2->pick(b, false);
+
+    // set target object
+    QModelIndex t = fst->getTarget();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (t != c->getTarget())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->lineEdit_3->setMultipleValues();
+    else
+        ui->lineEdit_3->pick(t, false);
+
+    // set up
+    QModelIndex u = fst->getUp();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (u != c->getUp())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->lineEdit_4->setMultipleValues();
+    else
+        ui->lineEdit_4->pick(u, false);
 }
 
 void CameraAttributes::unsetSelection()

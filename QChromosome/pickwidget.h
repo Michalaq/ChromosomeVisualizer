@@ -17,6 +17,8 @@ public:
 
     void pick(const QPersistentModelIndex& object, bool spontaneous = true);
 
+    void setMultipleValues(bool enabled = true);
+
 signals:
     void picked(const QPersistentModelIndex&);
     void selected(const QPersistentModelIndex&);

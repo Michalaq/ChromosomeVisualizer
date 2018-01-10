@@ -77,7 +77,7 @@ void LineEdit::paintEvent(QPaintEvent *event)
             vscroll = r.y() + (r.height() - fm.height() + 1) / 2;
             break;
         }
-        QRect lineRect(r.x() + 2, vscroll, r.width() - contentsMargins().left() - 4, fm.height());
+        QRect lineRect(r.x() + 2, vscroll, r.width() - 4, fm.height());
 
         //int minLB = qMax(0, -fm.minLeftBearing());
 
