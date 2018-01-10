@@ -225,6 +225,10 @@ MainWindow::MainWindow(QWidget *parent) :
         QApplication::setOverrideCursor(Qt::WhatsThisCursor);
     });
 
+    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
+        ui->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    });
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);

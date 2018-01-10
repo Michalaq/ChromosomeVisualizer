@@ -22,6 +22,9 @@ public:
     void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
 
+signals:
+    void selected(const QPersistentModelIndex&);
+
 public slots:
 
 

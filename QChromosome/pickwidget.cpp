@@ -5,8 +5,7 @@ QSignalMapper PickWidget::sm;
 
 PickWidget::PickWidget(QWidget *parent) :
     LineEdit(parent),
-    icon(new QAction(this)),
-    indexValidator([](const QPersistentModelIndex& i) { return i.isValid(); })
+    icon(new QAction(this))
 {
     addAction(icon, QLineEdit::LeadingPosition);
 
@@ -33,11 +32,8 @@ const QSignalMapper& PickWidget::getSignalMapper()
     return sm;
 }
 
-void PickWidget::pick(QPersistentModelIndex object, bool spontaneous)
+void PickWidget::pick(const QPersistentModelIndex &object, bool spontaneous)
 {
-    if (!indexValidator(object))
-        object = QPersistentModelIndex();
-
     if (!object.isValid() && spontaneous)
         return;
 
@@ -51,12 +47,10 @@ void PickWidget::pick(QPersistentModelIndex object, bool spontaneous)
         emit picked(obj);
 }
 
-void PickWidget::setIndexValidator(std::function<bool (const QPersistentModelIndex &)> iv)
-{
-    indexValidator = iv;
-}
-
 void PickWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if (obj.isValid());
+    if (obj.isValid())
+        emit selected(obj);
+
+    QLineEdit::mouseDoubleClickEvent(event);
 }

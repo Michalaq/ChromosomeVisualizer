@@ -15,11 +15,11 @@ public:
 
     static const QSignalMapper& getSignalMapper();
 
-    void pick(QPersistentModelIndex object, bool spontaneous = true);
-    void setIndexValidator(std::function<bool(const QPersistentModelIndex&)> iv);
+    void pick(const QPersistentModelIndex& object, bool spontaneous = true);
 
 signals:
-    void picked(QPersistentModelIndex);
+    void picked(const QPersistentModelIndex&);
+    void selected(const QPersistentModelIndex&);
 
 public slots:
 
@@ -30,7 +30,6 @@ private:
     static QSignalMapper sm;
     QPersistentModelIndex obj;
     QAction* icon;
-    std::function<bool(const QPersistentModelIndex&)> indexValidator;
 };
 
 class Pickable

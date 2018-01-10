@@ -121,6 +121,19 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
         for (auto c : cameras)
             c->setFarClipping(val);
     });
+
+    //connect item selection
+    connect(ui->lineEdit_2, &PickWidget::selected, [this](const QPersistentModelIndex& index) {
+        emit selected(index);
+    });
+
+    connect(ui->lineEdit_3, &PickWidget::selected, [this](const QPersistentModelIndex& index) {
+        emit selected(index);
+    });
+
+    connect(ui->lineEdit_4, &PickWidget::selected, [this](const QPersistentModelIndex& index) {
+        emit selected(index);
+    });
 }
 
 CameraAttributes::~CameraAttributes()
