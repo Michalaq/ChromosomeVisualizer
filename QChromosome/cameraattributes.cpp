@@ -270,48 +270,52 @@ void CameraAttributes::updateModelSelection()
     ui->label->setElements(list);
 
     auto fst = rows.first();
+    bool multiple;
 
     // set name
     QString name = fst.data().toString();
+    multiple = false;
 
     for (const auto& r : rows)
         if (name != r.data().toString())
         {
-            name.clear();
+            multiple = true;
             break;
         }
 
-    if (name.isEmpty())
+    if (multiple)
         ui->lineEdit->setMultipleValues();
     else
         ui->lineEdit->setText(name, false);
 
     // set vie
     int vie = fst.sibling(fst.row(), 3).data().toInt();
+    multiple = false;
 
     for (const auto& r : rows)
         if (vie != r.sibling(r.row(), 3).data().toInt())
         {
-            vie = -1;
+            multiple = true;
             break;
         }
 
-    if (vie == -1)
+    if (multiple)
         ui->comboBox->setMultipleValues();
     else
         ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
     int vir = fst.sibling(fst.row(), 4).data().toInt();
+    multiple = false;
 
     for (const auto& r : rows)
         if (vir != r.sibling(r.row(), 4).data().toInt())
         {
-            vir = -1;
+            multiple = true;
             break;
         }
 
-    if (vir == -1)
+    if (multiple)
         ui->comboBox_2->setMultipleValues();
     else
         ui->comboBox_2->setCurrentIndex(vir, false);
@@ -320,93 +324,100 @@ void CameraAttributes::updateModelSelection()
 void CameraAttributes::updateModelView()
 {
     const auto fst = cameras.first();
+    bool multiple;
 
     // set P.X
     double x = fst->getPosition().x();
+    multiple = false;
 
     for (const auto c : cameras)
         if (x != c->getPosition().x())
         {
-            x = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(x))
+    if (multiple)
         ui->doubleSpinBox->setMultipleValues();
     else
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
     double y = fst->getPosition().y();
+    multiple = false;
 
     for (const auto c : cameras)
         if (y != c->getPosition().y())
         {
-            y = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(y))
+    if (multiple)
         ui->doubleSpinBox_2->setMultipleValues();
     else
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
     double z = fst->getPosition().z();
+    multiple = false;
 
     for (const auto c : cameras)
         if (z != c->getPosition().z())
         {
-            z = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(z))
+    if (multiple)
         ui->doubleSpinBox_3->setMultipleValues();
     else
         ui->doubleSpinBox_3->setValue(z, false);
 
     // set R.H
     double h = fst->getRotation().y();
+    multiple = false;
 
     for (const auto c : cameras)
         if (h != c->getRotation().y())
         {
-            h = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(h))
+    if (multiple)
         ui->doubleSpinBox_4->setMultipleValues();
     else
         ui->doubleSpinBox_4->setValue(h, false);
 
     // set R.P
     double p = fst->getRotation().x();
+    multiple = false;
 
     for (const auto c : cameras)
         if (p != c->getRotation().x())
         {
-            p = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(p))
+    if (multiple)
         ui->doubleSpinBox_5->setMultipleValues();
     else
         ui->doubleSpinBox_5->setValue(p, false);
 
     // set R.B
     double b = fst->getRotation().z();
+    multiple = false;
 
     for (const auto c : cameras)
         if (b != c->getRotation().z())
         {
-            b = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(b))
+    if (multiple)
         ui->doubleSpinBox_6->setMultipleValues();
     else
         ui->doubleSpinBox_6->setValue(b, false);
@@ -425,93 +436,100 @@ void CameraAttributes::updateModelView()
 void CameraAttributes::updateProjection()
 {
     const auto fst = cameras.first();
+    bool multiple;
 
     // set focal length
     double fl = fst->getFocalLength();
+    multiple = false;
 
     for (const auto c : cameras)
         if (fl != c->getFocalLength())
         {
-            fl = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(fl))
+    if (multiple)
         ui->doubleSpinBox_7->setMultipleValues();
     else
         ui->doubleSpinBox_7->setValue(fl, false);
 
     // set sensor size
     double ss = fst->getSensorSize();
+    multiple = false;
 
     for (const auto c : cameras)
         if (ss != c->getSensorSize())
         {
-            ss = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(ss))
+    if (multiple)
         ui->doubleSpinBox_8->setMultipleValues();
     else
         ui->doubleSpinBox_8->setValue(ss, false);
 
     // set horizontal angle
     double ha = fst->getHorizontalAngle();
+    multiple = false;
 
     for (const auto c : cameras)
         if (ha != c->getHorizontalAngle())
         {
-            ha = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(ha))
+    if (multiple)
         ui->doubleSpinBox_9->setMultipleValues();
     else
         ui->doubleSpinBox_9->setValue(ha, false);
 
     // set vertical angle
     double va = fst->getVerticalAngle();
+    multiple = false;
 
     for (const auto c : cameras)
         if (va != c->getVerticalAngle())
         {
-            va = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(va))
+    if (multiple)
         ui->doubleSpinBox_10->setMultipleValues();
     else
         ui->doubleSpinBox_10->setValue(va, false);
 
     // set near clipping
     double nc = fst->getNearClipping();
+    multiple = false;
 
     for (const auto c : cameras)
         if (nc != c->getNearClipping())
         {
-            nc = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(nc))
+    if (multiple)
         ui->doubleSpinBox_11->setMultipleValues();
     else
         ui->doubleSpinBox_11->setValue(nc, false);
 
     // set far clipping
     double fc = fst->getFarClipping();
+    multiple = false;
 
     for (const auto c : cameras)
         if (fc != c->getFarClipping())
         {
-            fc = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(fc))
+    if (multiple)
         ui->doubleSpinBox_12->setMultipleValues();
     else
         ui->doubleSpinBox_12->setValue(fc, false);

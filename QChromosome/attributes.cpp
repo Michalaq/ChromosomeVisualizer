@@ -68,48 +68,52 @@ void Attributes::updateModelSelection()
     ui->label->setElements(list);
 
     auto fst = rows.first();
+    bool multiple;
 
     // set name
     QString name = fst.data().toString();
+    multiple = false;
 
     for (const auto& r : rows)
         if (name != r.data().toString())
         {
-            name.clear();
+            multiple = true;
             break;
         }
 
-    if (name.isEmpty())
+    if (multiple)
         ui->lineEdit->setMultipleValues();
     else
         ui->lineEdit->setText(name, false);
 
     // set vie
     int vie = fst.sibling(fst.row(), 3).data().toInt();
+    multiple = false;
 
     for (const auto& r : rows)
         if (vie != r.sibling(r.row(), 3).data().toInt())
         {
-            vie = -1;
+            multiple = true;
             break;
         }
 
-    if (vie == -1)
+    if (multiple)
         ui->comboBox->setMultipleValues();
     else
         ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
     int vir = fst.sibling(fst.row(), 4).data().toInt();
+    multiple = false;
 
     for (const auto& r : rows)
         if (vir != r.sibling(r.row(), 4).data().toInt())
         {
-            vir = -1;
+            multiple = true;
             break;
         }
 
-    if (vir == -1)
+    if (multiple)
         ui->comboBox_2->setMultipleValues();
     else
         ui->comboBox_2->setCurrentIndex(vir, false);
@@ -121,48 +125,52 @@ void Attributes::updateModelSelection()
 void Attributes::updatePosition()
 {
     auto fst = rows.first();
+    bool multiple;
 
     // set P.X
     double x = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().x();
+    multiple = false;
 
     for (const auto& r : rows)
         if (x != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().x())
         {
-            x = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(x))
+    if (multiple)
         ui->doubleSpinBox->setMultipleValues();
     else
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
     double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
+    multiple = false;
 
     for (const auto& r : rows)
         if (y != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().y())
         {
-            y = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(y))
+    if (multiple)
         ui->doubleSpinBox_2->setMultipleValues();
     else
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
     double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
+    multiple = false;
 
     for (const auto& r : rows)
         if (z != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().z())
         {
-            z = qSNaN();
+            multiple = true;
             break;
         }
 
-    if (qIsNaN(z))
+    if (multiple)
         ui->doubleSpinBox_3->setMultipleValues();
     else
         ui->doubleSpinBox_3->setValue(z, false);
