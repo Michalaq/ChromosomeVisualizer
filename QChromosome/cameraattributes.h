@@ -1,7 +1,7 @@
 #ifndef CAMERAATTRIBUTES_H
 #define CAMERAATTRIBUTES_H
 
-#include <QWidget>
+#include "attributes.h"
 #include <QModelIndexList>
 
 namespace Ui {
@@ -11,7 +11,7 @@ class CameraAttributes;
 class TreeModel;
 class Camera;
 
-class CameraAttributes : public QWidget
+class CameraAttributes : public MetaAttributes
 {
     Q_OBJECT
 

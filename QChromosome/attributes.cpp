@@ -2,8 +2,18 @@
 #include "ui_attributes.h"
 #include "treemodel.h"
 
+MetaAttributes::MetaAttributes(QWidget *parent) : QWidget(parent)
+{
+
+}
+
+MetaAttributes::~MetaAttributes()
+{
+
+}
+
 Attributes::Attributes(QWidget *parent) :
-    QWidget(parent),
+    MetaAttributes(parent),
     ui(new Ui::Attributes),
     model(nullptr)
 {
@@ -33,6 +43,8 @@ Attributes::~Attributes()
 void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
     Q_ASSERT(!selectedRows.empty());
+
+    ui->tabWidget->setCurrentIndex(0);
 
     model = selectedModel;
     rows = selectedRows;

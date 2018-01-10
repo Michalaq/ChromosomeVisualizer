@@ -10,7 +10,19 @@ class Attributes;
 
 class TreeModel;
 
-class Attributes : public QWidget
+class MetaAttributes : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit MetaAttributes(QWidget *parent = 0);
+    virtual ~MetaAttributes();
+
+    virtual void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows) = 0;
+    virtual void unsetSelection() = 0;
+};
+
+class Attributes : public MetaAttributes
 {
     Q_OBJECT
 

@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     preferences(new Preferences),
     materialBrowser(MaterialBrowser::getInstance()),
     pw(nullptr),
-    msg(new QLabel("Pick mode: Click on an object, material, tag ..."))
+    msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
+    recent(nullptr)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -680,11 +681,11 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
 
-    ui->page_5->unsetSelection();
-    ui->page_8->unsetSelection();
+    if (recent) recent->unsetSelection();
 
     if (!ui->treeView->selectionModel()->hasSelection())
     {
+        recent = nullptr;
         Camera::setOrigin(QVector3D());
         ui->stackedWidget->setCurrentIndex(8);
         return;
@@ -703,21 +704,13 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
             break;
         }
 
-    switch (selectionType) {
-    //case LayerObject:
-    //case ChainObject:
-    //case ResidueObject:
-    //case AtomObject:
-    case CameraObject:
-        ui->page_5->setSelection(simulation->getModel(), selectedRows);
-        ui->stackedWidget->setCurrentIndex(4);
-        break;
-    default:
-        ui->page_8->setSelection(simulation->getModel(), selectedRows);
-        ui->stackedWidget->setCurrentIndex(7);
-        break;
-    }
+    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5}});
 
+    auto i = map.find(selectionType);
+    recent = i == map.end() ? ui->page_8 : *i;
+
+    recent->setSelection(simulation->getModel(), selectedRows);
+    ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
 
     /*auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);

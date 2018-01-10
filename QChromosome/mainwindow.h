@@ -10,6 +10,7 @@
 #include "materialbrowser.h"
 #include "camera.h"
 #include "pickwidget.h"
+#include "attributes.h"
 
 namespace Ui
 {
@@ -104,6 +105,8 @@ private:
 
     PickWidget* pw;
     QLabel* msg;
+
+    MetaAttributes* recent;
 };
 
 #endif // MAINWINDOW_H

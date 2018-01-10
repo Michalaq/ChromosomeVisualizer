@@ -4,7 +4,7 @@
 #include "camera.h"
 
 CameraAttributes::CameraAttributes(QWidget *parent) :
-    QWidget(parent),
+    MetaAttributes(parent),
     ui(new Ui::CameraAttributes),
     model(nullptr)
 {
@@ -164,6 +164,8 @@ CameraAttributes::~CameraAttributes()
 void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
     Q_ASSERT(!selectedRows.empty());
+
+    ui->tabWidget->setCurrentIndex(0);
 
     model = selectedModel;
     rows = selectedRows;
