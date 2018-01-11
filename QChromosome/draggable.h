@@ -21,6 +21,7 @@ protected:
 private:
     QPoint initial;
     QPoint center;
+    bool ignore;
 
     static Qt::MouseButton pressed;
 

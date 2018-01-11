@@ -5,7 +5,7 @@ Qt::MouseButton Draggable::pressed = Qt::NoButton;
 #include <QGuiApplication>
 #include <QScreen>
 
-Draggable::Draggable(QWidget *parent) : QPushButton(parent)
+Draggable::Draggable(QWidget *parent) : QPushButton(parent), ignore(false)
 {
     setScreenGeometry(QGuiApplication::primaryScreen()->geometry());
 
@@ -28,6 +28,8 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
     initial = event->globalPos();
 
+    ignore = true;
+
     QApplication::setOverrideCursor(Qt::BlankCursor);
     QCursor::setPos(center);
 }
@@ -36,12 +38,15 @@ void Draggable::mouseMoveEvent(QMouseEvent *event)
 {
     QWidget::mouseMoveEvent(event);
 
-    if (event->globalPos() != center)
-    {
-        emit delta(event->globalX() - center.x(), event->globalY() - center.y());
+    if (ignore)
+        ignore = false;
+    else
+        if (event->globalPos() != center)
+        {
+            emit delta(event->globalX() - center.x(), event->globalY() - center.y());
 
-        QCursor::setPos(center);
-    }
+            QCursor::setPos(center);
+        }
 }
 
 void Draggable::mouseReleaseEvent(QMouseEvent *event)
