@@ -131,8 +131,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                                      ui->dockWidget_3->recentlyClosedAction()
                                                  });
 
-    ui->page_2->setVizWidget(ui->scene);
-
     ui->page_3->setVizWidget(ui->scene);
 
     addAction(ui->actionViewport);
