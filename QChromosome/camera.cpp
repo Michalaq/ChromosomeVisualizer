@@ -28,7 +28,7 @@ Camera::Camera(QWidget *parent)
       focalLength(36),
       sensorSize(36),
       rotationType(RT_World),
-      nearClipping(.1),
+      nearClipping(.3),
       farClipping(1000.)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);

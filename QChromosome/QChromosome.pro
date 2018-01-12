@@ -43,7 +43,6 @@ SOURCES += main.cpp\
     layerattributes.cpp \
     viewport.cpp \
     multimap.cpp \
-    camerasettings.cpp \
     doublespinbox.cpp \
     combobox.cpp \
     lineedit.cpp \
@@ -120,7 +119,6 @@ HEADERS  += mainwindow.h\
     layerattributes.h \
     viewport.h \
     multimap.h \
-    camerasettings.h \
     doublespinbox.h \
     combobox.h \
     lineedit.h \
@@ -156,7 +154,6 @@ FORMS    += mainwindow.ui \
     atomattributes.ui \
     layerattributes.ui \
     viewport.ui \
-    camerasettings.ui \
     keyframe.ui \
     defaults.ui \
     preferences.ui \
