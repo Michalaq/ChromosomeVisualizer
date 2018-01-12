@@ -131,8 +131,6 @@ MainWindow::MainWindow(QWidget *parent) :
                                                      ui->dockWidget_3->recentlyClosedAction()
                                                  });
 
-    ui->page_3->setVizWidget(ui->scene);
-
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
@@ -339,7 +337,6 @@ void MainWindow::newProject()
 
     ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
-    ui->page_3->setSimulation(simulation);
 
     ui->treeView->setModel(simulation->getModel());
     ui->treeView->hideColumn(1);
