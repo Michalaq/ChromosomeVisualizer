@@ -49,6 +49,12 @@ void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &s
     model = selectedModel;
     rows = selectedRows;
 
+    items.clear();
+    items.reserve(selectedRows.size());
+
+    for (const auto& i : selectedRows)
+        items.append(reinterpret_cast<TreeItem*>(i.internalPointer()));
+
     connect(model, &TreeModel::attributeChanged, this, &Attributes::updateModelSelection);
 
     // set title
@@ -136,15 +142,15 @@ void Attributes::updateModelSelection()
 
 void Attributes::updatePosition()
 {
-    auto fst = rows.first();
+    auto fst = items.first();
     bool multiple;
 
     // set P.X
-    double x = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().x();
+    double x = fst->getPosition().x();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (x != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().x())
+    for (const auto& i : items)
+        if (x != i->getPosition().x())
         {
             multiple = true;
             break;
@@ -156,11 +162,11 @@ void Attributes::updatePosition()
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
-    double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
+    double y = fst->getPosition().y();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (y != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().y())
+    for (const auto& i : items)
+        if (y != i->getPosition().y())
         {
             multiple = true;
             break;
@@ -172,11 +178,11 @@ void Attributes::updatePosition()
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
-    double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
+    double z = fst->getPosition().z();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (z != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().z())
+    for (const auto& i : items)
+        if (z != i->getPosition().z())
         {
             multiple = true;
             break;
@@ -190,8 +196,8 @@ void Attributes::updatePosition()
     // set camera origin
     QVector3D g;
 
-    for (const auto& r : rows)
-        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
+    for (const auto& i : items)
+        g += i->getPosition();
 
     g /= rows.count();
 

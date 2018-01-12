@@ -9,6 +9,7 @@ class Attributes;
 }
 
 class TreeModel;
+class TreeItem;
 
 class MetaAttributes : public QWidget
 {
@@ -41,6 +42,7 @@ private:
 
     TreeModel *model;
     QModelIndexList rows;
+    QList<TreeItem*> items;
 
     void updateModelSelection();
     void updatePosition();
