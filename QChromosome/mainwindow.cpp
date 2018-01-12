@@ -701,7 +701,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
             break;
         }
 
-    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5},{AtomObject, ui->page_2}});
+    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5},{AtomObject, ui->page_2},{LayerObject, ui->page_3}});
 
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;
@@ -709,25 +709,6 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     recent->setSelection(simulation->getModel(), selectedRows);
     ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
-
-    /*auto selection = ui->scene->customSelection(id[NodeType::AtomObject]);
-
-    // handle custom selection types
-    if (type.size() == 1)
-    {
-        /*if (*type.begin() == NodeType::LayerObject)
-        {
-            ui->dockWidget_2->show();
-
-            ui->stackedWidget->setCurrentIndex(2);
-
-            ui->page_3->handleSelection(selection, id[NodeType::LayerObject]);
-        }*/
-    /*}
-
-    ui->page_2->handleSelection(selection);
-    ui->stackedWidget->setCurrentIndex(1);
-    ui->dockWidget_2->show();*/
 }
 
 void MainWindow::focusSelection(const AtomSelection& s)
