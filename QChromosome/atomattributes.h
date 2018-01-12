@@ -7,6 +7,8 @@ namespace Ui {
 class AtomAttributes;
 }
 
+class AtomItem;
+
 class AtomAttributes : public MetaAttributes
 {
     Q_OBJECT
@@ -18,6 +20,9 @@ public:
     void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
 
+signals:
+    void attributeChanged();
+
 public slots:
 
 
@@ -26,6 +31,7 @@ private:
 
     TreeModel *model;
     QModelIndexList rows;
+    QList<AtomItem*> atoms;
 
     void updateModelSelection();
     void updatePosition();

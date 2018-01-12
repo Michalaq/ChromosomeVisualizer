@@ -23,6 +23,13 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
     connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         model->setVisibility(rows, (Visibility)index, Renderer);
     });
+
+    // connect radius
+    connect(ui->doubleSpinBox_4, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
+        for (auto a : atoms)
+            a->setRadius(val);
+        emit attributeChanged();
+    });
 }
 
 AtomAttributes::~AtomAttributes()
@@ -39,16 +46,44 @@ void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLis
     model = selectedModel;
     rows = selectedRows;
 
+    atoms.clear();
+    atoms.reserve(selectedRows.size());
+
+    for (const auto& i : selectedRows)
+        atoms.append(reinterpret_cast<AtomItem*>(i.internalPointer()));
+
     connect(model, &TreeModel::attributeChanged, this, &AtomAttributes::updateModelSelection);
 
     // set title
-    QString title = QString::number(rows.count()) + " elements ";
+    QString title("Atom object ");
+
+    if (rows.count() > 1)
+        title += "(" + QString::number(rows.count()) + " elements) ";
 
     ui->label->setTitle(title);
 
     updateModelSelection();
 
     updatePosition();
+
+    auto fst = atoms.first();
+    bool multiple;
+
+    // set radius
+    double r = fst->getRadius();
+    multiple = false;
+
+    for (const auto& a : atoms)
+        if (r != a->getRadius())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_4->setMultipleValues();
+    else
+        ui->doubleSpinBox_4->setValue(r, false);
 }
 
 void AtomAttributes::unsetSelection()
@@ -126,15 +161,15 @@ void AtomAttributes::updateModelSelection()
 
 void AtomAttributes::updatePosition()
 {
-    auto fst = rows.first();
+    auto fst = atoms.first();
     bool multiple;
 
     // set P.X
-    double x = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().x();
+    double x = fst->getPosition().x();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (x != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().x())
+    for (const auto& a : atoms)
+        if (x != a->getPosition().x())
         {
             multiple = true;
             break;
@@ -146,11 +181,11 @@ void AtomAttributes::updatePosition()
         ui->doubleSpinBox->setValue(x, false);
 
     // set P.Y
-    double y = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().y();
+    double y = fst->getPosition().y();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (y != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().y())
+    for (const auto& a : atoms)
+        if (y != a->getPosition().y())
         {
             multiple = true;
             break;
@@ -162,11 +197,11 @@ void AtomAttributes::updatePosition()
         ui->doubleSpinBox_2->setValue(y, false);
 
     // set P.Z
-    double z = reinterpret_cast<TreeItem*>(fst.internalPointer())->getPosition().z();
+    double z = fst->getPosition().z();
     multiple = false;
 
-    for (const auto& r : rows)
-        if (z != reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition().z())
+    for (const auto& a : atoms)
+        if (z != a->getPosition().z())
         {
             multiple = true;
             break;
@@ -180,8 +215,8 @@ void AtomAttributes::updatePosition()
     // set camera origin
     QVector3D g;
 
-    for (const auto& r : rows)
-        g += reinterpret_cast<TreeItem*>(r.internalPointer())->getPosition();
+    for (const auto& a : atoms)
+        g += a->getPosition();
 
     g /= rows.count();
 

@@ -228,6 +228,8 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
 
+    connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
+
     newProject();
 
     ui->treeView->header()->resizeSection(3, 40);
