@@ -702,7 +702,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
             break;
         }
 
-    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5}});
+    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5},{AtomObject, ui->page_2}});
 
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;
