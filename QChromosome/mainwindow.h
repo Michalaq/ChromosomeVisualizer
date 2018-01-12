@@ -57,7 +57,6 @@ public slots:
     void selectAll();
     void handleSceneSelection(const QItemSelection &selected, QItemSelectionModel::SelectionFlags flags);
     void handleModelSelection(const QItemSelection &selected, const QItemSelection &deselected);
-    void focusSelection(const AtomSelection &s);
 
     /* actions */
     void setBaseAction(bool enabled);

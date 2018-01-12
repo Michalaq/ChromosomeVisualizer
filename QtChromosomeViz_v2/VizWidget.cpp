@@ -37,9 +37,9 @@ VizWidget::VizWidget(QWidget *parent)
     , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
     , pickingFramebuffer_(nullptr)
-    , currentSelection_(this)
     , ballQualityParameters_(0, 0)
     , labelRenderer_(QSizeF(800, 600))
+    , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
 }
@@ -486,6 +486,11 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
     return color != 0xFFFFFFFFU ? simulation_->getModel()->getIndices()[color] : QPersistentModelIndex();
 }
 
+void VizWidget::setSelectionModel(QItemSelectionModel *selectionModel)
+{
+    selectionModel_ = selectionModel;
+}
+
 void VizWidget::advanceFrame()
 {
     setFrame(frameNumber_ + 1);
@@ -743,59 +748,6 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.release();
 }
 
-QList<unsigned int> VizWidget::selectedSphereIndices() const
-{
-    return currentSelection_.selectedIndices();
-}
-
-QList<Atom> VizWidget::selectedSpheres() const
-{
-    QList<Atom> ret;
-    auto frame = simulation_->getFrame(frameNumber_);
-
-    for (unsigned int i : currentSelection_.selectedIndices())
-        ret.push_back(frame->atoms[i]);
-
-    return ret;
-}
-
-AtomSelection VizWidget::selectedSpheresObject() const
-{
-    return currentSelection_;
-}
-
-AtomSelection VizWidget::allSelection()
-{
-    QList<unsigned int> l;
-    for (unsigned int i = 0; i < sphereCount_; i++)
-        l.push_back(i);
-
-    return AtomSelection(l, this);
-}
-
-AtomSelection VizWidget::atomTypeSelection(const char * s)
-{
-    QList<unsigned int> l;
-    const auto frame = simulation_->getFrame(0);
-    for (unsigned int i = 0; i < sphereCount_; i++)
-    {
-        if (Defaults::typename2label(frame->atoms[i].type) == s)
-            l.push_back(i);
-    }
-
-    return AtomSelection(l, this);
-}
-
-AtomSelection VizWidget::atomTypeSelection(const std::string & s)
-{
-    return atomTypeSelection(s.c_str());
-}
-
-AtomSelection VizWidget::customSelection(const QList<unsigned int> &indices)
-{
-    return AtomSelection(indices, this);
-}
-
 const QMap<unsigned int, QString> & VizWidget::getLabels() const
 {
     return atomLabels_;
@@ -956,18 +908,17 @@ void VizWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    auto index = image.pixel(event->pos());
-
-    //TODO reimplement after changing selection
     auto model = simulation_->getModel();
     auto indices = model->getIndices();
+
+    auto index = indices[image.pixel(event->pos())];
     auto material = qobject_cast<Material*>(event->source());
 
-    if (currentSelection_.selectedIndices_.contains(index))
-        for (auto i : currentSelection_.selectedIndices_)
-            model->setMaterial(indices[i], material);
+    if (selectionModel_ && selectionModel_->isSelected(index))
+        for (auto i : selectionModel_->selectedRows())
+            model->setMaterial(i, material);
     else
-        model->setMaterial(indices[index], material);
+        model->setMaterial(index, material);
 }
 
 void VizWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -1019,59 +970,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     emit selectionChanged(selected, flags);
 }
 
-AtomSelection::AtomSelection(VizWidget * widget)
-    : widget_(widget)
-{
-
-}
-
-AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
-    : selectedIndices_(std::move(indices))
-    , widget_(widget)
-{
-
-}
-
-void AtomSelection::setMaterial(const Material *material)
-{
-    unsigned int alpha = 255 * (1. - material->getTransparency());
-    unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);
-    unsigned int code2 = material->getSpecularColor().rgba();
-    float exponent = material->getSpecularExponent();
-    for (unsigned int i : selectedIndices_)
-    {
-        widget_->frameState_[i].color = code1;
-        widget_->frameState_[i].specularColor = code2;
-        widget_->frameState_[i].specularExponent = exponent;
-        widget_->materials[i] = material;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setSize(float size)
-{
-    //TODO reimplement after changing selection
-    auto& buf = widget_->simulation_->getModel()->getIndices();
-    for (unsigned int i : selectedIndices_)
-        reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setRadius(size);
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setName(const QString &name)
-{
-    //TODO reimplement after changing selection
-    auto model = widget_->simulation_->getModel();
-    auto indices = model->getIndices();
-
-    for (auto i : selectedIndices_)
-        model->setData(indices[i], name);
-}
-
-void AtomSelection::setLabel(const QString & label)
+/*void AtomSelection::setLabel(const QString & label)
 {
     //TODO reimplement after changing selection
     auto& buf = widget_->simulation_->getModel()->getIndices();
@@ -1099,44 +998,6 @@ void AtomSelection::setLabel(const QString & label)
     widget_->update();
 }
 
-void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
-{
-    //TODO reimplement after changing selection
-    auto model = widget_->simulation_->getModel();
-    auto indices = model->getIndices();
-
-    for (auto i : selectedIndices_)
-        model->setVisibility(indices[i], visible, m);
-}
-
-double AtomSelection::getSize() const
-{
-    if (selectedIndices_.isEmpty())
-        return std::numeric_limits<double>::lowest();
-
-    float ans = widget_->frameState_[selectedIndices_.front()].size;
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].size != ans)
-            return std::numeric_limits<double>::lowest();
-
-    return ans;
-}
-
-QVariant AtomSelection::getName() const
-{
-    //TODO reimplement after changing selection
-    auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
-
-    auto ans = indices[selectedIndices_.first()].data().toString();
-
-    for (unsigned int i : selectedIndices_)
-        if (indices[i].data().toString() != ans)
-            return QVariant();
-
-    return ans;
-}
-
 QVariant AtomSelection::getLabel() const
 {
     if (selectedIndices_.isEmpty())
@@ -1149,80 +1010,4 @@ QVariant AtomSelection::getLabel() const
             return QVariant();
 
     return ans;
-}
-
-std::tuple<int, int, int> AtomSelection::getCoordinates() const
-{
-    int x = widget_->frameState_[selectedIndices_.front()].position[0];
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position[0] != x)
-        {
-            x = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    int y = widget_->frameState_[selectedIndices_.front()].position[1];
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position[1] != y)
-        {
-            y = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    int z = widget_->frameState_[selectedIndices_.front()].position[2];
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position[2] != z)
-        {
-            z = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    return std::make_tuple(x, y, z);
-}
-
-Visibility AtomSelection::getVisibility(VisibilityMode m) const
-{
-    return Default;
-    //TODO reimplement after changing selection
-    auto indices = static_cast<TreeModel*>(widget_->simulation_->getModel())->getIndices();
-
-    auto ans = indices[selectedIndices_.first()].sibling(indices[selectedIndices_.first()].row(), m).data().toInt();
-
-    for (unsigned int i : selectedIndices_)
-        if (indices[i].sibling(indices[i].row(), m).data().toInt() != ans)
-            return Default;
-
-    return (Visibility)ans;
-}
-
-unsigned int AtomSelection::atomCount() const
-{
-    return selectedIndices_.size();
-}
-
-QVector3D AtomSelection::weightCenter() const
-{
-    if (atomCount() == 0)
-        return QVector3D(0.f, 0.f, 0.f);
-
-    QVector3D sum(0.f, 0.f, 0.f);
-    auto frame = widget_->simulation_->getFrame(0);
-
-    for (unsigned int i : selectedIndices_)
-    {
-        QVector3D atomPos(frame->atoms[i].x,
-                          frame->atoms[i].y,
-                          frame->atoms[i].z);
-        sum += atomPos;
-    }
-
-    return sum /= (float)atomCount();
-}
-
-const QList<unsigned int> & AtomSelection::selectedIndices() const
-{
-    return selectedIndices_;
-}
+}*/

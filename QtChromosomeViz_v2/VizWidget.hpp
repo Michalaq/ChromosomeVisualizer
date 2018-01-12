@@ -31,39 +31,6 @@ struct VizLink
     void update(const float q1[3], const float q2[3]);
 };
 
-class VizWidget;
-
-class AtomSelection
-{
-    friend class VizWidget;
-
-public:
-    AtomSelection(const AtomSelection &) = default;
-
-    void setMaterial(const Material* material);
-    void setSize(float size);
-    void setName(const QString & name);
-    void setLabel(const QString & label);
-    void setVisible(Visibility visible, VisibilityMode m);
-
-    double getSize() const;
-    QVariant getName() const;
-    QVariant getLabel() const;
-    std::tuple<int, int, int> getCoordinates() const;
-    Visibility getVisibility(VisibilityMode m) const;
-
-    unsigned int atomCount() const;
-    QVector3D weightCenter() const;
-    const QList<unsigned int> & selectedIndices() const;
-
-private:
-    AtomSelection(VizWidget * widget);
-    AtomSelection(QList<unsigned int> indices, VizWidget * widget);
-
-    QList<unsigned int> selectedIndices_;
-    VizWidget * widget_;
-};
-
 using VizSegment = QPair<VizVertex, VizVertex>;
 
 #include "selection.h"
@@ -76,7 +43,6 @@ class VizWidget :   public Selection,
 {
     Q_OBJECT
     Q_INTERFACES(Pickable)
-    friend class AtomSelection;
 
 public:
     VizWidget(QWidget *parent = 0);
@@ -94,6 +60,8 @@ public:
 
     QPersistentModelIndex pick(const QPoint& pos);
 
+    void setSelectionModel(QItemSelectionModel *selectionModel);
+
 public slots:
     void advanceFrame();
     void setFrame(frameNumber_t frame);
@@ -104,15 +72,6 @@ public slots:
 
     // quality should be in range [0.f, 1.f]
     void setBallQuality(float quality);
-
-    QList<unsigned int> selectedSphereIndices() const;
-    QList<Atom> selectedSpheres() const;
-    AtomSelection selectedSpheresObject() const;
-
-    AtomSelection allSelection();
-    AtomSelection atomTypeSelection(const char * s);
-    AtomSelection atomTypeSelection(const std::string & s);
-    AtomSelection customSelection(const QList<unsigned int> & indices);
 
     const QMap<unsigned int, QString> & getLabels() const;
 
@@ -182,7 +141,6 @@ private:
     void generateSortedState();
 
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
-    AtomSelection currentSelection_;
 
     QImage image;
     void pickSpheres();
@@ -196,6 +154,8 @@ private:
     Viewport* viewport_;
 
     QVector<const Material*> materials;
+
+    QItemSelectionModel *selectionModel_;
 };
 
 #endif /* VIZWINDOW_HPP */

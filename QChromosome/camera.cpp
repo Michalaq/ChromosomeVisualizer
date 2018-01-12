@@ -242,6 +242,11 @@ void Camera::paintEvent(QPaintEvent *event)
     }
 }
 
+QVector3D Camera::getOrigin()
+{
+    return origin;
+}
+
 void Camera::setOrigin(const QVector3D &o)
 {
     origin = o;

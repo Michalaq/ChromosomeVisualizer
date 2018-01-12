@@ -19,6 +19,7 @@ public:
     static void setViewport(Viewport* vp);
 
     /* sets new origin */
+    static QVector3D getOrigin();
     static void setOrigin(const QVector3D& o);
 
     QVector3D getPosition() const;
@@ -116,7 +117,6 @@ private:
     void rotate(qreal dh, qreal dp, qreal db);
 
     qreal focalLength;
-    qreal apertureWidth;//TODO usunąć
     qreal sensorSize;
 
     qreal horizontalAngle;

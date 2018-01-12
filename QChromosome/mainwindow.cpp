@@ -165,7 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        focusSelection(ui->scene->selectedSpheresObject());
+        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setLookAt(Camera::getOrigin());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -356,6 +356,8 @@ void MainWindow::newProject()
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
+
+    ui->scene->setSelectionModel(ui->treeView->selectionModel());
 }
 
 #include <QStandardPaths>
@@ -709,11 +711,6 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     recent->setSelection(simulation->getModel(), selectedRows);
     ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
-}
-
-void MainWindow::focusSelection(const AtomSelection& s)
-{
-    qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setLookAt(s.weightCenter());
 }
 
 void MainWindow::setBaseAction(bool enabled)
