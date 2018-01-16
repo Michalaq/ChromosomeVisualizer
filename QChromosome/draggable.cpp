@@ -22,7 +22,7 @@ Draggable::~Draggable()
 
 void Draggable::mousePressEvent(QMouseEvent *event)
 {
-    QWidget::mousePressEvent(event);
+    event->accept();
 
     pressed = event->button();
 
@@ -36,7 +36,7 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
 void Draggable::mouseMoveEvent(QMouseEvent *event)
 {
-    QWidget::mouseMoveEvent(event);
+    event->accept();
 
     if (ignore)
         ignore = false;
@@ -51,7 +51,7 @@ void Draggable::mouseMoveEvent(QMouseEvent *event)
 
 void Draggable::mouseReleaseEvent(QMouseEvent *event)
 {
-    QWidget::mouseReleaseEvent(event);
+    event->accept();
 
     QCursor::setPos(initial);
     QApplication::restoreOverrideCursor();

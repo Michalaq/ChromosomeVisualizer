@@ -146,7 +146,7 @@ void Camera::wheelEvent(QWheelEvent *event)
 {
     scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
 
-    Draggable::wheelEvent(event);
+    event->accept();
 }
 
 #include <QMetaMethod>
