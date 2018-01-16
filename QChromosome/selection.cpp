@@ -35,6 +35,7 @@ void Selection::paintEvent(QPaintEvent *event)
     {
         QPainter p(this);
         p.setPen(Qt::white);
+        p.translate(1, 0);
 
         switch (st)
         {
