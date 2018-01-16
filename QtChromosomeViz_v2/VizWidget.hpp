@@ -55,17 +55,12 @@ public:
     void setSimulation(std::shared_ptr<Simulation> dp);
     void setViewport(Viewport* vp);
 
-    std::shared_ptr<Frame> currentFrame() const;
-    void nextInterestingFrame();
-
     QPersistentModelIndex pick(const QPoint& pos);
 
     void setSelectionModel(QItemSelectionModel *selectionModel);
 
 public slots:
-    void advanceFrame();
     void setFrame(frameNumber_t frame);
-    void setFrame(int frame);
 
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);

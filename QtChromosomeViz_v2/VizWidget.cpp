@@ -466,17 +466,6 @@ void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
     setFirstFrame();
 }
 
-std::shared_ptr<Frame> VizWidget::currentFrame() const
-{
-    return simulation_->getFrame(frameNumber_);
-}
-
-void VizWidget::nextInterestingFrame()
-{
-    auto next = simulation_->getNextTime(frameNumber_);
-    setFrame(next);
-}
-
 QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 {
     pickSpheres();
@@ -489,11 +478,6 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 void VizWidget::setSelectionModel(QItemSelectionModel *selectionModel)
 {
     selectionModel_ = selectionModel;
-}
-
-void VizWidget::advanceFrame()
-{
-    setFrame(frameNumber_ + 1);
 }
 
 #include "defaults.h"
@@ -586,12 +570,6 @@ void VizWidget::setFrame(frameNumber_t frame)
     }
 
     needVBOUpdate_ = true;
-}
-
-void VizWidget::setFrame(int frame)
-{
-    setFrame((frameNumber_t)frame);
-    update();
 }
 
 void VizWidget::setBallQuality(float quality)
