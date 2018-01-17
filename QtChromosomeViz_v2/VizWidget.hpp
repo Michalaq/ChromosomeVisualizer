@@ -19,15 +19,8 @@ struct VizVertex
 
 struct VizLink
 {
-    QVector3D position;
-    QQuaternion rotation;
-    unsigned int color[2];
-    unsigned int specularColor[2];
-    float specularExponent[2];
-    float size[3];
-    unsigned int visible;
-
-    void update(const QVector3D p1, const QVector3D p2);
+    VizBallInstance b1;
+    VizBallInstance b2;
 };
 
 using VizSegment = QPair<VizVertex, VizVertex>;

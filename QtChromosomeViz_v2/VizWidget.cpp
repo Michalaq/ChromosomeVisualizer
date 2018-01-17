@@ -21,13 +21,6 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
     };
 }
 
-void VizLink::update(const QVector3D p1, const QVector3D p2)
-{
-    position = (p1 + p2) * 0.5f;
-    rotation = QQuaternion::rotationTo(QVector3D(0.f, 0.f, 1.f), (p2 - p1).normalized());
-    size[2] = (p1 - p2).length() * 0.5f;
-}
-
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , needVBOUpdate_(true)
@@ -211,64 +204,111 @@ void VizWidget::initializeGL()
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        nullptr
+        (void*)offsetof(VizLink, b1.position)
     );
 
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         3,
-        4,
-        GL_FLOAT,
-        GL_FALSE,
+        1,
+        GL_UNSIGNED_INT,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, rotation)
+        (void*)offsetof(VizLink, b1.flags)
     );
 
     glEnableVertexAttribArray(4);
     glVertexAttribIPointer(
         4,
-        2,
+        1,
         GL_UNSIGNED_INT,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, color)
+        (void*)offsetof(VizLink, b1.color)
     );
 
     glEnableVertexAttribArray(5);
     glVertexAttribIPointer(
         5,
-        2,
+        1,
         GL_UNSIGNED_INT,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, specularColor)
+        (void*)offsetof(VizLink, b1.specularColor)
     );
 
     glEnableVertexAttribArray(6);
     glVertexAttribPointer(
         6,
-        2,
+        1,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, specularExponent)
+        (void*)offsetof(VizLink, b1.specularExponent)
     );
 
     glEnableVertexAttribArray(7);
     glVertexAttribPointer(
         7,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, b1.size)
+    );
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(
+        8,
         3,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, size)
+        (void*)offsetof(VizLink, b2.position)
     );
 
-    glEnableVertexAttribArray(8);
+    glEnableVertexAttribArray(9);
     glVertexAttribIPointer(
-        8,
+        9,
         1,
         GL_UNSIGNED_INT,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, visible)
+        (void*)offsetof(VizLink, b2.flags)
+    );
+
+    glEnableVertexAttribArray(10);
+    glVertexAttribIPointer(
+        10,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, b2.color)
+    );
+
+    glEnableVertexAttribArray(11);
+    glVertexAttribIPointer(
+        11,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, b2.specularColor)
+    );
+
+    glEnableVertexAttribArray(12);
+    glVertexAttribPointer(
+        12,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, b2.specularExponent)
+    );
+
+    glEnableVertexAttribArray(13);
+    glVertexAttribPointer(
+        13,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, b2.size)
     );
 
     glVertexAttribDivisor(2, 1);
@@ -278,6 +318,11 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1);
     glVertexAttribDivisor(8, 1);
+    glVertexAttribDivisor(9, 1);
+    glVertexAttribDivisor(10, 1);
+    glVertexAttribDivisor(11, 1);
+    glVertexAttribDivisor(12, 1);
+    glVertexAttribDivisor(13, 1);
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -478,7 +523,7 @@ void VizWidget::setFirstFrame()
         connectionCount_ += conn.second - conn.first;
 
     atomPositions_.bind();
-    atomPositions_.allocate(sphereCount_ * sizeof(VizBallInstance));
+    atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
     atomPositions_.release();
 
     cylinderPositions_.bind();
@@ -522,16 +567,8 @@ void VizWidget::setFrame(frameNumber_t frame)
             auto a = AtomItem::getBuffer()[i];
             auto b = AtomItem::getBuffer()[i + 1];
 
-            link.update(a.position, b.position);
-            link.color[0] = a.color;
-            link.color[1] = b.color;
-            link.specularColor[0] = a.specularColor;
-            link.specularColor[1] = b.specularColor;
-            link.specularExponent[0] = a.specularExponent;
-            link.specularExponent[1] = b.specularExponent;
-            link.size[0] = a.size;
-            link.size[1] = b.size;
-            link.visible = (a.flags & VISIBLE_FLAG) && (b.flags & VISIBLE_FLAG);
+            link.b1=a;
+            link.b2=b;
         }
     }
 
