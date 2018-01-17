@@ -299,8 +299,8 @@ Camera* CameraItem::getCamera() const
 
 QVector<VizBallInstance> AtomItem::buffer;
 
-AtomItem::AtomItem(const Atom *atom, int id, TreeItem *parentItem) :
-    TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
+    TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     id(id)
 {
     QIcon icon;
@@ -308,9 +308,9 @@ AtomItem::AtomItem(const Atom *atom, int id, TreeItem *parentItem) :
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
 
-    buffer[id].position[0] = atom->x;
-    buffer[id].position[1] = atom->y;
-    buffer[id].position[2] = atom->z;
+    buffer[id].position[0] = atom.x;
+    buffer[id].position[1] = atom.y;
+    buffer[id].position[2] = atom.z;
 }
 
 AtomItem::~AtomItem()
@@ -468,8 +468,9 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
     TreeItem::writePOVFrame(stream, frame, material, used);
 }
 
-ChainItem::ChainItem(const QString& name, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+ChainItem::ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem) :
+    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    range(ran)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);

@@ -156,7 +156,7 @@ enum VizBallFlags : unsigned int
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom *atom, int id, TreeItem *parentItem = 0);
+    explicit AtomItem(const Atom& atom, int id, TreeItem *parentItem = 0);
     ~AtomItem();
 
     VizBallInstance& getInstance();
@@ -191,8 +191,11 @@ private:
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, TreeItem *parentItem = 0);
+    explicit ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem = 0);
     ~ChainItem();
+
+private:
+    std::pair<int, int> range;
 };
 
 class ResidueItem : public TreeItem

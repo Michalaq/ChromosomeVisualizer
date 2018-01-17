@@ -161,13 +161,13 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 #include "defaults.h"
 
-void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
+void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
-    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), parent);
+    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), range, parent);
 
     QMap<int, TreeItem*> types;
 
-    for (auto atom = first; atom != last; atom++)
+    for (auto atom = atoms.begin() + range.first; atom != atoms.begin() + range.second; atom++)
     {
         int t = atom->type;
 
@@ -179,7 +179,7 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
                 types[t]->setData(5, Defaults::typename2color(t));
         }
 
-        types[t]->appendChild(new AtomItem(atom, atom->id - 1 + offset, types[t]));
+        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, types[t]));
     }
 
     for (auto t : types)
@@ -206,8 +206,9 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     for (auto range : connectedRanges)
     {
-        used.fill(true, range.first - 1, range.second);
-        appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root, init);
+        range.first--;
+        used.fill(true, range.first, range.second);
+        appendSubmodel(range, atoms, i++, offset, root, init);
     }
 
     QMap<int, TreeItem*> types;
@@ -225,7 +226,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
                     types[t]->setData(5, Defaults::typename2color(t));
             }
 
-            types[t]->appendChild(new AtomItem(&atoms[i], atoms[i].id - 1 + offset, types[t]));
+            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, types[t]));
         }
 
     for (auto t : types)
