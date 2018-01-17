@@ -21,10 +21,8 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
     };
 }
 
-void VizLink::update(const float q1[3], const float q2[3])
+void VizLink::update(const QVector3D p1, const QVector3D p2)
 {
-    auto p1 = QVector3D(q1[0], q1[1], q1[2]);
-    auto p2 = QVector3D(q2[0], q2[1], q2[2]);
     position = (p1 + p2) * 0.5f;
     rotation = QQuaternion::rotationTo(QVector3D(0.f, 0.f, 1.f), (p2 - p1).normalized());
     size[2] = (p1 - p2).length() * 0.5f;
@@ -704,9 +702,9 @@ void VizWidget::generateSortedState()
 {
     auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
         float z1 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(a.position[0], a.position[1], a.position[2], 1.f));
+            QVector4D(a.position, 1.f));
         float z2 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(b.position[0], b.position[1], b.position[2], 1.f));
+            QVector4D(b.position, 1.f));
         return z1 > z2;
     };
 

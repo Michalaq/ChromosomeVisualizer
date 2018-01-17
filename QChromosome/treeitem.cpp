@@ -111,8 +111,6 @@ void TreeItem::removeRows(int row, int count)
         delete m_childItems.takeAt(i);
 }
 
-#include <QVector3D>
-
 QVector3D TreeItem::getPosition() const
 {
     return QVector3D(0, 0, 0);
@@ -308,9 +306,7 @@ AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
 
-    buffer[id].position[0] = atom.x;
-    buffer[id].position[1] = atom.y;
-    buffer[id].position[2] = atom.z;
+    buffer[id].position = QVector3D(atom.x, atom.y, atom.z);
 }
 
 AtomItem::~AtomItem()
@@ -330,8 +326,7 @@ const QVector<VizBallInstance>& AtomItem::getBuffer()
 
 QVector3D AtomItem::getPosition() const
 {
-    auto buff = buffer[id].position;
-    return QVector3D(buff[0], buff[1], buff[2]);
+    return buffer[id].position;
 }
 
 void AtomItem::resizeBuffer(int count)
@@ -359,10 +354,7 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
     for (int i = 0; i < atoms.size(); i++)
     {
         auto& atom = atoms[i];
-        auto* buff = buffer[i].position;
-        buff[0] = atom.x;
-        buff[1] = atom.y;
-        buff[2] = atom.z;
+        buffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 }
 

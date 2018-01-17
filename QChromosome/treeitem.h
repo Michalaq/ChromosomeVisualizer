@@ -134,9 +134,11 @@ private:
     Camera* camera;
 };
 
+#include <QVector3D>
+
 struct VizBallInstance
 {
-    float position[3];
+    QVector3D position;
     unsigned int flags;
     unsigned int atomID;
     unsigned int color;

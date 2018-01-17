@@ -27,7 +27,7 @@ struct VizLink
     float size[3];
     unsigned int visible;
 
-    void update(const float q1[3], const float q2[3]);
+    void update(const QVector3D p1, const QVector3D p2);
 };
 
 using VizSegment = QPair<VizVertex, VizVertex>;
