@@ -483,6 +483,18 @@ ChainItem::~ChainItem()
 
 }
 
+void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material *material, QSet<const Material *> &used) const
+{
+    TreeItem::writePOVFrame(stream, frame, material, used);
+
+    auto buffer = AtomItem::getBuffer();
+
+    stream<<*Material::getDefault();
+
+    for (int i = range.first; i < range.second; i++)
+        MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), buffer[i].size / 2, buffer[i + 1].size / 2, Material::getDefault(), Material::getDefault());
+}
+
 ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :
     TreeItem({name, NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {

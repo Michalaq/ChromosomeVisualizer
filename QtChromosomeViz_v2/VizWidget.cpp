@@ -1,7 +1,5 @@
-#include <cassert>
-#include <cstddef>
-#include "bartekm_code/PDBSimulationLayer.h"
 #include "VizWidget.hpp"
+#include <cassert>
 
 static const float EPSILON = 1e-4;
 
@@ -34,7 +32,6 @@ void VizLink::update(const float q1[3], const float q2[3])
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
-    , simulation_(std::make_shared<Simulation>())
     , needVBOUpdate_(true)
     , pickingFramebuffer_(nullptr)
     , ballQualityParameters_(0, 0)
@@ -565,6 +562,7 @@ void VizWidget::setFrame(frameNumber_t frame)
     }
 
     needVBOUpdate_ = true;
+    update();
 }
 
 void VizWidget::setBallQuality(float quality)

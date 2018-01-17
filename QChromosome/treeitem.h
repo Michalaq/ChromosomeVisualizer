@@ -194,6 +194,8 @@ public:
     explicit ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem = 0);
     ~ChainItem();
 
+    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
+
 private:
     std::pair<int, int> range;
 };
