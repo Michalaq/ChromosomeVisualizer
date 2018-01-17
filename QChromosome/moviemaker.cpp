@@ -165,7 +165,11 @@ void addLabel(std::ofstream& outFile, const QString & label)
 
 }
 
-void MovieMaker::captureScene(int fbeg, int fend, Viewport* viewport, const VizWidget* scene, const Camera* camera, QString suffix, int fr)
+#include <QTemporaryDir>
+#include <QRegularExpression>
+#include <QPainter>
+
+void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -181,10 +185,10 @@ void MovieMaker::captureScene(int fbeg, int fend, Viewport* viewport, const VizW
     setBackgroundColor(outFile, viewport->getBackgroundColor());
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    scene->writePOVFrames(outFile, fbeg, fend);
+    simulation->writePOVFrames(outFile, fbeg, fend);
 
-    for (auto & key : scene->getLabels().keys())
-        addLabel(outFile, "");
+    /*for (auto & key : scene->getLabels().keys())
+        addLabel(outFile, "");*/
 
     outFile.flush();
 
@@ -296,7 +300,7 @@ void MovieMaker::captureScene(int fbeg, int fend, Viewport* viewport, const VizW
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, Viewport* viewport, const VizWidget* scene, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -312,10 +316,10 @@ void MovieMaker::captureScene1(int fn, Viewport* viewport, const VizWidget* scen
     setBackgroundColor(outFile, viewport->getBackgroundColor());
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
-    scene->writePOVFrame(outFile, fn);
+    simulation->writePOVFrame(outFile, fn);
 
-    for (auto & key : scene->getLabels().keys())
-        addLabel(outFile, "");
+    /*for (auto & key : scene->getLabels().keys())
+        addLabel(outFile, "");*/
 
     outFile.flush();
 

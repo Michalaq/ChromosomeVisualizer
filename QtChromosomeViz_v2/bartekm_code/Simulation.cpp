@@ -137,6 +137,71 @@ static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
+/*
+
+#include "moviemaker.h"
+
+constexpr QVector3D vec3(const Atom& a)
+{
+    return {a.x, a.y, a.z};
+}
+
+void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
+{
+    // Materials
+    QSet<const Material*> used;
+
+    for (auto m : materials)
+        if (!used.contains(m))
+        {
+            stream << *m;
+            used.insert(m);
+        }
+
+    auto frame = simulation_->getFrame(f);
+
+    // Spheres
+    for (int i = 0; i < sphereCount_; i++)
+        MovieMaker::addSphere(stream, vec3(frame->atoms[i]), frameState_[i].size, materials[i]);
+
+    // Cylinders
+    for (auto r : frame->connectedRanges)
+        for (int i = r.first; i < r.second; i++)
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
+}
+
+void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+{
+    // Materials
+    QSet<const Material*> used;
+
+    for (auto m : materials)
+        if (!used.contains(m))
+        {
+            stream << *m;
+            used.insert(m);
+        }
+
+    simulation_->writePOVFrames(stream, fbeg, fend);
+
+    auto frame = simulation_->getFrame(0);
+
+    // Spheres
+    for (int i = 0; i < sphereCount_; i++)
+        MovieMaker::addSphere1(stream, frameState_[i].atomID, frameState_[i].size, materials[i]);
+
+    // Cylinders
+    for (auto r : frame->connectedRanges)
+        for (int i = r.first; i < r.second; i++)
+            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
+}
+*/
+
+void Simulation::writePOVFrame(std::ostream &stream, frameNumber_t f)
+{
+    ;
+}
+
 void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)
 {
     int n = getFrame(0)->atoms.size();

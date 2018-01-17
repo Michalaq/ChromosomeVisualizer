@@ -480,8 +480,6 @@ void VizWidget::setSelectionModel(QItemSelectionModel *selectionModel)
     selectionModel_ = selectionModel;
 }
 
-#include "defaults.h"
-
 void VizWidget::setFirstFrame()
 {
     auto frame = simulation_->getFrame(0);
@@ -510,9 +508,6 @@ void VizWidget::setFirstFrame()
 
     VizLink dummy2;
     linksState_.fill(dummy2, connectionCount_);
-
-    Material* dummy3 = Material::getDefault();
-    materials.fill(dummy3, sphereCount_);
 
     setFrame(0);
 
@@ -734,63 +729,6 @@ const QMap<unsigned int, QString> & VizWidget::getLabels() const
 void VizWidget::setViewport(Viewport* vp)
 {
     viewport_ = vp;
-}
-
-#include "moviemaker.h"
-
-constexpr QVector3D vec3(const Atom& a)
-{
-    return {a.x, a.y, a.z};
-}
-
-void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
-{
-    // Materials
-    QSet<const Material*> used;
-
-    for (auto m : materials)
-        if (!used.contains(m))
-        {
-            stream << *m;
-            used.insert(m);
-        }
-
-    auto frame = simulation_->getFrame(f);
-
-    // Spheres
-    for (int i = 0; i < sphereCount_; i++)
-        MovieMaker::addSphere(stream, vec3(frame->atoms[i]), frameState_[i].size, materials[i]);
-
-    // Cylinders
-    for (auto r : frame->connectedRanges)
-        for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
-}
-
-void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
-{
-    // Materials
-    QSet<const Material*> used;
-
-    for (auto m : materials)
-        if (!used.contains(m))
-        {
-            stream << *m;
-            used.insert(m);
-        }
-
-    simulation_->writePOVFrames(stream, fbeg, fend);
-
-    auto frame = simulation_->getFrame(0);
-
-    // Spheres
-    for (int i = 0; i < sphereCount_; i++)
-        MovieMaker::addSphere1(stream, frameState_[i].atomID, frameState_[i].size, materials[i]);
-
-    // Cylinders
-    for (auto r : frame->connectedRanges)
-        for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
 }
 
 void VizWidget::generateSortedState()

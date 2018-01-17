@@ -70,9 +70,6 @@ public slots:
 
     const QMap<unsigned int, QString> & getLabels() const;
 
-    void writePOVFrame(std::ostream& stream, frameNumber_t f) const;
-    void writePOVFrames(std::ostream& stream, frameNumber_t fbeg, frameNumber_t fend) const;
-
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
 
@@ -147,8 +144,6 @@ private:
     LabelRenderer labelRenderer_;
 
     Viewport* viewport_;
-
-    QVector<const Material*> materials;
 
     QItemSelectionModel *selectionModel_;
 };
