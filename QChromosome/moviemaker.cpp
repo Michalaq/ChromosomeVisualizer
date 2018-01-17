@@ -160,11 +160,6 @@ void setFog(std::ofstream& outFile, const QColor & color, const float distance)
     outFile << "fog{color " << color << " distance " << distance << " }\n";
 }
 
-void addLabel(std::ofstream& outFile, const QString & label)
-{
-
-}
-
 #include <QTemporaryDir>
 #include <QRegularExpression>
 #include <QPainter>
@@ -186,9 +181,6 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
     simulation->writePOVFrames(outFile, fbeg, fend);
-
-    /*for (auto & key : scene->getLabels().keys())
-        addLabel(outFile, "");*/
 
     outFile.flush();
 
@@ -317,9 +309,6 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
     simulation->writePOVFrame(outFile, fn);
-
-    /*for (auto & key : scene->getLabels().keys())
-        addLabel(outFile, "");*/
 
     outFile.flush();
 

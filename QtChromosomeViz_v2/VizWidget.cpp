@@ -35,7 +35,6 @@ VizWidget::VizWidget(QWidget *parent)
     , needVBOUpdate_(true)
     , pickingFramebuffer_(nullptr)
     , ballQualityParameters_(0, 0)
-    , labelRenderer_(QSizeF(800, 600))
     , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
@@ -49,7 +48,6 @@ VizWidget::~VizWidget()
 void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
-    labelRenderer_.initGL();
 
     glEnable(GL_DEPTH_TEST);
 
@@ -400,16 +398,9 @@ void VizWidget::paintGL()
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-
-    paintLabels();
 }
 
-void VizWidget::resizeGL(int w, int h)
-{
-    labelRenderer_.setViewportSize(QSizeF(w, h));
-}
-
-void VizWidget::paintLabels()
+/*void VizWidget::paintLabels()
 {
     labelRenderer_.begin();
 
@@ -436,7 +427,7 @@ void VizWidget::paintLabels()
     }
 
     labelRenderer_.end();
-}
+}*/
 
 void VizWidget::setModelView(QMatrix4x4 mat)
 {
@@ -496,13 +487,6 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
     cylinderPositions_.release();
 
-    VizBallInstance dummy;
-    dummy.color = 0xFF777777;
-    dummy.specularColor = 0xFFFFFFFF;
-    dummy.specularExponent = 10.f;
-    dummy.size = 1.f;
-    frameState_.fill(dummy, sphereCount_);
-
     VizLink dummy2;
     linksState_.fill(dummy2, connectionCount_);
 
@@ -519,14 +503,6 @@ void VizWidget::setFrame(frameNumber_t frame)
 {
     frameNumber_ = frame;
     auto diff = simulation_->getFrame(frameNumber_);
-    for (const auto & a : diff->atoms)
-    {
-        frameState_[a.id - 1].position[0] = a.x;
-        frameState_[a.id - 1].position[1] = a.y;
-        frameState_[a.id - 1].position[2] = a.z;
-        frameState_[a.id - 1].flags = 0;
-        frameState_[a.id - 1].atomID = a.id - 1;
-    }
 
     int linkNumber = 0;
     for (const auto & conn : diff->connectedRanges)
@@ -717,11 +693,6 @@ void VizWidget::updateWholeFrameData()
     cylinderPositions_.bind();
     cylinderPositions_.write(0, linksState_.constData(), linksState_.size() * sizeof(VizLink));
     cylinderPositions_.release();
-}
-
-const QMap<unsigned int, QString> & VizWidget::getLabels() const
-{
-    return atomLabels_;
 }
 
 void VizWidget::setViewport(Viewport* vp)
