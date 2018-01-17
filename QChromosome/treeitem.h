@@ -41,8 +41,12 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
-
 #include <QVariant>
+
+#include <memory>
+#include "../QtChromosomeViz_v2/bartekm_code/common.h"
+
+class Material;
 
 class TreeItem
 {
@@ -70,6 +74,9 @@ public:
 
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
+
+    virtual void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
+    virtual void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
     QList<TreeItem*> m_childItems;
@@ -172,6 +179,8 @@ public:
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
 
 private:
     int id;

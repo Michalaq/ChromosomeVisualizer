@@ -199,6 +199,24 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
+void TreeItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material*>& used) const
+{
+    for (const auto c : m_childItems)
+    {
+        auto tags = c->m_itemData[5].toList();
+
+        if (!tags.empty())
+            material = tags.last().value<Material*>();
+
+        c->writePOVFrame(stream, frame, material, used);
+    }
+}
+
+void TreeItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+{
+
+}
+
 LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     layer(slc)
@@ -428,6 +446,26 @@ void AtomItem::write(QJsonObject &json) const
         object["Label"] = label;
 
     json["Object"] = object;
+}
+
+#include "moviemaker.h"
+
+constexpr QVector3D vec3(const Atom& a)
+{
+    return {a.x, a.y, a.z};
+}
+
+void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const
+{
+    if (!used.contains(material))
+    {
+        stream << *material;
+        used.insert(material);
+    }
+
+    MovieMaker::addSphere(stream, vec3(frame->atoms[id - 1]), buffer[id].size, material);
+
+    TreeItem::writePOVFrame(stream, frame, material, used);
 }
 
 ChainItem::ChainItem(const QString& name, TreeItem *parentItem) :

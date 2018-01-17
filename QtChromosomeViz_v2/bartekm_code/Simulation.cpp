@@ -199,7 +199,7 @@ void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
 
 void Simulation::writePOVFrame(std::ostream &stream, frameNumber_t f)
 {
-    ;
+    model->writePOVFrame(stream, getFrame(f));
 }
 
 void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)

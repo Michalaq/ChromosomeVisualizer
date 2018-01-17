@@ -98,6 +98,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
+    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame);
+
 public slots:
     void updateAttributes(const Material* m);
 

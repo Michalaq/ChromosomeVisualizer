@@ -10,7 +10,8 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     color(c),
     transparency(t),
     specularColor(sc),
-    specularExponent(se)
+    specularExponent(se),
+    finish(0)
 {
     setFixedSize(45, 45);
     updateIcon();

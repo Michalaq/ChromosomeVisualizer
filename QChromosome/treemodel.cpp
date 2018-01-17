@@ -491,6 +491,14 @@ void TreeModel::write(QJsonObject &json) const
     header->write(json);
 }
 
+#include <QSet>
+
+void TreeModel::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame)
+{
+    QSet<const Material*> used;
+    header->writePOVFrame(stream, frame, Material::getDefault(), used);
+}
+
 void TreeModel::updateAttributes(const Material *m)
 {
     for (auto i : m->getAssigned())
