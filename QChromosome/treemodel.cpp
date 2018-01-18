@@ -163,13 +163,12 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
-    ChainItem::resizeBuffer(range.second - range.first - 1);
-
-    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, parent);
+    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), range, parent);
 
     QMap<int, TreeItem*> types;
 
     AtomItem* first = nullptr;
+    auto i = root->begin();
 
     for (auto atom = atoms.begin() + range.first; atom != atoms.begin() + range.second; atom++)
     {
@@ -187,7 +186,13 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
 
         types[t]->appendChild(second);
 
-        if (first) ChainItem::addLink(first, second);
+        if (first)
+        {
+            first->addLink(&i->first);
+            second->addLink(&i->second);
+            i++;
+        }
+
         first = second;
     }
 
@@ -207,7 +212,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
+    auto root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
 
     AtomItem::resizeBuffer(atoms.size());
 
@@ -506,7 +511,7 @@ void TreeModel::write(QJsonObject &json) const
 void TreeModel::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame)
 {
     QSet<const Material*> used;
-    header->writePOVFrame(stream, frame, Material::getDefault(), used);
+    header->writePOVFrame(stream, frame, used);
 }
 
 void TreeModel::updateAttributes(const Material *m)

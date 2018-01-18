@@ -75,7 +75,7 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
+    virtual void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
     virtual void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
@@ -145,6 +145,7 @@ struct VizBallInstance
     unsigned int specularColor;
     float specularExponent;
     float size;
+    const Material* material;
 };
 
 enum VizBallFlags : unsigned int
@@ -182,7 +183,7 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
+    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
 
 private:
     int id;
@@ -196,20 +197,19 @@ using VizLink = QPair<VizBallInstance, VizBallInstance>;
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem = 0);
+    explicit ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem = 0);
     ~ChainItem();
 
     static const QVector<VizLink> &getBuffer();
-    static void resizeBuffer(int count);
 
-    static void addLink(AtomItem* first, AtomItem* second);
+    VizLink* begin();
 
-    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
+    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
 
 private:
     static QVector<VizLink> buffer;
-    static int offset;
     std::pair<int, int> range;
+    int offset;
 };
 
 class ResidueItem : public TreeItem

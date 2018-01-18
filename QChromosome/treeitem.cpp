@@ -197,17 +197,10 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material*>& used) const
+void TreeItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material*>& used) const
 {
     for (const auto c : m_childItems)
-    {
-        auto tags = c->m_itemData[5].toList();
-
-        if (!tags.empty())
-            material = tags.last().value<Material*>();
-
-        c->writePOVFrame(stream, frame, material, used);
-    }
+        c->writePOVFrame(stream, frame, used);
 }
 
 void TreeItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
@@ -387,6 +380,7 @@ void AtomItem::setMaterial(const Material *material)
         i->color = code1;
         i->specularColor = code2;
         i->specularExponent = exponent;
+        i->material = material;
     }
 }
 
@@ -456,30 +450,34 @@ constexpr QVector3D vec3(const Atom& a)
     return {a.x, a.y, a.z};
 }
 
-void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const
+void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
-    if (!used.contains(material))
+    auto& atom = buffer[id];
+
+    if (!used.contains(atom.material))
     {
-        stream << *material;
-        used.insert(material);
+        stream << *atom.material;
+        used.insert(atom.material);
     }
 
-    MovieMaker::addSphere(stream, vec3(frame->atoms[id - 1]), buffer[id].size, material);
+    MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
 
-    TreeItem::writePOVFrame(stream, frame, material, used);
+    TreeItem::writePOVFrame(stream, frame, used);
 }
 
 QVector<VizLink> ChainItem::buffer;
-int ChainItem::offset = 0;
 
-ChainItem::ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem) :
+ChainItem::ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem) :
     TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    range(ran)
+    range(r),
+    offset(buffer.size() - r.first)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
+
+    buffer.resize(offset + r.second - 1);
 }
 
 ChainItem::~ChainItem()
@@ -492,30 +490,19 @@ const QVector<VizLink>& ChainItem::getBuffer()
     return buffer;
 }
 
-void ChainItem::resizeBuffer(int count)
+VizLink* ChainItem::begin()
 {
-    int offset = buffer.size();
-
-    buffer.resize(offset + count);
+    return &buffer[offset + range.first];
 }
 
-void ChainItem::addLink(AtomItem *first, AtomItem *second)
+void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
-    first->addLink(&buffer[offset].first);
-    second->addLink(&buffer[offset].second);
-    offset++;
-}
-
-void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material *material, QSet<const Material *> &used) const
-{
-    TreeItem::writePOVFrame(stream, frame, material, used);
+    TreeItem::writePOVFrame(stream, frame, used);
 
     auto buffer = AtomItem::getBuffer();
 
-    stream<<*Material::getDefault();
-
     for (int i = range.first; i < range.second; i++)
-        MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), buffer[i].size / 2, buffer[i + 1].size / 2, Material::getDefault(), Material::getDefault());
+        MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), buffer[i].size / 2, buffer[i + 1].size / 2, buffer[i].material, buffer[i + 1].material);
 }
 
 ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :
