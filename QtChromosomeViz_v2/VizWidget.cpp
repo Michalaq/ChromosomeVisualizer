@@ -420,7 +420,7 @@ void VizWidget::setFirstFrame()
     cylinderPositions_.release();
 
     VizLink dummy2;
-    linksState_.fill(dummy2, connectionCount_);
+    //ChainItem::buffer.fill(dummy2, connectionCount_);
 
     setFrame(0);
 
@@ -436,29 +436,7 @@ void VizWidget::setFrame(frameNumber_t frame)
     frameNumber_ = frame;
     auto diff = simulation_->getFrame(frameNumber_);
 
-    int linkNumber = 0;
-    for (const auto & conn : diff->connectedRanges)
-    {
-        for (int id = conn.first; id < conn.second; id++)
-        {
-            // linkState_ has atom IDs, which are numbered from 1, not 0
-            const int i = id - 1;
-            auto & link = linksState_[linkNumber++];
 
-            /*if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
-                (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
-            {
-                link.size[0] = 0.f;
-                link.size[1] = 0.f;
-                continue;
-            }*/
-
-            auto a = AtomItem::getBuffer()[i];
-            auto b = AtomItem::getBuffer()[i + 1];
-
-            link = {a,b};
-        }
-    }
 
     needVBOUpdate_ = true;
     update();
@@ -614,7 +592,7 @@ void VizWidget::updateWholeFrameData()
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.write(0, linksState_.constData(), linksState_.size() * sizeof(VizLink));
+    cylinderPositions_.write(0, ChainItem::getBuffer().constData(), ChainItem::getBuffer().size() * sizeof(VizLink));
     cylinderPositions_.release();
 }
 

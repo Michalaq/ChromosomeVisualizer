@@ -17,8 +17,6 @@ struct VizVertex
     VizVertex rotated(const QQuaternion & q) const;
 };
 
-using VizLink = QPair<VizBallInstance, VizBallInstance>;
-
 using VizSegment = QPair<VizVertex, VizVertex>;
 
 #include "selection.h"
@@ -110,7 +108,6 @@ private:
 
     bool needVBOUpdate_;
     QVector<VizBallInstance> sortedState_;
-    QVector<VizLink> linksState_;
     void generateSortedState();
 
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;

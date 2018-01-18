@@ -161,8 +161,6 @@ public:
     explicit AtomItem(const Atom& atom, int id, TreeItem *parentItem = 0);
     ~AtomItem();
 
-    VizBallInstance& getInstance();
-
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
     static void setFrame(std::shared_ptr<Frame> frame);
@@ -177,6 +175,8 @@ public:
     void setVisibility(bool visible);
     void setSelected(bool selected);
 
+    void addLink(VizBallInstance* link);
+
     QVector3D getPosition() const;
 
     void read(const QJsonObject& json);
@@ -188,7 +188,10 @@ private:
     int id;
     static QVector<VizBallInstance> buffer;
     QString label;
+    QList<VizBallInstance*> links;
 };
+
+using VizLink = QPair<VizBallInstance, VizBallInstance>;
 
 class ChainItem : public TreeItem
 {
@@ -196,9 +199,16 @@ public:
     explicit ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem = 0);
     ~ChainItem();
 
+    static const QVector<VizLink> &getBuffer();
+    static void resizeBuffer(int count);
+
+    static void addLink(AtomItem* first, AtomItem* second);
+
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material* material, QSet<const Material *> &used) const;
 
 private:
+    static QVector<VizLink> buffer;
+    static int offset;
     std::pair<int, int> range;
 };
 

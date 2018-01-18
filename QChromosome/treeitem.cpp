@@ -299,7 +299,8 @@ QVector<VizBallInstance> AtomItem::buffer;
 
 AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(id)
+    id(id),
+    links({&buffer[id]})
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
@@ -312,11 +313,6 @@ AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
 AtomItem::~AtomItem()
 {
 
-}
-
-VizBallInstance& AtomItem::getInstance()
-{
-    return buffer[id];
 }
 
 const QVector<VizBallInstance>& AtomItem::getBuffer()
@@ -370,7 +366,8 @@ const QString& AtomItem::getLabel() const
 
 void AtomItem::setRadius(float r)
 {
-    buffer[id].size = r;
+    for (auto i : links)
+        i->size = r;
 }
 
 float AtomItem::getRadius() const
@@ -385,26 +382,38 @@ void AtomItem::setMaterial(const Material *material)
     unsigned int code2 = material->getSpecularColor().rgba();
     float exponent = material->getSpecularExponent();
 
-    auto& buff = buffer[id];
-    buff.color = code1;
-    buff.specularColor = code2;
-    buff.specularExponent = exponent;
+    for (auto i : links)
+    {
+        i->color = code1;
+        i->specularColor = code2;
+        i->specularExponent = exponent;
+    }
 }
 
 void AtomItem::setVisibility(bool visible)
 {
     if (visible)
-        buffer[id].flags |= VISIBLE_FLAG;
+        for (auto i : links)
+            i->flags |= VISIBLE_FLAG;
     else
-        buffer[id].flags &= ~VISIBLE_FLAG;
+        for (auto i : links)
+            i->flags &= ~VISIBLE_FLAG;
 }
 
 void AtomItem::setSelected(bool selected)
 {
     if (selected)
-        buffer[id].flags |= SELECTED_FLAG;
+        for (auto i : links)
+            i->flags |= SELECTED_FLAG;
     else
-        buffer[id].flags &= ~SELECTED_FLAG;
+        for (auto i : links)
+            i->flags &= ~SELECTED_FLAG;
+}
+
+void AtomItem::addLink(VizBallInstance *link)
+{
+    links.append(link);
+    *link = buffer[id];
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -414,7 +423,7 @@ void AtomItem::read(const QJsonObject &json)
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) buffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) for (auto i : links) i->size = (*rad).toDouble();
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
@@ -460,6 +469,9 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
     TreeItem::writePOVFrame(stream, frame, material, used);
 }
 
+QVector<VizLink> ChainItem::buffer;
+int ChainItem::offset = 0;
+
 ChainItem::ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *parentItem) :
     TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     range(ran)
@@ -473,6 +485,25 @@ ChainItem::ChainItem(const QString& name, std::pair<int, int> ran, TreeItem *par
 ChainItem::~ChainItem()
 {
 
+}
+
+const QVector<VizLink>& ChainItem::getBuffer()
+{
+    return buffer;
+}
+
+void ChainItem::resizeBuffer(int count)
+{
+    int offset = buffer.size();
+
+    buffer.resize(offset + count);
+}
+
+void ChainItem::addLink(AtomItem *first, AtomItem *second)
+{
+    first->addLink(&buffer[offset].first);
+    second->addLink(&buffer[offset].second);
+    offset++;
 }
 
 void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, const Material *material, QSet<const Material *> &used) const

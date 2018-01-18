@@ -163,9 +163,13 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
-    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), range, parent);
+    ChainItem::resizeBuffer(range.second - range.first - 1);
+
+    TreeItem* root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, parent);
 
     QMap<int, TreeItem*> types;
+
+    AtomItem* first = nullptr;
 
     for (auto atom = atoms.begin() + range.first; atom != atoms.begin() + range.second; atom++)
     {
@@ -179,7 +183,12 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
                 types[t]->setData(5, Defaults::typename2color(t));
         }
 
-        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, types[t]));
+        auto second = new AtomItem(*atom, atom->id - 1 + offset, types[t]);
+
+        types[t]->appendChild(second);
+
+        if (first) ChainItem::addLink(first, second);
+        first = second;
     }
 
     for (auto t : types)
