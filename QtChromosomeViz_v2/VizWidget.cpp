@@ -23,7 +23,6 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
-    , needVBOUpdate_(true)
     , pickingFramebuffer_(nullptr)
     , ballQualityParameters_(0, 0)
     , selectionModel_(nullptr)
@@ -224,9 +223,6 @@ void VizWidget::initializeGL()
     cylinderPositions_.release();
     vaoCylinders_.release();
 
-    // TODO: Getting the first frame should be somewhere else
-    setFirstFrame();
-
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
@@ -251,12 +247,6 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    if (needVBOUpdate_)
-    {
-        setFrame(frameNumber_);
-        needVBOUpdate_ = false;
-    }
-
     generateSortedState();
     updateWholeFrameData();
 
@@ -280,7 +270,7 @@ void VizWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (sphereCount_ > 0)
+    if (!AtomItem::getBuffer().empty())
     {
         float fogDensity_ = viewport_->getFogDensity();
         float fogContribution_ = viewport_->getFogContribution();
@@ -301,7 +291,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, connectionCount_);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, ChainItem::getBuffer().count());
 
         cylinderProgram_.release();
         vaoCylinders_.release();
@@ -322,7 +312,7 @@ void VizWidget::paintGL()
                                        backgroundColor_.greenF(),
                                        backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, AtomItem::getBuffer().count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
@@ -367,7 +357,6 @@ void VizWidget::setModelView(QMatrix4x4 mat)
     modelViewNormal_ = mat.normalMatrix();
     modelViewProjection_ = projection_ * modelView_;
 
-    needVBOUpdate_ = true;
     update();
 }
 
@@ -376,7 +365,6 @@ void VizWidget::setProjection(QMatrix4x4 mat)
     projection_ = mat;
     modelViewProjection_ = projection_ * modelView_;
 
-    needVBOUpdate_ = true;
     update();
 }
 
@@ -402,43 +390,14 @@ void VizWidget::setSelectionModel(QItemSelectionModel *selectionModel)
 
 void VizWidget::setFirstFrame()
 {
-    auto frame = simulation_->getFrame(0);
-
-    sphereCount_ = frame->atoms.size();
-
-    // Calculate connection count
-    connectionCount_ = 0;
-    for (const auto & conn : frame->connectedRanges)
-        connectionCount_ += conn.second - conn.first;
-
     atomPositions_.bind();
     atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
+    cylinderPositions_.allocate(ChainItem::getBuffer().count() * sizeof(VizLink));
     cylinderPositions_.release();
 
-    VizLink dummy2;
-    //ChainItem::buffer.fill(dummy2, connectionCount_);
-
-    setFrame(0);
-
-    needVBOUpdate_ = true;
-    update();
-
-    // Run this again to update link colours
-    setFrame(0);
-}
-
-void VizWidget::setFrame(frameNumber_t frame)
-{
-    frameNumber_ = frame;
-    auto diff = simulation_->getFrame(frameNumber_);
-
-
-
-    needVBOUpdate_ = true;
     update();
 }
 
@@ -653,7 +612,7 @@ void VizWidget::pickSpheres()
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
 
-    if (sphereCount_ > 0)
+    if (!AtomItem::getBuffer().empty())
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
@@ -661,7 +620,7 @@ void VizWidget::pickSpheres()
         pickingProgram_.setUniformValue("mvp", modelViewProjection_);
         pickingProgram_.setUniformValue("mvNormal", modelViewNormal_);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, AtomItem::getBuffer().count());
 
         pickingProgram_.release();
         vaoSpheres_.release();

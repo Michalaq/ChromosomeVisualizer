@@ -506,7 +506,7 @@ void MainWindow::setFrame(int n)
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
-    ui->scene->setFrame(n);
+    ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
     AtomItem::setFrame(simulation->getFrame(n));

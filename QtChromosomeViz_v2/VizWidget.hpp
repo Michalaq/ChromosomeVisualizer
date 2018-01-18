@@ -45,8 +45,6 @@ public:
     void setSelectionModel(QItemSelectionModel *selectionModel);
 
 public slots:
-    void setFrame(frameNumber_t frame);
-
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);
 
@@ -100,13 +98,9 @@ private:
 
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
-    unsigned int sphereCount_;
-    unsigned int connectionCount_;
 
     std::shared_ptr<Simulation> simulation_;
-    frameNumber_t frameNumber_;
 
-    bool needVBOUpdate_;
     QVector<VizBallInstance> sortedState_;
     void generateSortedState();
 
