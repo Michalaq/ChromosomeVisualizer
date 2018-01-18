@@ -335,7 +335,6 @@ void MainWindow::newProject()
     softMinimum = 0;
     softMaximum = 0;
 
-    ui->scene->setSimulation(simulation);
     ui->plot->setSimulation(simulation);
 
     ui->treeView->setModel(simulation->getModel());
@@ -357,7 +356,7 @@ void MainWindow::newProject()
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
 
-    ui->scene->setSelectionModel(ui->treeView->selectionModel());
+    ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 }
 
 #include <QStandardPaths>
@@ -392,7 +391,7 @@ void MainWindow::openProject()
         read(objects);
         simulation->getModel()->read(objects);
 
-        ui->scene->setSimulation(simulation);
+        ui->scene->reloadModel();
         ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
@@ -416,7 +415,7 @@ void MainWindow::addLayer()
 
             simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
-            ui->scene->setSimulation(simulation);
+            ui->scene->reloadModel();
             ui->plot->updateSimulation();
         }
     } catch (std::exception& e) {

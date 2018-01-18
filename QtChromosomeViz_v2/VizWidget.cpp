@@ -247,8 +247,7 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    generateSortedState();
-    updateWholeFrameData();
+    writeData();
 
     // Enable alpha blending
     glEnable(GL_BLEND);
@@ -368,27 +367,24 @@ void VizWidget::setProjection(QMatrix4x4 mat)
     update();
 }
 
-void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
-{
-    simulation_ = std::move(dp);
-    setFirstFrame();
-}
-
 QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 {
     pickSpheres();
 
     auto color = image.pixel(pos);
 
-    return color != 0xFFFFFFFFU ? simulation_->getModel()->getIndices()[color] : QPersistentModelIndex();
+    return color != 0xFFFFFFFFU ? model_->getIndices()[color] : QPersistentModelIndex();
 }
 
-void VizWidget::setSelectionModel(QItemSelectionModel *selectionModel)
+void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
 {
+    model_ = model;
     selectionModel_ = selectionModel;
+
+    reloadModel();
 }
 
-void VizWidget::setFirstFrame()
+void VizWidget::reloadModel()
 {
     atomPositions_.bind();
     atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
@@ -544,8 +540,15 @@ QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
     return generateSolidOfRevolution(segs, axis, segments);
 }
 
-void VizWidget::updateWholeFrameData()
+void VizWidget::writeData()
 {
+    auto sorter = [=](const VizBallInstance & a, const VizBallInstance & b) -> bool {
+        return QVector4D::dotProduct(modelViewProjection_.row(2), QVector4D(a.position - b.position)) > 0;
+    };
+
+    auto sortedState_ = AtomItem::getBuffer();
+    qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
+
     atomPositions_.bind();
     atomPositions_.write(0, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
     atomPositions_.release();
@@ -558,20 +561,6 @@ void VizWidget::updateWholeFrameData()
 void VizWidget::setViewport(Viewport* vp)
 {
     viewport_ = vp;
-}
-
-void VizWidget::generateSortedState()
-{
-    auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
-        float z1 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(a.position, 1.f));
-        float z2 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(b.position, 1.f));
-        return z1 > z2;
-    };
-
-    sortedState_ = AtomItem::getBuffer();
-    qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
 }
 
 void VizWidget::pickSpheres()
@@ -653,17 +642,16 @@ void VizWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    auto model = simulation_->getModel();
-    auto indices = model->getIndices();
+    auto indices = model_->getIndices();
 
     auto index = indices[image.pixel(event->pos())];
     auto material = qobject_cast<Material*>(event->source());
 
     if (selectionModel_ && selectionModel_->isSelected(index))
         for (auto i : selectionModel_->selectedRows())
-            model->setMaterial(i, material);
+            model_->setMaterial(i, material);
     else
-        model->setMaterial(index, material);
+        model_->setMaterial(index, material);
 }
 
 void VizWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -693,7 +681,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
         }
     }
 
-    auto& buffer = simulation_->getModel()->getIndices();
+    auto& buffer = model_->getIndices();
 
     QItemSelection selected;
 

@@ -42,7 +42,8 @@ public:
 
     QPersistentModelIndex pick(const QPoint& pos);
 
-    void setSelectionModel(QItemSelectionModel *selectionModel);
+    void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
+    void reloadModel();
 
 public slots:
     void setModelView(QMatrix4x4 mat);
@@ -69,9 +70,6 @@ protected:
     static QVector<VizVertex> generateIcoSphere(unsigned int subdivisions);
     static QVector<VizVertex> generateCylinder(unsigned int segments);
 
-    void setFirstFrame();
-    void updateWholeFrameData();
-
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
@@ -79,6 +77,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
+    void writeData();
+
     QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
@@ -99,11 +99,6 @@ private:
     unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
 
-    std::shared_ptr<Simulation> simulation_;
-
-    QVector<VizBallInstance> sortedState_;
-    void generateSortedState();
-
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
 
     QImage image;
@@ -113,6 +108,7 @@ private:
 
     Viewport* viewport_;
 
+    TreeModel *model_;
     QItemSelectionModel *selectionModel_;
 };
 
