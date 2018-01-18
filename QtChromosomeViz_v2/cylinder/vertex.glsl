@@ -3,17 +3,11 @@
 layout(location = 0) in vec3 vVertexPosition;
 layout(location = 1) in vec3 vVertexNormal;
 layout(location = 2) in vec3 vInstancePosition1;
-layout(location = 3) in uint iInstanceFlags1;
-layout(location = 4) in uint cInstanceColor1;
-layout(location = 5) in uint cInstanceSpecularColor1;
-layout(location = 6) in float fInstanceSpecularExponent1;
-layout(location = 7) in float fInstanceSize1;
-layout(location = 8) in vec3 vInstancePosition2;
-layout(location = 9) in uint iInstanceFlags2;
-layout(location = 10) in uint cInstanceColor2;
-layout(location = 11) in uint cInstanceSpecularColor2;
-layout(location = 12) in float fInstanceSpecularExponent2;
-layout(location = 13) in float fInstanceSize2;
+layout(location = 3) in uvec4 iInstaceAttr1; // (iInstanceFlags,iAtomID,cInstanceColor,cInstanceSpecularColor)
+layout(location = 4) in vec2 fInstanceAttr1; // (fInstanceSpecularExponent,fInstanceSize)
+layout(location = 5) in vec3 vInstancePosition2;
+layout(location = 6) in uvec4 iInstaceAttr2; // (iInstanceFlags,iAtomID,cInstanceColor,cInstanceSpecularColor)
+layout(location = 7) in vec2 fInstanceAttr2; // (fInstanceSpecularExponent,fInstanceSize)
 
 uniform mat4 mvp;
 uniform mat4 mv;
@@ -53,7 +47,7 @@ void main() {
     float fInstanceSize = length(vInstancePosition1 - vInstancePosition2) / 2;
     
     float blendFactor = 0.5 + 0.5 * vVertexPosition.z;
-    float size = mix(fInstanceSize1, fInstanceSize2, blendFactor) * 0.5;
+    float size = mix(fInstanceAttr1.y, fInstanceAttr2.y, blendFactor) * 0.5;
     vec3 pos3 = vVertexPosition * -vec3(size, size, fInstanceSize);
     pos3 = rotatedVector(vInstanceRotation, pos3);
     vec4 objectSpacePos = vec4(pos3 + vInstancePosition.xyz, 1);
@@ -64,14 +58,14 @@ void main() {
     gvNormal = normalize(mvNormal * -rotatedVector(vInstanceRotation, vVertexNormal));
     giInstanceID = 0u;
     giFlags = 0u;
-    gcColor = mix(colorFromARGB8(cInstanceColor1),
-                  colorFromARGB8(cInstanceColor2),
+    gcColor = mix(colorFromARGB8(iInstaceAttr1.z),
+                  colorFromARGB8(iInstaceAttr2.z),
                   blendFactor);
-    gcSpecularColor = mix(colorFromARGB8(cInstanceSpecularColor1).rgb,
-                          colorFromARGB8(cInstanceSpecularColor2).rgb,
+    gcSpecularColor = mix(colorFromARGB8(iInstaceAttr1.w).rgb,
+                          colorFromARGB8(iInstaceAttr2.w).rgb,
                           blendFactor);
-    gfSpecularExponent = mix(fInstanceSpecularExponent1,
-                             fInstanceSpecularExponent2,
+    gfSpecularExponent = mix(fInstanceAttr1.x,
+                             fInstanceAttr2.x,
                              blendFactor);
-    giVisible = iInstanceFlags1 & iInstanceFlags2;
+    giVisible = iInstaceAttr1.x & iInstaceAttr2.x;
 }

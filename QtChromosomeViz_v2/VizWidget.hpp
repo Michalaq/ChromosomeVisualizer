@@ -17,11 +17,7 @@ struct VizVertex
     VizVertex rotated(const QQuaternion & q) const;
 };
 
-struct VizLink
-{
-    VizBallInstance b1;
-    VizBallInstance b2;
-};
+using VizLink = QPair<VizBallInstance, VizBallInstance>;
 
 using VizSegment = QPair<VizVertex, VizVertex>;
 
@@ -94,8 +90,6 @@ private:
     QOpenGLBuffer cylinderModel_;
     QOpenGLBuffer cylinderPositions_;
     QOpenGLVertexArrayObject vaoCylinders_;
-
-    QOpenGLVertexArrayObject planeVAO_;
 
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;

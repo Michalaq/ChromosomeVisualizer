@@ -92,66 +92,25 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(3);
     glVertexAttribIPointer(
         3,
-        1,
+        4,
         GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
 
     glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(
-        4,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, atomID)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribIPointer(
-        5,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, color)
-    );
-
-    glEnableVertexAttribArray(6);
-    glVertexAttribIPointer(
-        6,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularColor)
-    );
-
-    glEnableVertexAttribArray(7);
     glVertexAttribPointer(
-        7,
-        1,
+        4,
+        2,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularExponent)
     );
 
-    glEnableVertexAttribArray(8);
-    glVertexAttribPointer(
-        8,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, size)
-    );
-
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);
-    glVertexAttribDivisor(8, 1);
 
     atomPositions_.release();
     vaoSpheres_.release();
@@ -204,111 +163,55 @@ void VizWidget::initializeGL()
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.position)
+        (void*)offsetof(VizLink, first.position)
     );
 
     glEnableVertexAttribArray(3);
     glVertexAttribIPointer(
         3,
-        1,
+        4,
         GL_UNSIGNED_INT,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.flags)
+        (void*)offsetof(VizLink, first.flags)
     );
 
     glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(
-        4,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.color)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribIPointer(
-        5,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.specularColor)
-    );
-
-    glEnableVertexAttribArray(6);
     glVertexAttribPointer(
-        6,
-        1,
+        4,
+        2,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.specularExponent)
+        (void*)offsetof(VizLink, first.specularExponent)
+    );
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, second.position)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribIPointer(
+        6,
+        4,
+        GL_UNSIGNED_INT,
+        sizeof(VizLink),
+        (void*)offsetof(VizLink, second.flags)
     );
 
     glEnableVertexAttribArray(7);
     glVertexAttribPointer(
         7,
-        1,
+        2,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
-        (void*)offsetof(VizLink, b1.size)
-    );
-
-    glEnableVertexAttribArray(8);
-    glVertexAttribPointer(
-        8,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.position)
-    );
-
-    glEnableVertexAttribArray(9);
-    glVertexAttribIPointer(
-        9,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.flags)
-    );
-
-    glEnableVertexAttribArray(10);
-    glVertexAttribIPointer(
-        10,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.color)
-    );
-
-    glEnableVertexAttribArray(11);
-    glVertexAttribIPointer(
-        11,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.specularColor)
-    );
-
-    glEnableVertexAttribArray(12);
-    glVertexAttribPointer(
-        12,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.specularExponent)
-    );
-
-    glEnableVertexAttribArray(13);
-    glVertexAttribPointer(
-        13,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, b2.size)
+        (void*)offsetof(VizLink, second.specularExponent)
     );
 
     glVertexAttribDivisor(2, 1);
@@ -317,17 +220,9 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
     glVertexAttribDivisor(7, 1);
-    glVertexAttribDivisor(8, 1);
-    glVertexAttribDivisor(9, 1);
-    glVertexAttribDivisor(10, 1);
-    glVertexAttribDivisor(11, 1);
-    glVertexAttribDivisor(12, 1);
-    glVertexAttribDivisor(13, 1);
 
     cylinderPositions_.release();
     vaoCylinders_.release();
-
-    planeVAO_.create();
 
     // TODO: Getting the first frame should be somewhere else
     setFirstFrame();
@@ -362,14 +257,8 @@ void VizWidget::paintGL()
         needVBOUpdate_ = false;
     }
 
-    // QPainter painter;
-    // painter.begin(this);
-    // painter.setRenderHint(QPainter::Antialiasing);
-
     generateSortedState();
     updateWholeFrameData();
-
-    // painter.beginNativePainting();
 
     // Enable alpha blending
     glEnable(GL_BLEND);
@@ -567,8 +456,7 @@ void VizWidget::setFrame(frameNumber_t frame)
             auto a = AtomItem::getBuffer()[i];
             auto b = AtomItem::getBuffer()[i + 1];
 
-            link.b1=a;
-            link.b2=b;
+            link = {a,b};
         }
     }
 
