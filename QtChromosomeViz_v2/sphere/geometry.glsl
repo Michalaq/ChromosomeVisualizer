@@ -23,7 +23,7 @@ flat out float fSpecularExponent;
 flat out float fInstanceSize;
 
 void main() {
-    if ((giFlags[0] & 8u) == 8u)
+    if ((giFlags[0] & 2u) == 2u)
     {
         vInstancePosition = gvInstancePosition[0];
         iInstanceID = giInstanceID[0];

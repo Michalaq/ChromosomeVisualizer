@@ -325,7 +325,7 @@ void AtomItem::resizeBuffer(int count)
     buffer.resize(offset + count);
 
     VizBallInstance dummy;
-    dummy.flags = VISIBLE_FLAG;
+    dummy.flags = VIE_FLAG | VIR_FLAG;
     dummy.size = 1.f;
 
     std::fill(buffer.begin() + offset, buffer.end(), dummy);
@@ -384,24 +384,14 @@ void AtomItem::setMaterial(const Material *material)
     }
 }
 
-void AtomItem::setVisibility(bool visible)
+void AtomItem::setFlag(unsigned flag, bool on)
 {
-    if (visible)
+    if (on)
         for (auto i : links)
-            i->flags |= VISIBLE_FLAG;
+            i->flags |= flag;
     else
         for (auto i : links)
-            i->flags &= ~VISIBLE_FLAG;
-}
-
-void AtomItem::setSelected(bool selected)
-{
-    if (selected)
-        for (auto i : links)
-            i->flags |= SELECTED_FLAG;
-    else
-        for (auto i : links)
-            i->flags &= ~SELECTED_FLAG;
+            i->flags &= ~flag;
 }
 
 void AtomItem::addLink(VizBallInstance *link)
@@ -452,15 +442,18 @@ constexpr QVector3D vec3(const Atom& a)
 
 void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
-    auto& atom = buffer[id];
+    const auto& atom = buffer[id];
 
-    if (!used.contains(atom.material))
+    if (atom.flags & VIR_FLAG)
     {
-        stream << *atom.material;
-        used.insert(atom.material);
-    }
+        if (!used.contains(atom.material))
+        {
+            stream << *atom.material;
+            used.insert(atom.material);
+        }
 
-    MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+        MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+    }
 
     TreeItem::writePOVFrame(stream, frame, used);
 }
@@ -502,7 +495,13 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
     auto buffer = AtomItem::getBuffer();
 
     for (int i = range.first; i < range.second; i++)
-        MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), buffer[i].size / 2, buffer[i + 1].size / 2, buffer[i].material, buffer[i + 1].material);
+    {
+        const auto& first = buffer[i];
+        const auto& second = buffer[i + 1];
+
+        if (first.flags & second.flags & VIR_FLAG)
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+    }
 }
 
 ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :

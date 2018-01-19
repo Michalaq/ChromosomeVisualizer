@@ -113,7 +113,7 @@ private:
     void propagateMaterial(const QModelIndex &root, const Material* m);
     void updateMaterial(const QModelIndex &root, const Material* m);
 
-    void propagateVisibility(const QModelIndex &root, bool v);
+    void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
 
     void propagateSelected(const QModelIndex &root, bool s);
 

@@ -23,7 +23,7 @@ out vec3 cSpecularColor;
 out float fSpecularExponent;
 
 void main() {
-    if (giVisible[0] != 0u)
+    if ((giVisible[0] & 2u) == 2u)
     {
         iInstanceID = giInstanceID[0];
         iFlags = giFlags[0];

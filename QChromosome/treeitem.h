@@ -150,8 +150,9 @@ struct VizBallInstance
 
 enum VizBallFlags : unsigned int
 {
-    SELECTED_FLAG = 1 << 2,
-    VISIBLE_FLAG = 1 << 3,
+    SELECTED_FLAG   = 1u << 0,
+    VIE_FLAG        = 1u << 1,
+    VIR_FLAG        = 1u << 2,
 };
 
 #include "material.h"
@@ -173,8 +174,7 @@ public:
     float getRadius() const;
 
     void setMaterial(const Material* material);
-    void setVisibility(bool visible);
-    void setSelected(bool selected);
+    void setFlag(unsigned flag, bool on = true);
 
     void addLink(VizBallInstance* link);
 
