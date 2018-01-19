@@ -232,4 +232,6 @@ void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameN
     }
 
     delete[] data;
+
+    model->writePOVFrames(stream, fbeg, fend);
 }

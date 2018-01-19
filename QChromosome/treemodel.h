@@ -99,6 +99,7 @@ public:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame);
+    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend);
 
 public slots:
     void updateAttributes(const Material* m);

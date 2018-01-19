@@ -205,7 +205,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
         QByteArray buffer;
 
-        int rf = 0, tf = fend - fbeg + 1, last = -1;
+        int rf = 0, tf = (fend - fbeg) * renderSettings->framerate() + 1, last = -1;
 
         p.connect(&p, &QProcess::readyReadStandardError, [&] {
             buffer += p.readAllStandardError();

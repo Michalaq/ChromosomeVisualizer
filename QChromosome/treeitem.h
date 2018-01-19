@@ -76,7 +76,7 @@ public:
     virtual void write(QJsonObject& json) const;
 
     virtual void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    virtual void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    virtual void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     QList<TreeItem*> m_childItems;
@@ -184,6 +184,7 @@ public:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
+    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     int id;
@@ -205,6 +206,7 @@ public:
     VizLink* begin();
 
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
+    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     static QVector<VizLink> buffer;

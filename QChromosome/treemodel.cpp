@@ -511,6 +511,12 @@ void TreeModel::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
     header->writePOVFrame(stream, frame, used);
 }
 
+void TreeModel::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)
+{
+    QSet<const Material*> used;
+    header->writePOVFrames(stream, fbeg, fend, used);
+}
+
 void TreeModel::updateAttributes(const Material *m)
 {
     for (auto i : m->getAssigned())

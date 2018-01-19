@@ -203,9 +203,10 @@ void TreeItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
         c->writePOVFrame(stream, frame, used);
 }
 
-void TreeItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void TreeItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
-
+    for (const auto c : m_childItems)
+        c->writePOVFrames(stream, fbeg, fend, used);
 }
 
 LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
@@ -458,6 +459,24 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
     TreeItem::writePOVFrame(stream, frame, used);
 }
 
+void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+{
+    const auto& atom = buffer[id];
+
+    if (atom.flags & VIR_FLAG)
+    {
+        if (!used.contains(atom.material))
+        {
+            stream << *atom.material;
+            used.insert(atom.material);
+        }
+
+        MovieMaker::addSphere1(stream, atom.atomID, atom.size, atom.material);
+    }
+
+    TreeItem::writePOVFrames(stream, fbeg, fend, used);
+}
+
 QVector<VizLink> ChainItem::buffer;
 
 ChainItem::ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem) :
@@ -501,6 +520,22 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
 
         if (first.flags & second.flags & VIR_FLAG)
             MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+    }
+}
+
+void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+{
+    TreeItem::writePOVFrames(stream, fbeg, fend, used);
+
+    auto buffer = AtomItem::getBuffer();
+
+    for (int i = range.first; i < range.second; i++)
+    {
+        const auto& first = buffer[i];
+        const auto& second = buffer[i + 1];
+
+        if (first.flags & second.flags & VIR_FLAG)
+            MovieMaker::addCylinder1(stream, first.atomID, second.atomID, first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
