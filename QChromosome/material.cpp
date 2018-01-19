@@ -134,6 +134,8 @@ void Material::read(const QJsonObject& json)
     const QJsonObject specular = json["Specular"].toObject();
     specularExponent = specular["Shininess exponent"].toDouble();
     specularColor = specular["Specular color"].toString();
+
+    updateIcon();
 }
 
 void Material::write(QJsonObject& json) const

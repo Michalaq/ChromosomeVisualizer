@@ -431,7 +431,8 @@ void AtomItem::write(QJsonObject &json) const
     if (!label.isEmpty())
         object["Label"] = label;
 
-    json["Object"] = object;
+    if (object.size() > 1)
+        json["Object"] = object;
 }
 
 #include "moviemaker.h"
