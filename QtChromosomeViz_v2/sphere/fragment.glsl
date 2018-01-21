@@ -1,14 +1,14 @@
 #version 330 core
 
-uniform mat4 mvp;
-uniform mat3 mvNormal;
+uniform mat4 pro;
+uniform mat4 mv;
 uniform vec2 uvScreenSize;
 uniform float ufFogDensity;
 uniform float ufFogContribution;
 uniform vec3 ucFogColor;
 
 in vec4 vPosition;
-in vec4 vViewPosition;
+in vec3 vViewPosition;
 flat in vec3 vInstancePosition;
 flat in uint iFlags;
 flat in vec4 cColor;
@@ -23,31 +23,23 @@ void main() {
     vec4 baseColor = cColor;
     
     // Normal
-    mat4 mvp = transpose(mvp);
-    
-    vec4 a = vPosition.w * mvp[0] - vPosition.x * mvp[3];
-    vec4 b = vPosition.w * mvp[1] - vPosition.y * mvp[3];
-    
-    vec3 c = cross(a.xyz, b.xyz);
-    vec3 d = cross(a.xyw, b.xyw);
-    
-    d = vec3(d.xy, 0.) - c.z * vInstancePosition;
-    
-    float p = dot(c, c);
-    float q = dot(c, d);
-    float r = dot(d, d) - (c.z * fInstanceSize) * (c.z * fInstanceSize);
-    
-    float z = (sqrt(q * q - p * r) - q) / p;
-    
-    vec3 vNormal = normalize(c * z + d);
-    vec3 vFixedNormal = mvNormal * vNormal;
+    float p = dot(vViewPosition, vViewPosition);
+    float q = dot(vViewPosition, vInstancePosition);
+    float r = dot(vInstancePosition, vInstancePosition);
+
+    float d = q * q - p * (r - fInstanceSize * fInstanceSize);
+    float t = (q - sqrt(d)) / p;
+
+    vec3 vNormal = (t * vViewPosition - vInstancePosition) / fInstanceSize;
+    vec4 e = pro * vec4(t * vViewPosition, 1);
+    gl_FragDepth = 0.5 * e.z / e.w + 0.5;
 
     // Diffuse
-    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
+    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);
     vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);
 
     // Specular
-    vec3 reflected = reflect(-cvLightDirection, vFixedNormal);
+    vec3 reflected = reflect(-cvLightDirection, vNormal);
     float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
     vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
 
@@ -65,8 +57,4 @@ void main() {
     float isSelected = ((iFlags & 1u) == 1u) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
-    
-    vec4 tmp = vec4(fInstanceSize*vNormal + vInstancePosition, 1);
-    tmp = transpose(mvp)*tmp;
-    gl_FragDepth = tmp.z/tmp.w;
 }

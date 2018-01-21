@@ -298,9 +298,8 @@ void VizWidget::paintGL()
         vaoSpheres_.bind();
         sphereProgram_.bind();
 
-        sphereProgram_.setUniformValue("mvp", modelViewProjection_);
+        sphereProgram_.setUniformValue("pro", projection_);
         sphereProgram_.setUniformValue("mv", modelView_);
-        sphereProgram_.setUniformValue("mvNormal", modelViewNormal_);
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
@@ -606,8 +605,8 @@ void VizWidget::pickSpheres()
         vaoSpheres_.bind();
         pickingProgram_.bind();
 
-        pickingProgram_.setUniformValue("mvp", modelViewProjection_);
-        pickingProgram_.setUniformValue("mvNormal", modelViewNormal_);
+        sphereProgram_.setUniformValue("pro", projection_);
+        sphereProgram_.setUniformValue("mv", modelView_);
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, AtomItem::getBuffer().count());
 

@@ -3,7 +3,7 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices=3) out;
 
-in vec4 gvViewPosition[3];
+in vec3 gvViewPosition[3];
 flat in vec3 gvInstancePosition[3];
 flat in uint giInstanceID[3];
 flat in uint giFlags[3];
@@ -13,7 +13,7 @@ flat in float gfSpecularExponent[3];
 flat in float gfInstanceSize[3];
 
 out vec4 vPosition;
-out vec4 vViewPosition;
+out vec3 vViewPosition;
 flat out vec3 vInstancePosition;
 flat out uint iInstanceID;
 flat out uint iFlags;

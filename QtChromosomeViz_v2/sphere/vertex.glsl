@@ -6,9 +6,9 @@ layout(location = 2) in vec3 vInstancePosition;
 layout(location = 3) in uvec4 iInstaceAttr; // (iInstanceFlags,iAtomID,cInstanceColor,cInstanceSpecularColor)
 layout(location = 4) in vec2 fInstanceAttr; // (fInstanceSpecularExponent,fInstanceSize)
 
-uniform mat4 mvp;
+uniform mat4 pro;
 uniform mat4 mv;
-out vec4 gvViewPosition;
+out vec3 gvViewPosition;
 flat out vec3 gvInstancePosition;
 flat out uint giInstanceID;
 flat out uint giFlags;
@@ -27,10 +27,11 @@ vec4 colorFromARGB8(uint color) {
 }
 
 void main() {
-    vec4 objectSpacePos = vec4(vVertexPosition * fInstanceAttr.y + vInstancePosition.xyz, 1);
-    gl_Position = mvp * objectSpacePos;
-    gvViewPosition = mv * objectSpacePos;
-    gvInstancePosition = vInstancePosition;
+    vec4 objectSpacePos = mv * vec4(vVertexPosition * fInstanceAttr.y + vInstancePosition.xyz, 1);
+    gvViewPosition = objectSpacePos.xyz / objectSpacePos.w;
+    gl_Position = pro * objectSpacePos;
+    vec4 objectSpaceInstancePos = mv * vec4(vInstancePosition, 1);
+    gvInstancePosition = objectSpaceInstancePos.xyz / objectSpaceInstancePos.w;
     giInstanceID = iInstaceAttr.y;
     giFlags = iInstaceAttr.x;
     gcColor = colorFromARGB8(iInstaceAttr.z);

@@ -43,6 +43,4 @@ void main() {
     float isSelected = ((iFlags & 1u) == 1u) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
-    
-    gl_FragDepth = vPosition.z/vPosition.w;
 }
