@@ -22,6 +22,29 @@ void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;
     
+    vec2 vScreenPos = (0.5f * vPosition.xy / vPosition.w + 0.5f) * uvScreenSize;
+    ivec2 iScreenPos = ivec2(vScreenPos) & 1;
+    
+    if (baseColor.a <= 0.51)
+    {
+        if (iScreenPos.x == 0 && iScreenPos.y == 1)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.33)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 0)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.20)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 1)
+            discard;
+    }
+    
+    baseColor.a = 1.0;
+    
     // Normal
     float p = dot(vViewPosition, vViewPosition);
     float q = dot(vViewPosition, vInstancePosition);
@@ -50,7 +73,6 @@ void main() {
                           ufFogContribution);
 
     // Calculate stripes for selected molecules
-    vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 

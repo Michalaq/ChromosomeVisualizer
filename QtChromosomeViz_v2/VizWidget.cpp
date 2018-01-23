@@ -541,15 +541,8 @@ QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
 
 void VizWidget::writeData()
 {
-    auto sorter = [=](const VizBallInstance & a, const VizBallInstance & b) -> bool {
-        return QVector4D::dotProduct(modelViewProjection_.row(2), QVector4D(a.position - b.position)) > 0;
-    };
-
-    auto sortedState_ = AtomItem::getBuffer();
-    qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
-
     atomPositions_.bind();
-    atomPositions_.write(0, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
+    atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
     atomPositions_.release();
 
     cylinderPositions_.bind();
