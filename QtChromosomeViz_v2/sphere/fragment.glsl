@@ -51,11 +51,16 @@ void main() {
     float r = dot(vInstancePosition, vInstancePosition);
 
     float d = q * q - p * (r - fInstanceSize * fInstanceSize);
+    
+    if (d < 0.0)
+        discard;
+    
     float t = (q - sqrt(d)) / p;
 
     vec3 vNormal = (t * vViewPosition - vInstancePosition) / fInstanceSize;
-    vec4 e = pro * vec4(t * vViewPosition, 1);
-    gl_FragDepth = 0.5 * e.z / e.w + 0.5;
+    vec4 vFragCoord = pro * vec4(t * vViewPosition, 1.0);
+    
+    gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
 
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);

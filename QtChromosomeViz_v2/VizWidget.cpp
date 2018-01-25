@@ -39,21 +39,13 @@ void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glEnable(GL_DEPTH_TEST);
-
-    assert(sphereModel_.create());
-    sphereModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    assert(vaoSpheres_.create());
 
     assert(atomPositions_.create());
     atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    assert(vaoSpheres_.create());
-
-    // Create sphere model
-    setBallQuality(1.f);
     vaoSpheres_.bind();
-
-    sphereModel_.bind();
+    atomPositions_.bind();
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -61,45 +53,22 @@ void VizWidget::initializeGL()
         3,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
-    );
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
-    );
-
-    sphereModel_.release();
-    atomPositions_.bind();
-
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, position)
     );
 
-    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(1);
     glVertexAttribIPointer(
-        3,
+        1,
         2,
         GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
 
-    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(2);
     glVertexAttribPointer(
-        4,
+        2,
         4,
         GL_UNSIGNED_BYTE,
         GL_TRUE,
@@ -107,9 +76,9 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, color)
     );
 
-    glEnableVertexAttribArray(5);
+    glEnableVertexAttribArray(3);
     glVertexAttribPointer(
-        5,
+        3,
         4,
         GL_UNSIGNED_BYTE,
         GL_TRUE,
@@ -117,21 +86,15 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, specularColor)
     );
 
-    glEnableVertexAttribArray(6);
+    glEnableVertexAttribArray(4);
     glVertexAttribPointer(
-        6,
+        4,
         2,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularExponent)
     );
-
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
 
     atomPositions_.release();
     vaoSpheres_.release();
@@ -332,7 +295,7 @@ void VizWidget::paintGL()
                                        backgroundColor_.greenF(),
                                        backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, AtomItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
@@ -614,6 +577,7 @@ void VizWidget::pickSpheres()
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
 
     if (!AtomItem::getBuffer().empty())
     {
@@ -623,7 +587,7 @@ void VizWidget::pickSpheres()
         sphereProgram_.setUniformValue("pro", projection_);
         sphereProgram_.setUniformValue("mv", modelView_);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, AtomItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         pickingProgram_.release();
         vaoSpheres_.release();
