@@ -24,7 +24,6 @@ VizVertex VizVertex::rotated(const QQuaternion & q) const
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , pickingFramebuffer_(nullptr)
-    , ballQualityParameters_(0, 0)
     , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
@@ -100,10 +99,10 @@ void VizWidget::initializeGL()
     vaoSpheres_.release();
 
     assert(cylinderModel_.create());
-    sphereModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    cylinderModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
     assert(cylinderPositions_.create());
-    atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    cylinderPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     assert(vaoCylinders_.create());
 
@@ -381,30 +380,6 @@ void VizWidget::reloadModel()
     update();
 }
 
-void VizWidget::setBallQuality(float quality)
-{
-    static const QVector<QPair<unsigned int, unsigned int>> parameters {
-        qMakePair(2u, 4u),
-        qMakePair(6u, 8u),
-        qMakePair(10u, 10u),
-    };
-
-    quality = std::max(0.f, std::min(.999f, quality));
-    unsigned int index = int(floor(quality * parameters.size()));
-
-    if (ballQualityParameters_ != parameters[index])
-    {
-        ballQualityParameters_ = parameters[index];
-
-        QVector<VizVertex> sphereVerts = generateSphere(
-                    parameters[index].first, parameters[index].second);
-        sphereVertCount_ = sphereVerts.size();
-        sphereModel_.bind();
-        sphereModel_.allocate(sphereVerts.data(), sphereVerts.size() * sizeof(VizVertex));
-        sphereModel_.release();
-    }
-}
-
 QVector<VizVertex> VizWidget::generateSolidOfRevolution(
     const QVector<VizSegment> & quads,
     QVector3D axis,
@@ -456,42 +431,6 @@ QVector<VizVertex> VizWidget::generateSolidOfRevolution(
     }
 
     return ret;
-}
-
-QVector<VizVertex> VizWidget::generateSphere(unsigned int rings, unsigned int segments)
-{
-    assert(rings > 1);
-
-    const QVector3D auxAxis { 1.0, 0.0, 0.0 };
-    const QVector3D mainAxis { 0.0, 0.0, 1.0 };
-    const VizVertex auxVertex {
-        { 0.0, 0.0, 1.0 },
-        { 0.0, 0.0, 1.0 }
-    };
-
-    // Generate quads outline
-    QVector<VizSegment> outline;
-    for (unsigned int i = 0; i < rings; i++)
-    {
-        const float angle0 = ((float)i / (float)rings) * 180.0;
-        const float angle1 = ((float)(i + 1) / (float)rings) * 180.0;
-        const auto q0 = QQuaternion::fromAxisAndAngle(auxAxis, angle0);
-        const auto q1 = QQuaternion::fromAxisAndAngle(auxAxis, angle1);
-
-        outline.push_back({
-            auxVertex.rotated(q0),
-            auxVertex.rotated(q1)
-        });
-    }
-
-    return generateSolidOfRevolution(outline, mainAxis, segments);
-}
-
-QVector<VizVertex> VizWidget::generateIcoSphere(unsigned int subdivisions)
-{
-    static const float phi = 1.6180339887498948482045868343656f;
-
-    return {};
 }
 
 QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)

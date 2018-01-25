@@ -49,9 +49,6 @@ public slots:
     void setModelView(QMatrix4x4 mat);
     void setProjection(QMatrix4x4 mat);
 
-    // quality should be in range [0.f, 1.f]
-    void setBallQuality(float quality);
-
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
 
@@ -66,8 +63,6 @@ protected:
         unsigned int segments
     );
 
-    static QVector<VizVertex> generateSphere(unsigned int rings, unsigned int segments);
-    static QVector<VizVertex> generateIcoSphere(unsigned int subdivisions);
     static QVector<VizVertex> generateCylinder(unsigned int segments);
 
     void dragEnterEvent(QDragEnterEvent *event);
@@ -79,7 +74,6 @@ protected:
 private:
     void writeData();
 
-    QOpenGLBuffer sphereModel_;
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
 
@@ -96,15 +90,12 @@ private:
     QMatrix4x4 modelView_;
     QMatrix3x3 modelViewNormal_;
 
-    unsigned int sphereVertCount_;
     unsigned int cylinderVertCount_;
 
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
 
     QImage image;
     void pickSpheres();
-
-    QPair<unsigned int, unsigned int> ballQualityParameters_;
 
     Viewport* viewport_;
 
