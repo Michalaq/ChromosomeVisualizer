@@ -59,20 +59,19 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(1);
     glVertexAttribIPointer(
         1,
-        2,
+        1,
         GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         2,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
+        1,
+        GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, color)
+        (void*)offsetof(VizBallInstance, atomID)
     );
 
     glEnableVertexAttribArray(3);
@@ -82,17 +81,37 @@ void VizWidget::initializeGL()
         GL_UNSIGNED_BYTE,
         GL_TRUE,
         sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularColor)
+        (void*)offsetof(VizBallInstance, color)
     );
 
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(
         4,
-        2,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularColor)
+    );
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5,
+        1,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularExponent)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, size)
     );
 
     atomPositions_.release();

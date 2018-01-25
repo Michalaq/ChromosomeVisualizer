@@ -9,6 +9,7 @@ uniform vec3 ucFogColor;
 
 in vec4 vPosition;
 in vec3 vViewPosition;
+
 flat in vec3 vInstancePosition;
 flat in uint iFlags;
 flat in vec4 cColor;
