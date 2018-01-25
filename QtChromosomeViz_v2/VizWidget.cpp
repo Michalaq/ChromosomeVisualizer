@@ -91,7 +91,7 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(3);
     glVertexAttribIPointer(
         3,
-        4,
+        2,
         GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
@@ -100,6 +100,26 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(
         4,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, color)
+    );
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularColor)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
         2,
         GL_FLOAT,
         GL_FALSE,
@@ -110,6 +130,8 @@ void VizWidget::initializeGL()
     glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
 
     atomPositions_.release();
     vaoSpheres_.release();

@@ -371,8 +371,9 @@ float AtomItem::getRadius() const
 
 void AtomItem::setMaterial(const Material *material)
 {
-    unsigned int alpha = 255 * (1. - material->getTransparency());
-    unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);
+    auto color = material->getColor();
+    color.setAlphaF(1. - material->getTransparency());
+    unsigned int code1 = color.rgba();
     unsigned int code2 = material->getSpecularColor().rgba();
     float exponent = material->getSpecularExponent();
 
