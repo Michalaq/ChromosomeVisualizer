@@ -56,9 +56,12 @@ void main() {
     if (d < 0.0)
         discard;
     
-    float t = (q - sqrt(d)) / p;
-
-    vec3 vNormal = (t * vViewPosition - vInstancePosition) / fInstanceSize;
+    d = sqrt(d);
+    
+    float s = sign(q - d);
+    float t = (q - s * d) / p;
+    
+    vec3 vNormal = s * (t * vViewPosition - vInstancePosition) / fInstanceSize;
     vec4 vFragCoord = pro * vec4(t * vViewPosition, 1.0);
     
     gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
