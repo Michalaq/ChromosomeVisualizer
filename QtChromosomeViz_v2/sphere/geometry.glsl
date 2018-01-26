@@ -26,6 +26,7 @@ flat out vec3 cSpecularColor;
 flat out float fSpecularExponent;
 flat out float fInstanceSize;
 
+// this can be passed from CPU (as uniform?) 
 vec3 tetrahedron[4] = vec3[](
     vec3(+1, +1, +1),
     vec3(-1, -1, +1),

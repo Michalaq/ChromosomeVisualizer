@@ -133,7 +133,7 @@ void VizWidget::initializeGL()
     cylinderModel_.release();
 
     vaoCylinders_.bind();
-    cylinderModel_.bind();
+    /*cylinderModel_.bind();
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -155,41 +155,41 @@ void VizWidget::initializeGL()
         nullptr
     );
 
-    cylinderModel_.release();
+    cylinderModel_.release();*/
     cylinderPositions_.bind();
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, position)
+    );
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribIPointer(
+        1,
+        4,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, flags)
+    );
 
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(
         2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, first.position)
-    );
-
-    glEnableVertexAttribArray(3);
-    glVertexAttribIPointer(
-        3,
-        4,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, first.flags)
-    );
-
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(
-        4,
         2,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, first.specularExponent)
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularExponent)
     );
 
-    glEnableVertexAttribArray(5);
+    /*glEnableVertexAttribArray(3);
     glVertexAttribPointer(
-        5,
+        3,
         3,
         GL_FLOAT,
         GL_FALSE,
@@ -197,31 +197,31 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizLink, second.position)
     );
 
-    glEnableVertexAttribArray(6);
+    glEnableVertexAttribArray(4);
     glVertexAttribIPointer(
-        6,
+        4,
         4,
         GL_UNSIGNED_INT,
         sizeof(VizLink),
         (void*)offsetof(VizLink, second.flags)
     );
 
-    glEnableVertexAttribArray(7);
+    glEnableVertexAttribArray(5);
     glVertexAttribPointer(
-        7,
+        5,
         2,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizLink),
         (void*)offsetof(VizLink, second.specularExponent)
-    );
+    );*/
 
-    glVertexAttribDivisor(2, 1);
+    /*glVertexAttribDivisor(2, 1);
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(7, 1);*/
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -280,6 +280,7 @@ void VizWidget::paintGL()
         vaoCylinders_.bind();
         cylinderProgram_.bind();
 
+        cylinderProgram_.setUniformValue("pro", projection_);
         cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
         cylinderProgram_.setUniformValue("mv", modelView_);
         cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
@@ -293,7 +294,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, ChainItem::getBuffer().count());
+        glDrawArrays(GL_LINE_STRIP, 0, 2 * ChainItem::getBuffer().count());
 
         cylinderProgram_.release();
         vaoCylinders_.release();
