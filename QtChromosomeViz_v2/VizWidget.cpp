@@ -118,20 +118,59 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(1);
     glVertexAttribIPointer(
         1,
-        4,
+        1,
         GL_UNSIGNED_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
 
     glEnableVertexAttribArray(2);
+    glVertexAttribIPointer(
+        2,
+        1,
+        GL_UNSIGNED_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, atomID)
+    );
+
+    glEnableVertexAttribArray(3);
     glVertexAttribPointer(
-        2,
-        2,
+        3,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, color)
+    );
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(
+        4,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, specularColor)
+    );
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5,
+        1,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularExponent)
+    );
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, size)
     );
 
     cylinderPositions_.release();
