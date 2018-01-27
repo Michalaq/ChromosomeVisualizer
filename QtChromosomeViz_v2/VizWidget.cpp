@@ -227,7 +227,7 @@ void VizWidget::paintGL()
         float fogDensity_ = viewport_->getFogDensity();
         float fogContribution_ = viewport_->getFogContribution();
 
-        vaoCylinders_.bind();
+        vaoSpheres_.bind();
         cylinderProgram_.bind();
 
         cylinderProgram_.setUniformValue("pro", projection_);
@@ -243,10 +243,10 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArrays(GL_LINE_STRIP, 0, 2 * ChainItem::getBuffer().count());
+        glDrawElements(GL_LINE_STRIP, ChainItem::getBuffer().count(), GL_UNSIGNED_INT, ChainItem::getBuffer().data());
 
         cylinderProgram_.release();
-        vaoCylinders_.release();
+        vaoSpheres_.release();
 
         vaoSpheres_.bind();
         sphereProgram_.bind();
@@ -341,7 +341,7 @@ void VizWidget::reloadModel()
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.allocate(ChainItem::getBuffer().count() * sizeof(VizLink));
+    //cylinderPositions_.allocate(ChainItem::getBuffer().count() * sizeof(VizBallInstance));
     cylinderPositions_.release();
 
     update();
@@ -354,7 +354,7 @@ void VizWidget::writeData()
     atomPositions_.release();
 
     cylinderPositions_.bind();
-    cylinderPositions_.write(0, ChainItem::getBuffer().constData(), ChainItem::getBuffer().size() * sizeof(VizLink));
+    //cylinderPositions_.write(0, ChainItem::getBuffer().constData(), ChainItem::getBuffer().size() * sizeof(VizBallInstance));
     cylinderPositions_.release();
 }
 

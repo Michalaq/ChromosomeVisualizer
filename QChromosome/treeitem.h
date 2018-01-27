@@ -193,25 +193,20 @@ private:
     QList<VizBallInstance*> links;
 };
 
-using VizLink = QPair<VizBallInstance, VizBallInstance>;
-
 class ChainItem : public TreeItem
 {
 public:
     explicit ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem = 0);
     ~ChainItem();
 
-    static const QVector<VizLink> &getBuffer();
-
-    VizLink* begin();
+    static const QVector<unsigned> &getBuffer();
 
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
     void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
-    static QVector<VizLink> buffer;
+    static QVector<unsigned> buffer;
     std::pair<int, int> range;
-    int offset;
 };
 
 class ResidueItem : public TreeItem
