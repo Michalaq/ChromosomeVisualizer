@@ -1,26 +1,6 @@
 #include "VizWidget.hpp"
 #include <cassert>
 
-static const float EPSILON = 1e-4;
-
-inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
-{
-    return 0.5f * QVector3D::crossProduct(b - a, c - a).length();
-}
-
-inline static bool isDegenerate(const QVector3D & a, const QVector3D & b, const QVector3D & c)
-{
-    return triangleField(a, b, c) < EPSILON;
-}
-
-VizVertex VizVertex::rotated(const QQuaternion & q) const
-{
-    return {
-        q.rotatedVector(position),
-        q.rotatedVector(normal)
-    };
-}
-
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , pickingFramebuffer_(nullptr)
@@ -117,45 +97,12 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoSpheres_.release();
 
-    assert(cylinderModel_.create());
-    cylinderModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    assert(vaoCylinders_.create());
 
     assert(cylinderPositions_.create());
     cylinderPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    assert(vaoCylinders_.create());
-
-    // Create cylinder model
-    QVector<VizVertex> cylinderVerts = generateCylinder(8);
-    cylinderVertCount_ = cylinderVerts.size();
-    cylinderModel_.bind();
-    cylinderModel_.allocate(cylinderVerts.data(), cylinderVerts.size() * sizeof(VizVertex));
-    cylinderModel_.release();
-
     vaoCylinders_.bind();
-    /*cylinderModel_.bind();
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
-    );
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
-    );
-
-    cylinderModel_.release();*/
     cylinderPositions_.bind();
 
     glEnableVertexAttribArray(0);
@@ -186,42 +133,6 @@ void VizWidget::initializeGL()
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularExponent)
     );
-
-    /*glEnableVertexAttribArray(3);
-    glVertexAttribPointer(
-        3,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, second.position)
-    );
-
-    glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(
-        4,
-        4,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, second.flags)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
-        5,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, second.specularExponent)
-    );*/
-
-    /*glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);*/
 
     cylinderPositions_.release();
     vaoCylinders_.release();
@@ -281,7 +192,6 @@ void VizWidget::paintGL()
         cylinderProgram_.bind();
 
         cylinderProgram_.setUniformValue("pro", projection_);
-        cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
         cylinderProgram_.setUniformValue("mv", modelView_);
         cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
         cylinderProgram_.setUniformValue("uvScreenSize",
@@ -357,7 +267,6 @@ void VizWidget::setModelView(QMatrix4x4 mat)
 {
     modelView_ = mat;
     modelViewNormal_ = mat.normalMatrix();
-    modelViewProjection_ = projection_ * modelView_;
 
     update();
 }
@@ -365,7 +274,6 @@ void VizWidget::setModelView(QMatrix4x4 mat)
 void VizWidget::setProjection(QMatrix4x4 mat)
 {
     projection_ = mat;
-    modelViewProjection_ = projection_ * modelView_;
 
     update();
 }
@@ -398,89 +306,6 @@ void VizWidget::reloadModel()
     cylinderPositions_.release();
 
     update();
-}
-
-QVector<VizVertex> VizWidget::generateSolidOfRevolution(
-    const QVector<VizSegment> & quads,
-    QVector3D axis,
-    unsigned int segments
-)
-{
-    const auto rotatePair = [](
-        const QQuaternion & axis,
-        const VizSegment & p
-    ) -> VizSegment {
-        return{ p.first.rotated(axis), p.second.rotated(axis) };
-    };
-
-    assert(segments > 2);
-    assert(axis.lengthSquared() > 0.0);
-    axis.normalize();
-
-    QVector<VizVertex> ret;
-
-    const auto pushIfNotDegenerate = [&](
-        const VizVertex & a,
-        const VizVertex & b,
-        const VizVertex & c
-    ) {
-        if (!isDegenerate(a.position, b.position, c.position))
-        {
-            ret.push_back(a);
-            ret.push_back(b);
-            ret.push_back(c);
-        }
-    };
-
-    for (int i = 0; i < segments; i++)
-    {
-        const float angle0 = ((float)i / (float)segments) * 360.0;
-        const float angle1 = ((float)(i + 1) / (float)segments) * 360.0;
-        const auto q0 = QQuaternion::fromAxisAndAngle(axis, angle0);
-        const auto q1 = QQuaternion::fromAxisAndAngle(axis, angle1);
-
-        // Generate quads
-        for (const auto & p : quads)
-        {
-            const auto p0 = rotatePair(q0, p);
-            const auto p1 = rotatePair(q1, p);
-
-            pushIfNotDegenerate(p0.first, p0.second, p1.second);
-            pushIfNotDegenerate(p1.second, p1.first, p0.first);
-        }
-    }
-
-    return ret;
-}
-
-QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
-{
-    const auto flatSegment = [](
-        const QVector3D & a,
-        const QVector3D & b,
-        const QVector3D & n
-    ) -> VizSegment {
-        return { { a, n }, { b, n } };
-    };
-
-    static const QVector3D p0 { 0.f, 0.f, -1.f };
-    static const QVector3D p1 { 0.f, 1.f, -1.f };
-    static const QVector3D p2 { 0.f, 1.f, 1.f };
-    static const QVector3D p3 { 0.f, 0.f, 1.f };
-
-    static const QVector3D n0 { 0.f, 0.f, -1.f };
-    static const QVector3D n1 { 0.f, 1.f, 0.f };
-    static const QVector3D n2 { 0.f, 0.f, 1.f };
-
-    static const QVector3D axis { 0.f, 0.f, 1.f };
-
-    static const QVector<VizSegment> segs {
-        flatSegment(p0, p1, n0),
-        flatSegment(p1, p2, n1),
-        flatSegment(p2, p3, n2),
-    };
-
-    return generateSolidOfRevolution(segs, axis, segments);
 }
 
 void VizWidget::writeData()
