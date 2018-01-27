@@ -54,9 +54,6 @@ private:
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
 
-    QOpenGLBuffer cylinderPositions_;
-    QOpenGLVertexArrayObject vaoCylinders_;
-
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram pickingProgram_;

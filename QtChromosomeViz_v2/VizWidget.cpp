@@ -97,85 +97,6 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoSpheres_.release();
 
-    assert(vaoCylinders_.create());
-
-    assert(cylinderPositions_.create());
-    cylinderPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
-    vaoCylinders_.bind();
-    cylinderPositions_.bind();
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, position)
-    );
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribIPointer(
-        1,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, flags)
-    );
-
-    glEnableVertexAttribArray(2);
-    glVertexAttribIPointer(
-        2,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, atomID)
-    );
-
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(
-        3,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, color)
-    );
-
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(
-        4,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularColor)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
-        5,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularExponent)
-    );
-
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(
-        6,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, size)
-    );
-
-    cylinderPositions_.release();
-    vaoCylinders_.release();
-
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
@@ -246,9 +167,6 @@ void VizWidget::paintGL()
         glDrawElements(GL_LINE_STRIP, ChainItem::getBuffer().count(), GL_UNSIGNED_INT, ChainItem::getBuffer().data());
 
         cylinderProgram_.release();
-        vaoSpheres_.release();
-
-        vaoSpheres_.bind();
         sphereProgram_.bind();
 
         sphereProgram_.setUniformValue("pro", projection_);
@@ -340,10 +258,6 @@ void VizWidget::reloadModel()
     atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
     atomPositions_.release();
 
-    cylinderPositions_.bind();
-    //cylinderPositions_.allocate(ChainItem::getBuffer().count() * sizeof(VizBallInstance));
-    cylinderPositions_.release();
-
     update();
 }
 
@@ -352,10 +266,6 @@ void VizWidget::writeData()
     atomPositions_.bind();
     atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
     atomPositions_.release();
-
-    cylinderPositions_.bind();
-    //cylinderPositions_.write(0, ChainItem::getBuffer().constData(), ChainItem::getBuffer().size() * sizeof(VizBallInstance));
-    cylinderPositions_.release();
 }
 
 void VizWidget::setViewport(Viewport* vp)

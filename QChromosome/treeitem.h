@@ -176,8 +176,6 @@ public:
     void setMaterial(const Material* material);
     void setFlag(unsigned flag, bool on = true);
 
-    void addLink(VizBallInstance* link);
-
     QVector3D getPosition() const;
 
     void read(const QJsonObject& json);
@@ -190,7 +188,6 @@ private:
     int id;
     static QVector<VizBallInstance> buffer;
     QString label;
-    QList<VizBallInstance*> links;
 };
 
 class ChainItem : public TreeItem

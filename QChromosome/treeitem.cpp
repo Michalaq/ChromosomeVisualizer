@@ -293,8 +293,7 @@ QVector<VizBallInstance> AtomItem::buffer;
 
 AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(id),
-    links({&buffer[id]})
+    id(id)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
@@ -360,8 +359,7 @@ const QString& AtomItem::getLabel() const
 
 void AtomItem::setRadius(float r)
 {
-    for (auto i : links)
-        i->size = r;
+    buffer[id].size = r;
 }
 
 float AtomItem::getRadius() const
@@ -373,33 +371,19 @@ void AtomItem::setMaterial(const Material *material)
 {
     auto color = material->getColor();
     color.setAlphaF(1. - material->getTransparency());
-    unsigned int code1 = color.rgba();
-    unsigned int code2 = material->getSpecularColor().rgba();
-    float exponent = material->getSpecularExponent();
 
-    for (auto i : links)
-    {
-        i->color = code1;
-        i->specularColor = code2;
-        i->specularExponent = exponent;
-        i->material = material;
-    }
+    auto& buff = buffer[id];
+    buff.color = color.rgba();
+    buff.specularColor = material->getSpecularColor().rgba();
+    buff.specularExponent = material->getSpecularExponent();
 }
 
 void AtomItem::setFlag(unsigned flag, bool on)
 {
     if (on)
-        for (auto i : links)
-            i->flags |= flag;
+        buffer[id].flags |= flag;
     else
-        for (auto i : links)
-            i->flags &= ~flag;
-}
-
-void AtomItem::addLink(VizBallInstance *link)
-{
-    links.append(link);
-    *link = buffer[id];
+        buffer[id].flags &= ~flag;
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -409,7 +393,7 @@ void AtomItem::read(const QJsonObject &json)
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) for (auto i : links) i->size = (*rad).toDouble();
+    if (rad != object.end()) buffer[id].size = (*rad).toDouble();
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
