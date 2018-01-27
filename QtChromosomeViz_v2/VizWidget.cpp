@@ -164,7 +164,8 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawElements(GL_LINE_STRIP, ChainItem::getBuffer().count(), GL_UNSIGNED_INT, ChainItem::getBuffer().data());
+        for (auto& strip : ChainItem::getBuffer())
+            glDrawElements(GL_LINE_STRIP, strip.count(), GL_UNSIGNED_INT, strip.data());
 
         cylinderProgram_.release();
         sphereProgram_.bind();
