@@ -376,6 +376,7 @@ void AtomItem::setMaterial(const Material *material)
     buff.color = color.rgba();
     buff.specularColor = material->getSpecularColor().rgba();
     buff.specularExponent = material->getSpecularExponent();
+    buff.material = material;
 }
 
 void AtomItem::setFlag(unsigned flag, bool on)

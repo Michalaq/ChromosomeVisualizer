@@ -135,14 +135,15 @@ private:
 };
 
 #include <QVector3D>
+#include <QRgb>
 
 struct VizBallInstance
 {
     QVector3D position;
     unsigned int flags;
     unsigned int atomID;
-    unsigned int color;
-    unsigned int specularColor;
+    QRgb color;
+    QRgb specularColor;
     float specularExponent;
     float size;
     const Material* material;
