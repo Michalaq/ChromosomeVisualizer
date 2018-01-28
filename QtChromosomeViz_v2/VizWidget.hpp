@@ -54,8 +54,12 @@ private:
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
 
+    QOpenGLBuffer cameraPositions_;
+    QOpenGLVertexArrayObject vaoCameras_;
+
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
+    QOpenGLShaderProgram cameraProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
     QMatrix4x4 projection_;

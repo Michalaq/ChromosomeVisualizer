@@ -97,6 +97,37 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoSpheres_.release();
 
+    assert(vaoCameras_.create());
+
+    assert(cameraPositions_.create());
+    cameraPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    vaoCameras_.bind();
+    cameraPositions_.bind();
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,
+        16,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizCameraInstance),
+        (void*)offsetof(VizCameraInstance, modelview)
+    );
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+        1,
+        16,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizCameraInstance),
+        (void*)offsetof(VizCameraInstance, projection)
+    );
+
+    cameraPositions_.release();
+    vaoCameras_.release();
+
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
@@ -110,6 +141,12 @@ void VizWidget::initializeGL()
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/cylinder/fragment.glsl");
     assert(cylinderProgram_.link());
 
+    assert(cameraProgram_.create());
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/camera/vertex.glsl");
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/camera/geometry.glsl");
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/camera/fragment.glsl");
+    assert(cameraProgram_.link());
+
     assert(pickingProgram_.create());
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
@@ -121,11 +158,7 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    if (AtomItem::modified)
-    {
-        writeData();
-        AtomItem::modified = false;
-    }
+    writeData();
 
     // Enable culling
     glEnable(GL_CULL_FACE);
@@ -186,6 +219,20 @@ void VizWidget::paintGL()
 
         sphereProgram_.release();
         vaoSpheres_.release();
+    }
+
+    if (!CameraItem::getBuffer().empty())
+    {
+        vaoCameras_.bind();
+        cameraProgram_.bind();
+
+        cameraProgram_.setUniformValue("pro", projection_);
+        cameraProgram_.setUniformValue("mv", modelView_);
+
+        glDrawArrays(GL_POINTS, 0, CameraItem::getBuffer().count());
+
+        cameraProgram_.release();
+        vaoCameras_.release();
     }
 
     glDisable(GL_CULL_FACE);
@@ -264,9 +311,23 @@ void VizWidget::reloadModel()
 
 void VizWidget::writeData()
 {
-    atomPositions_.bind();
-    atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
-    atomPositions_.release();
+    if (AtomItem::modified)
+    {
+        atomPositions_.bind();
+        atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
+        atomPositions_.release();
+
+        AtomItem::modified = false;
+    }
+
+    if (CameraItem::modified)
+    {
+        cameraPositions_.bind();
+        cameraPositions_.write(0, CameraItem::getBuffer().constData(), CameraItem::getBuffer().size() * sizeof(VizCameraInstance));
+        cameraPositions_.release();
+
+        CameraItem::modified = false;
+    }
 }
 
 void VizWidget::setViewport(Viewport* vp)

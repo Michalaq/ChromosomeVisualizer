@@ -115,6 +115,14 @@ private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
 };
 
+#include <QMatrix4x4>
+
+struct VizCameraInstance
+{
+    QMatrix4x4 modelview;
+    QMatrix4x4 projection;
+};
+
 class Camera;
 
 class CameraItem : public TreeItem
@@ -122,6 +130,9 @@ class CameraItem : public TreeItem
 public:
     explicit CameraItem(const QString& name, Camera* cam, TreeItem *parentItem = 0);
     ~CameraItem();
+
+    static const QVector<VizCameraInstance>& getBuffer();
+    static bool modified;
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
@@ -131,7 +142,9 @@ public:
     Camera* getCamera() const;
 
 private:
+    int id;
     Camera* camera;
+    static QVector<VizCameraInstance> buffer;
 };
 
 #include <QVector3D>

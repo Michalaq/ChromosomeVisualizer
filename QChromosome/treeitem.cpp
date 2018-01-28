@@ -244,19 +244,40 @@ void LayerItem::write(QJsonObject &json) const
 
 #include "camera.h"
 
+QVector<VizCameraInstance> CameraItem::buffer;
+bool CameraItem::modified = false;
+
 CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
-    camera(cam)
+    camera(cam),
+    id(buffer.size())
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
     decoration = icon;
+
+    buffer.append({QMatrix4x4(), QMatrix4x4()});
+
+    QObject::connect(cam, &Camera::modelViewChanged, [this](const QMatrix4x4 mv) {
+        buffer[id].modelview = mv;
+        modified = true;
+    });
+
+    QObject::connect(cam, &Camera::projectionChanged, [this](const QMatrix4x4 pro) {
+        buffer[id].projection = pro;
+        modified = true;
+    });
 }
 
 CameraItem::~CameraItem()
 {
+    buffer.remove(id);
+}
 
+const QVector<VizCameraInstance>& CameraItem::getBuffer()
+{
+    return buffer;
 }
 
 QVector3D CameraItem::getPosition() const
