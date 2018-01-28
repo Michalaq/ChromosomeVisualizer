@@ -166,6 +166,8 @@ public:
 
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
+    static bool modified;
+
     static void setFrame(std::shared_ptr<Frame> frame);
 
     void setLabel(const QString& l);

@@ -121,11 +121,11 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    writeData();
-
-    // Enable alpha blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (AtomItem::modified)
+    {
+        writeData();
+        AtomItem::modified = false;
+    }
 
     // Enable culling
     glEnable(GL_CULL_FACE);

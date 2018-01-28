@@ -290,6 +290,7 @@ Camera* CameraItem::getCamera() const
 }
 
 QVector<VizBallInstance> AtomItem::buffer;
+bool AtomItem::modified = false;
 
 AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
@@ -301,6 +302,7 @@ AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     decoration = icon;
 
     buffer[id].position = QVector3D(atom.x, atom.y, atom.z);
+    modified = true;
 }
 
 AtomItem::~AtomItem()
@@ -332,6 +334,8 @@ void AtomItem::resizeBuffer(int count)
 
     for (int i = offset; i < buffer.size(); i++)
         buffer[i].atomID = i;
+
+    modified = true;
 }
 
 void AtomItem::setFrame(std::shared_ptr<Frame> frame)
@@ -345,11 +349,14 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
         auto& atom = atoms[i];
         buffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
+
+    modified = true;
 }
 
 void AtomItem::setLabel(const QString& l)
 {
     label = l;
+    modified = true;
 }
 
 const QString& AtomItem::getLabel() const
@@ -360,6 +367,7 @@ const QString& AtomItem::getLabel() const
 void AtomItem::setRadius(float r)
 {
     buffer[id].size = r;
+    modified = true;
 }
 
 float AtomItem::getRadius() const
@@ -377,6 +385,8 @@ void AtomItem::setMaterial(const Material *material)
     buff.specularColor = material->getSpecularColor().rgba();
     buff.specularExponent = material->getSpecularExponent();
     buff.material = material;
+
+    modified = true;
 }
 
 void AtomItem::setFlag(unsigned flag, bool on)
@@ -385,6 +395,8 @@ void AtomItem::setFlag(unsigned flag, bool on)
         buffer[id].flags |= flag;
     else
         buffer[id].flags &= ~flag;
+
+    modified = true;
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -419,6 +431,8 @@ void AtomItem::write(QJsonObject &json) const
 
     if (object.size() > 1)
         json["Object"] = object;
+
+    modified = true;
 }
 
 #include "moviemaker.h"
