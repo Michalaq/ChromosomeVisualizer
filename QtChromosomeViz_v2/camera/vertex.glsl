@@ -1,14 +1,13 @@
 #version 330 core
 
-layout(location = 0) in mat4 modelview;
-layout(location = 1) in mat4 projection;
+layout(location = 0) in mat4 modelView;
 
-flat out mat4 gModelview;
+flat out mat4 gModelView;
 flat out mat4 gProjection;
 flat out uint giFlags;
 
 void main() {
-    gModelview = modelview;
-    gProjection = projection;
+    gModelView = modelView;
+    //gProjection = projection;
     giFlags = 2u;
 }

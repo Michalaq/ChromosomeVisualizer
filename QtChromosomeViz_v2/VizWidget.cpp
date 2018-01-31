@@ -105,25 +105,18 @@ void VizWidget::initializeGL()
     vaoCameras_.bind();
     cameraPositions_.bind();
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        16,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizCameraInstance),
-        (void*)offsetof(VizCameraInstance, modelView)
-    );
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        16,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizCameraInstance),
-        (void*)offsetof(VizCameraInstance, projection)
-    );
+    for (int i = 0; i < 4; i++)
+    {
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(
+            i,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(VizCameraInstance),
+            (void*)offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D)
+        );
+    }
 
     cameraPositions_.release();
     vaoCameras_.release();
