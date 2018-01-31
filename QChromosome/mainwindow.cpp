@@ -390,7 +390,7 @@ void MainWindow::openProject()
         read(objects);
         simulation->getModel()->read(objects);
 
-        ui->scene->reloadModel();
+        ui->scene->update();
         ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
@@ -414,7 +414,7 @@ void MainWindow::addLayer()
 
             simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
-            ui->scene->reloadModel();
+            ui->scene->update();
             ui->plot->updateSimulation();
         }
     } catch (std::exception& e) {

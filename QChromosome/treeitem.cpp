@@ -246,6 +246,7 @@ void LayerItem::write(QJsonObject &json) const
 
 QVector<VizCameraInstance> CameraItem::buffer;
 bool CameraItem::modified = false;
+bool CameraItem::resized = false;
 
 CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
@@ -270,6 +271,7 @@ const QVector<VizCameraInstance>& CameraItem::getBuffer()
 VizCameraInstance *CameraItem::emplace_back()
 {
     buffer.resize(buffer.size() + 1);
+    resized = true;
 
     return &buffer.last();
 }
@@ -306,6 +308,7 @@ Camera* CameraItem::getCamera() const
 
 QVector<VizBallInstance> AtomItem::buffer;
 bool AtomItem::modified = false;
+bool AtomItem::resized = false;
 
 AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
@@ -351,6 +354,7 @@ void AtomItem::resizeBuffer(int count)
         buffer[i].atomID = i;
 
     modified = true;
+    resized = true;
 }
 
 void AtomItem::setFrame(std::shared_ptr<Frame> frame)

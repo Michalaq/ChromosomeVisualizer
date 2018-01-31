@@ -49,7 +49,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    void writeData();
+    void allocate();
 
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;

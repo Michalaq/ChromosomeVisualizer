@@ -158,7 +158,8 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    writeData();
+    // Ensure taht buffers are up to date
+    allocate();
 
     // Enable culling
     glEnable(GL_CULL_FACE);
@@ -296,21 +297,19 @@ void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
 {
     model_ = model;
     selectionModel_ = selectionModel;
-
-    reloadModel();
 }
 
-void VizWidget::reloadModel()
+void VizWidget::allocate()
 {
-    atomPositions_.bind();
-    atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
-    atomPositions_.release();
+    if (AtomItem::resized)
+    {
+        atomPositions_.bind();
+        atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
+        atomPositions_.release();
 
-    update();
-}
+        AtomItem::resized = false;
+    }
 
-void VizWidget::writeData()
-{
     if (AtomItem::modified)
     {
         atomPositions_.bind();
@@ -318,6 +317,15 @@ void VizWidget::writeData()
         atomPositions_.release();
 
         AtomItem::modified = false;
+    }
+
+    if (CameraItem::resized)
+    {
+        cameraPositions_.bind();
+        cameraPositions_.allocate(CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
+        cameraPositions_.release();
+
+        CameraItem::resized = false;
     }
 
     if (CameraItem::modified)

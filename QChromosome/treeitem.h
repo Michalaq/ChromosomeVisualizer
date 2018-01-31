@@ -133,7 +133,9 @@ public:
 
     static const QVector<VizCameraInstance>& getBuffer();
     static VizCameraInstance *emplace_back();
+
     static bool modified;
+    static bool resized;
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
@@ -179,7 +181,9 @@ public:
 
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
+
     static bool modified;
+    static bool resized;
 
     static void setFrame(std::shared_ptr<Frame> frame);
 
