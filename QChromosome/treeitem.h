@@ -119,7 +119,7 @@ private:
 
 struct VizCameraInstance
 {
-    QMatrix4x4 modelview;
+    QMatrix4x4 modelView;
     QMatrix4x4 projection;
 };
 
@@ -132,6 +132,7 @@ public:
     ~CameraItem();
 
     static const QVector<VizCameraInstance>& getBuffer();
+    static VizCameraInstance *emplace_back();
     static bool modified;
 
     QVector3D getPosition() const;
@@ -142,7 +143,6 @@ public:
     Camera* getCamera() const;
 
 private:
-    int id;
     Camera* camera;
     static QVector<VizCameraInstance> buffer;
 };

@@ -249,35 +249,29 @@ bool CameraItem::modified = false;
 
 CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
-    camera(cam),
-    id(buffer.size())
+    camera(cam)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
     decoration = icon;
-
-    buffer.append({QMatrix4x4(), QMatrix4x4()});
-
-    QObject::connect(cam, &Camera::modelViewChanged, [this](const QMatrix4x4 mv) {
-        buffer[id].modelview = mv;
-        modified = true;
-    });
-
-    QObject::connect(cam, &Camera::projectionChanged, [this](const QMatrix4x4 pro) {
-        buffer[id].projection = pro;
-        modified = true;
-    });
 }
 
 CameraItem::~CameraItem()
 {
-    buffer.remove(id);
+    delete camera;
 }
 
 const QVector<VizCameraInstance>& CameraItem::getBuffer()
 {
     return buffer;
+}
+
+VizCameraInstance *CameraItem::emplace_back()
+{
+    buffer.resize(buffer.size() + 1);
+
+    return &buffer.last();
 }
 
 QVector3D CameraItem::getPosition() const

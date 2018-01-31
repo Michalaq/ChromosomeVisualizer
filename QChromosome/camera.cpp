@@ -16,7 +16,7 @@ bool Camera::automaticKeyframing = false;
 
 Viewport* Camera::viewport = nullptr;
 
-#include <QtMath>
+#include "treeitem.h"
 
 Camera::Camera(QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
@@ -29,7 +29,8 @@ Camera::Camera(QWidget *parent)
       sensorSize(36),
       rotationType(RT_World),
       nearClipping(.3),
-      farClipping(1000.)
+      farClipping(1000.),
+      instance(CameraItem::emplace_back())
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -67,12 +68,11 @@ Camera::Camera(const Camera& camera)
       sensorSize(camera.sensorSize),
       horizontalAngle(camera.horizontalAngle),
       verticalAngle(camera.verticalAngle),
-      modelView(camera.modelView),
-      projection(camera.projection),
       aspectRatio(camera.aspectRatio),
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
-      farClipping(camera.farClipping)
+      farClipping(camera.farClipping),
+      instance(CameraItem::emplace_back())
 {
     connect(this, &Camera::delta, [this](int dx, int dy) {
         switch (currentAction) {
@@ -87,6 +87,8 @@ Camera::Camera(const Camera& camera)
             break;
         };
     });
+
+    *instance = *camera.instance;
 }
 
 Camera::~Camera()
@@ -154,18 +156,18 @@ void Camera::wheelEvent(QWheelEvent *event)
 void Camera::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&Camera::modelViewChanged))
-        emit modelViewChanged(modelView);
+        emit modelViewChanged(instance->modelView);
 
     if (signal == QMetaMethod::fromSignal(&Camera::projectionChanged))
-        emit projectionChanged(projection);
+        emit projectionChanged(instance->projection);
 }
 
 void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(modelView);
-    emit projectionChanged(projection);
+    emit modelViewChanged(instance->modelView);
+    emit projectionChanged(instance->projection);
 }
 
 #include <QPainter>
@@ -200,6 +202,8 @@ void Camera::paintEvent(QPaintEvent *event)
 
     if (position != Off_)
     {
+        auto& modelView = instance->modelView;
+
         struct
         {
             QVector3D vector;
@@ -388,6 +392,8 @@ void Camera::setSensorSize(qreal ss)
     updateAngles();
 }
 
+#include <QtMath>
+
 void Camera::setHorizontalAngle(qreal ha)
 {
     qreal w = sensorSize;
@@ -538,6 +544,8 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
 
 QMatrix4x4& Camera::updateModelView()
 {
+    auto& modelView = instance->modelView;
+
     modelView.setToIdentity();
 
     modelView.translate(eye);
@@ -545,6 +553,7 @@ QMatrix4x4& Camera::updateModelView()
 
     modelView = modelView.inverted();
 
+    CameraItem::modified = true;
     update();
 
     return modelView;
@@ -552,6 +561,8 @@ QMatrix4x4& Camera::updateModelView()
 
 QMatrix4x4& Camera::updateProjection()
 {
+    auto& projection = instance->projection;
+
     const qreal aspectRatio_ = (qreal)width() / height();
 
     projection.setToIdentity();
@@ -566,6 +577,8 @@ QMatrix4x4& Camera::updateProjection()
     {
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
+
+    CameraItem::modified = true;
 
     return projection;
 }

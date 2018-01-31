@@ -112,7 +112,7 @@ void VizWidget::initializeGL()
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizCameraInstance),
-        (void*)offsetof(VizCameraInstance, modelview)
+        (void*)offsetof(VizCameraInstance, modelView)
     );
 
     glEnableVertexAttribArray(1);

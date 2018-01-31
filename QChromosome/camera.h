@@ -7,6 +7,7 @@
 #include <QMatrix4x4>
 
 class Viewport;
+struct VizCameraInstance;
 
 class Camera : public SplineInterpolator
 {
@@ -124,8 +125,7 @@ private:
 
     static QVector3D origin;
 
-    QMatrix4x4 modelView;
-    QMatrix4x4 projection;
+    VizCameraInstance *instance;
 
     /* updates modelview matrix */
     QMatrix4x4& updateModelView();
