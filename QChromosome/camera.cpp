@@ -21,10 +21,6 @@ Viewport* Camera::viewport = nullptr;
 Camera::Camera(QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
       eye(60, 30, 60),
-      x(1, 0, 0),
-      y(0, 1, 0),
-      z(0, 0, 1),
-      h(45), p(-20), b(0),
       focalLength(36),
       sensorSize(36),
       rotationType(RT_World),
@@ -34,13 +30,7 @@ Camera::Camera(QWidget *parent)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
-
-    x = q.rotatedVector(x);
-    y = q.rotatedVector(y);
-    z = q.rotatedVector(z);
-
-    updateModelView();
+    setLookAt(QVector3D(0, 0, 0));
 
     updateAngles();
 
@@ -388,10 +378,17 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
 
 void Camera::setRotation(qreal h_, qreal p_, qreal b_)
 {
-    int cp = RotationType::RT_Camera;
-    std::swap(rotationType, cp);
-    rotate(h - h_, p - p_, b - b_);
-    std::swap(rotationType, cp);
+    h = h_;
+    p = p_;
+    b = b_;
+
+    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
+
+    x = q.rotatedVector({1,0,0});
+    y = q.rotatedVector({0,1,0});
+    z = q.rotatedVector({0,0,1});
+
+    emit modelViewChanged(updateModelView());
 }
 
 void Camera::setFocalLength(qreal fl)
