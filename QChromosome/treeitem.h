@@ -150,26 +150,25 @@ private:
     static QVector<VizCameraInstance> buffer;
 };
 
+enum VizBallFlags : unsigned int
+{
+    SELECTED_FLAG   = 1u << 0,
+    VIE_FLAG        = 1u << 1,
+    VIR_FLAG        = 1u << 2,
+};
+
 #include <QVector3D>
 #include <QRgb>
 
 struct VizBallInstance
 {
     QVector3D position;
-    unsigned int flags;
-    unsigned int atomID;
+    unsigned int flags = VIE_FLAG | VIR_FLAG;
     QRgb color;
     QRgb specularColor;
     float specularExponent;
-    float size;
+    float size = 1.0;
     const Material* material;
-};
-
-enum VizBallFlags : unsigned int
-{
-    SELECTED_FLAG   = 1u << 0,
-    VIE_FLAG        = 1u << 1,
-    VIR_FLAG        = 1u << 2,
 };
 
 #include "material.h"

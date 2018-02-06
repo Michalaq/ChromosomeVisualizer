@@ -9,7 +9,6 @@ uniform mat3 mvNormal;
 
 flat in vec3 gvInstancePosition[2];
 flat in uint giFlags[2];
-flat in uint giInstanceID[2];
 flat in vec4 gcColor[2];
 flat in vec3 gcSpecularColor[2];
 flat in float gfSpecularExponent[2];

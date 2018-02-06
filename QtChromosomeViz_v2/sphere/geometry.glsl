@@ -9,7 +9,7 @@ uniform mat4 mv;
 
 flat in vec3 gvInstancePosition[1];
 flat in uint giFlags[1];
-flat in uint giInstanceID[1];
+flat in int giInstanceID[1];
 flat in vec4 gcColor[1];
 flat in vec3 gcSpecularColor[1];
 flat in float gfSpecularExponent[1];
@@ -20,7 +20,7 @@ out vec3 vViewPosition;
 
 flat out vec3 vInstancePosition;
 flat out uint iFlags;
-flat out uint iInstanceID;
+flat out int iInstanceID;
 flat out vec4 cColor;
 flat out vec3 cSpecularColor;
 flat out float fSpecularExponent;

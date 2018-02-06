@@ -46,12 +46,13 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(2);
-    glVertexAttribIPointer(
+    glVertexAttribPointer(
         2,
-        1,
-        GL_UNSIGNED_INT,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
         sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, atomID)
+        (void*)offsetof(VizBallInstance, color)
     );
 
     glEnableVertexAttribArray(3);
@@ -61,22 +62,12 @@ void VizWidget::initializeGL()
         GL_UNSIGNED_BYTE,
         GL_TRUE,
         sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, color)
+        (void*)offsetof(VizBallInstance, specularColor)
     );
 
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(
         4,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularColor)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
-        5,
         1,
         GL_FLOAT,
         GL_FALSE,
@@ -84,9 +75,9 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, specularExponent)
     );
 
-    glEnableVertexAttribArray(6);
+    glEnableVertexAttribArray(5);
     glVertexAttribPointer(
-        6,
+        5,
         1,
         GL_FLOAT,
         GL_FALSE,

@@ -4,7 +4,7 @@ uniform mat4 pro;
 
 in vec3 vViewPosition;
 flat in vec3 vInstancePosition;
-flat in uint iInstanceID;
+flat in int iInstanceID;
 flat in float fInstanceSize;
 
 out vec4 cColor;
@@ -27,8 +27,8 @@ void main() {
     
     gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
 
-    cColor.a = float((iInstanceID >> 24u) & 0xFFu) / 255.f;
-    cColor.r = float((iInstanceID >> 16u) & 0xFFu) / 255.f;
-    cColor.g = float((iInstanceID >>  8u) & 0xFFu) / 255.f;
-    cColor.b = float((iInstanceID >>  0u) & 0xFFu) / 255.f;
+    cColor.a = float((iInstanceID >> 24) & 0xFF) / 255.f;
+    cColor.r = float((iInstanceID >> 16) & 0xFF) / 255.f;
+    cColor.g = float((iInstanceID >>  8) & 0xFF) / 255.f;
+    cColor.b = float((iInstanceID >>  0) & 0xFF) / 255.f;
 }

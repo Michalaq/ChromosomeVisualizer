@@ -346,19 +346,7 @@ QVector3D AtomItem::getPosition() const
 
 void AtomItem::resizeBuffer(int count)
 {
-    int offset = buffer.size();
-
-    buffer.resize(offset + count);
-
-    VizBallInstance dummy;
-    dummy.flags = VIE_FLAG | VIR_FLAG;
-    dummy.size = 1.f;
-
-    std::fill(buffer.begin() + offset, buffer.end(), dummy);
-
-    for (int i = offset; i < buffer.size(); i++)
-        buffer[i].atomID = i;
-
+    buffer.resize(buffer.size() + count);
     resized = true;
 }
 
@@ -502,7 +490,7 @@ void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNum
             used.insert(atom.material);
         }
 
-        MovieMaker::addSphere1(stream, atom.atomID, atom.size, atom.material);
+        MovieMaker::addSphere1(stream, id, atom.size, atom.material);
     }
 
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
@@ -565,7 +553,7 @@ void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
         const auto& second = buffer[i + 1];
 
         if (first.flags & second.flags & VIR_FLAG)
-            MovieMaker::addCylinder1(stream, first.atomID, second.atomID, first.size / 2, second.size / 2, first.material, second.material);
+            MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
