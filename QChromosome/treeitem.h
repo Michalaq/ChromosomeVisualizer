@@ -132,7 +132,7 @@ public:
     ~CameraItem();
 
     static const QVector<VizCameraInstance>& getBuffer();
-    static VizCameraInstance *emplace_back();
+    static int emplace_back();
     static void clearBuffer();
 
     static bool modified;
@@ -148,6 +148,8 @@ public:
 private:
     Camera* camera;
     static QVector<VizCameraInstance> buffer;
+
+friend class Camera;
 };
 
 enum VizBallFlag

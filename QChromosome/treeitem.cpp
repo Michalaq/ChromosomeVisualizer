@@ -260,7 +260,7 @@ CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
 
 CameraItem::~CameraItem()
 {
-    delete camera;
+
 }
 
 const QVector<VizCameraInstance>& CameraItem::getBuffer()
@@ -268,12 +268,14 @@ const QVector<VizCameraInstance>& CameraItem::getBuffer()
     return buffer;
 }
 
-VizCameraInstance *CameraItem::emplace_back()
+int CameraItem::emplace_back()
 {
-    buffer.resize(buffer.size() + 1);
+    int offset = buffer.size();
+
+    buffer.resize(offset + 1);
     resized = true;
 
-    return &buffer.last();
+    return offset;
 }
 
 void CameraItem::clearBuffer()

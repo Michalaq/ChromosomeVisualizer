@@ -125,7 +125,8 @@ private:
 
     static QVector3D origin;
 
-    VizCameraInstance *instance;
+    QMatrix4x4 modelView;
+    QMatrix4x4 projection;
 
     /* updates modelview matrix */
     QMatrix4x4& updateModelView();
@@ -156,6 +157,8 @@ private:
     static Viewport* viewport;
 
     QPersistentModelIndex base, target, up;
+
+    int id;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

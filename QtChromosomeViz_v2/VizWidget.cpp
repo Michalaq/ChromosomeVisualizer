@@ -206,7 +206,7 @@ void VizWidget::paintGL()
         vaoSpheres_.release();
     }
 
-    if (!CameraItem::getBuffer().empty())
+    if (CameraItem::getBuffer().count() > 1)
     {
         vaoCameras_.bind();
         cameraProgram_.bind();
@@ -214,7 +214,7 @@ void VizWidget::paintGL()
         cameraProgram_.setUniformValue("pro", projection_);
         cameraProgram_.setUniformValue("mv", modelView_);
 
-        glDrawArrays(GL_POINTS, 0, CameraItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
 
         cameraProgram_.release();
         vaoCameras_.release();

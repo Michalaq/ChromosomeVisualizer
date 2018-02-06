@@ -30,7 +30,7 @@ Camera::Camera(QWidget *parent)
       rotationType(RT_World),
       nearClipping(.3),
       farClipping(1000.),
-      instance(CameraItem::emplace_back())
+      id(CameraItem::emplace_back())
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -68,11 +68,13 @@ Camera::Camera(const Camera& camera)
       sensorSize(camera.sensorSize),
       horizontalAngle(camera.horizontalAngle),
       verticalAngle(camera.verticalAngle),
+      modelView(camera.modelView),
+      projection(camera.projection),
       aspectRatio(camera.aspectRatio),
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
-      instance(CameraItem::emplace_back())
+      id(CameraItem::emplace_back())
 {
     connect(this, &Camera::delta, [this](int dx, int dy) {
         switch (currentAction) {
@@ -88,7 +90,7 @@ Camera::Camera(const Camera& camera)
         };
     });
 
-    *instance = *camera.instance;
+    CameraItem::buffer[id] = CameraItem::buffer[camera.id];
 }
 
 Camera::~Camera()
@@ -156,18 +158,18 @@ void Camera::wheelEvent(QWheelEvent *event)
 void Camera::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&Camera::modelViewChanged))
-        emit modelViewChanged(instance->modelView);
+        emit modelViewChanged(modelView);
 
     if (signal == QMetaMethod::fromSignal(&Camera::projectionChanged))
-        emit projectionChanged(instance->projection);
+        emit projectionChanged(projection);
 }
 
 void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(instance->modelView);
-    emit projectionChanged(instance->projection);
+    emit modelViewChanged(modelView);
+    emit projectionChanged(projection);
 }
 
 #include <QPainter>
@@ -202,8 +204,6 @@ void Camera::paintEvent(QPaintEvent *event)
 
     if (position != Off_)
     {
-        auto& modelView = instance->modelView;
-
         struct
         {
             QVector3D vector;
@@ -558,25 +558,17 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
 
 QMatrix4x4& Camera::updateModelView()
 {
-    auto& modelView = instance->modelView;
-
     modelView.setToIdentity();
 
     modelView.translate(eye);
     modelView.rotate(QQuaternion::fromAxes(x, y, z));
 
-    modelView = modelView.inverted();
-
     CameraItem::modified = true;
-    update();
-
-    return modelView;
+    return CameraItem::buffer[id].modelView = modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
 {
-    auto& projection = instance->projection;
-
     const qreal aspectRatio_ = (qreal)width() / height();
 
     projection.setToIdentity();
@@ -593,8 +585,7 @@ QMatrix4x4& Camera::updateProjection()
     }
 
     CameraItem::modified = true;
-
-    return projection;
+    return CameraItem::buffer[id].projection = projection;
 }
 
 void Camera::updateAngles()
