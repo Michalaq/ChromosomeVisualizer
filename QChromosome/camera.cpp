@@ -244,6 +244,20 @@ void Camera::paintEvent(QPaintEvent *event)
             }
         }
     }
+
+    QRect r(2, 2, fontMetrics().width("Perspective") + 6, fontMetrics().height() + 6);
+
+    QPainter p(this);
+    p.save();
+    p.setPen(Qt::NoPen);
+    p.setBrush(Qt::black);
+    p.setOpacity(0.5);
+
+    p.drawRoundedRect(r, 3, 3);
+
+    p.restore();
+    p.setPen(Qt::white);
+    p.drawText(r, Qt::AlignCenter, "Perspective");
 }
 
 QVector3D Camera::getOrigin()
