@@ -356,6 +356,12 @@ void MainWindow::newProject()
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
 
     ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
+
+    CameraItem::clearBuffer();
+    ChainItem::clearBuffer();
+    AtomItem::clearBuffer();
+
+    ui->scene->update();
 }
 
 #include <QStandardPaths>

@@ -133,6 +133,7 @@ public:
 
     static const QVector<VizCameraInstance>& getBuffer();
     static VizCameraInstance *emplace_back();
+    static void clearBuffer();
 
     static bool modified;
     static bool resized;
@@ -181,6 +182,7 @@ public:
 
     static const QVector<VizBallInstance>& getBuffer();
     static void resizeBuffer(int count);
+    static void clearBuffer();
 
     static bool modified;
     static bool resized;
@@ -217,6 +219,7 @@ public:
     ~ChainItem();
 
     static const QVector<std::pair<int, int>> &getBuffer();
+    static void clearBuffer();
 
     void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
     void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;

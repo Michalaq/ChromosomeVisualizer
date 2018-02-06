@@ -17,8 +17,6 @@ flat in vec3 cSpecularColor;
 flat in float fSpecularExponent;
 flat in float fInstanceSize;
 
-out vec4 ocColor;
-
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;
@@ -87,5 +85,6 @@ void main() {
 
     float isSelected = ((iFlags & 1u) == 1u) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
-    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    
+    gl_FragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }

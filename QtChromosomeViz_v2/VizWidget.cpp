@@ -297,10 +297,11 @@ void VizWidget::allocate()
     if (AtomItem::resized)
     {
         atomPositions_.bind();
-        atomPositions_.allocate(AtomItem::getBuffer().count() * sizeof(VizBallInstance));
+        atomPositions_.allocate(AtomItem::getBuffer().constData(), AtomItem::getBuffer().count() * sizeof(VizBallInstance));
         atomPositions_.release();
 
         AtomItem::resized = false;
+        AtomItem::modified = false;
     }
 
     if (AtomItem::modified)
@@ -315,10 +316,11 @@ void VizWidget::allocate()
     if (CameraItem::resized)
     {
         cameraPositions_.bind();
-        cameraPositions_.allocate(CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
+        cameraPositions_.allocate(CameraItem::getBuffer().constData(), CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
         cameraPositions_.release();
 
         CameraItem::resized = false;
+        CameraItem::modified = false;
     }
 
     if (CameraItem::modified)

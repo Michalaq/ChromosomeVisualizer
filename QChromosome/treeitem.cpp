@@ -276,6 +276,12 @@ VizCameraInstance *CameraItem::emplace_back()
     return &buffer.last();
 }
 
+void CameraItem::clearBuffer()
+{
+    buffer.resize(1);
+    resized = true;
+}
+
 QVector3D CameraItem::getPosition() const
 {
     return camera->getPosition();
@@ -353,7 +359,12 @@ void AtomItem::resizeBuffer(int count)
     for (int i = offset; i < buffer.size(); i++)
         buffer[i].atomID = i;
 
-    modified = true;
+    resized = true;
+}
+
+void AtomItem::clearBuffer()
+{
+    buffer.clear();
     resized = true;
 }
 
@@ -519,6 +530,11 @@ ChainItem::~ChainItem()
 const QVector<std::pair<int, int> > &ChainItem::getBuffer()
 {
     return buffer;
+}
+
+void ChainItem::clearBuffer()
+{
+    buffer.clear();
 }
 
 void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
