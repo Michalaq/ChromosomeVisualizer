@@ -8,7 +8,7 @@ uniform mat4 mv;
 uniform mat3 mvNormal;
 
 flat in vec3 gvInstancePosition[2];
-flat in uint giFlags[2];
+flat in int giFlags[2];
 flat in vec4 gcColor[2];
 flat in vec3 gcSpecularColor[2];
 flat in float gfSpecularExponent[2];
@@ -17,7 +17,7 @@ flat in float gfInstanceSize[2];
 out vec4 vPosition;
 out vec4 vViewPosition;
 out vec3 vNormal;
-flat out uint iFlags;
+flat out int iFlags;
 out vec4 cColor;
 out vec3 cSpecularColor;
 out float fSpecularExponent;
@@ -37,7 +37,7 @@ const float PI = 3.1415926535897932384626433832795;
 void main() {
     iFlags = giFlags[0] & giFlags[1];
     
-    if ((iFlags & 2u) == 2u)
+    if ((iFlags & 0x2) == 0x2)
     {
         vec3 vInstancePosition = (gvInstancePosition[0] + gvInstancePosition[1]) / 2;
         vec4 vInstanceRotation = rotationTo(vec3(0, 0, 1), normalize(gvInstancePosition[0] - gvInstancePosition[1]));

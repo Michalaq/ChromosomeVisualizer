@@ -398,7 +398,7 @@ void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
 void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v)
 {
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(m == Editor ? VIE_FLAG : VIR_FLAG, v);
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(m == Editor ? VisibleInEditor : VisibleInRenderer, v);
 
     for (int r = 0; r < rowCount(root); r++)
     {
@@ -448,7 +448,7 @@ void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, Visi
 void TreeModel::propagateSelected(const QModelIndex &root, bool s)
 {
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(SELECTED_FLAG, s);
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(Selected, s);
 
     for (int r = 0; r < rowCount(root); r++)
         propagateSelected(index(r, 0, root), s);

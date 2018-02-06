@@ -407,13 +407,9 @@ void AtomItem::setMaterial(const Material *material)
     modified = true;
 }
 
-void AtomItem::setFlag(unsigned flag, bool on)
+void AtomItem::setFlag(VizBallFlag flag, bool on)
 {
-    if (on)
-        buffer[id].flags |= flag;
-    else
-        buffer[id].flags &= ~flag;
-
+    buffer[id].flags.setFlag(flag, on);
     modified = true;
 }
 
@@ -464,7 +460,7 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
 {
     const auto& atom = buffer[id];
 
-    if (atom.flags & VIR_FLAG)
+    if (atom.flags.testFlag(VisibleInRenderer))
     {
         if (!used.contains(atom.material))
         {
@@ -482,7 +478,7 @@ void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNum
 {
     const auto& atom = buffer[id];
 
-    if (atom.flags & VIR_FLAG)
+    if (atom.flags.testFlag(VisibleInRenderer))
     {
         if (!used.contains(atom.material))
         {
@@ -536,7 +532,7 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
-        if (first.flags & second.flags & VIR_FLAG)
+        if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
     }
 }
@@ -552,7 +548,7 @@ void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
-        if (first.flags & second.flags & VIR_FLAG)
+        if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
     }
 }

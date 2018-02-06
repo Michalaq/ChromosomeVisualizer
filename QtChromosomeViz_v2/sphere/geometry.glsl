@@ -8,7 +8,7 @@ uniform mat4 pro;
 uniform mat4 mv;
 
 flat in vec3 gvInstancePosition[1];
-flat in uint giFlags[1];
+flat in int giFlags[1];
 flat in int giInstanceID[1];
 flat in vec4 gcColor[1];
 flat in vec3 gcSpecularColor[1];
@@ -19,7 +19,7 @@ out vec4 vPosition;
 out vec3 vViewPosition;
 
 flat out vec3 vInstancePosition;
-flat out uint iFlags;
+flat out int iFlags;
 flat out int iInstanceID;
 flat out vec4 cColor;
 flat out vec3 cSpecularColor;
@@ -35,7 +35,7 @@ vec3 tetrahedron[4] = vec3[](
 );
 
 void main() {
-    if ((giFlags[0] & 2u) == 2u)
+    if ((giFlags[0] & 0x2) == 0x2)
     {
         vec4 objectSpacePos = mv * vec4(gvInstancePosition[0], 1.0);
         

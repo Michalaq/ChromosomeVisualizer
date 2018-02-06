@@ -40,7 +40,7 @@ void VizWidget::initializeGL()
     glVertexAttribIPointer(
         1,
         1,
-        GL_UNSIGNED_INT,
+        GL_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
