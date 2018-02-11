@@ -560,6 +560,8 @@ QMatrix4x4& Camera::updateModelView()
     modelView.translate(eye);
     modelView.rotate(QQuaternion::fromAxes(x, y, z));
 
+    update();
+
     CameraItem::modified = true;
     return CameraItem::buffer[id].modelView = modelView = modelView.inverted();
 }

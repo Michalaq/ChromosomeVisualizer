@@ -24,7 +24,8 @@ const float PI = 3.1415926535897932384626433832795;
 void main() {
     if ((giFlags[0] & 2u) == 2u)
     {
-        mat4 mat = pro * mv * inverse(gModelView[0]);
+        mat4 tmp = mat4(0.1); tmp[3][3] = 1;
+        mat4 mat = pro * mv * inverse(gModelView[0]) * tmp;
         
         gl_Position = mat * vec4(tab[0], 1); EmitVertex();
         gl_Position = mat * vec4(tab[1], 1); EmitVertex();
