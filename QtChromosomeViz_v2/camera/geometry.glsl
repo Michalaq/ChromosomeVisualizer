@@ -9,7 +9,7 @@ uniform mat4 mv;
 
 flat in mat4 gModelView[1];
 flat in mat4 gProjection[1];
-flat in uint giFlags[1];
+flat in int giFlags[1];
 
 vec3 tab[] = vec3[](
     vec3(+10.625, -10.625, 0), vec3(+10.625, +10.625, 0), vec3(-10.625, +10.625, 0), vec3(-10.625, -10.625, 0),
@@ -22,7 +22,7 @@ vec3 tab[] = vec3[](
 const float PI = 3.1415926535897932384626433832795;
 
 void main() {
-    if ((giFlags[0] & 2u) == 2u)
+    if ((giFlags[0] & 0x2) == 0x2)
     {
         mat4 tmp = mat4(0.1); tmp[3][3] = 1;
         mat4 mat = pro * mv * inverse(gModelView[0]) * tmp;

@@ -46,6 +46,17 @@
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/common.h"
 
+enum VizFlag
+{
+    NoFlags = 0x0,
+    Selected = 0x1,
+    VisibleInEditor = 0x2,
+    VisibleInRenderer = 0x4
+};
+
+Q_DECLARE_FLAGS(VizFlags, VizFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(VizFlags)
+
 class Material;
 
 class TreeItem
@@ -71,6 +82,8 @@ public:
     QVariant decoration;
 
     virtual QVector3D getPosition() const;
+
+    virtual void setFlag(VizFlag flag, bool on = true);
 
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
@@ -121,6 +134,7 @@ struct VizCameraInstance
 {
     QMatrix4x4 modelView;
     QMatrix4x4 projection;
+    VizFlags flags = VisibleInEditor | VisibleInRenderer;
 };
 
 class Camera;
@@ -141,27 +155,19 @@ public:
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
 
+    void setFlag(VizFlag flag, bool on = true);
+
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;
 
 private:
+    int id;
     Camera* camera;
     static QVector<VizCameraInstance> buffer;
 
 friend class Camera;
 };
-
-enum VizBallFlag
-{
-    NoFlags = 0x0,
-    Selected = 0x1,
-    VisibleInEditor = 0x2,
-    VisibleInRenderer = 0x4
-};
-
-Q_DECLARE_FLAGS(VizBallFlags, VizBallFlag)
-Q_DECLARE_OPERATORS_FOR_FLAGS(VizBallFlags)
 
 #include <QVector3D>
 #include <QRgb>
@@ -169,7 +175,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(VizBallFlags)
 struct VizBallInstance
 {
     QVector3D position;
-    VizBallFlags flags = VisibleInEditor | VisibleInRenderer;
+    VizFlags flags = VisibleInEditor | VisibleInRenderer;
     QRgb color;
     QRgb specularColor;
     float specularExponent;
@@ -201,7 +207,7 @@ public:
     float getRadius() const;
 
     void setMaterial(const Material* material);
-    void setFlag(VizBallFlag flag, bool on = true);
+    void setFlag(VizFlag flag, bool on = true);
 
     QVector3D getPosition() const;
 

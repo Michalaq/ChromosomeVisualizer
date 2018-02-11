@@ -181,9 +181,12 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
         if (!testAttribute(Qt::WA_SetCursor))
             setCursor(Qt::DragCopyCursor);
 
-        qobject_cast<TreeModel*>(model())->setVisibility(index, cv, vm);
+        if (index.isValid())
+        {
+            qobject_cast<TreeModel*>(model())->setVisibility(index, cv, vm);
+            update();
+        }
 
-        update();
         break;
 
     case DragTag:

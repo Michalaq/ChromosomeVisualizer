@@ -116,6 +116,11 @@ QVector3D TreeItem::getPosition() const
     return QVector3D(0, 0, 0);
 }
 
+void TreeItem::setFlag(VizFlag flag, bool on)
+{
+    ;
+}
+
 #include <QJsonObject>
 #include <QJsonArray>
 #include "materialbrowser.h"
@@ -250,7 +255,8 @@ bool CameraItem::resized = false;
 
 CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
-    camera(cam)
+    camera(cam),
+    id(cam->id)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
@@ -292,6 +298,12 @@ QVector3D CameraItem::getPosition() const
 void CameraItem::setPosition(const QVector3D& p)
 {
     camera->setPosition(p);
+}
+
+void CameraItem::setFlag(VizFlag flag, bool on)
+{
+    buffer[id].flags.setFlag(flag, on);
+    modified = true;
 }
 
 void CameraItem::write(QJsonObject &json) const
@@ -409,7 +421,7 @@ void AtomItem::setMaterial(const Material *material)
     modified = true;
 }
 
-void AtomItem::setFlag(VizBallFlag flag, bool on)
+void AtomItem::setFlag(VizFlag flag, bool on)
 {
     buffer[id].flags.setFlag(flag, on);
     modified = true;

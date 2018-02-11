@@ -397,8 +397,7 @@ void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
 
 void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v)
 {
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(m == Editor ? VisibleInEditor : VisibleInRenderer, v);
+    reinterpret_cast<TreeItem*>(root.internalPointer())->setFlag(m == Editor ? VisibleInEditor : VisibleInRenderer, v);
 
     for (int r = 0; r < rowCount(root); r++)
     {
