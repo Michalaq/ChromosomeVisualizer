@@ -202,16 +202,17 @@ void Material::updateIcon()
     std::ofstream file(f->fileName().toStdString());
 
     file << *this
-         << "plane {z, 1000 texture{pigment {gradient <1,1,0> color_map {[0.0 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.4, 0.4, 0.4>] [0.5 color rgb<0.6, 0.6, 0.6>  ] [1.0 color rgb<0.6, 0.6, 0.6>  ] } scale 500 translate 0}}}\n"
-         << "camera {perspective location <0, 0, -5> look_at <0, 0, 0>}\n"
-         << "sphere {<0, 0, 0>, 2 material { " << this << " }}\n"
-         << "light_source {<1, 1, -2> color rgb<1, 1, 1> parallel point_at <0,0,0>}\n";
+         << "camera { perspective location <0,0,-2.8125> direction <0,0,1> right x up y }\n"
+         << "sphere { <0,0,0>, 1 material { " << this << " } }\n"
+         << "difference { box{ <-4,-4,-4>, <4,4,4> } union { box { <-5,-1,-5>, <5,5,1.4> } box{ <-5,1,-5>, <5,5,3.4> } cylinder { <-5,1,1.4>, <5,1,1.4>, 2 } } pigment { checker rgb <0.9,0.9,0.9> rgb <0.6,0.6,0.6> scale 0.5 } scale <1,1,0.75> }\n"
+         << "light_source { <-3,4,-5> rgb <1,1,1> parallel area_light <5, 0, 0>, <0, 0, 5>, 5, 5 adaptive 1 jitter }\n";
 
     file.close();
 
     QStringList argv;
     argv << "+W256"
          << "+H256"
+         << "+A"
          << "-GA"
          << "-D"
          << "-O-"
