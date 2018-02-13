@@ -20,8 +20,6 @@ int TreeModel::columnCount(const QModelIndex &parent) const
     return 7;
 }
 
-#include <QIcon>
-
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
