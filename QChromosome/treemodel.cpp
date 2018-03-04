@@ -406,6 +406,34 @@ void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, b
     }
 }
 
+void TreeModel::updateVisibility(const QModelIndex &root, QPair<bool, bool> v)
+{
+    if (root.isValid())
+    {
+        Visibility w;
+
+        w = (Visibility)root.sibling(root.row(), Editor).data().toInt();
+
+        if (w != Default)
+            v.first = w == On;
+
+        w = (Visibility)root.sibling(root.row(), Renderer).data().toInt();
+
+        if (w != Default)
+            v.second = w == On;
+
+        if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        {
+            AtomItem* a = reinterpret_cast<AtomItem*>(root.internalPointer());
+            a->setFlag(VisibleInEditor, v.first);
+            a->setFlag(VisibleInRenderer, v.second);
+        }
+    }
+
+    for (int r = 0; r < rowCount(root); r++)
+        updateVisibility(index(r, 0, root), v);
+}
+
 void TreeModel::setVisibility(const QModelIndex &index, Visibility v, VisibilityMode m)
 {
     setVisibility(QModelIndexList({index}), v, m);
@@ -479,6 +507,7 @@ void TreeModel::read(const QJsonObject &json)
     header->read(json);
 
     updateMaterial(QModelIndex(), Material::getDefault());
+    updateVisibility(QModelIndex(), {true, true});
 }
 
 void TreeModel::write(QJsonObject &json) const
