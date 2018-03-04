@@ -29,7 +29,7 @@ vec3 rotatedVector(vec4 q, vec3 v) {
 vec4 rotationTo(vec3 u, vec3 v) {
     vec4 q = vec4(cross(u, v), dot(u, v));
     q.w += length(q);
-    return normalize(q);
+    return q == vec4(0, 0, 0, 0) ? vec4(1, 0, 0, 0) : normalize(q);
 }
 
 const float PI = 3.1415926535897932384626433832795;
