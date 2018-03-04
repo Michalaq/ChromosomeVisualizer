@@ -13,6 +13,8 @@ in vec4 cColor;
 in vec3 cSpecularColor;
 in float fSpecularExponent;
 
+out vec4 fragColor;
+
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec3 vFixedNormal = normalize(vNormal);
@@ -41,5 +43,5 @@ void main() {
     float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     
-    gl_FragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }
