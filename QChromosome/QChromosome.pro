@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     attributes.cpp \
     titlelabel.cpp \
     pickwidget.cpp \
-    cameraattributes.cpp
+    cameraattributes.cpp \
+    session.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -145,7 +146,8 @@ HEADERS  += mainwindow.h\
     attributes.h \
     titlelabel.h \
     pickwidget.h \
-    cameraattributes.h
+    cameraattributes.h \
+    session.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \

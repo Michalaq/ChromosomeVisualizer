@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     materialBrowser(MaterialBrowser::getInstance()),
     pw(nullptr),
     msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
-    recent(nullptr)
+    recent(nullptr),
+    session(new Session)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -301,7 +302,7 @@ void MainWindow::read(const QJsonObject &json)
             auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
             simulationLayer->read(object["paths"].toArray());
 
-            simulation->addSimulationLayerConcatenation(simulationLayer, false);
+            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
         }
 
         if (object["class"] == "Camera")
@@ -320,9 +321,7 @@ void MainWindow::newProject()
     ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
-    simulation = std::make_shared<Simulation>();
-
-    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    connect(session->simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
@@ -334,9 +333,9 @@ void MainWindow::newProject()
     softMinimum = 0;
     softMaximum = 0;
 
-    ui->plot->setSimulation(simulation);
+    ui->plot->setSimulation(session->simulation);
 
-    ui->treeView->setModel(simulation->getModel());
+    ui->treeView->setModel(session->simulation->getModel());
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
@@ -348,14 +347,14 @@ void MainWindow::newProject()
 
     ui->stackedWidget->setCurrentIndex(0);
 
-    connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
+    connect(session->simulation->getModel(), &TreeModel::propertyChanged, [this] {
         ui->treeView->update();
         ui->scene->update();
     });
 
-    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), session->simulation->getModel(), SLOT(updateAttributes(const Material*)));
 
-    ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
+    ui->scene->setModel(session->simulation->getModel(), ui->treeView->selectionModel());
 
     CameraItem::clearBuffer();
     ChainItem::clearBuffer();
@@ -394,7 +393,7 @@ void MainWindow::openProject()
 
         const QJsonObject objects = project["Objects"].toObject();
         read(objects);
-        simulation->getModel()->read(objects);
+        session->simulation->getModel()->read(objects);
 
         ui->scene->update();
         ui->plot->updateSimulation();
@@ -418,7 +417,7 @@ void MainWindow::addLayer()
             else
                 simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
-            simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+            session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
             ui->scene->update();
             ui->plot->updateSimulation();
@@ -456,7 +455,7 @@ void MainWindow::saveProject()
         project["Materials"] = materials;
 
         QJsonObject objects;
-        simulation->getModel()->write(objects);
+        session->simulation->getModel()->write(objects);
         project["Objects"] = objects;
 
         QFile file(currentFile);
@@ -513,7 +512,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    AtomItem::setFrame(simulation->getFrame(n));
+    AtomItem::setFrame(session->simulation->getFrame(n));
     ui->page->ui->spinBox_5->setValue(n, false);
 }
 
@@ -546,7 +545,7 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
+    frameNumber_t previousFrame = session->simulation->getPreviousTime(currentFrame);
 
     if (currentFrame > 0)
     {
@@ -628,8 +627,8 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
-    simulation->getFrame(nextFrame);
+    frameNumber_t nextFrame = session->simulation->getNextTime(currentFrame);
+    session->simulation->getFrame(nextFrame);
 
     if (currentFrame < lastFrame)
     {
@@ -658,13 +657,13 @@ void MainWindow::play_next()
         }
     }
 
-    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    session->simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
 {
     setFrame(lastFrame);
-    simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    session->simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::selectAll()
@@ -679,7 +678,7 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    auto model = qobject_cast<TreeModel*>(simulation->getModel());
+    auto model = qobject_cast<TreeModel*>(session->simulation->getModel());
 
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
@@ -712,7 +711,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;
 
-    recent->setSelection(simulation->getModel(), selectedRows);
+    recent->setSelection(session->simulation->getModel(), selectedRows);
     ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
 }
@@ -731,7 +730,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(currentFrame, simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    MovieMaker::captureScene1(currentFrame, session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
@@ -740,7 +739,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});

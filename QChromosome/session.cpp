@@ -1,0 +1,6 @@
+#include "session.h"
+
+Session::Session()
+{
+    simulation = std::make_shared<Simulation>();
+}

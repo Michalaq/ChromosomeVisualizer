@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
+#include "session.h"
 
 namespace Ui
 {
@@ -75,7 +76,7 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    std::shared_ptr<Simulation> simulation;
+    Session *session;
 
     int currentFrame;
     int lastFrame;
