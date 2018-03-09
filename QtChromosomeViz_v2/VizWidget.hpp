@@ -32,8 +32,6 @@ public:
 
     QPersistentModelIndex pick(const QPoint& pos);
 
-    void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
-
     void setSession(Session *s);
 
 public slots:

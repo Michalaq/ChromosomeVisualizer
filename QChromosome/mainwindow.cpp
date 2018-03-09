@@ -338,6 +338,8 @@ void MainWindow::newProject()
     ui->plot->setSimulation(session->simulation);
 
     ui->treeView->setModel(session->simulation->getModel());
+    ui->treeView->setSelectionModel(session->selectionModel);
+
     ui->treeView->hideColumn(1);
     ui->treeView->hideColumn(2);
     ui->treeView->hideColumn(4);
@@ -356,7 +358,7 @@ void MainWindow::newProject()
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), session->simulation->getModel(), SLOT(updateAttributes(const Material*)));
 
-    ui->scene->setModel(session->simulation->getModel(), ui->treeView->selectionModel());
+    ui->scene->setSession(session);
 
     CameraItem::clearBuffer();
     ChainItem::clearBuffer();

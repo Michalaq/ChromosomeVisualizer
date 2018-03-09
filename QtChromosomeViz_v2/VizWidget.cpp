@@ -4,7 +4,6 @@
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , pickingFramebuffer_(nullptr)
-    , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
 }
@@ -299,12 +298,6 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
     return color != 0xFFFFFFFFU ? model_->getIndices()[color] : QPersistentModelIndex();
 }
 
-void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
-{
-    model_ = model;
-    selectionModel_ = selectionModel;
-}
-
 void VizWidget::allocate()
 {
     if (AtomItem::resized)
@@ -495,6 +488,8 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 void VizWidget::setSession(Session *s)
 {
     session = s;
+    model_ = s->simulation->getModel();
+    selectionModel_ = s->selectionModel;
 }
 
 /*void AtomSelection::setLabel(const QString & label)
