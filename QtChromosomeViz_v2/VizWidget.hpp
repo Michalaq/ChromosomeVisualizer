@@ -10,6 +10,7 @@
 #include "selection.h"
 #include "pickwidget.h"
 #include "treemodel.h"
+#include "session.h"
 
 class Viewport;
 
@@ -32,7 +33,8 @@ public:
     QPersistentModelIndex pick(const QPoint& pos);
 
     void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
-    void reloadModel();
+
+    void setSession(Session *s);
 
 public slots:
     void setModelView(QMatrix4x4 mat);
@@ -75,6 +77,8 @@ private:
 
     TreeModel *model_;
     QItemSelectionModel *selectionModel_;
+
+    Session *session;
 };
 
 #endif /* VIZWINDOW_HPP */

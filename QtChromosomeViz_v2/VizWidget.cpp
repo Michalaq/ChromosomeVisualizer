@@ -492,6 +492,11 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     emit selectionChanged(selected, flags);
 }
 
+void VizWidget::setSession(Session *s)
+{
+    session = s;
+}
+
 /*void AtomSelection::setLabel(const QString & label)
 {
     //TODO reimplement after changing selection

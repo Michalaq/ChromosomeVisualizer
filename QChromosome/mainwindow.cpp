@@ -317,6 +317,8 @@ void MainWindow::read(const QJsonObject &json)
 
 void MainWindow::newProject()
 {
+    session = new Session;
+
     currentFile.clear();
     ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
