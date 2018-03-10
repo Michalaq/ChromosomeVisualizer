@@ -164,7 +164,7 @@ void setFog(std::ofstream& outFile, const QColor & color, const float distance)
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, Simulation* simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -292,7 +292,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, Simulation *simulation, Viewport* viewport, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();

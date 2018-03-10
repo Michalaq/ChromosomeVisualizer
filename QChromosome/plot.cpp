@@ -11,11 +11,9 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
-    simulation_(std::make_shared<Simulation>()),
+    simulation_(nullptr),
     lastBuffered(-1)
 {
-    simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
-
     new QHBoxLayout(this);
     layout()->setMargin(0);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -26,7 +24,7 @@ Plot::~Plot()
 
 }
 
-void Plot::setSimulation(std::shared_ptr<Simulation> dp)
+void Plot::setSimulation(Simulation *dp)
 {
     simulation_ = std::move(dp);
 
@@ -62,13 +60,6 @@ void Plot::setSimulation(std::shared_ptr<Simulation> dp)
     update();
 }
 
-void Plot::updateSimulation()
-{
-    auto oldBuffered = lastBuffered;
-    lastBuffered = -1;
-    setMaximum(oldBuffered);
-}
-
 void Plot::setMaximum(int m)
 {
     if (lastBuffered < m)
@@ -77,12 +68,12 @@ void Plot::setMaximum(int m)
         do
         {
             prevI = lastBuffered;
-            lastBuffered = simulation_->getNextTime(lastBuffered);
+            lastBuffered = simulation_ ? simulation_->getNextTime(lastBuffered) : 0;
 
             if (prevI == lastBuffered)
                 break;
 
-            auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
+            auto funvals = simulation_ ? simulation_->getFrame(lastBuffered)->functionValues : std::map<std::string, float>();
             for (auto entry : funvals)
             {
                 data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);

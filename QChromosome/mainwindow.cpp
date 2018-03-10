@@ -323,7 +323,7 @@ void MainWindow::newProject()
     ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
-    connect(session->simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    connect(session->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
@@ -399,8 +399,7 @@ void MainWindow::openProject()
         read(objects);
         session->simulation->getModel()->read(objects);
 
-        ui->scene->update();
-        ui->plot->updateSimulation();
+        setFrame(currentFrame);
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         ui->page->read(projectSettings);
@@ -423,8 +422,7 @@ void MainWindow::addLayer()
 
             session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
-            ui->scene->update();
-            ui->plot->updateSimulation();
+            setFrame(currentFrame);
         }
     } catch (std::exception& e) {
         QMessageBox::critical(0, "Error occured.", e.what());

@@ -9,8 +9,14 @@ class Session
 {
 public:
     Session();
+    ~Session();
 
-    std::shared_ptr<Simulation> simulation;
+    void setCurrent();
+
+    static Session* current;
+
+    // Session data
+    Simulation* simulation;
     QItemSelectionModel *selectionModel;
 };
 

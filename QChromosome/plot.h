@@ -16,8 +16,7 @@ public:
     explicit Plot(QWidget *parent = 0);
     ~Plot();
 
-    void setSimulation(std::shared_ptr<Simulation> dp);
-    void updateSimulation();
+    void setSimulation(Simulation* dp);
 
     void setMaximum(int max);
     void followSlider(QAbstractSlider *s);
@@ -29,7 +28,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    std::shared_ptr<Simulation> simulation_;
+    Simulation* simulation_;
 
     QHash<QString, QVector<QPointF> > data;
     Tree minimax;
