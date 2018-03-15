@@ -49,6 +49,7 @@
 
 class Material;
 class Simulation;
+class Session;
 
 enum VisibilityMode
 {
@@ -75,7 +76,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init = true);
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, Session* session, unsigned int layer, unsigned int offset, bool init = true);
     const QVector<QPersistentModelIndex> &getIndices() const;
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());

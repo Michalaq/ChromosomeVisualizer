@@ -20,8 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     materialBrowser(MaterialBrowser::getInstance()),
     pw(nullptr),
     msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
-    recent(nullptr),
-    session(new Session)
+    recent(nullptr)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
@@ -362,7 +361,6 @@ void MainWindow::newProject()
 
     CameraItem::clearBuffer();
     ChainItem::clearBuffer();
-    AtomItem::clearBuffer();
 
     ui->scene->update();
 }
@@ -514,7 +512,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    AtomItem::setFrame(session->simulation->getFrame(n));
+    session->setFrame(session->simulation->getFrame(n));
     ui->page->ui->spinBox_5->setValue(n, false);
 }
 

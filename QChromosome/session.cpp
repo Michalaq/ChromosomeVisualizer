@@ -1,10 +1,8 @@
 #include "session.h"
 
-Session* Session::current = new Session;
-
 Session::Session()
 {
-    simulation = new Simulation;
+    simulation = new Simulation(this);
     selectionModel = new QItemSelectionModel(simulation->getModel());
 }
 
@@ -14,7 +12,19 @@ Session::~Session()
     delete selectionModel;
 }
 
-void Session::setCurrent()
+#include <cassert>
+
+void Session::setFrame(std::shared_ptr<Frame> frame)
 {
-    current = this;
+    assert(frame->atoms.size() == abuffer.size());
+
+    auto& atoms = frame->atoms;
+
+    for (int i = 0; i < atoms.size(); i++)
+    {
+        auto& atom = atoms[i];
+        abuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
+    }
+
+    amodified = true;
 }

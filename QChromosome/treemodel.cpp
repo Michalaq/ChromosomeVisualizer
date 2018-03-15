@@ -159,9 +159,9 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
 
 #include "defaults.h"
 
-void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
+void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, Session* session, TreeItem *parent, bool init)
 {
-    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, parent);
+    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, session, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -177,7 +177,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
                 types[t]->setData(5, Defaults::typename2color(t));
         }
 
-        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, types[t]));
+        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, session, types[t]));
     }
 
     for (auto t : types)
@@ -188,7 +188,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
 
 #include <QBitArray>
 
-void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, Session *session, unsigned int layer, unsigned int offset, bool init)
 {
     auto f = slc->getFrame(0);
     auto& atoms = f->atoms;
@@ -198,7 +198,8 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     auto root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
 
-    AtomItem::resizeBuffer(atoms.size());
+    session->abuffer.resize(session->abuffer.size() + atoms.size());
+    session->aresized = true;
 
     unsigned int i = 0;
 
@@ -206,7 +207,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     {
         range.first--;
         used.fill(true, range.first, range.second);
-        appendSubmodel(range, atoms, i++, offset, root, init);
+        appendSubmodel(range, atoms, i++, offset, session, root, init);
     }
 
     QMap<int, TreeItem*> types;
@@ -224,7 +225,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
                     types[t]->setData(5, Defaults::typename2color(t));
             }
 
-            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, types[t]));
+            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]));
         }
 
     for (auto t : types)

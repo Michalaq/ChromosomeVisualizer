@@ -9,6 +9,9 @@
 #include "treemodel.h"
 #include "SimulationLayerConcatenation.h"
 
+class Session;
+class TreeModel;
+
 class Simulation : public QObject {
     Q_OBJECT
 protected:
@@ -16,8 +19,9 @@ protected:
     frameNumber_t frameCount_;
     frameNumber_t nextUnreadFrame_;
     TreeModel *model;
+    Session* session;
 public:
-    Simulation();
+    Simulation(Session* s);
     virtual ~Simulation();
     frameNumber_t getFrameCount() const;
     void setSimulationName(const std::string & name);

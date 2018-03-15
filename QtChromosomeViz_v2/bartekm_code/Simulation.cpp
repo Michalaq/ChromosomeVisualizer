@@ -3,10 +3,11 @@
 #include <QDebug>
 
 
-Simulation::Simulation()
+Simulation::Simulation(Session *s)
     : frameCount_(0),
       nextUnreadFrame_(0),
-      model(new TreeModel(this))
+      model(new TreeModel(this)),
+      session(s)
 {}
 
 Simulation::~Simulation()
@@ -117,7 +118,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
    
-    model->setupModelData(slc, layerId, offset, init);
+    model->setupModelData(slc, session, layerId, offset, init);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)

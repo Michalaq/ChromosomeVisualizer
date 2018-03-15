@@ -326,21 +326,18 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-QVector<VizBallInstance> AtomItem::buffer;
-bool AtomItem::modified = false;
-bool AtomItem::resized = false;
-
-AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
+AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(id)
+    id(id),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
 
-    buffer[id].position = QVector3D(atom.x, atom.y, atom.z);
-    modified = true;
+    session->abuffer[id].position = QVector3D(atom.x, atom.y, atom.z);
+    session->amodified = true;
 }
 
 AtomItem::~AtomItem()
@@ -348,47 +345,15 @@ AtomItem::~AtomItem()
 
 }
 
-const QVector<VizBallInstance>& AtomItem::getBuffer()
-{
-    return buffer;
-}
-
 QVector3D AtomItem::getPosition() const
 {
-    return buffer[id].position;
-}
-
-void AtomItem::resizeBuffer(int count)
-{
-    buffer.resize(buffer.size() + count);
-    resized = true;
-}
-
-void AtomItem::clearBuffer()
-{
-    buffer.clear();
-    resized = true;
-}
-
-void AtomItem::setFrame(std::shared_ptr<Frame> frame)
-{
-    assert(frame->atoms.size() == buffer.size());
-
-    auto& atoms = frame->atoms;
-
-    for (int i = 0; i < atoms.size(); i++)
-    {
-        auto& atom = atoms[i];
-        buffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
-
-    modified = true;
+    return session->abuffer[id].position;
 }
 
 void AtomItem::setLabel(const QString& l)
 {
     label = l;
-    modified = true;
+    session->amodified = true;
 }
 
 const QString& AtomItem::getLabel() const
@@ -398,13 +363,13 @@ const QString& AtomItem::getLabel() const
 
 void AtomItem::setRadius(float r)
 {
-    buffer[id].size = r;
-    modified = true;
+    session->abuffer[id].size = r;
+    session->amodified = true;
 }
 
 float AtomItem::getRadius() const
 {
-    return buffer[id].size;
+    return session->abuffer[id].size;
 }
 
 void AtomItem::setMaterial(const Material *material)
@@ -412,19 +377,19 @@ void AtomItem::setMaterial(const Material *material)
     auto color = material->getColor();
     color.setAlphaF(1. - material->getTransparency());
 
-    auto& buff = buffer[id];
+    auto& buff = session->abuffer[id];
     buff.color = color.rgba();
     buff.specularColor = material->getSpecularColor().rgba();
     buff.specularExponent = material->getSpecularExponent();
     buff.material = material;
 
-    modified = true;
+    session->amodified = true;
 }
 
 void AtomItem::setFlag(VizFlag flag, bool on)
 {
-    buffer[id].flags.setFlag(flag, on);
-    modified = true;
+    session->abuffer[id].flags.setFlag(flag, on);
+    session->amodified = true;
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -434,7 +399,7 @@ void AtomItem::read(const QJsonObject &json)
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) buffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) session->abuffer[id].size = (*rad).toDouble();
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
@@ -451,8 +416,8 @@ void AtomItem::write(QJsonObject &json) const
 
     object["class"] = "Atom";
 
-    if (buffer[id].size != 1)
-        object["Radius"] = buffer[id].size;
+    if (session->abuffer[id].size != 1)
+        object["Radius"] = session->abuffer[id].size;
 
     if (!label.isEmpty())
         object["Label"] = label;
@@ -460,7 +425,7 @@ void AtomItem::write(QJsonObject &json) const
     if (object.size() > 1)
         json["Object"] = object;
 
-    modified = true;
+    session->amodified = true;
 }
 
 #include "moviemaker.h"
@@ -472,7 +437,7 @@ constexpr QVector3D vec3(const Atom& a)
 
 void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
-    const auto& atom = buffer[id];
+    const auto& atom = session->abuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
     {
@@ -490,7 +455,7 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
 
 void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
-    const auto& atom = buffer[id];
+    const auto& atom = session->abuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
     {
@@ -508,9 +473,10 @@ void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNum
 
 QVector<std::pair<int, int>> ChainItem::buffer;
 
-ChainItem::ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem) :
+ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
     TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    range(r)
+    range(r),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
@@ -539,7 +505,7 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
 {
     TreeItem::writePOVFrame(stream, frame, used);
 
-    auto buffer = AtomItem::getBuffer();
+    auto buffer = session->abuffer;
 
     for (int i = range.first; i < range.second; i++)
     {
@@ -555,7 +521,7 @@ void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
 {
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
 
-    auto buffer = AtomItem::getBuffer();
+    auto buffer = session->abuffer;
 
     for (int i = range.first; i < range.second; i++)
     {

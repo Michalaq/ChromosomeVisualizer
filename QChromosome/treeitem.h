@@ -57,7 +57,7 @@ enum VizFlag
 Q_DECLARE_FLAGS(VizFlags, VizFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(VizFlags)
 
-class Material;
+#include "material.h"
 
 class TreeItem
 {
@@ -169,9 +169,6 @@ private:
 friend class Camera;
 };
 
-#include <QVector3D>
-#include <QRgb>
-
 struct VizBallInstance
 {
     QVector3D position;
@@ -183,22 +180,15 @@ struct VizBallInstance
     const Material* material;
 };
 
-#include "material.h"
+#include "session.h"
+
+class Session;
 
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom& atom, int id, TreeItem *parentItem = 0);
+    explicit AtomItem(const Atom& atom, int id, Session* s, TreeItem *parentItem = 0);
     ~AtomItem();
-
-    static const QVector<VizBallInstance>& getBuffer();
-    static void resizeBuffer(int count);
-    static void clearBuffer();
-
-    static bool modified;
-    static bool resized;
-
-    static void setFrame(std::shared_ptr<Frame> frame);
 
     void setLabel(const QString& l);
     const QString& getLabel() const;
@@ -219,14 +209,14 @@ public:
 
 private:
     int id;
-    static QVector<VizBallInstance> buffer;
     QString label;
+    Session* session;
 };
 
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem = 0);
+    explicit ChainItem(const QString& name, std::pair<int, int> r, Session* s, TreeItem *parentItem = 0);
     ~ChainItem();
 
     static const QVector<std::pair<int, int>> &getBuffer();
@@ -238,6 +228,7 @@ public:
 private:
     static QVector<std::pair<int, int>> buffer;
     std::pair<int, int> range;
+    Session* session;
 };
 
 class ResidueItem : public TreeItem
