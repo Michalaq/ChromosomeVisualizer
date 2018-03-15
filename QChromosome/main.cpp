@@ -41,7 +41,5 @@ int main(int argc, char *argv[])
     delete MaterialBrowser::getInstance();
     delete RenderSettings::getInstance();
 
-    delete Material::getDefault();
-
     return ans;
 }
