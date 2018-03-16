@@ -203,7 +203,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        for (auto& strip : ChainItem::getBuffer())
+        for (auto& strip : session->lbuffer)
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();

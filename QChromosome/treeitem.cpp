@@ -471,8 +471,6 @@ void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNum
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
 }
 
-QVector<std::pair<int, int>> ChainItem::buffer;
-
 ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
     TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     range(r),
@@ -483,22 +481,12 @@ ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, Tre
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
 
-    buffer.append({r.first, r.second - r.first});
+    session->lbuffer.append({r.first, r.second - r.first});
 }
 
 ChainItem::~ChainItem()
 {
 
-}
-
-const QVector<std::pair<int, int> > &ChainItem::getBuffer()
-{
-    return buffer;
-}
-
-void ChainItem::clearBuffer()
-{
-    buffer.clear();
 }
 
 void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const

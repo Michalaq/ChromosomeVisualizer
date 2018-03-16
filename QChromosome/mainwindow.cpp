@@ -360,7 +360,6 @@ void MainWindow::newProject()
     ui->scene->setSession(session);
 
     CameraItem::clearBuffer();
-    ChainItem::clearBuffer();
 
     ui->scene->update();
 }

@@ -25,6 +25,9 @@ public:
     QVector<VizBallInstance> abuffer;
     bool amodified;
     bool aresized;
+
+    // ChainItem
+    QVector<std::pair<int, int>> lbuffer;
 };
 
 #endif // SESSION_H
