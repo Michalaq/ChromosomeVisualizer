@@ -105,7 +105,7 @@ void VizWidget::initializeGL()
             GL_FLOAT,
             GL_FALSE,
             sizeof(VizCameraInstance),
-            (void*)offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D)
+            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
         );
     }
 
@@ -118,7 +118,7 @@ void VizWidget::initializeGL()
             GL_FLOAT,
             GL_FALSE,
             sizeof(VizCameraInstance),
-            (void*)offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D)
+            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
         );
     }
 

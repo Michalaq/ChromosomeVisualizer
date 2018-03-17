@@ -3,7 +3,7 @@
 
 static QVector4D colorToVector(QColor c)
 {
-    return { c.redF(), c.greenF(), c.blueF(), c.alphaF() };
+    return QVector4D(c.redF(), c.greenF(), c.blueF(), c.alphaF());
 }
 
 LabelRenderer::LabelRenderer(QSizeF viewportSize)

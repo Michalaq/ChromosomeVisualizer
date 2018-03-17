@@ -169,6 +169,6 @@ RESOURCES += \
     ../QtChromosomeViz_v2/shaders.qrc \
     misc.qrc
 
-OTHER_FILES +=
+LIBS += -lprotobuf
 
-unix|win32: LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
+INCLUDEPATH += /usr/local/include
