@@ -130,19 +130,19 @@ TreeModel* Simulation::getModel()
     return model;
 }
 
-void Simulation::writePOVFrame(std::ostream &stream, frameNumber_t f)
+void Simulation::writePOVFrame(QTextStream &stream, frameNumber_t f)
 {
     model->writePOVFrame(stream, getFrame(f));
 }
 
 #include <QVector3D>
 
-static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
+static QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
-void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)
+void Simulation::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
 {
     int n = getFrame(0)->atoms.size();
 

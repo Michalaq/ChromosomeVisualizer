@@ -66,7 +66,7 @@ public:
     SplineKeyframe saveFrame() const;
     void loadFrame(const SplineKeyframe &frame);
 
-    void writePOVCamera(std::ostream &stream, bool interpolate) const;
+    void writePOVCamera(QTextStream &stream, bool interpolate) const;
 
     static void setAutomaticKeyframing(bool b = true);
 

@@ -5,33 +5,37 @@
 #include <QSettings>
 #include <QProcess>
 
-std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
+QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
-std::ostream& operator<<(std::ostream& out, const QColor & col)
+QTextStream& operator<<(QTextStream& out, const QColor & col)
 {
     return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
+#include <QFile>
+
 void prepareINIFile(const QString& filename)
 {
-    std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    QFile out(filename + ".ini");
+    out.open(QFile::WriteOnly | QFile::Truncate);
+    QTextStream outFile(&out);
     auto renderSettings = RenderSettings::getInstance();
     QSize size = renderSettings->outputSize();
     outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality().toStdString();
+            << "\nQuality=" << renderSettings->quality();
     if (renderSettings->antiAliasing())
     {
         outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
+                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
+                << "\nAntialias_Depth=" << renderSettings->aaDepth();
         if (renderSettings->aaJitter())
         {
             outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
         }
         else
         {
@@ -46,21 +50,23 @@ void prepareINIFile(const QString& filename)
 
 void prepareINIFile1(const QString& filename, int fbeg, int fend)
 {
-    std::ofstream outFile((filename + ".ini").toUtf8().constData());
+    QFile out(filename + ".ini");
+    out.open(QFile::WriteOnly | QFile::Truncate);
+    QTextStream outFile(&out);
     auto renderSettings = RenderSettings::getInstance();
     QSize size = renderSettings->outputSize();
     outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality().toStdString();
+            << "\nQuality=" << renderSettings->quality();
     if (renderSettings->antiAliasing())
     {
         outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod().toStdString()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold().toStdString()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth().toStdString();
+                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
+                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
+                << "\nAntialias_Depth=" << renderSettings->aaDepth();
         if (renderSettings->aaJitter())
         {
             outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount().toStdString();
+                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
         }
         else
         {
@@ -77,14 +83,13 @@ void prepareINIFile1(const QString& filename, int fbeg, int fend)
             << "\nFinal_Clock=" << fend;
 }
 
-void createPOVFile(std::ofstream& outFile, std::string filename)
+void createPOVFile(QTextStream& outFile)
 {
-    outFile.open(filename + ".pov");
     outFile << "#version 3.7;\n"
             << "global_settings { assumed_gamma 1.0 }\n";
 }
 
-void setCamera(std::ofstream& outFile, const Camera* camera, bool s)
+void setCamera(QTextStream& outFile, const Camera* camera, bool s)
 {
     camera->writePOVCamera(outFile, s);
 
@@ -95,7 +100,7 @@ void setCamera(std::ofstream& outFile, const Camera* camera, bool s)
             << "}\n";
 }
 
-void set360Camera(std::ofstream& outFile, const Camera* camera, bool s)
+void set360Camera(QTextStream& outFile, const Camera* camera, bool s)
 {
     outFile << "#declare odsIPD = 0.065;\n";
 
@@ -150,12 +155,12 @@ void set360Camera(std::ofstream& outFile, const Camera* camera, bool s)
             << "}\n";
 }
 
-void setBackgroundColor(std::ofstream& outFile, const QColor & color)
+void setBackgroundColor(QTextStream& outFile, const QColor & color)
 {
     outFile << "background{color " << color << "}\n";
 }
 
-void setFog(std::ofstream& outFile, const QColor & color, const float distance)
+void setFog(QTextStream& outFile, const QColor & color, const float distance)
 {
     outFile << "fog{color " << color << " distance " << distance << " }\n";
 }
@@ -170,8 +175,10 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + '/' + renderSettings->saveFile();
     prepareINIFile1(filename, fbeg, fend);
-    std::ofstream outFile;
-    createPOVFile(outFile, filename.toStdString());
+    QFile out(filename + ".pov");
+    out.open(QFile::WriteOnly | QFile::Truncate);
+    QTextStream outFile(&out);
+    createPOVFile(outFile);
 
     if (renderSettings->cam360())
         set360Camera(outFile, camera, camera->count() > 1);
@@ -298,8 +305,10 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + "/" + renderSettings->saveFile();
     prepareINIFile(filename);
-    std::ofstream outFile;
-    createPOVFile(outFile, filename.toStdString());
+    QFile out(filename + ".pov");
+    out.open(QFile::WriteOnly | QFile::Truncate);
+    QTextStream outFile(&out);
+    createPOVFile(outFile);
 
     if (renderSettings->cam360())
         set360Camera(outFile, camera, false);
@@ -366,7 +375,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
 #endif
 }
 
-void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, float radius, const Material *color)
+void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material *color)
 {
     outFile << "sphere {"
             << position << ", "
@@ -375,7 +384,7 @@ void MovieMaker::addSphere(std::ostream& outFile, const QVector3D & position, fl
             << "}\n";
 }
 
-void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
     QVector3D direction = positionB - positionA;
 
@@ -388,7 +397,7 @@ void MovieMaker::addCylinder(std::ostream& outFile, const QVector3D & positionA,
             << "}}\n";
 }
 
-void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const Material *color)
+void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, const Material *color)
 {
     outFile << "sphere {"
             << "Atom" << id << "Pos(clock), "
@@ -397,7 +406,7 @@ void MovieMaker::addSphere1(std::ostream& outFile, int id, float radius, const M
             << "}\n";
 }
 
-void MovieMaker::addCylinder1(std::ostream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
 {
     outFile << "cone{"
             << " Atom" << idA << "Pos(clock), " << radiusA

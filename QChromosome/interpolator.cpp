@@ -299,7 +299,7 @@ void SplineInterpolator::write(QJsonArray &json) const
     }
 }
 
-void SplineInterpolator::writePOVSpline(std::ostream &stream, std::function<void(std::ostream &, const SplineKeyframe &)> f) const
+void SplineInterpolator::writePOVSpline(QTextStream &stream, std::function<void(QTextStream &, const SplineKeyframe &)> f) const
 {
     stream << "spline { cubic_spline\n";
 

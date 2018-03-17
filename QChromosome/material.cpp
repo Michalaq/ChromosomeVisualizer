@@ -187,7 +187,6 @@ void Material::paintEvent(QPaintEvent *event)
 }
 
 #include <QTemporaryFile>
-#include <fstream>
 
 void Material::updateIcon()
 {
@@ -199,15 +198,13 @@ void Material::updateIcon()
     QTemporaryFile* f = new QTemporaryFile;
     f->open();
 
-    std::ofstream file(f->fileName().toStdString());
+    QTextStream file(f);
 
     file << *this
          << "camera { perspective location <0,0,-2.8125> direction <0,0,1> right x up y }\n"
          << "sphere { <0,0,0>, 1 material { " << this << " } }\n"
          << "difference { box{ <-4,-4,-4>, <4,4,4> } union { box { <-5,-1,-5>, <5,5,1.4> } box{ <-5,1,-5>, <5,5,3.4> } cylinder { <-5,1,1.4>, <5,1,1.4>, 2 } } pigment { checker rgb <0.9,0.9,0.9> rgb <0.6,0.6,0.6> scale 0.5 } scale <1,1,0.75> }\n"
          << "light_source { <-3,4,-5> rgb <1,1,1> parallel area_light <5, 0, 0>, <0, 0, 5>, 5, 5 adaptive 1 jitter }\n";
-
-    file.close();
 
     QStringList argv;
     argv << "+W256"
@@ -241,7 +238,7 @@ void Material::updateIcon()
 
 #include "rendersettings.h"
 
-std::ostream &Material::operator<<(std::ostream &stream) const
+QTextStream &Material::operator<<(QTextStream &stream) const
 {
     auto renderSettings = RenderSettings::getInstance();
 
@@ -255,14 +252,14 @@ std::ostream &Material::operator<<(std::ostream &stream) const
                << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
                << " }\n"
                << " finish {\n"
-               << "  ambient " << renderSettings->ambient().toStdString() << "\n"
-               << "  diffuse " << renderSettings->diffuse().toStdString() << "\n"
-               << "  phong " << renderSettings->phong().toStdString() << "\n"
-               << "  phong_size " << renderSettings->phongSize().toStdString() << "\n"
-               << "  metallic " << renderSettings->metallic().toStdString() << "\n"
-               << "  irid { " << renderSettings->iridescence().toStdString() << "\n"
-               << "   thickness " << renderSettings->iridescenceThickness().toStdString() << "\n"
-               << "   turbulence " << renderSettings->iridescenceTurbulence().toStdString() << "\n"
+               << "  ambient " << renderSettings->ambient() << "\n"
+               << "  diffuse " << renderSettings->diffuse() << "\n"
+               << "  phong " << renderSettings->phong() << "\n"
+               << "  phong_size " << renderSettings->phongSize() << "\n"
+               << "  metallic " << renderSettings->metallic() << "\n"
+               << "  irid { " << renderSettings->iridescence() << "\n"
+               << "   thickness " << renderSettings->iridescenceThickness() << "\n"
+               << "   turbulence " << renderSettings->iridescenceTurbulence() << "\n"
                << "  }\n"
                << "  specular 1.0\n"
                << "  roughness 0.02\n"
@@ -290,12 +287,12 @@ std::ostream &Material::operator<<(std::ostream &stream) const
     return stream;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Material &mat)
+QTextStream &operator<<(QTextStream &stream, const Material &mat)
 {
     return mat << stream;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Material *mat)
+QTextStream &operator<<(QTextStream &stream, const Material *mat)
 {
-    return stream << "m" << QString::number(quintptr(mat), 16).toStdString();
+    return stream << "m" << QString::number(quintptr(mat), 16);
 }

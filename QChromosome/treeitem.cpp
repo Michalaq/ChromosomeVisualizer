@@ -202,13 +202,13 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material*>& used) const
+void TreeItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material*>& used) const
 {
     for (const auto c : m_childItems)
         c->writePOVFrame(stream, frame, used);
 }
 
-void TreeItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
     for (const auto c : m_childItems)
         c->writePOVFrames(stream, fbeg, fend, used);
@@ -470,7 +470,7 @@ constexpr QVector3D vec3(const Atom& a)
     return {a.x, a.y, a.z};
 }
 
-void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
+void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
     const auto& atom = buffer[id];
 
@@ -488,7 +488,7 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
     TreeItem::writePOVFrame(stream, frame, used);
 }
 
-void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
     const auto& atom = buffer[id];
 
@@ -535,7 +535,7 @@ void ChainItem::clearBuffer()
     buffer.clear();
 }
 
-void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
+void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
     TreeItem::writePOVFrame(stream, frame, used);
 
@@ -551,7 +551,7 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
     }
 }
 
-void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
 

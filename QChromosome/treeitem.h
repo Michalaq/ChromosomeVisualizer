@@ -42,6 +42,7 @@
 #define TREEITEM_H
 
 #include <QVariant>
+#include <QTextStream>
 
 #include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/common.h"
@@ -88,8 +89,8 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    virtual void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
+    virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     QList<TreeItem*> m_childItems;
@@ -214,8 +215,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     int id;
@@ -232,8 +233,8 @@ public:
     static const QVector<std::pair<int, int>> &getBuffer();
     static void clearBuffer();
 
-    void writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
 
 private:
     static QVector<std::pair<int, int>> buffer;

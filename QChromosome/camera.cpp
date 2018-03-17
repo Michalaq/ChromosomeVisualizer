@@ -600,22 +600,22 @@ void Camera::updateAngles()
 
 #include "moviemaker.h"
 
-void Camera::writePOVCamera(std::ostream &stream, bool interpolate) const
+void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
 {
     if (interpolate)
     {
         stream << "#declare MySplinePos = \n";
-        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
             stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
         });
 
         stream << "#declare MySplineAng = \n";
-        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
             stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
         });
 
         stream << "#declare MySplineFov = \n";
-        writePOVSpline(stream, [](std::ostream &stream, const SplineKeyframe &frame) {
+        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
             stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
         });
 

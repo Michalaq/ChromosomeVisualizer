@@ -30,8 +30,8 @@ public:
     frameNumber_t getPreviousTime(frameNumber_t time) const;
     TreeModel* getModel();
 
-    void writePOVFrame(std::ostream &stream, frameNumber_t f);
-    void writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend);
+    void writePOVFrame(QTextStream &stream, frameNumber_t f);
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
 
 signals:
     void frameCountChanged(int frameCount);

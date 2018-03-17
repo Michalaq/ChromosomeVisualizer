@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QItemSelectionModel>
 #include <functional>
+#include <QTextStream>
 
 class SplineKeyframe
 {
@@ -76,7 +77,7 @@ public:
     virtual void read(const QJsonArray& json);
     virtual void write(QJsonArray &json) const;
 
-    void writePOVSpline(std::ostream &stream, std::function<void(std::ostream &, const SplineKeyframe &)> f) const;
+    void writePOVSpline(QTextStream &stream, std::function<void(QTextStream &, const SplineKeyframe &)> f) const;
 
     int count() const;
 
