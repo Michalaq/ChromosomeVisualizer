@@ -3,4 +3,5 @@ QChromosome/QChromosome.pro.user
 build*
 QtChromosomeViz_v2/bartekm_code/message_format/*
 !QtChromosomeViz_v2/bartekm_code/message_format/*.proto
+QtChromosomeViz_v2/bartekm_code/include/config.h
 
