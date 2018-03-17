@@ -48,8 +48,8 @@
 #include "treeitem.h"
 
 class Material;
-class Simulation;
 class Session;
+class Camera;
 
 enum VisibilityMode
 {

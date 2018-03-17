@@ -128,17 +128,12 @@ private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
 };
 
-#include <QMatrix4x4>
+#include "session.h"
 
-struct VizCameraInstance
-{
-    QMatrix4x4 modelView;
-    QMatrix4x4 projection;
-    VizFlags flags = VisibleInEditor | VisibleInRenderer;
-};
-
+class Session;
 class Camera;
 
+struct VizCameraInstance;
 class CameraItem : public TreeItem
 {
 public:
@@ -168,21 +163,6 @@ private:
 
 friend class Camera;
 };
-
-struct VizBallInstance
-{
-    QVector3D position;
-    VizFlags flags = VisibleInEditor | VisibleInRenderer;
-    QRgb color;
-    QRgb specularColor;
-    float specularExponent;
-    float size = 1.0;
-    const Material* material;
-};
-
-#include "session.h"
-
-class Session;
 
 class AtomItem : public TreeItem
 {
