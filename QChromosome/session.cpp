@@ -5,6 +5,7 @@
 
 Session::Session(MainWindow *parent) :
     window(parent),
+    saved(true),
     PS_FPS(30),
     PS_DocumentTime(0),
     PS_PreviewMinTime(0),
@@ -22,6 +23,17 @@ Session::~Session()
     delete selectionModel;
 }
 
+bool Session::isSaved() const
+{
+    return saved;
+}
+
+void Session::setSaved(bool b)
+{
+    saved = b;
+    updateWindowTitle();
+}
+
 // ProjectSettings;
 int Session::PS_getFPS() const
 {
@@ -30,6 +42,9 @@ int Session::PS_getFPS() const
 
 void Session::PS_setFPS(int n)
 {
+    saved = saved && PS_FPS == n;
+    updateWindowTitle();
+
     PS_FPS = n;
 
     window->timer.setInterval(1000 / n);
@@ -44,6 +59,9 @@ int Session::PS_getDocumentTime() const
 
 void Session::PS_setDocumentTime(int n)
 {
+    saved = saved && PS_DocumentTime == n;
+    updateWindowTitle();
+
     PS_DocumentTime = n;
 
     window->currentFrame = n;
@@ -74,6 +92,9 @@ int Session::PS_getMinimumTime() const
 
 void Session::PS_setMinimumTime(int n)
 {
+    saved = saved && PS_MinimumTime == n;
+    updateWindowTitle();
+
     PS_MinimumTime = n;
 
     window->ui->horizontalSlider_2->setMinimum(n);
@@ -91,6 +112,9 @@ int Session::PS_getMaximumTime() const
 
 void Session::PS_setMaximumTime(int n)
 {
+    saved = saved && PS_MaximumTime == n;
+    updateWindowTitle();
+
     PS_MaximumTime = n;
 
     window->ui->horizontalSlider_2->setMaximum(n);
@@ -108,6 +132,9 @@ int Session::PS_getPreviewMinTime() const
 
 void Session::PS_setPreviewMinTime(int n)
 {
+    saved = saved && PS_PreviewMinTime == n;
+    updateWindowTitle();
+
     PS_PreviewMinTime = n;
 
     window->ui->horizontalSlider->setSoftMinimum(n);
@@ -126,6 +153,9 @@ int Session::PS_getPreviewMaxTime() const
 
 void Session::PS_setPreviewMaxTime(int n)
 {
+    saved = saved && PS_PreviewMaxTime == n;
+    updateWindowTitle();
+
     PS_PreviewMaxTime = n;
 
     window->ui->horizontalSlider->setSoftMaximum(n);
@@ -145,6 +175,9 @@ const QString& Session::I_getAuthor() const
 
 void Session::I_setAuthor(const QString& s)
 {
+    saved = saved && I_Author == s;
+    updateWindowTitle();
+
     I_Author = s;
 }
 
@@ -155,6 +188,9 @@ const QString& Session::I_getInfo() const
 
 void Session::I_setInfo(const QString& s)
 {
+    saved = saved && I_Info == s;
+    updateWindowTitle();
+
     I_Info = s;
 }
 
@@ -188,7 +224,8 @@ void Session::I_setFilePath(const QString& s)
     I_FilePath = s;
 
     window->ui->page->ui->lineEdit_6->setText(s, false);
-    window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(s).fileName()));
+
+    updateWindowTitle();
 }
 
 #include <QJsonObject>
@@ -229,4 +266,9 @@ void Session::PS_write(QJsonObject &json) const
     info["File Format"] = I_FileFormat;
     info["File Version"] = I_FileVersion;
     json["Info"] = info;
+}
+
+void Session::updateWindowTitle()
+{
+    window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(I_FilePath).fileName() + (saved ? "" : "*")));
 }

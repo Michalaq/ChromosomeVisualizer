@@ -391,6 +391,8 @@ void MainWindow::openProject()
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         session->PS_read(projectSettings);
+
+        session->setSaved();
     }
 }
 
@@ -452,6 +454,8 @@ void MainWindow::saveProject()
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         file.write(QJsonDocument(project).toJson());
         file.close();
+
+        session->setSaved();
     }
 }
 
@@ -725,6 +729,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    if (session->isSaved())
+        return QMainWindow::closeEvent(event);
+
     switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->I_getFilePath().isEmpty() ? "Untitled" : QFileInfo(session->I_getFilePath()).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:

@@ -35,6 +35,9 @@ public:
     Session(MainWindow* parent);
     ~Session();
 
+    bool isSaved() const;
+    void setSaved(bool b = true);
+
     // Session data
     Simulation* simulation;
     QItemSelectionModel *selectionModel;
@@ -87,6 +90,10 @@ public:
 
 private:
     MainWindow* window;
+
+    bool saved;
+
+    void updateWindowTitle();
 
     // ProjectSettings;
     int PS_FPS;
