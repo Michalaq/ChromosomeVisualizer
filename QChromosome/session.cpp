@@ -5,7 +5,10 @@
 
 Session::Session(MainWindow *parent) :
     window(parent),
-    PS_FPS(30)
+    PS_FPS(30),
+    PS_DocumentTime(0),
+    PS_PreviewMinTime(0),
+    PS_PreviewMaxTime(0)
 {
     simulation = new Simulation(this);
     selectionModel = new QItemSelectionModel(simulation->getModel());
@@ -102,6 +105,14 @@ int Session::PS_getPreviewMinTime() const
 void Session::PS_setPreviewMinTime(int n)
 {
     PS_PreviewMinTime = n;
+
+    window->ui->horizontalSlider->setSoftMinimum(n);
+    window->ui->horizontalSlider_2->setLowerBound(n, false);
+    window->ui->plot->setSoftMinimum(n);
+    window->ui->page->ui->spinBox_7->setMinimum(n);
+    window->ui->page->ui->spinBox_4->setValue(n, false);
+
+    window->softMinimum = n;
 }
 
 int Session::PS_getPreviewMaxTime() const
@@ -112,6 +123,14 @@ int Session::PS_getPreviewMaxTime() const
 void Session::PS_setPreviewMaxTime(int n)
 {
     PS_PreviewMaxTime = n;
+
+    window->ui->horizontalSlider->setSoftMaximum(n);
+    window->ui->horizontalSlider_2->setUpperBound(n, false);
+    window->ui->plot->setSoftMaximum(n);
+    window->ui->page->ui->spinBox_4->setMaximum(n);
+    window->ui->page->ui->spinBox_7->setValue(n, false);
+
+    window->softMaximum = n;
 }
 
 // Info

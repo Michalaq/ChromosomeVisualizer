@@ -483,28 +483,6 @@ void MainWindow::updateFrameCount(int n)
         ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
-void MainWindow::setSoftMinimum(int min)
-{
-    ui->horizontalSlider->setSoftMinimum(min);
-    ui->horizontalSlider_2->setLowerBound(min, false);
-    ui->plot->setSoftMinimum(min);
-    ui->page->ui->spinBox_7->setMinimum(min);
-    ui->page->ui->spinBox_4->setValue(min, false);
-
-    softMinimum = min;
-}
-
-void MainWindow::setSoftMaximum(int max)
-{
-    ui->horizontalSlider->setSoftMaximum(max);
-    ui->horizontalSlider_2->setUpperBound(max, false);
-    ui->plot->setSoftMaximum(max);
-    ui->page->ui->spinBox_4->setMaximum(max);
-    ui->page->ui->spinBox_7->setValue(max, false);
-
-    softMaximum = max;
-}
-
 void MainWindow::start()
 {
     session->PS_setDocumentTime(0);

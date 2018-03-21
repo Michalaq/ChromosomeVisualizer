@@ -40,9 +40,6 @@ public slots:
 
     void updateFrameCount(int n);
 
-    void setSoftMinimum(int min);
-    void setSoftMaximum(int max);
-
     /* animation */
     void start();
     void previous();
