@@ -358,6 +358,7 @@ void MainWindow::newProject()
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), session->simulation->getModel(), SLOT(updateAttributes(const Material*)));
 
     ui->scene->setSession(session);
+    ui->page->setSession(session);
 
     CameraItem::clearBuffer();
 
@@ -399,7 +400,7 @@ void MainWindow::openProject()
         setFrame(currentFrame);
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
-        ui->page->read(projectSettings);
+        session->PS_read(projectSettings);
     }
 }
 
@@ -438,7 +439,7 @@ void MainWindow::saveProject()
         ui->page->ui->lineEdit_5->setText("1.01");
 
         QJsonObject projectSettings;
-        ui->page->write(projectSettings);
+        session->PS_write(projectSettings);
         project["Project Settings"] = projectSettings;
 
         QJsonObject viewport;
@@ -738,7 +739,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->PS_getFPS());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});

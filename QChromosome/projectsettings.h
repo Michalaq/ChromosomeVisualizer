@@ -2,6 +2,7 @@
 #define PROJECTSETTINGS_H
 
 #include <QWidget>
+#include "session.h"
 
 namespace Ui
 {
@@ -15,17 +16,16 @@ public:
     explicit ProjectSettings(QWidget *parent = 0);
     ~ProjectSettings();
 
-    void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
+    void setSession(Session* s);
 
 private:
     Ui::Form *ui;
+    Session* session;
 
 signals:
 
 public slots:
 
-friend class MainWindow;
 };
 
 #endif // PROJECTSETTINGS_H

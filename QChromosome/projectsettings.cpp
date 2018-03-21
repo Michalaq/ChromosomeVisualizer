@@ -13,40 +13,19 @@ ProjectSettings::~ProjectSettings()
     delete ui;
 }
 
-#include <QJsonObject>
-
-void ProjectSettings::read(const QJsonObject &json)
+void ProjectSettings::setSession(Session *s)
 {
-    const QJsonObject projectSettings = json["Project Settings"].toObject();
-    ui->spinBox->setValue(projectSettings["FPS"].toInt());
-    ui->spinBox_5->setValue(projectSettings["Document Time"].toInt());
-    ui->spinBox_3->setValue(projectSettings["Minimum Time"].toInt());
-    ui->spinBox_6->setValue(projectSettings["Maximum Time"].toInt());
-    ui->spinBox_4->setValue(projectSettings["Preview Min. Time"].toInt());
-    ui->spinBox_7->setValue(projectSettings["Preview Max. Time"].toInt());
+    session = s;
 
-    const QJsonObject info = json["Info"].toObject();
-    ui->lineEdit_3->setText(info["Author"].toString());
-    ui->textEdit->setPlainText(info["Info"].toString());
-    ui->lineEdit_4->setText(info["File Format"].toString());
-    ui->lineEdit_5->setText(info["File Version"].toString());
-}
+    ui->spinBox->setValue(session->PS_FPS);
+    ui->spinBox_5->setValue(session->PS_DocumentTime);
+    ui->spinBox_3->setValue(session->PS_MinimumTime);
+    ui->spinBox_6->setValue(session->PS_MaximumTime);
+    ui->spinBox_4->setValue(session->PS_PreviewMinTime);
+    ui->spinBox_7->setValue(session->PS_PreviewMaxTime);
 
-void ProjectSettings::write(QJsonObject &json) const
-{
-    QJsonObject projectSettings;
-    projectSettings["FPS"] = ui->spinBox->value();
-    projectSettings["Document Time"] = ui->spinBox_5->value();
-    projectSettings["Minimum Time"] = ui->spinBox_3->value();
-    projectSettings["Maximum Time"] = ui->spinBox_6->value();
-    projectSettings["Preview Min. Time"] = ui->spinBox_4->value();
-    projectSettings["Preview Max. Time"] = ui->spinBox_7->value();
-    json["Project Settings"] = projectSettings;
-
-    QJsonObject info;
-    info["Author"] = ui->lineEdit_3->text();
-    info["Info"] = ui->textEdit->toPlainText();
-    info["File Format"] = ui->lineEdit_4->text();
-    info["File Version"] = ui->lineEdit_5->text();
-    json["Info"] = info;
+    ui->lineEdit_3->setText(session->I_Author);
+    ui->textEdit->setPlainText(session->I_Info);
+    ui->lineEdit_4->setText(session->I_FileFormat);
+    ui->lineEdit_5->setText(session->I_FileVersion);
 }
