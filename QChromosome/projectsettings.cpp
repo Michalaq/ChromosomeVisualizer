@@ -6,6 +6,30 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
     ui(new Ui::Form)
 {
     ui->setupUi(this);
+
+    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setFPS(value);
+    });
+
+    connect(ui->spinBox_5, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setDocumentTime(value);
+    });
+
+    connect(ui->spinBox_3, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setMinimumTime(value);
+    });
+
+    connect(ui->spinBox_6, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setMaximumTime(value);
+    });
+
+    connect(ui->spinBox_4, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setPreviewMinTime(value);
+    });
+
+    connect(ui->spinBox_7, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setPreviewMaxTime(value);
+    });
 }
 
 ProjectSettings::~ProjectSettings()

@@ -13,7 +13,7 @@ Session::Session(MainWindow *parent) :
     simulation = new Simulation(this);
     selectionModel = new QItemSelectionModel(simulation->getModel());
 
-    I_setFilePath("");
+    I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
 }
 
 Session::~Session()
@@ -31,6 +31,8 @@ int Session::PS_getFPS() const
 void Session::PS_setFPS(int n)
 {
     PS_FPS = n;
+
+    window->timer.setInterval(1000 / n);
 }
 
 int Session::PS_getDocumentTime() const
@@ -75,6 +77,7 @@ void Session::PS_setMinimumTime(int n)
     PS_MinimumTime = n;
 
     window->ui->horizontalSlider_2->setMinimum(n);
+    window->ui->spinBox_2->setValue(n, false);
     window->ui->spinBox_3->setMinimum(n);
     window->ui->page->ui->spinBox_6->setMinimum(n);
     window->ui->page->ui->spinBox_4->setMinimum(n);
@@ -91,6 +94,7 @@ void Session::PS_setMaximumTime(int n)
     PS_MaximumTime = n;
 
     window->ui->horizontalSlider_2->setMaximum(n);
+    window->ui->spinBox_3->setValue(n, false);
     window->ui->spinBox_2->setMaximum(n);
     window->ui->page->ui->spinBox_3->setMaximum(n);
     window->ui->page->ui->spinBox_7->setMaximum(n);
@@ -183,11 +187,7 @@ void Session::I_setFilePath(const QString& s)
 {
     I_FilePath = s;
 
-    if (s.isEmpty())
-        window->ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
-    else
-        window->ui->page->ui->lineEdit_6->setText(s);
-
+    window->ui->page->ui->lineEdit_6->setText(s);
     window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(s).fileName()));
 }
 

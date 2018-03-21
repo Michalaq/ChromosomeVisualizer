@@ -1755,22 +1755,6 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionSelect_All</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -1827,70 +1811,6 @@ QLineEdit {
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>411</x>
-     <y>244</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plot</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>423</x>
-     <y>436</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>lowerBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMinimum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>upperBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMaximum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>

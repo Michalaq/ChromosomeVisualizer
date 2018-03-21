@@ -22,14 +22,14 @@ MainWindow::MainWindow(QWidget *parent) :
     msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
     recent(nullptr)
 {
-    setWindowTitle("QChromosome 4D Studio - [Untitled]");
-
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     ui->setupUi(this);
+
+    newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
         QMessageBox::about(0, "About QChromosome 4D", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
@@ -90,17 +90,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
 
-    connect(ui->page->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        timer.setInterval(1000 / value);
-    });
-
-    timer.setInterval(1000 / ui->page->ui->spinBox->value());
-
-    connect(ui->page->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
-    connect(ui->page->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(ui->page->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
+    timer.setInterval(1000 / session->PS_getFPS());
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -219,7 +209,25 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
-    newProject();
+    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        session->PS_setDocumentTime(value);
+    });
+
+    connect(ui->plot, &Plot::valueChanged, [this](int value) {
+        session->PS_setDocumentTime(value);
+    });
+
+    connect(ui->horizontalSlider, &QSlider::valueChanged, [this](int value) {
+        session->PS_setDocumentTime(value);
+    });
+
+    connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, [this](int value) {
+        session->PS_setPreviewMinTime(value);
+    });
+
+    connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, [this](int value) {
+        session->PS_setPreviewMaxTime(value);
+    });
 
     ui->treeView->header()->resizeSection(3, 40);
     ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
@@ -498,7 +506,7 @@ void MainWindow::previous()
 
 void MainWindow::reverse_previous()
 {
-    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * session->PS_getFPS() / 1000), 0);
 
     if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
         session->PS_setDocumentTime(previousFrame);
@@ -572,7 +580,7 @@ void MainWindow::next()
 
 void MainWindow::play_next()
 {
-    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * session->PS_getFPS() / 1000);
 
     if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
         session->PS_setDocumentTime(nextFrame);

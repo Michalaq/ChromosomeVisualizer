@@ -27,6 +27,7 @@ signals:
 public slots:
 
     friend class Session;
+    friend class MainWindow;
 };
 
 #endif // PROJECTSETTINGS_H
