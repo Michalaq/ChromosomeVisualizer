@@ -11,7 +11,8 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
-#include "session.h"
+
+class Session;
 
 namespace Ui
 {
@@ -99,14 +100,14 @@ private:
     int softMinimum;
     int softMaximum;
 
-    QString currentFile;
-
     void addCamera(Camera *camera);
 
     PickWidget* pw;
     QLabel* msg;
 
     MetaAttributes* recent;
+
+    friend class Session;
 };
 
 #endif // MAINWINDOW_H

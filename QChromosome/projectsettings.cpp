@@ -17,15 +17,16 @@ void ProjectSettings::setSession(Session *s)
 {
     session = s;
 
-    ui->spinBox->setValue(session->PS_FPS);
-    ui->spinBox_5->setValue(session->PS_DocumentTime);
-    ui->spinBox_3->setValue(session->PS_MinimumTime);
-    ui->spinBox_6->setValue(session->PS_MaximumTime);
-    ui->spinBox_4->setValue(session->PS_PreviewMinTime);
-    ui->spinBox_7->setValue(session->PS_PreviewMaxTime);
+    ui->spinBox->setValue(session->PS_getFPS());
+    ui->spinBox_5->setValue(session->PS_getDocumentTime());
+    ui->spinBox_3->setValue(session->PS_getMinimumTime());
+    ui->spinBox_6->setValue(session->PS_getMaximumTime());
+    ui->spinBox_4->setValue(session->PS_getPreviewMinTime());
+    ui->spinBox_7->setValue(session->PS_getPreviewMaxTime());
 
-    ui->lineEdit_3->setText(session->I_Author);
-    ui->textEdit->setPlainText(session->I_Info);
-    ui->lineEdit_4->setText(session->I_FileFormat);
-    ui->lineEdit_5->setText(session->I_FileVersion);
+    ui->lineEdit_3->setText(session->I_getAuthor());
+    ui->textEdit->setPlainText(session->I_getInfo());
+    ui->lineEdit_4->setText(session->I_getFileFormat());
+    ui->lineEdit_5->setText(session->I_getFileVersion());
+    ui->lineEdit_6->setText(session->I_getFilePath());
 }

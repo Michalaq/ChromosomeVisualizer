@@ -1,10 +1,16 @@
 #include "session.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "ui_projectsettings.h"
 
-Session::Session() :
+Session::Session(MainWindow *parent) :
+    window(parent),
     PS_FPS(30)
 {
     simulation = new Simulation(this);
     selectionModel = new QItemSelectionModel(simulation->getModel());
+
+    I_setFilePath("");
 }
 
 Session::~Session()
@@ -59,6 +65,12 @@ int Session::PS_getMinimumTime() const
 void Session::PS_setMinimumTime(int n)
 {
     PS_MinimumTime = n;
+
+    window->ui->horizontalSlider_2->setMinimum(n);
+    window->ui->spinBox_3->setMinimum(n);
+    window->ui->page->ui->spinBox_6->setMinimum(n);
+    window->ui->page->ui->spinBox_4->setMinimum(n);
+    window->ui->page->ui->spinBox_3->setValue(n, false);
 }
 
 int Session::PS_getMaximumTime() const
@@ -69,6 +81,12 @@ int Session::PS_getMaximumTime() const
 void Session::PS_setMaximumTime(int n)
 {
     PS_MaximumTime = n;
+
+    window->ui->horizontalSlider_2->setMaximum(n);
+    window->ui->spinBox_2->setMaximum(n);
+    window->ui->page->ui->spinBox_3->setMaximum(n);
+    window->ui->page->ui->spinBox_7->setMaximum(n);
+    window->ui->page->ui->spinBox_6->setValue(n, false);
 }
 
 int Session::PS_getPreviewMinTime() const
@@ -130,6 +148,23 @@ const QString& Session::I_getFileVersion() const
 void Session::I_setFileVersion(const QString& s)
 {
     I_FileVersion = s;
+}
+
+const QString& Session::I_getFilePath() const
+{
+    return I_FilePath;
+}
+
+void Session::I_setFilePath(const QString& s)
+{
+    I_FilePath = s;
+
+    if (s.isEmpty())
+        window->ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
+    else
+        window->ui->page->ui->lineEdit_6->setText(s);
+
+    window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(s).fileName()));
 }
 
 #include <QJsonObject>

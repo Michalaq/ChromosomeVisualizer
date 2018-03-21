@@ -13,6 +13,7 @@
 #include "session.h"
 
 class Viewport;
+class Session;
 
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_3_3_Core,

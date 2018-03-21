@@ -6,6 +6,7 @@
 #include <QItemSelectionModel>
 
 class Simulation;
+class MainWindow;
 
 #include "treeitem.h"
 #include <QMatrix4x4>
@@ -31,7 +32,7 @@ struct VizBallInstance
 class Session
 {
 public:
-    Session();
+    Session(MainWindow* parent);
     ~Session();
 
     void setFrame(std::shared_ptr<Frame> frame);
@@ -72,6 +73,9 @@ public:
     const QString& I_getFileVersion() const;
     void I_setFileVersion(const QString& s);
 
+    const QString& I_getFilePath() const;
+    void I_setFilePath(const QString& s);
+
     void PS_read(const QJsonObject& json);
     void PS_write(QJsonObject& json) const;
 
@@ -84,6 +88,8 @@ public:
     QVector<std::pair<int, int>> lbuffer;
 
 private:
+    MainWindow* window;
+
     // ProjectSettings;
     int PS_FPS;
     int PS_DocumentTime;
@@ -97,6 +103,7 @@ private:
     QString I_Info;
     QString I_FileFormat;
     QString I_FileVersion;
+    QString I_FilePath;
 };
 
 #endif // SESSION_H
