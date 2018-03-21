@@ -78,12 +78,12 @@ public:
     void PS_write(QJsonObject& json) const;
 
     // AtomItem
-    QVector<VizBallInstance> abuffer;
-    bool amodified;
-    bool aresized;
+    QVector<VizBallInstance> AI_buffer;
+    bool AI_modified;
+    bool AI_resized;
 
     // ChainItem
-    QVector<std::pair<int, int>> lbuffer;
+    QVector<std::pair<int, int>> CI_buffer;
 
 private:
     MainWindow* window;

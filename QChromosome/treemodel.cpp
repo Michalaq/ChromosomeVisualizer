@@ -198,8 +198,8 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     auto root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
 
-    session->abuffer.resize(session->abuffer.size() + atoms.size());
-    session->aresized = true;
+    session->AI_buffer.resize(session->AI_buffer.size() + atoms.size());
+    session->AI_resized = true;
 
     unsigned int i = 0;
 

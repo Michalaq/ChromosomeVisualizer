@@ -30,6 +30,10 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
     connect(ui->spinBox_7, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
         session->PS_setPreviewMaxTime(value);
     });
+
+    connect(ui->lineEdit_6, &LineEdit::textChanged, [this](const QString& s) {
+        session->I_setFilePath(s);
+    });
 }
 
 ProjectSettings::~ProjectSettings()

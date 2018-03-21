@@ -182,7 +182,7 @@ void VizWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (!session->abuffer.empty())
+    if (!session->AI_buffer.empty())
     {
         float fogDensity_ = viewport_->getFogDensity();
         float fogContribution_ = viewport_->getFogContribution();
@@ -203,7 +203,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        for (auto& strip : session->lbuffer)
+        for (auto& strip : session->CI_buffer)
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();
@@ -221,7 +221,7 @@ void VizWidget::paintGL()
                                        backgroundColor_.greenF(),
                                        backgroundColor_.blueF());
 
-        glDrawArrays(GL_POINTS, 0, session->abuffer.count());
+        glDrawArrays(GL_POINTS, 0, session->AI_buffer.count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
@@ -300,23 +300,23 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 
 void VizWidget::allocate()
 {
-    if (session->aresized)
+    if (session->AI_resized)
     {
         atomPositions_.bind();
-        atomPositions_.allocate(session->abuffer.constData(), session->abuffer.count() * sizeof(VizBallInstance));
+        atomPositions_.allocate(session->AI_buffer.constData(), session->AI_buffer.count() * sizeof(VizBallInstance));
         atomPositions_.release();
 
-        session->aresized = false;
-        session->amodified = false;
+        session->AI_resized = false;
+        session->AI_modified = false;
     }
 
-    if (session->amodified)
+    if (session->AI_modified)
     {
         atomPositions_.bind();
-        atomPositions_.write(0, session->abuffer.constData(), session->abuffer.size() * sizeof(VizBallInstance));
+        atomPositions_.write(0, session->AI_buffer.constData(), session->AI_buffer.size() * sizeof(VizBallInstance));
         atomPositions_.release();
 
-        session->amodified = false;
+        session->AI_modified = false;
     }
 
     if (CameraItem::resized)
@@ -383,7 +383,7 @@ void VizWidget::pickSpheres()
     glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
 
-    if (!session->abuffer.empty())
+    if (!session->AI_buffer.empty())
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
@@ -391,7 +391,7 @@ void VizWidget::pickSpheres()
         sphereProgram_.setUniformValue("pro", projection_);
         sphereProgram_.setUniformValue("mv", modelView_);
 
-        glDrawArrays(GL_POINTS, 0, session->abuffer.count());
+        glDrawArrays(GL_POINTS, 0, session->AI_buffer.count());
 
         pickingProgram_.release();
         vaoSpheres_.release();

@@ -336,8 +336,8 @@ AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
 
-    session->abuffer[id].position = QVector3D(atom.x, atom.y, atom.z);
-    session->amodified = true;
+    session->AI_buffer[id].position = QVector3D(atom.x, atom.y, atom.z);
+    session->AI_modified = true;
 }
 
 AtomItem::~AtomItem()
@@ -347,13 +347,13 @@ AtomItem::~AtomItem()
 
 QVector3D AtomItem::getPosition() const
 {
-    return session->abuffer[id].position;
+    return session->AI_buffer[id].position;
 }
 
 void AtomItem::setLabel(const QString& l)
 {
     label = l;
-    session->amodified = true;
+    session->AI_modified = true;
 }
 
 const QString& AtomItem::getLabel() const
@@ -363,13 +363,13 @@ const QString& AtomItem::getLabel() const
 
 void AtomItem::setRadius(float r)
 {
-    session->abuffer[id].size = r;
-    session->amodified = true;
+    session->AI_buffer[id].size = r;
+    session->AI_modified = true;
 }
 
 float AtomItem::getRadius() const
 {
-    return session->abuffer[id].size;
+    return session->AI_buffer[id].size;
 }
 
 void AtomItem::setMaterial(const Material *material)
@@ -377,19 +377,19 @@ void AtomItem::setMaterial(const Material *material)
     auto color = material->getColor();
     color.setAlphaF(1. - material->getTransparency());
 
-    auto& buff = session->abuffer[id];
+    auto& buff = session->AI_buffer[id];
     buff.color = color.rgba();
     buff.specularColor = material->getSpecularColor().rgba();
     buff.specularExponent = material->getSpecularExponent();
     buff.material = material;
 
-    session->amodified = true;
+    session->AI_modified = true;
 }
 
 void AtomItem::setFlag(VizFlag flag, bool on)
 {
-    session->abuffer[id].flags.setFlag(flag, on);
-    session->amodified = true;
+    session->AI_buffer[id].flags.setFlag(flag, on);
+    session->AI_modified = true;
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -399,7 +399,7 @@ void AtomItem::read(const QJsonObject &json)
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) session->abuffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) session->AI_buffer[id].size = (*rad).toDouble();
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
@@ -416,8 +416,8 @@ void AtomItem::write(QJsonObject &json) const
 
     object["class"] = "Atom";
 
-    if (session->abuffer[id].size != 1)
-        object["Radius"] = session->abuffer[id].size;
+    if (session->AI_buffer[id].size != 1)
+        object["Radius"] = session->AI_buffer[id].size;
 
     if (!label.isEmpty())
         object["Label"] = label;
@@ -425,7 +425,7 @@ void AtomItem::write(QJsonObject &json) const
     if (object.size() > 1)
         json["Object"] = object;
 
-    session->amodified = true;
+    session->AI_modified = true;
 }
 
 #include "moviemaker.h"
@@ -437,7 +437,7 @@ constexpr QVector3D vec3(const Atom& a)
 
 void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
 {
-    const auto& atom = session->abuffer[id];
+    const auto& atom = session->AI_buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
     {
@@ -455,7 +455,7 @@ void AtomItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame,
 
 void AtomItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
 {
-    const auto& atom = session->abuffer[id];
+    const auto& atom = session->AI_buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
     {
@@ -481,7 +481,7 @@ ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, Tre
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
 
-    session->lbuffer.append({r.first, r.second - r.first});
+    session->CI_buffer.append({r.first, r.second - r.first});
 }
 
 ChainItem::~ChainItem()
@@ -493,7 +493,7 @@ void ChainItem::writePOVFrame(std::ostream &stream, std::shared_ptr<Frame> frame
 {
     TreeItem::writePOVFrame(stream, frame, used);
 
-    auto buffer = session->abuffer;
+    auto buffer = session->AI_buffer;
 
     for (int i = range.first; i < range.second; i++)
     {
@@ -509,7 +509,7 @@ void ChainItem::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNu
 {
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
 
-    auto buffer = session->abuffer;
+    auto buffer = session->AI_buffer;
 
     for (int i = range.first; i < range.second; i++)
     {

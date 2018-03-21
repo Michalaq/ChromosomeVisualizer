@@ -56,15 +56,15 @@ void Session::PS_setDocumentTime(int n)
 
     auto& atoms = simulation->getFrame(n)->atoms;
 
-    assert(atoms.size() == abuffer.size());
+    assert(atoms.size() == AI_buffer.size());
 
     for (int i = 0; i < atoms.size(); i++)
     {
         auto& atom = atoms[i];
-        abuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
+        AI_buffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 
-    amodified = true;
+    AI_modified = true;
 }
 
 int Session::PS_getMinimumTime() const
@@ -187,7 +187,7 @@ void Session::I_setFilePath(const QString& s)
 {
     I_FilePath = s;
 
-    window->ui->page->ui->lineEdit_6->setText(s);
+    window->ui->page->ui->lineEdit_6->setText(s, false);
     window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(s).fileName()));
 }
 
