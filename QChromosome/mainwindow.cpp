@@ -381,8 +381,6 @@ void MainWindow::openProject()
         read(objects);
         session->simulation->getModel()->read(objects);
 
-        setFrame(currentFrame);
-
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         session->PS_read(projectSettings);
     }
@@ -404,7 +402,7 @@ void MainWindow::addLayer()
 
             session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
-            setFrame(currentFrame);
+            session->PS_setDocumentTime(currentFrame);
         }
     } catch (std::exception& e) {
         QMessageBox::critical(0, "Error occured.", e.what());
@@ -485,19 +483,6 @@ void MainWindow::updateFrameCount(int n)
         ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
-void MainWindow::setFrame(int n)
-{
-    currentFrame = n;
-
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
-    ui->scene->update();
-    ui->plot->setValue(n);
-    SplineInterpolator::setFrame(n);
-    session->setFrame(session->simulation->getFrame(n));
-    ui->page->ui->spinBox_5->setValue(n, false);
-}
-
 void MainWindow::setSoftMinimum(int min)
 {
     ui->horizontalSlider->setSoftMinimum(min);
@@ -522,7 +507,7 @@ void MainWindow::setSoftMaximum(int max)
 
 void MainWindow::start()
 {
-    setFrame(0);
+    session->PS_setDocumentTime(0);
 }
 
 void MainWindow::previous()
@@ -530,10 +515,7 @@ void MainWindow::previous()
     frameNumber_t previousFrame = session->simulation->getPreviousTime(currentFrame);
 
     if (currentFrame > 0)
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
+        session->PS_setDocumentTime(previousFrame);
 }
 
 void MainWindow::reverse_previous()
@@ -541,19 +523,13 @@ void MainWindow::reverse_previous()
     qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
 
     if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
+        session->PS_setDocumentTime(previousFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->reverse->click();
         else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMaximum : lastFrame;
-            setFrame(currentFrame);
-        }
+            session->PS_setDocumentTime(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
     }
 }
 
@@ -568,7 +544,7 @@ void MainWindow::reverse(bool checked)
             ui->play->click();
 
         if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
-            setFrame(softMaximum);
+            session->PS_setDocumentTime(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
 
@@ -593,7 +569,7 @@ void MainWindow::play(bool checked)
             ui->reverse->click();
 
         if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
-            setFrame(softMinimum);
+            session->PS_setDocumentTime(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
 
@@ -613,10 +589,7 @@ void MainWindow::next()
     session->simulation->getFrame(nextFrame);
 
     if (currentFrame < lastFrame)
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
+        session->PS_setDocumentTime(nextFrame);
 }
 
 void MainWindow::play_next()
@@ -624,19 +597,13 @@ void MainWindow::play_next()
     qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
 
     if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
+        session->PS_setDocumentTime(nextFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->play->click();
         else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMinimum : 0;
-            setFrame(currentFrame);
-        }
+            session->PS_setDocumentTime(ui->actionPreview_range->isChecked() ? softMinimum : 0);
     }
 
     session->simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
@@ -644,7 +611,7 @@ void MainWindow::play_next()
 
 void MainWindow::end()
 {
-    setFrame(lastFrame);
+    session->PS_setDocumentTime(lastFrame);
     session->simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
@@ -772,7 +739,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(currentFile.isEmpty() ? "Untitled" : QFileInfo(currentFile).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
+    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->I_getFilePath().isEmpty() ? "Untitled" : QFileInfo(session->I_getFilePath()).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:
         saveProject();

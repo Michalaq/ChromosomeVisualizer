@@ -19,23 +19,6 @@ Session::~Session()
     delete selectionModel;
 }
 
-#include <cassert>
-
-void Session::setFrame(std::shared_ptr<Frame> frame)
-{
-    assert(frame->atoms.size() == abuffer.size());
-
-    auto& atoms = frame->atoms;
-
-    for (int i = 0; i < atoms.size(); i++)
-    {
-        auto& atom = atoms[i];
-        abuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
-
-    amodified = true;
-}
-
 // ProjectSettings;
 int Session::PS_getFPS() const
 {
@@ -52,9 +35,31 @@ int Session::PS_getDocumentTime() const
     return PS_DocumentTime;
 }
 
+#include <cassert>
+
 void Session::PS_setDocumentTime(int n)
 {
     PS_DocumentTime = n;
+
+    window->currentFrame = n;
+    window->ui->horizontalSlider->setValue(n);
+    window->ui->spinBox->setValue(n);
+    window->ui->scene->update();
+    window->ui->plot->setValue(n);
+    SplineInterpolator::setFrame(n);
+    window->ui->page->ui->spinBox_5->setValue(n, false);
+
+    auto& atoms = simulation->getFrame(n)->atoms;
+
+    assert(atoms.size() == abuffer.size());
+
+    for (int i = 0; i < atoms.size(); i++)
+    {
+        auto& atom = atoms[i];
+        abuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
+    }
+
+    amodified = true;
 }
 
 int Session::PS_getMinimumTime() const
@@ -184,6 +189,8 @@ void Session::PS_read(const QJsonObject &json)
     I_Info = info["Info"].toString();
     I_FileFormat = info["File Format"].toString();
     I_FileVersion = info["File Version"].toString();
+
+    PS_setDocumentTime(PS_DocumentTime);
 }
 
 void Session::PS_write(QJsonObject &json) const

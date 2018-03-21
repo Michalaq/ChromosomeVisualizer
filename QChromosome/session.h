@@ -35,8 +35,6 @@ public:
     Session(MainWindow* parent);
     ~Session();
 
-    void setFrame(std::shared_ptr<Frame> frame);
-
     // Session data
     Simulation* simulation;
     QItemSelectionModel *selectionModel;

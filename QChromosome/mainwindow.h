@@ -38,7 +38,6 @@ public slots:
     void saveProject();
     void saveProjectAs();
 
-    void setFrame(int n);
     void updateFrameCount(int n);
 
     void setSoftMinimum(int min);
