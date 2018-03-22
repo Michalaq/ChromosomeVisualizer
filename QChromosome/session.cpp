@@ -3,6 +3,8 @@
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
 
+int Session::count = 0;
+
 Session::Session(MainWindow *parent) :
     window(parent),
     saved(true),
@@ -11,18 +13,24 @@ Session::Session(MainWindow *parent) :
     PS_FPS(30),
     PS_DocumentTime(0),
     PS_PreviewMinTime(0),
-    PS_PreviewMaxTime(0)
+    PS_PreviewMaxTime(0),
+    action(new QAction)
 {
     simulation = new Simulation(this);
     selectionModel = new QItemSelectionModel(simulation->getModel());
 
-    I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
+    I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled %1").arg(++count));
 }
 
 Session::~Session()
 {
     delete simulation;
     delete selectionModel;
+}
+
+QAction *Session::getAction()
+{
+    return action;
 }
 
 bool Session::isSaved() const
@@ -273,5 +281,9 @@ void Session::PS_write(QJsonObject &json) const
 
 void Session::updateWindowTitle()
 {
-    window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(I_FilePath).fileName() + (saved ? "" : "*")));
+    auto name = QFileInfo(I_FilePath).fileName();
+    if (!saved) name.append('*');
+
+    window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(name));
+    action->setText(name);
 }

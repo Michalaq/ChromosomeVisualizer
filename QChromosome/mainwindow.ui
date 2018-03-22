@@ -791,6 +791,7 @@ Label {
     <addaction name="menuDockable_dialogs"/>
     <addaction name="separator"/>
     <addaction name="actionMaterial_Browser"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

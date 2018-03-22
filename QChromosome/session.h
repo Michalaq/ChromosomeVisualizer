@@ -29,11 +29,15 @@ struct VizBallInstance
     const Material* material;
 };
 
+#include <QAction>
+
 class Session
 {
 public:
     Session(MainWindow* parent);
     ~Session();
+
+    QAction* getAction();
 
     bool isSaved() const;
     void setSaved(bool b = true);
@@ -89,7 +93,11 @@ public:
     QVector<std::pair<int, int>> CI_buffer;
 
 private:
+    static int count;
+
     MainWindow* window;
+
+    QAction* action;
 
     bool saved;
 

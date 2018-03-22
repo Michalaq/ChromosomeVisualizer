@@ -359,6 +359,8 @@ void MainWindow::newProject()
     CameraItem::clearBuffer();
 
     ui->scene->update();
+
+    ui->menuWindows->addAction(session->getAction());
 }
 
 void MainWindow::openProject()
