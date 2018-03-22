@@ -6,6 +6,8 @@
 Session::Session(MainWindow *parent) :
     window(parent),
     saved(true),
+    AI_modified(false),
+    AI_resized(false),
     PS_FPS(30),
     PS_DocumentTime(0),
     PS_PreviewMinTime(0),
@@ -72,7 +74,8 @@ void Session::PS_setDocumentTime(int n)
     SplineInterpolator::setFrame(n);
     window->ui->page->ui->spinBox_5->setValue(n, false);
 
-    auto& atoms = simulation->getFrame(n)->atoms;
+    auto frame = simulation->getFrame(n);
+    auto& atoms = frame->atoms;
 
     assert(atoms.size() == AI_buffer.size());
 
