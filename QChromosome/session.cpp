@@ -233,18 +233,18 @@ void Session::I_setFilePath(const QString& s)
 void Session::PS_read(const QJsonObject &json)
 {
     const QJsonObject projectSettings = json["Project Settings"].toObject();
-    PS_FPS = projectSettings["FPS"].toInt();
-    PS_DocumentTime = projectSettings["Document Time"].toInt();
-    PS_MinimumTime = projectSettings["Minimum Time"].toInt();
-    PS_MaximumTime = projectSettings["Maximum Time"].toInt();
-    PS_PreviewMinTime = projectSettings["Preview Min. Time"].toInt();
-    PS_PreviewMaxTime = projectSettings["Preview Max. Time"].toInt();
+    PS_setFPS(projectSettings["FPS"].toInt());
+    PS_setDocumentTime(projectSettings["Document Time"].toInt());
+    PS_setMinimumTime(projectSettings["Minimum Time"].toInt());
+    PS_setMaximumTime(projectSettings["Maximum Time"].toInt());
+    PS_setPreviewMinTime(projectSettings["Preview Min. Time"].toInt());
+    PS_setPreviewMaxTime(projectSettings["Preview Max. Time"].toInt());
 
     const QJsonObject info = json["Info"].toObject();
-    I_Author = info["Author"].toString();
-    I_Info = info["Info"].toString();
-    I_FileFormat = info["File Format"].toString();
-    I_FileVersion = info["File Version"].toString();
+    I_setAuthor(info["Author"].toString());
+    I_setInfo(info["Info"].toString());
+    I_setFileFormat(info["File Format"].toString());
+    I_setFileVersion(info["File Version"].toString());
 
     PS_setDocumentTime(PS_DocumentTime);
 }
