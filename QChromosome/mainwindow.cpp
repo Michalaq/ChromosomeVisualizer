@@ -318,17 +318,15 @@ void MainWindow::newProject()
 {
     session = new Session(this);
 
-    connect(session->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
     ui->horizontalSlider_2->setRange(0, 0);
 
-    currentFrame = 0;
-    lastFrame = 0;
+    currentFrame = session->PS_getDocumentTime();
+    lastFrame = session->S_getTotalFrames();
 
-    softMinimum = 0;
-    softMaximum = 0;
+    softMinimum = session->PS_getPreviewMinTime();
+    softMaximum = session->PS_getPreviewMaxTime();
 
     ui->plot->setSimulation(session->simulation);
 
@@ -471,27 +469,6 @@ void MainWindow::saveProjectAs()
 
         saveProject();
     }
-}
-
-void MainWindow::updateFrameCount(int n)
-{
-    bool expandRange = ui->spinBox_3->value() == lastFrame;
-    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
-
-    lastFrame = n - 1;
-
-    ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_3->setMaximum(lastFrame);
-    ui->horizontalSlider->setMaximum(lastFrame);
-    ui->plot->setMaximum(lastFrame);
-    ui->page->ui->spinBox_5->setMaximum(lastFrame);
-    ui->page->ui->spinBox_6->setMaximum(lastFrame);
-
-    if (expandRange)
-        ui->spinBox_3->setValue(lastFrame);
-
-    if (expandInterval)
-        ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
 void MainWindow::start()

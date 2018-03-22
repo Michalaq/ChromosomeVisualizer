@@ -31,8 +31,9 @@ struct VizBallInstance
 
 #include <QAction>
 
-class Session
+class Session : public QObject
 {
+    Q_OBJECT
 public:
     Session(MainWindow* parent);
     ~Session();
@@ -45,6 +46,9 @@ public:
     // Session data
     Simulation* simulation;
     QItemSelectionModel *selectionModel;
+
+    // Simulation
+    int S_getTotalFrames() const;
 
     // ProjectSettings;
     int PS_getFPS() const;
@@ -101,12 +105,15 @@ private:
     static int count;
 
     MainWindow* window;
-
     QAction* action;
 
     bool saved;
 
     void updateWindowTitle();
+    void updateFrameCount(int n);
+
+    // Simulation
+    int S_TotalFrames;
 
     // ProjectSettings;
     int PS_FPS;

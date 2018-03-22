@@ -38,8 +38,6 @@ public slots:
     void saveProject();
     void saveProjectAs();
 
-    void updateFrameCount(int n);
-
     /* animation */
     void start();
     void previous();

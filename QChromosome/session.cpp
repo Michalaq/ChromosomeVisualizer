@@ -8,6 +8,7 @@ int Session::count = 0;
 Session::Session(MainWindow *parent) :
     window(parent),
     saved(true),
+    S_TotalFrames(0),
     PS_FPS(30),
     PS_DocumentTime(0),
     PS_PreviewMinTime(0),
@@ -22,6 +23,8 @@ Session::Session(MainWindow *parent) :
     selectionModel = new QItemSelectionModel(simulation->getModel());
 
     I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled %1").arg(++count));
+
+    connect(simulation, &Simulation::frameCountChanged, this, &Session::updateFrameCount);
 }
 
 Session::~Session()
@@ -44,6 +47,12 @@ void Session::setSaved(bool b)
 {
     saved = b;
     updateWindowTitle();
+}
+
+// Simulation
+int Session::S_getTotalFrames() const
+{
+    return S_TotalFrames;
 }
 
 // ProjectSettings;
@@ -288,4 +297,27 @@ void Session::updateWindowTitle()
 
     window->setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(name));
     action->setText(name);
+}
+
+void Session::updateFrameCount(int n)
+{
+    bool expandRange = PS_MaximumTime == S_TotalFrames;
+    bool expandInterval = PS_PreviewMaxTime == S_TotalFrames;
+
+    S_TotalFrames = n - 1;
+
+    window->ui->spinBox->setMaximum(S_TotalFrames);
+    window->ui->spinBox_3->setMaximum(S_TotalFrames);
+    window->ui->horizontalSlider->setMaximum(S_TotalFrames);
+    window->ui->plot->setMaximum(S_TotalFrames);
+    window->ui->page->ui->spinBox_5->setMaximum(S_TotalFrames);
+    window->ui->page->ui->spinBox_6->setMaximum(S_TotalFrames);
+
+    if (expandRange)
+        window->ui->spinBox_3->setValue(S_TotalFrames);
+
+    if (expandInterval)
+        window->ui->horizontalSlider_2->setUpperBound(S_TotalFrames);
+
+    window->lastFrame = S_TotalFrames;
 }
