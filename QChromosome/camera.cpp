@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "session.h"
 
 const qreal Camera::distanceFactor = 0.025;
 const qreal Camera::angleFactor = 0.05;
@@ -18,15 +19,15 @@ Viewport* Camera::viewport = nullptr;
 
 #include "treeitem.h"
 
-Camera::Camera(QWidget *parent)
+Camera::Camera(Session *s, QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
+      session(s),
       eye(60, 30, 60),
       focalLength(36),
       sensorSize(36),
       rotationType(RT_World),
       nearClipping(.3),
-      farClipping(1000.),
-      id(CameraItem::emplace_back())
+      farClipping(1000.)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -47,10 +48,19 @@ Camera::Camera(QWidget *parent)
             break;
         };
     });
+
+    if (session)
+    {
+        id = session->CI_buffer.size();
+
+        session->CI_buffer.resize(id + 1);
+        session->CI_resized = true;
+    }
 }
 
-Camera::Camera(const Camera& camera)
+Camera::Camera(const Camera& camera, Session *s)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}),
+      session(s),
       eye(camera.eye),
       x(camera.x), y(camera.y), z(camera.z),
       h(camera.h), p(camera.p), b(camera.b),
@@ -63,9 +73,10 @@ Camera::Camera(const Camera& camera)
       aspectRatio(camera.aspectRatio),
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
-      farClipping(camera.farClipping),
-      id(CameraItem::emplace_back())
+      farClipping(camera.farClipping)
 {
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
     connect(this, &Camera::delta, [this](int dx, int dy) {
         switch (currentAction) {
         case CA_Move:
@@ -80,7 +91,16 @@ Camera::Camera(const Camera& camera)
         };
     });
 
-    CameraItem::buffer[id] = CameraItem::buffer[camera.id];
+    if (session)
+    {
+        id = session->CI_buffer.size();
+
+        session->CI_buffer.resize(id + 1);
+        session->CI_resized = true;
+
+        session->CI_buffer[id].modelView = modelView;
+        session->CI_buffer[id].projection = projection;
+    }
 }
 
 Camera::~Camera()
@@ -562,8 +582,15 @@ QMatrix4x4& Camera::updateModelView()
 
     update();
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].modelView = modelView = modelView.inverted();
+    modelView = modelView.inverted();
+
+    if (session)
+    {
+        session->CI_modified = true;
+        session->CI_buffer[id].modelView = modelView;
+    }
+
+    return modelView;
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -583,8 +610,13 @@ QMatrix4x4& Camera::updateProjection()
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].projection = projection;
+    if (session)
+    {
+        session->CI_modified = true;
+        session->CI_buffer[id].projection = projection;
+    }
+
+    return projection;
 }
 
 void Camera::updateAngles()

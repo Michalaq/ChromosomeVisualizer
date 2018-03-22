@@ -181,7 +181,6 @@ void VizWidget::paintGL()
                  0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // If there are no spheres, my driver crashes
     if (!session->AI_buffer.empty())
     {
         float fogDensity_ = viewport_->getFogDensity();
@@ -203,7 +202,7 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        for (auto& strip : session->CI_buffer)
+        for (auto& strip : session->LI_buffer)
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();
@@ -227,7 +226,7 @@ void VizWidget::paintGL()
         vaoSpheres_.release();
     }
 
-    if (CameraItem::getBuffer().count() > 1)
+    if (!session->CI_buffer.empty())
     {
         vaoCameras_.bind();
         cameraProgram_.bind();
@@ -235,7 +234,7 @@ void VizWidget::paintGL()
         cameraProgram_.setUniformValue("pro", projection_);
         cameraProgram_.setUniformValue("mv", modelView_);
 
-        glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
+        glDrawArrays(GL_POINTS, 0, session->CI_buffer.count());
 
         cameraProgram_.release();
         vaoCameras_.release();
@@ -319,23 +318,23 @@ void VizWidget::allocate()
         session->AI_modified = false;
     }
 
-    if (CameraItem::resized)
+    if (session->CI_resized)
     {
         cameraPositions_.bind();
-        cameraPositions_.allocate(CameraItem::getBuffer().constData(), CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
+        cameraPositions_.allocate(session->CI_buffer.constData(), session->CI_buffer.count() * sizeof(VizCameraInstance));
         cameraPositions_.release();
 
-        CameraItem::resized = false;
-        CameraItem::modified = false;
+        session->CI_resized = false;
+        session->CI_modified = false;
     }
 
-    if (CameraItem::modified)
+    if (session->CI_modified)
     {
         cameraPositions_.bind();
-        cameraPositions_.write(0, CameraItem::getBuffer().constData(), CameraItem::getBuffer().size() * sizeof(VizCameraInstance));
+        cameraPositions_.write(0, session->CI_buffer.constData(), session->CI_buffer.size() * sizeof(VizCameraInstance));
         cameraPositions_.release();
 
-        CameraItem::modified = false;
+        session->CI_modified = false;
     }
 }
 

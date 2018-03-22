@@ -128,24 +128,14 @@ private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
 };
 
-#include "session.h"
-
 class Session;
 class Camera;
 
-struct VizCameraInstance;
 class CameraItem : public TreeItem
 {
 public:
     explicit CameraItem(const QString& name, Camera* cam, TreeItem *parentItem = 0);
     ~CameraItem();
-
-    static const QVector<VizCameraInstance>& getBuffer();
-    static int emplace_back();
-    static void clearBuffer();
-
-    static bool modified;
-    static bool resized;
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
@@ -159,7 +149,7 @@ public:
 private:
     int id;
     Camera* camera;
-    static QVector<VizCameraInstance> buffer;
+    Session* session;
 
 friend class Camera;
 };

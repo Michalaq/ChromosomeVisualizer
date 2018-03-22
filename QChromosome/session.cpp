@@ -8,12 +8,14 @@ int Session::count = 0;
 Session::Session(MainWindow *parent) :
     window(parent),
     saved(true),
-    AI_modified(false),
-    AI_resized(false),
     PS_FPS(30),
     PS_DocumentTime(0),
     PS_PreviewMinTime(0),
     PS_PreviewMaxTime(0),
+    AI_modified(false),
+    AI_resized(false),
+    CI_modified(false),
+    CI_resized(false),
     action(new QAction)
 {
     simulation = new Simulation(this);

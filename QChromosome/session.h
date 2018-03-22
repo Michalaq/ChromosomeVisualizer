@@ -90,7 +90,12 @@ public:
     bool AI_resized;
 
     // ChainItem
-    QVector<std::pair<int, int>> CI_buffer;
+    QVector<std::pair<int, int>> LI_buffer;
+
+    // CameraItem
+    QVector<VizCameraInstance> CI_buffer;
+    bool CI_modified;
+    bool CI_resized;
 
 private:
     static int count;

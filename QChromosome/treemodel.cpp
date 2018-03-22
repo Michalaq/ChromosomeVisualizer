@@ -186,6 +186,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
     parent->appendChild(root);
 }
 
+#include "session.h"
 #include <QBitArray>
 
 void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, Session *session, unsigned int layer, unsigned int offset, bool init)

@@ -64,6 +64,7 @@ public slots:
     void captureMovie() const;
 
     void updateLocks();
+    void setSession(Session* s);
 
 protected:
     void keyPressEvent(QKeyEvent *event);

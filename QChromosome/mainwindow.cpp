@@ -181,7 +181,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())));
+        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), session));
     });
 
     connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
@@ -306,7 +306,7 @@ void MainWindow::read(const QJsonObject &json)
 
         if (object["class"] == "Camera")
         {
-            auto camera = new Camera();
+            auto camera = new Camera(session);
             camera->read(object);
 
             addCamera(camera);
@@ -341,7 +341,7 @@ void MainWindow::newProject()
     ui->treeView->hideColumn(6);
     ui->treeView->setColumnWidth(3, 48);
 
-    connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+    connect(session->selectionModel, &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -355,9 +355,6 @@ void MainWindow::newProject()
 
     ui->scene->setSession(session);
     ui->page->setSession(session);
-
-    CameraItem::clearBuffer();
-
     ui->scene->update();
 
     ui->menuWindows->addAction(session->getAction());
@@ -689,6 +686,11 @@ void MainWindow::captureMovie() const
 void MainWindow::updateLocks()
 {
     Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
+}
+
+void MainWindow::setSession(Session *s)
+{
+    session = s;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

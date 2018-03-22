@@ -39,6 +39,7 @@
 ****************************************************************************/
 
 #include "treeitem.h"
+#include "session.h"
 
 TreeItem::TreeItem(const QVariantList &data, TreeItem *parent)
 {
@@ -249,14 +250,11 @@ void LayerItem::write(QJsonObject &json) const
 
 #include "camera.h"
 
-QVector<VizCameraInstance> CameraItem::buffer;
-bool CameraItem::modified = false;
-bool CameraItem::resized = false;
-
 CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
     camera(cam),
-    id(cam->id)
+    id(cam->id),
+    session(cam->session)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
@@ -266,28 +264,8 @@ CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
 
 CameraItem::~CameraItem()
 {
-
-}
-
-const QVector<VizCameraInstance>& CameraItem::getBuffer()
-{
-    return buffer;
-}
-
-int CameraItem::emplace_back()
-{
-    int offset = buffer.size();
-
-    buffer.resize(offset + 1);
-    resized = true;
-
-    return offset;
-}
-
-void CameraItem::clearBuffer()
-{
-    buffer.resize(1);
-    resized = true;
+    session->CI_buffer[id].flags.setFlag(VisibleInEditor, false);
+    session->CI_modified = true;
 }
 
 QVector3D CameraItem::getPosition() const
@@ -302,8 +280,8 @@ void CameraItem::setPosition(const QVector3D& p)
 
 void CameraItem::setFlag(VizFlag flag, bool on)
 {
-    buffer[id].flags.setFlag(flag, on);
-    modified = true;
+    session->CI_buffer[id].flags.setFlag(flag, on);
+    session->CI_modified = true;
 }
 
 void CameraItem::write(QJsonObject &json) const
@@ -481,7 +459,7 @@ ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, Tre
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
 
-    session->CI_buffer.append({r.first, r.second - r.first});
+    session->LI_buffer.append({r.first, r.second - r.first});
 }
 
 ChainItem::~ChainItem()
