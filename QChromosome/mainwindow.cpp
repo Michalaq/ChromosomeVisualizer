@@ -232,6 +232,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeView->header()->resizeSection(3, 40);
     ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
     ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
+
+    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 }
 
 MainWindow::~MainWindow()
@@ -316,35 +318,9 @@ void MainWindow::read(const QJsonObject &json)
 
 void MainWindow::newProject()
 {
-    session = new Session(this);
-
-    ui->plot->setSimulation(session->simulation);
-    ui->plot->setRange(session->PS_getPreviewMinTime(), session->PS_getPreviewMaxTime());
-
-    ui->horizontalSlider->setRange(0, session->S_getTotalFrames());
-    ui->horizontalSlider->setSoftMinimum(session->PS_getPreviewMinTime());
-    ui->horizontalSlider->setSoftMaximum(session->PS_getPreviewMaxTime());
-    ui->horizontalSlider_2->setRange(session->PS_getMinimumTime(), session->PS_getMaximumTime());
-
-    currentFrame = session->PS_getDocumentTime();
-    lastFrame = session->S_getTotalFrames();
-
-    softMinimum = session->PS_getPreviewMinTime();
-    softMaximum = session->PS_getPreviewMaxTime();
-
-    ui->treeView->setModel(session->simulation->getModel());
-    ui->treeView->setSelectionModel(session->selectionModel);
-
-    ui->treeView->hideColumn(1);
-    ui->treeView->hideColumn(2);
-    ui->treeView->hideColumn(4);
-    ui->treeView->hideColumn(6);
-    ui->treeView->setColumnWidth(3, 48);
+    setSession(new Session(this));
 
     connect(session->selectionModel, &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
-    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
-
-    ui->stackedWidget->setCurrentIndex(0);
 
     connect(session->simulation->getModel(), &TreeModel::propertyChanged, [this] {
         ui->treeView->update();
@@ -352,10 +328,6 @@ void MainWindow::newProject()
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), session->simulation->getModel(), SLOT(updateAttributes(const Material*)));
-
-    ui->scene->setSession(session);
-    ui->page->setSession(session);
-    ui->scene->update();
 
     ui->menuWindows->addAction(session->getAction());
 }
@@ -670,6 +642,25 @@ void MainWindow::updateLocks()
 void MainWindow::setSession(Session *s)
 {
     session = s;
+
+    ui->plot->setSimulation(session->simulation);
+
+    session->load();
+
+    ui->treeView->setModel(session->simulation->getModel());
+    ui->treeView->setSelectionModel(session->selectionModel);
+
+    ui->treeView->hideColumn(1);
+    ui->treeView->hideColumn(2);
+    ui->treeView->hideColumn(4);
+    ui->treeView->hideColumn(6);
+    ui->treeView->setColumnWidth(3, 48);
+
+    ui->stackedWidget->setCurrentIndex(0);
+
+    ui->scene->setSession(session);
+    ui->page->setSession(session);
+    ui->scene->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

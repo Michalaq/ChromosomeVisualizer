@@ -27,6 +27,10 @@ Session::Session(MainWindow *parent) :
     I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled %1").arg(++count));
 
     connect(simulation, &Simulation::frameCountChanged, this, &Session::updateFrameCount);
+
+    connect(action, &QAction::triggered, [this] {
+        window->setSession(this);
+    });
 }
 
 Session::~Session()
@@ -322,4 +326,27 @@ void Session::updateFrameCount(int n)
         window->ui->horizontalSlider_2->setUpperBound(S_TotalFrames);
 
     window->lastFrame = S_TotalFrames;
+}
+
+void Session::load()
+{
+    int tmp = PS_DocumentTime;
+
+    updateFrameCount(S_TotalFrames + 1);
+
+    PS_setFPS(PS_FPS);
+    PS_setMinimumTime(PS_MinimumTime);
+    PS_setMaximumTime(PS_MaximumTime);
+    PS_setPreviewMinTime(PS_PreviewMinTime);
+    PS_setPreviewMaxTime(PS_PreviewMaxTime);
+    PS_setDocumentTime(tmp);
+
+    I_setAuthor(I_Author);
+    I_setInfo(I_Info);
+    I_setFileFormat(I_FileFormat);
+    I_setFileVersion(I_FileVersion);
+    I_setFilePath(I_FilePath);
+
+    AI_resized = true;
+    CI_resized = true;
 }

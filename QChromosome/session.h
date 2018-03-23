@@ -43,6 +43,8 @@ public:
     bool isSaved() const;
     void setSaved(bool b = true);
 
+    void load();
+
     // Session data
     Simulation* simulation;
     QItemSelectionModel *selectionModel;

@@ -251,6 +251,7 @@ std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t time)
             ret = cachedFrame_;
         } else {
             file_.seekg(cachedFramePositions_[cachedPosition]);
+            readFrameHeader();
             ret = readFrameContents({ cachedPosition, cachedTime });
 
             positionCachedFor_ = cachedPosition;
