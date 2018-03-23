@@ -30,7 +30,6 @@ void Plot::setSimulation(Simulation *dp)
 
     data.clear();
 
-    setRange(0, 0);
     lastBuffered = -1;
 
     minimax.clear();

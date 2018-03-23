@@ -318,17 +318,19 @@ void MainWindow::newProject()
 {
     session = new Session(this);
 
-    ui->plot->setRange(0, 0);
-    ui->horizontalSlider->setRange(0, 0);
-    ui->horizontalSlider_2->setRange(0, 0);
+    ui->plot->setSimulation(session->simulation);
+    ui->plot->setRange(session->PS_getPreviewMinTime(), session->PS_getPreviewMaxTime());
+
+    ui->horizontalSlider->setRange(0, session->S_getTotalFrames());
+    ui->horizontalSlider->setSoftMinimum(session->PS_getPreviewMinTime());
+    ui->horizontalSlider->setSoftMaximum(session->PS_getPreviewMaxTime());
+    ui->horizontalSlider_2->setRange(session->PS_getMinimumTime(), session->PS_getMaximumTime());
 
     currentFrame = session->PS_getDocumentTime();
     lastFrame = session->S_getTotalFrames();
 
     softMinimum = session->PS_getPreviewMinTime();
     softMaximum = session->PS_getPreviewMaxTime();
-
-    ui->plot->setSimulation(session->simulation);
 
     ui->treeView->setModel(session->simulation->getModel());
     ui->treeView->setSelectionModel(session->selectionModel);

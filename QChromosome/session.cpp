@@ -11,6 +11,8 @@ Session::Session(MainWindow *parent) :
     S_TotalFrames(0),
     PS_FPS(30),
     PS_DocumentTime(0),
+    PS_MinimumTime(0),
+    PS_MaximumTime(0),
     PS_PreviewMinTime(0),
     PS_PreviewMaxTime(0),
     AI_modified(false),
