@@ -102,6 +102,9 @@ private:
 
     MetaAttributes* recent;
 
+    QStack<Session*> sessions;
+    bool closeCurrentSession();
+
     friend class Session;
 };
 

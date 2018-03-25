@@ -313,6 +313,7 @@ void MainWindow::newProject()
     if (session) session->currentCamera->blockSignals(true);
 
     setSession(new Session(this));
+    sessions.push(session);
 
     connect(session->editorCamera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
     connect(session->editorCamera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
@@ -711,22 +712,35 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
     QMainWindow::keyReleaseEvent(event);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+bool MainWindow::closeCurrentSession()
 {
-    if (session->isSaved())
-        return QMainWindow::closeEvent(event);
+    Session* tmp;
 
-    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->I_getFilePath().isEmpty() ? "Untitled" : QFileInfo(session->I_getFilePath()).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
+    switch (session->isSaved() ? QMessageBox::No : QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->I_getFilePath().isEmpty() ? "Untitled" : QFileInfo(session->I_getFilePath()).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:
         saveProject();
     case QMessageBox::No:
-        event->accept();
-        QApplication::quit();;
+        if (sessions.size() == 1)
+        {
+            QApplication::quit();
+            return false;
+        }
+        tmp = session;
+        sessions.removeOne(tmp);
+        setSession(sessions.top());
+        delete tmp;
+        return true;
     case QMessageBox::Cancel:
-        event->ignore();
-        break;
+        return false;
     }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    while (closeCurrentSession());
+
+    event->ignore();
 }
 
 void MainWindow::addCamera(Camera* camera)

@@ -39,7 +39,7 @@ Session::Session(MainWindow *parent) :
 Session::~Session()
 {
     delete simulation;
-    delete selectionModel;
+    delete action;
 }
 
 QAction *Session::getAction()
