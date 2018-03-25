@@ -48,6 +48,8 @@ public:
     // Session data
     Simulation* simulation;
     QItemSelectionModel *selectionModel;
+    Camera* editorCamera;
+    Camera* currentCamera;
 
     // Simulation
     int S_getTotalFrames() const;

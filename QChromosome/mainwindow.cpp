@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     materialBrowser(MaterialBrowser::getInstance()),
     pw(nullptr),
     msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
-    recent(nullptr)
+    recent(nullptr),
+    session(nullptr)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -81,8 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
-
     connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
     connect(ui->actionContent_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
 
@@ -123,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Camera::setViewport(ui->page_4);
 
     connect(ui->page_4, &Viewport::viewportChanged, [this] {
-        ui->stackedWidget_2->currentWidget()->update();
+        session->currentCamera->update();
         ui->scene->update();
     });
 
@@ -133,20 +132,12 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
+        session->currentCamera->captureFrame();
         ui->horizontalSlider->update();
     });
 
-    ui->horizontalSlider->setSplineInterpolator(ui->camera);
-
-    connect(ui->camera, &SplineInterpolator::selectionChanged, [this] {
-        ui->page_6->setSplineInterpolator(ui->camera);
-        ui->stackedWidget->setCurrentIndex(5);
-        ui->dockWidget_2->show();
-    });
-
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setLookAt(Camera::getOrigin());
+        session->currentCamera->setLookAt(Camera::getOrigin());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -181,15 +172,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), session));
+        addCamera(new Camera(*session->currentCamera, session));
     });
 
     connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
-        if (!camera) camera = ui->camera;
-        ui->stackedWidget_2->currentWidget()->blockSignals(true);
+        if (!camera) camera = session->editorCamera;
+        session->currentCamera->blockSignals(true);
         camera->blockSignals(false);
         ui->stackedWidget_2->setCurrentWidget(camera);
         ui->horizontalSlider->setSplineInterpolator(camera);
+        session->currentCamera = camera;
     });
 
     msg->setStyleSheet("padding-left: 1px; padding-top: -1px; color: white;");
@@ -281,7 +273,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
     if (watched == ui->scene && event->type() == QEvent::Wheel)
     {
-        QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
+        QApplication::sendEvent(session->currentCamera, event);
         return true;
     }
 
@@ -318,7 +310,18 @@ void MainWindow::read(const QJsonObject &json)
 
 void MainWindow::newProject()
 {
+    if (session) session->currentCamera->blockSignals(true);
+
     setSession(new Session(this));
+
+    connect(session->editorCamera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
+    connect(session->editorCamera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, session->editorCamera, &Camera::setAspectRatio);
+    connect(session->editorCamera, &SplineInterpolator::selectionChanged, [=] {
+        ui->page_6->setSplineInterpolator(session->editorCamera);
+        ui->stackedWidget->setCurrentIndex(5);
+        ui->dockWidget_2->show();
+    });
 
     connect(session->selectionModel, &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
@@ -351,7 +354,7 @@ void MainWindow::openProject()
         ui->page_4->read(viewport);
 
         const QJsonObject camera = project["Camera"].toObject();
-        ui->camera->read(camera);
+        session->editorCamera->read(camera);
 
         const QJsonArray materials = project["Materials"].toArray();
         materialBrowser->read(materials);
@@ -410,7 +413,7 @@ void MainWindow::saveProject()
         project["Viewport"] = viewport;
 
         QJsonObject camera;
-        ui->camera->write(camera);
+        session->editorCamera->write(camera);
         project["Camera"] = camera;
 
         QJsonArray materials;
@@ -619,7 +622,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene1(currentFrame, session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    MovieMaker::captureScene1(currentFrame, session->simulation, ui->page_4, session->currentCamera, suffix);
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
@@ -628,7 +631,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, ui->page_4, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->PS_getFPS());
+    MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, ui->page_4, session->currentCamera, suffix, session->PS_getFPS());
 
     if (renderSettings->render() && renderSettings->openFile())
         QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
@@ -641,6 +644,8 @@ void MainWindow::updateLocks()
 
 void MainWindow::setSession(Session *s)
 {
+    if (session) session->currentCamera->blockSignals(true);
+
     session = s;
 
     ui->plot->setSimulation(session->simulation);
@@ -661,6 +666,11 @@ void MainWindow::setSession(Session *s)
     ui->scene->setSession(session);
     ui->page->setSession(session);
     ui->scene->update();
+
+    session->currentCamera->blockSignals(false);
+    ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
+
+    ui->horizontalSlider->setSplineInterpolator(session->currentCamera);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

@@ -8,6 +8,10 @@ int Session::count = 0;
 Session::Session(MainWindow *parent) :
     window(parent),
     saved(true),
+    simulation(new Simulation(this)),
+    selectionModel(new QItemSelectionModel(simulation->getModel())),
+    editorCamera(new Camera),
+    currentCamera(editorCamera),
     S_TotalFrames(0),
     PS_FPS(30),
     PS_DocumentTime(0),
@@ -21,9 +25,6 @@ Session::Session(MainWindow *parent) :
     CI_resized(false),
     action(new QAction)
 {
-    simulation = new Simulation(this);
-    selectionModel = new QItemSelectionModel(simulation->getModel());
-
     I_setFilePath(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled %1").arg(++count));
 
     connect(simulation, &Simulation::frameCountChanged, this, &Session::updateFrameCount);
@@ -31,6 +32,8 @@ Session::Session(MainWindow *parent) :
     connect(action, &QAction::triggered, [this] {
         window->setSession(this);
     });
+
+    window->ui->stackedWidget_2->addWidget(editorCamera);
 }
 
 Session::~Session()

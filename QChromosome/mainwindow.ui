@@ -376,7 +376,6 @@ Label {
               <property name="styleSheet">
                <string notr="true">background: none;</string>
               </property>
-              <widget class="Camera" name="camera"/>
              </widget>
             </item>
            </layout>
@@ -1520,19 +1519,6 @@ QLineEdit {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Camera</class>
-   <extends>QWidget</extends>
-   <header>camera.h</header>
-   <container>1</container>
-   <slots>
-    <signal>modelViewChanged(QMatrix4x4)</signal>
-    <signal>projectionChanged(QMatrix4x4)</signal>
-    <slot>move(int,int)</slot>
-    <slot>rotate(int,int)</slot>
-    <slot>scale(int,int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>DockWidget</class>
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
@@ -1627,38 +1613,6 @@ QLineEdit {
   <include location="icons.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>camera</sender>
-   <signal>modelViewChanged(QMatrix4x4)</signal>
-   <receiver>scene</receiver>
-   <slot>setModelView(QMatrix4x4)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>40</x>
-     <y>175</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>63</x>
-     <y>204</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>camera</sender>
-   <signal>projectionChanged(QMatrix4x4)</signal>
-   <receiver>scene</receiver>
-   <slot>setProjection(QMatrix4x4)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>170</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>205</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
