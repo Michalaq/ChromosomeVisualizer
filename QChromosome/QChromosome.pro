@@ -163,12 +163,19 @@ FORMS    += mainwindow.ui \
     cameraattributes.ui
 
 CONFIG += c++14
+CONFIG -= app_bundle
 
 RESOURCES += \
     icons.qrc \
     ../QtChromosomeViz_v2/shaders.qrc \
     misc.qrc
 
-LIBS += -lprotobuf
+exists( /usr/lib/x86_64-linux-gnu/libprotobuf.a ) {
+    LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
+}
+
+exists( /usr/local/lib/libprotobuf.a ) {
+    LIBS += /usr/local/lib/libprotobuf.a
+}
 
 INCLUDEPATH += /usr/local/include
