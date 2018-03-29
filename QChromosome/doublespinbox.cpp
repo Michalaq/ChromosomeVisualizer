@@ -1,5 +1,4 @@
 #include "doublespinbox.h"
-#include <QLineEdit>
 
 RegularExpressionValidator::RegularExpressionValidator(const QRegularExpression &rx, QObject *parent) : QRegularExpressionValidator(rx, parent)
 {

@@ -1,7 +1,7 @@
 #ifndef SPINBOX_H
 #define SPINBOX_H
 
-#include <QSpinBox>
+#include "doublespinbox.h"
 
 class SpinBox : public QSpinBox
 {
@@ -12,6 +12,9 @@ public:
 
     QValidator::State validate(QString &input, int &pos) const;
     int valueFromText(const QString &text) const;
+    QString textFromValue(int val) const;
+
+    void setMultipleValues();
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -23,7 +26,9 @@ public slots:
     void setValue(int val, bool spontaneous = true);
 
 private:
-    QRegularExpression re;
+    RegularExpressionValidator validator;
+    LineEdit* edit;
+    bool multiple;
 };
 
 #endif // SPINBOX_H
