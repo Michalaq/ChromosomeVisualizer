@@ -16,6 +16,9 @@ public:
 
     void setMultipleValues();
 
+    void setMaximum(int max);
+    void setMinimum(int min);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);

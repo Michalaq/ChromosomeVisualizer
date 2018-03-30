@@ -60,6 +60,28 @@ void SpinBox::setMultipleValues()
     edit->setMultipleValues(multiple = true);
 }
 
+void SpinBox::setMaximum(int max)
+{
+    bool m = multiple;
+
+    bool b = blockSignals(true);
+    QSpinBox::setMaximum(max);
+    blockSignals(b);
+
+    if (m) setMultipleValues();
+}
+
+void SpinBox::setMinimum(int min)
+{
+    bool m = multiple;
+
+    bool b = blockSignals(true);
+    QSpinBox::setMinimum(min);
+    blockSignals(b);
+
+    if (m) setMultipleValues();
+}
+
 #include <QStyle>
 
 void SpinBox::focusInEvent(QFocusEvent *event)
