@@ -404,6 +404,8 @@ void MainWindow::openProject()
     }
 }
 
+#include "importdialog.h"
+
 void MainWindow::addLayer()
 {
     try {
@@ -418,10 +420,16 @@ void MainWindow::addLayer()
             else
                 simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
 
-            simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+            ImportDialog impd(simulationLayer.get());
+            impd.setWindowTitle(QString("Import - [%1]").arg(QFileInfo(path).fileName()));
 
-            ui->scene->update();
-            ui->plot->updateSimulation();
+            if (impd.exec() == QDialog::Accepted)
+            {
+                simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+
+                ui->scene->update();
+                ui->plot->updateSimulation();
+            }
         }
     } catch (std::exception& e) {
         QMessageBox::critical(0, "Error occured.", e.what());

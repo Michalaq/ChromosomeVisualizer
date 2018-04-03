@@ -13,6 +13,7 @@ protected:
     frameNumber_t frameCount_;
     int connectionCount_;
     int layerId_;
+    int first, last, stride;
 public:
     SimulationLayer(const std::string & name);
     virtual ~SimulationLayer() {};

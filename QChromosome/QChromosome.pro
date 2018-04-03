@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     attributes.cpp \
     titlelabel.cpp \
     pickwidget.cpp \
-    cameraattributes.cpp
+    cameraattributes.cpp \
+    importdialog.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -145,7 +146,8 @@ HEADERS  += mainwindow.h\
     attributes.h \
     titlelabel.h \
     pickwidget.h \
-    cameraattributes.h
+    cameraattributes.h \
+    importdialog.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
@@ -160,7 +162,8 @@ FORMS    += mainwindow.ui \
     materialattributes.ui \
     materialbrowser.ui \
     attributes.ui \
-    cameraattributes.ui
+    cameraattributes.ui \
+    importdialog.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle
