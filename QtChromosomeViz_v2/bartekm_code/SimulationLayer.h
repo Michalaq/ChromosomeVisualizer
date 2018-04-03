@@ -29,6 +29,7 @@ public:
     virtual bool reachedEndOfFile() const = 0;
 signals:
     void frameCountChanged(int frameCount);
+    friend class ImportDialog;
 };
 
 #endif // SIMULATIONAGGREGATION_H

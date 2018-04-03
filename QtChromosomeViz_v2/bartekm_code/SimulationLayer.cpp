@@ -9,7 +9,7 @@ SimulationLayer::SimulationLayer(const std::string & name)
 
 frameNumber_t SimulationLayer::getFrameCount() const
 {
-    return (frameCount_ - first) / stride;
+    return frameCount_ > first ? (frameCount_ - first) / stride : 0;
 }
 
 void SimulationLayer::setSimulationLayerName(const std::string &name)
