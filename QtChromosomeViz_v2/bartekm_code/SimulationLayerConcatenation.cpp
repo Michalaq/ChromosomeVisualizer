@@ -147,38 +147,20 @@ frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)
 }
 
 #include <QJsonArray>
-#include "PDBSimulationLayer.h"
-#include "ProtobufSimulationlayer.h"
-#include <QSettings>
-#include <QDir>
+#include <QJsonObject>
 
 void SimulationLayerConcatenation::read(const QJsonArray &json)
 {
     for (auto i : json)
-    {
-        QString path = i.toString();
-
-        if (QDir::isRelativePath(path))
-            path = QDir(QSettings().value("locallib").toString()).absoluteFilePath(path);
-
-        std::shared_ptr<SimulationLayer> simulationLayer;
-
-        if (path.endsWith(".pdb"))
-            simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
-        else
-            simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
-
-        appendSimulationLayer(simulationLayer);
-    }
+        appendSimulationLayer(SimulationLayer::read(i.toObject()));
 }
 
 void SimulationLayerConcatenation::write(QJsonArray &json) const
 {
     for (auto i : layers_)
     {
-        auto path = QString::fromStdString(i->getSimulationLayerName());
-        auto rpath = QDir(QSettings().value("locallib").toString()).relativeFilePath(path);
-
-        json.append(rpath.startsWith("..") ? path : rpath);
+        QJsonObject layer;
+        i->write(layer);
+        json.append(layer);
     }
 }

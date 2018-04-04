@@ -100,3 +100,40 @@ bool SimulationLayer::reachedEndOfFile() const
 
     return layer->reachedEndOfFile() || layer->getFrameCount() > last_;
 }
+
+#include <QJsonObject>
+#include <QDir>
+#include <QSettings>
+#include "PDBSimulationLayer.h"
+#include "ProtobufSimulationlayer.h"
+
+std::shared_ptr<SimulationLayer> SimulationLayer::read(const QJsonObject& json)
+{
+    QString path = json["File name"].toString();
+
+    if (QDir::isRelativePath(path))
+        path = QDir(QSettings().value("locallib").toString()).absoluteFilePath(path);
+
+    std::shared_ptr<SimulationLayer> layer;
+
+    if (path.endsWith(".pdb"))
+        layer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
+    else
+        layer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
+
+    layer->first = json["First"].toInt();
+    layer->last = json["Last"].toInt();
+    layer->stride = json["Stride"].toInt();
+
+    return layer;
+}
+
+void SimulationLayer::write(QJsonObject &json) const
+{
+    auto path = QString::fromStdString(getSimulationLayerName());
+    auto rpath = QDir(QSettings().value("locallib").toString()).relativeFilePath(path);
+    json["File name"] = rpath.startsWith("..") ? path : rpath;
+    json["First"] = (int)first;
+    json["Last"] = (int)last;
+    json["Stride"] = (int)stride;
+}

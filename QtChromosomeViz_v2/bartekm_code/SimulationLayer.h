@@ -47,6 +47,10 @@ public:
     frameNumber_t getNextTime(frameNumber_t time);
     frameNumber_t getPreviousTime(frameNumber_t time);
     bool reachedEndOfFile() const;
+
+    static std::shared_ptr<SimulationLayer> read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 signals:
     void frameCountChanged(int frameCount);
     friend class ImportDialog;
