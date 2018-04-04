@@ -25,7 +25,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.313708"
-     inkscape:cx="21.313166"
+     inkscape:cx="8.6736317"
      inkscape:cy="21.984258"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,27 +54,13 @@
      inkscape:groupmode="layer">
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 7.1601562,2.3027344 0,43.3222656 33.6757818,0 0,-27.707 L 27.731,8.4335938 C 32.912863,2.8375383 31.876098,2.3027232 26.914,2.3027344 Z"
-       id="path4227"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccc" />
+       d="M 7.1601562 2.3027344 L 7.1601562 45.625 L 40.835938 45.625 L 40.835938 17.917969 L 27.730469 8.4335938 C 32.912332 2.837538 31.876161 2.3027232 26.914062 2.3027344 L 7.1601562 2.3027344 z M 12.691406 19.667969 L 16.427734 19.667969 C 17.72168 19.667969 18.702148 19.916016 19.371094 20.414062 C 20.040039 20.907227 20.375 21.632812 20.375 22.589844 C 20.375 23.112304 20.241211 23.574219 19.972656 23.974609 C 19.704102 24.370117 19.33008 24.660156 18.851562 24.845703 C 19.398438 24.982422 19.828125 25.258789 20.140625 25.673828 C 20.458008 26.088867 20.617188 26.59668 20.617188 27.197266 C 20.617188 28.222656 20.289062 28.998047 19.634766 29.525391 C 18.980468 30.052735 18.046875 30.322266 16.835938 30.332031 L 12.691406 30.332031 L 12.691406 19.667969 z M 22.410156 19.667969 L 24.607422 19.667969 L 24.607422 30.332031 L 22.410156 30.332031 L 22.410156 19.667969 z M 26.636719 19.667969 L 28.833984 19.667969 L 33.119141 26.699219 L 33.119141 19.667969 L 35.308594 19.667969 L 35.308594 30.332031 L 33.111328 30.332031 L 28.833984 23.314453 L 28.833984 30.332031 L 26.636719 30.332031 L 26.636719 19.667969 z M 14.888672 21.447266 L 14.888672 24.134766 L 16.513672 24.134766 C 17.622071 24.115232 18.177734 23.674802 18.177734 22.810547 C 18.177734 22.327148 18.035156 21.979492 17.751953 21.769531 C 17.473633 21.554687 17.033203 21.447266 16.427734 21.447266 L 14.888672 21.447266 z M 14.888672 25.6875 L 14.888672 28.566406 L 16.771484 28.566406 C 17.289062 28.566406 17.69043 28.445313 17.978516 28.201172 C 18.271484 27.952148 18.417969 27.610351 18.417969 27.175781 C 18.417969 26.199219 17.913086 25.702148 16.902344 25.6875 L 14.888672 25.6875 z "
+       id="path4227" />
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 32.562883,2.9129899 c 0.03338,0.8290805 0.20863,2.3355766 -2.676164,5.1573226 l 10.949219,8.1269535 0,-0.294922 z"
        id="path3416"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
-    <flowRoot
-       xml:space="preserve"
-       id="flowRoot4146"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;line-height:125%;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       transform="translate(25.616211,18.169115)"><flowRegion
-         id="flowRegion4148"><rect
-           id="rect4150"
-           width="75.660431"
-           height="50.734913"
-           x="-13.876971"
-           y="-2.7349138"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:15px;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';fill:#ffffff" /></flowRegion><flowPara
-         id="flowPara4152">BIN</flowPara></flowRoot>  </g>
+  </g>
 </svg>
