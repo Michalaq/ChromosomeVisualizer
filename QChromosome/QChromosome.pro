@@ -116,7 +116,6 @@ HEADERS  += mainwindow.h\
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
     atomattributes.h \
     picker.h \
-    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
     viewport.h \
     multimap.h \

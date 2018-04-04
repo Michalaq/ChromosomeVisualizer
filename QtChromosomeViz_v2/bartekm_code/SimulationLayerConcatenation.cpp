@@ -4,7 +4,6 @@
 
 SimulationLayerConcatenation::SimulationLayerConcatenation()
     : QObject()
-    , transform_{ 0, 1, 1 }
     , frameCount_(0)
 {
     aggregatedFrameCounts_.push_back(0);
@@ -50,7 +49,6 @@ void SimulationLayerConcatenation::appendSimulationLayer(std::shared_ptr<Simulat
     layers_.emplace_back(std::move(sl));
     connect(layers_.back().get(), &SimulationLayer::frameCountChanged,
             [this, layerID] (int frameCount) {
-        frameCount = transform_.transformBack(frameCount);
         const frameNumber_t base = getLayerBaseFrameNumber(layerID);
         if (frameCount_ < base + frameCount) {
             frameCount_ = base + frameCount;
@@ -66,17 +64,11 @@ int SimulationLayerConcatenation::getConnectionCount() const
     return layers_.front()->getConnectionCount();
 }
 
-TimeTransformation & SimulationLayerConcatenation::getTransform()
-{
-    return transform_;
-}
-
 std::shared_ptr<Frame> SimulationLayerConcatenation::getFrame(frameNumber_t position)
 {
     if (layers_.empty())
         return std::make_shared<Frame>();
 
-    position = transform_.transform(position);
     if (position < 0)
         position = 0;
 
@@ -111,7 +103,6 @@ void SimulationLayerConcatenation::setLayerId(int layerId)
 frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
 {
     const frameNumber_t oldTime = time;
-    time = transform_.transform(time);
     if (time < 0)
         time = 0;
 
@@ -121,7 +112,7 @@ frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
         if (time < layer->getFrameCount()) {
             frameNumber_t nextTime = layer->getNextTime(time);
             if (nextTime != time)
-                return framesSkipped + transform_.transformBack(nextTime);
+                return framesSkipped + nextTime;
         }
 
         // Try the next one
@@ -135,7 +126,6 @@ frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
 frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)
 {
     const frameNumber_t oldTime = time;
-    time = transform_.transform(time);
     if (time < 0)
         return 0;
 
@@ -144,16 +134,16 @@ frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)
     for (const auto & layer : layers_) {
         frameNumber_t count = layer->getFrameCount();
         if (time == count && layer->reachedEndOfFile())
-            return framesSkipped + transform_.transformBack(count - 1);
+            return framesSkipped + count - 1;
         if (time < count)
-            return framesSkipped + transform_.transformBack(layer->getPreviousTime(time));
+            return framesSkipped + layer->getPreviousTime(time);
 
         // Try the next one
         time -= layer->getFrameCount();
         framesSkipped += layer->getFrameCount();
     }
 
-    return transform_.transformBack(oldTime - time - 1);
+    return oldTime - time - 1;
 }
 
 #include <QJsonArray>
