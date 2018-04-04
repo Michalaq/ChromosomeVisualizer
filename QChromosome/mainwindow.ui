@@ -1146,7 +1146,7 @@ QLineEdit {
   <action name="actionProject_Settings">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+     <normaloff>:/dialogs/project</normaloff>:/dialogs/project</iconset>
    </property>
    <property name="text">
     <string>Project Settings...</string>
