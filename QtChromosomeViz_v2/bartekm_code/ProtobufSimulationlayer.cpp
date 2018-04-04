@@ -15,7 +15,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
     , positionCachedFor_(-1)
-    , SimulationLayer(name)
+    , UntransformedSimulationLayer(name)
 {
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());

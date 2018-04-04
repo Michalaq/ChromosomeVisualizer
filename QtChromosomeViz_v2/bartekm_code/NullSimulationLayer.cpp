@@ -1,7 +1,7 @@
 #include "NullSimulationLayer.h"
 
 NullSimulationLayer::NullSimulationLayer()
-    : SimulationLayer("No simulation.")
+    : UntransformedSimulationLayer("No simulation.")
 {
 
 }

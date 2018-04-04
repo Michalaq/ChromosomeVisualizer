@@ -3,7 +3,7 @@
 
 #include "SimulationLayer.h"
 
-class NullSimulationLayer : public SimulationLayer
+class NullSimulationLayer : public UntransformedSimulationLayer
 {
 public:
     NullSimulationLayer();

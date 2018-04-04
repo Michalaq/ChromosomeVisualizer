@@ -416,9 +416,9 @@ void MainWindow::addLayer()
             std::shared_ptr<SimulationLayer> simulationLayer;
 
             if (path.endsWith(".pdb"))
-                simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+                simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
             else
-                simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+                simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
 
             ImportDialog impd(simulationLayer.get(), this);
             impd.setWindowTitle(QString("Import - [%1]").arg(QFileInfo(path).fileName()));

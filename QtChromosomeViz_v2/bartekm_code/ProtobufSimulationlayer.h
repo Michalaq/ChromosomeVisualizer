@@ -38,7 +38,7 @@ using stream_reader = stream<with_backend<posix_file_backend<file_mode_t::READ_O
                              with_delta_factory<string_factory>,
                              with_proto_header_factory<string_factory>>;
 
-class ProtobufSimulationLayer : public SimulationLayer {
+class ProtobufSimulationLayer : public UntransformedSimulationLayer {
 private:
     std::string fileName_;
     int connectionCount_;

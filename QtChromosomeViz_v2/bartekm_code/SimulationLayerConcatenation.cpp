@@ -174,9 +174,9 @@ void SimulationLayerConcatenation::read(const QJsonArray &json)
         std::shared_ptr<SimulationLayer> simulationLayer;
 
         if (path.endsWith(".pdb"))
-            simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
+            simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
         else
-            simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
+            simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
 
         appendSimulationLayer(simulationLayer);
     }
