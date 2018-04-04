@@ -12,7 +12,7 @@ PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::strin
     , UntransformedSimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
-    numbersAndPositions_.push_back(readFrameHeader());
+    numbersAndPositions_.push_back(frameCount_ = readFrameHeader());
 }
 
 PDBSimulationLayer::PDBSimulationLayer(const std::string & fileName)
