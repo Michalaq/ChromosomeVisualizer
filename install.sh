@@ -29,4 +29,3 @@ mkdir -p $DESTDIR
 cd $DESTDIR
 $QTDIR/bin/qmake $CWD/QChromosome/QChromosome.pro -spec $SPEC CONFIG+=debug CONFIG+=qml_debug
 /usr/bin/make
-cd $CWD

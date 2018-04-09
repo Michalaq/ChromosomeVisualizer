@@ -12,13 +12,14 @@ Chromosome Visualizer is based on few components required for it to work correct
 5.  **ffmpeg** -- required for movie rendering
 6.  **libprotobuf-dev protobuf-compiler** -- required for binary format support
 7.  **gcc, version >= 5.0** -- required for C++14 support
+8.  **cmake, version >= 2.8** -- required for compilation of libprotostream
 
 
 Installation
 ------------
 
 To install Chromosome Visualizer:
-1.  Install all dependencies listed in "requirements".
+1.  Install all dependencies listed in "Requirements".
 2.  Provide Qt installation details for install.sh:
       * set QTDIR to path to the Qt installation directory (e.g. /home/username/Qt/5.9.3/gcc_64)
       * set DESTDIR to the desired location of binary files
