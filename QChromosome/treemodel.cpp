@@ -187,6 +187,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
 }
 
 #include <QBitArray>
+#include <QFileInfo>
 
 void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
 {
@@ -196,7 +197,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     QBitArray used(atoms.size(), false);
 
-    auto root = new LayerItem(QString("Layer") + (layer ? QString(".") + QString::number(layer + 1) : ""), slc, header);
+    auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, header);
 
     AtomItem::resizeBuffer(atoms.size());
 

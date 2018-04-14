@@ -41,6 +41,12 @@ frameNumber_t SimulationLayerConcatenation::getFrameCount() const
     return frameCount_;
 }
 
+const std::string & SimulationLayerConcatenation::getSimulationLayerConcatenationName() const
+{
+    static const std::string empty = "";
+    return layers_.empty() ? empty : layers_.front()->getSimulationLayerName();
+}
+
 void SimulationLayerConcatenation::appendSimulationLayer(std::shared_ptr<SimulationLayer> sl)
 {
     // TODO: Check compatibility with other frames

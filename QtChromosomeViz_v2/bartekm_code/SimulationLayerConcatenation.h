@@ -21,6 +21,7 @@ public:
     SimulationLayerConcatenation(std::shared_ptr<SimulationLayer> sl);
     ~SimulationLayerConcatenation();
     frameNumber_t getFrameCount() const;
+    const std::string & getSimulationLayerConcatenationName() const;
     void appendSimulationLayer(std::shared_ptr<SimulationLayer> sl);
     int getConnectionCount() const;
 
