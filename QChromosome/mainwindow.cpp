@@ -425,6 +425,7 @@ void MainWindow::addLayer()
 
             if (impd.exec() == QDialog::Accepted)
             {
+                setFrame(0);
                 simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
                 ui->scene->update();
