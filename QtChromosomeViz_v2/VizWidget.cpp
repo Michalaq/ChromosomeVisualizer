@@ -159,6 +159,12 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
 
+    assert(labelsProgram_.create());
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/labels/vertex.glsl");
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/labels/geometry.glsl");
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/labels/fragment.glsl");
+    assert(labelsProgram_.link());
+
     AtomItem::getAtlas().initializeGL();
 }
 
@@ -245,6 +251,33 @@ void VizWidget::paintGL()
     }
 
     AtomItem::getAtlas().paintGL();
+
+    // If there are no spheres, my driver crashes
+    if (!AtomItem::getBuffer().empty())
+    {
+        float fogDensity_ = viewport_->getFogDensity();
+        float fogContribution_ = viewport_->getFogContribution();
+
+        vaoSpheres_.bind();
+        labelsProgram_.bind();
+
+        labelsProgram_.setUniformValue("pro", projection_);
+        labelsProgram_.setUniformValue("mv", modelView_);
+        labelsProgram_.setUniformValue("uvScreenSize",
+                                (float)size().width(),
+                                (float)size().height());
+        labelsProgram_.setUniformValue("ufFogDensity", fogDensity_);
+        labelsProgram_.setUniformValue("ufFogContribution", fogContribution_);
+        labelsProgram_.setUniformValue("ucFogColor",
+                                       backgroundColor_.redF(),
+                                       backgroundColor_.greenF(),
+                                       backgroundColor_.blueF());
+
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+
+        labelsProgram_.release();
+        vaoSpheres_.release();
+    }
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);

@@ -19,4 +19,9 @@
         <file alias="geometry.glsl">camera/geometry.glsl</file>
         <file alias="vertex.glsl">camera/vertex.glsl</file>
     </qresource>
+    <qresource prefix="/labels">
+        <file alias="fragment.glsl">labels/fragment.glsl</file>
+        <file alias="geometry.glsl">labels/geometry.glsl</file>
+        <file alias="vertex.glsl">labels/vertex.glsl</file>
+    </qresource>
 </RCC>

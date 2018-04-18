@@ -61,6 +61,7 @@ private:
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
     QOpenGLShaderProgram pickingProgram_;
+    QOpenGLShaderProgram labelsProgram_;
 
     QMatrix4x4 projection_;
     QMatrix4x4 modelView_;
