@@ -329,6 +329,7 @@ Camera* CameraItem::getCamera() const
 QVector<VizBallInstance> AtomItem::buffer;
 bool AtomItem::modified = false;
 bool AtomItem::resized = false;
+LabelAtlas AtomItem::atlas;
 
 AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
@@ -368,6 +369,11 @@ void AtomItem::clearBuffer()
 {
     buffer.clear();
     resized = true;
+}
+
+LabelAtlas &AtomItem::getAtlas()
+{
+    return atlas;
 }
 
 void AtomItem::setFrame(std::shared_ptr<Frame> frame)

@@ -158,6 +158,8 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
+
+    AtomItem::getAtlas().initializeGL();
 }
 
 #include "viewport.h"
@@ -241,6 +243,8 @@ void VizWidget::paintGL()
         cameraProgram_.release();
         vaoCameras_.release();
     }
+
+    AtomItem::getAtlas().paintGL();
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);

@@ -181,10 +181,12 @@ struct VizBallInstance
     QRgb specularColor;
     float specularExponent;
     float size = 1.0;
+    QRect label;
     const Material* material;
 };
 
 #include "material.h"
+#include "labelatlas.h"
 
 class AtomItem : public TreeItem
 {
@@ -198,6 +200,8 @@ public:
 
     static bool modified;
     static bool resized;
+
+    static LabelAtlas& getAtlas();
 
     static void setFrame(std::shared_ptr<Frame> frame);
 
@@ -222,6 +226,7 @@ private:
     int id;
     static QVector<VizBallInstance> buffer;
     QString label;
+    static LabelAtlas atlas;
 };
 
 class ChainItem : public TreeItem
