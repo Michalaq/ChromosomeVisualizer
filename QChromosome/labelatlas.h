@@ -2,17 +2,16 @@
 #define LABELATLAS_H
 
 
-#include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLFramebufferObject>
 
-class LabelAtlas : protected QOpenGLFunctions_3_3_Core
+class LabelAtlas
 {
 public:
     explicit LabelAtlas();
     ~LabelAtlas();
 
     void initializeGL();
-    void paintGL();
+    GLuint texture() const;
 
     QRect addLabel(const QString& text);
 

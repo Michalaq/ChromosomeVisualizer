@@ -250,8 +250,6 @@ void VizWidget::paintGL()
         vaoCameras_.release();
     }
 
-    AtomItem::getAtlas().paintGL();
-
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())
     {
@@ -272,6 +270,11 @@ void VizWidget::paintGL()
                                        backgroundColor_.redF(),
                                        backgroundColor_.greenF(),
                                        backgroundColor_.blueF());
+        labelsProgram_.setUniformValue("SampleTexture", 0);
+
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, AtomItem::getAtlas().texture());
 
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 

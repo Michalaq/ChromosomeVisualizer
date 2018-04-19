@@ -6,6 +6,7 @@ uniform vec2 uvScreenSize;
 uniform float ufFogDensity;
 uniform float ufFogContribution;
 uniform vec3 ucFogColor;
+uniform sampler2D SampleTexture;
 
 in vec4 vPosition;
 in vec3 vViewPosition;
@@ -16,11 +17,13 @@ flat in vec4 cColor;
 flat in vec3 cSpecularColor;
 flat in float fSpecularExponent;
 flat in float fInstanceSize;
+in vec2 vTextureCoord;
 
 out vec4 fragColor;
 
 void main() {
-    fragColor = vec4(1,1,1,1);
+    vec2 vTextureCoord1 = (vTextureCoord + vec2(1,1))/2;
+    fragColor = texture(SampleTexture,vTextureCoord1);
     return;
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;

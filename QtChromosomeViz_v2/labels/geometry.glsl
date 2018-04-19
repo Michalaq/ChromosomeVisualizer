@@ -25,13 +25,14 @@ flat out vec4 cColor;
 flat out vec3 cSpecularColor;
 flat out float fSpecularExponent;
 flat out float fInstanceSize;
+out vec2 vTextureCoord;
 
 // this can be passed from CPU (as uniform?) 
-vec3 tetrahedron[4] = vec3[](
-    vec3(+1, +1, 0),
-    vec3(+1, -1, 0),
-    vec3(-1, +1, 0),
-    vec3(-1, -1, 0)
+vec2 tetrahedron[4] = vec2[](
+    vec2(+1, +1),
+    vec2(+1, -1),
+    vec2(-1, +1),
+    vec2(-1, -1)
 );
 
 void main() {
@@ -52,7 +53,8 @@ void main() {
         
         for(int i = 0; i < 6; i++)
         {
-            gl_Position = vPosition = vec4(foo + tetrahedron[i & 3] * .1, 1.0);
+            vTextureCoord = tetrahedron[i & 3];
+            gl_Position = vPosition = vec4(foo + vec3(vTextureCoord, 0) * .1, 1.0);
             EmitVertex();
         }
         
