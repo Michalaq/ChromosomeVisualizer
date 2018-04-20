@@ -30,6 +30,15 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
             a->setRadius(val);
         emit attributeChanged();
     });
+
+    // connect label
+    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
+        QString val = ui->lineEdit_2->text();
+        auto r = AtomItem::getAtlas().addLabel(val);
+        for (auto a : atoms)
+            a->setLabel(val, r);
+        emit attributeChanged();
+    });
 }
 
 AtomAttributes::~AtomAttributes()
@@ -84,6 +93,22 @@ void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLis
         ui->doubleSpinBox_4->setMultipleValues();
     else
         ui->doubleSpinBox_4->setValue(r, false);
+
+    // set label
+    QString l = fst->getLabel();
+    multiple = false;
+
+    for (const auto& a : atoms)
+        if (l != a->getLabel())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->lineEdit_2->setMultipleValues();
+    else
+        ui->lineEdit_2->setText(l, false);
 }
 
 void AtomAttributes::unsetSelection()

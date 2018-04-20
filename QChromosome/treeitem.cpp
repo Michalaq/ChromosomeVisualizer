@@ -391,9 +391,11 @@ void AtomItem::setFrame(std::shared_ptr<Frame> frame)
     modified = true;
 }
 
-void AtomItem::setLabel(const QString& l)
+void AtomItem::setLabel(const QString& l, const QRect &r)
 {
     label = l;
+
+    buffer[id].label = r;
     modified = true;
 }
 

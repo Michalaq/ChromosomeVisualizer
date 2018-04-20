@@ -12,16 +12,12 @@ LabelAtlas::~LabelAtlas()
     delete fbo;
 }
 
-#include <QString>
 void LabelAtlas::initializeGL()
 {
     //format.setSamples(16);
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
 
     fbo = new QOpenGLFramebufferObject({100, 20}, format);
-
-    addLabel("foo");
-    addLabel("bar");
 }
 
 GLuint LabelAtlas::texture() const
@@ -34,6 +30,9 @@ GLuint LabelAtlas::texture() const
 
 QRect LabelAtlas::addLabel(const QString &text)
 {
+    if (text.isEmpty())
+        return QRect();
+
     fbo->bind();
 
     QOpenGLPaintDevice device(fbo->size());

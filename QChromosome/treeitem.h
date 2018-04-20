@@ -205,7 +205,7 @@ public:
 
     static void setFrame(std::shared_ptr<Frame> frame);
 
-    void setLabel(const QString& l);
+    void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
 
     void setRadius(float r);
