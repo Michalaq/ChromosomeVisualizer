@@ -1,6 +1,6 @@
 #include "labelatlas.h"
 
-const int height = 32;
+const int height = 24;
 
 LabelAtlas::LabelAtlas() :
     fbo(nullptr),

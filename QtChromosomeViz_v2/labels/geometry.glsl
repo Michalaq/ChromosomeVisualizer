@@ -27,7 +27,13 @@ vec2 tetrahedron[4] = vec2[](
 void main() {
     if ((giFlags[0] & 0x2) == 0x2 && gvLabelRect[0].z >= 0 && gvLabelRect[0].w >= 0)
     {
-        vec4 tmp = pro * mv * vec4(gvInstancePosition[0], 1.0);
+        vec4 objectSpacePos = mv * vec4(gvInstancePosition[0], 1.0);
+        
+        vec3 vInstancePosition = objectSpacePos.xyz / objectSpacePos.w;
+        vec3 bar = normalize(vInstancePosition);
+        vInstancePosition += bar * gfInstanceSize[0] / bar.z;
+        
+        vec4 tmp = pro * vec4(vInstancePosition, 1.0);
         vec3 foo = tmp.xyz / tmp.w;
         
         vec2 rect = vec2(gvLabelRect[0].z - gvLabelRect[0].x + 1, gvLabelRect[0].w - gvLabelRect[0].y + 1);
