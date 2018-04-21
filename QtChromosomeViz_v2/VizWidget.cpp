@@ -134,6 +134,43 @@ void VizWidget::initializeGL()
     cameraPositions_.release();
     vaoCameras_.release();
 
+    assert(vaoLabels_.create());
+
+    vaoLabels_.bind();
+    atomPositions_.bind();
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, position)
+    );
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribIPointer(
+        1,
+        1,
+        GL_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, flags)
+    );
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, size)
+    );
+
+    atomPositions_.release();
+    vaoLabels_.release();
+
     // Shaders
     assert(sphereProgram_.create());
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
@@ -253,23 +290,11 @@ void VizWidget::paintGL()
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())
     {
-        float fogDensity_ = viewport_->getFogDensity();
-        float fogContribution_ = viewport_->getFogContribution();
-
-        vaoSpheres_.bind();
+        vaoLabels_.bind();
         labelsProgram_.bind();
 
         labelsProgram_.setUniformValue("pro", projection_);
         labelsProgram_.setUniformValue("mv", modelView_);
-        labelsProgram_.setUniformValue("uvScreenSize",
-                                (float)size().width(),
-                                (float)size().height());
-        labelsProgram_.setUniformValue("ufFogDensity", fogDensity_);
-        labelsProgram_.setUniformValue("ufFogContribution", fogContribution_);
-        labelsProgram_.setUniformValue("ucFogColor",
-                                       backgroundColor_.redF(),
-                                       backgroundColor_.greenF(),
-                                       backgroundColor_.blueF());
         labelsProgram_.setUniformValue("SampleTexture", 0);
 
         glEnable(GL_TEXTURE_2D);
@@ -279,7 +304,7 @@ void VizWidget::paintGL()
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         labelsProgram_.release();
-        vaoSpheres_.release();
+        vaoLabels_.release();
     }
 
     glDisable(GL_CULL_FACE);

@@ -57,6 +57,8 @@ private:
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
 
+    QOpenGLVertexArrayObject vaoLabels_;
+
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
