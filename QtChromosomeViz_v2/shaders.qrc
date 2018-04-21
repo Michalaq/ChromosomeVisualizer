@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>picking.frag</file>
-        <file>label.vert</file>
-        <file>label.frag</file>
     </qresource>
     <qresource prefix="/sphere">
         <file alias="fragment.glsl">sphere/fragment.glsl</file>

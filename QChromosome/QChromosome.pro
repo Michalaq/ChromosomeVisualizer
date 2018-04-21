@@ -22,7 +22,6 @@ SOURCES += main.cpp\
     mediacontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
-    ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
     legend.cpp \
     toolbar.cpp \
@@ -83,7 +82,6 @@ HEADERS  += mainwindow.h\
     mediacontrol.h \
     dockwidget.h \
     spinbox.h \
-    ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
     legend.h \
     toolbar.h \

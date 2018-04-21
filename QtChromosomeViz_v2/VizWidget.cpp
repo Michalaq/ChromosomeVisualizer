@@ -325,40 +325,13 @@ void VizWidget::paintGL()
 
         labelsProgram_.release();
         vaoLabels_.release();
+
+        glDisable(GL_BLEND);
     }
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
 }
-
-/*void VizWidget::paintLabels()
-{
-    labelRenderer_.begin();
-
-    auto labelTextColor_ = viewport_->getLabelTextColor();
-    auto labelBackgroundColor_ = viewport_->getLabelBackgroundColor();
-
-    for (auto it = sortedState_.begin(); it != sortedState_.end(); ++it)
-    {
-        auto it2 = atomLabels_.find(it->atomID);
-        if (it2 == atomLabels_.end())
-            continue;
-
-        auto position = frameState_[it2.key()].position;
-        auto transformedPosition = modelViewProjection_ * QVector4D(position[0], position[1], position[2], 1.f);
-        if (transformedPosition.z() >= 0.f)
-        {
-            QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
-                                  -transformedPosition.y() / transformedPosition.w());
-            QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
-                                   (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            labelRenderer_.renderAt(screenPosition, it2.value(),
-                                    labelTextColor_, labelBackgroundColor_);
-        }
-    }
-
-    labelRenderer_.end();
-}*/
 
 void VizWidget::setModelView(QMatrix4x4 mat)
 {
@@ -576,45 +549,3 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 
     emit selectionChanged(selected, flags);
 }
-
-/*void AtomSelection::setLabel(const QString & label)
-{
-    //TODO reimplement after changing selection
-    auto& buf = widget_->simulation_->getModel()->getIndices();
-    if (label == "")
-    {
-        for (unsigned int i : selectedIndices_)
-        {
-            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
-            widget_->atomLabels_.remove(i);
-            reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setLabel(label);
-        }
-    }
-    else
-    {
-        widget_->labelRenderer_.addRef(label, selectedIndices_.size());
-
-        for (unsigned int i : selectedIndices_)
-        {
-            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
-            widget_->atomLabels_[i] = label;
-            reinterpret_cast<AtomItem*>(buf[i].internalPointer())->setLabel(label);
-        }
-    }
-
-    widget_->update();
-}
-
-QVariant AtomSelection::getLabel() const
-{
-    if (selectedIndices_.isEmpty())
-        return QVariant();
-
-    QString ans = widget_->atomLabels_.value(selectedIndices_.front());
-
-    for (auto i : selectedIndices_)
-        if (widget_->atomLabels_.value(i) != ans)
-            return QVariant();
-
-    return ans;
-}*/
