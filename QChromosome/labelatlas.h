@@ -4,7 +4,6 @@
 
 #include <QOpenGLFramebufferObject>
 #include <QFont>
-#include <QFontMetrics>
 
 class LabelAtlas
 {
@@ -26,7 +25,6 @@ private:
     int width;
 
     QFont font;
-    QFontMetrics fmetrics;
 };
 
 #endif // LABELATLAS_H

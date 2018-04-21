@@ -318,6 +318,9 @@ void VizWidget::paintGL()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, atlas.texture());
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         labelsProgram_.release();
