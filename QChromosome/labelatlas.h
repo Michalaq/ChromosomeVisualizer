@@ -16,13 +16,14 @@ public:
     GLuint texture() const;
 
     QRect addLabel(const QString& text);
+    QRect size() const;
 
 private:
     QOpenGLFramebufferObjectFormat format;
     QOpenGLFramebufferObject *fbo;
 
     int pos;
-    int size;
+    int width;
 
     QFont font;
     QFontMetrics fmetrics;

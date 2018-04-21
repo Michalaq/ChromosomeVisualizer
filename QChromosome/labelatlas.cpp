@@ -3,7 +3,7 @@
 LabelAtlas::LabelAtlas() :
     fbo(nullptr),
     pos(0),
-    size(1),
+    width(1),
     font(":/fonts/Roboto-Regular"),
     fmetrics(font)
 {
@@ -26,6 +26,11 @@ GLuint LabelAtlas::texture() const
     return fbo->texture();
 }
 
+QRect LabelAtlas::size() const
+{
+    return QRect(0, 0, width, 20);
+}
+
 #include <QOpenGLPaintDevice>
 #include <QPainter>
 
@@ -34,15 +39,15 @@ QRect LabelAtlas::addLabel(const QString &text)
     if (text.isEmpty())
         return QRect();
 
-    int width = fmetrics.width(text) + 10;
-    QRect rect(pos, 0, width, 20);
+    int width_ = fmetrics.width(text) + 10;
+    QRect rect(pos, 0, width_, 20);
 
-    while (pos + width > size)
-        size *= 2;
+    while (pos + width_ > width)
+        width *= 2;
 
-    if (fbo->width() < size)
+    if (fbo->width() < width)
     {
-        auto tmp = new QOpenGLFramebufferObject({size, 20}, format);
+        auto tmp = new QOpenGLFramebufferObject({width, 20}, format);
         QOpenGLFramebufferObject::blitFramebuffer(tmp, {0, 0, pos, 20}, fbo, {0, 0, pos, 20});
 
         delete fbo;
@@ -67,6 +72,6 @@ QRect LabelAtlas::addLabel(const QString &text)
 
     fbo->release();
 
-    pos += width;
+    pos += width_;
     return rect;
 }

@@ -168,6 +168,15 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, size)
     );
 
+    glEnableVertexAttribArray(3);
+    glVertexAttribIPointer(
+        3,
+        4,
+        GL_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, label)
+    );
+
     atomPositions_.release();
     vaoLabels_.release();
 
@@ -293,13 +302,21 @@ void VizWidget::paintGL()
         vaoLabels_.bind();
         labelsProgram_.bind();
 
+        auto& atlas = AtomItem::getAtlas();
+
         labelsProgram_.setUniformValue("pro", projection_);
         labelsProgram_.setUniformValue("mv", modelView_);
+        labelsProgram_.setUniformValue("uvScreenSize",
+                                (float)size().width(),
+                                (float)size().height());
+        labelsProgram_.setUniformValue("uvTextureSize",
+                                (float)atlas.size().width(),
+                                (float)atlas.size().height());
         labelsProgram_.setUniformValue("SampleTexture", 0);
 
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, AtomItem::getAtlas().texture());
+        glBindTexture(GL_TEXTURE_2D, atlas.texture());
 
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
