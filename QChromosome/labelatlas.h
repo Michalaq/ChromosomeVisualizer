@@ -3,6 +3,8 @@
 
 
 #include <QOpenGLFramebufferObject>
+#include <QFont>
+#include <QFontMetrics>
 
 class LabelAtlas
 {
@@ -19,7 +21,11 @@ private:
     QOpenGLFramebufferObjectFormat format;
     QOpenGLFramebufferObject *fbo;
 
-    int width;
+    int pos;
+    int size;
+
+    QFont font;
+    QFontMetrics fmetrics;
 };
 
 #endif // LABELATLAS_H
