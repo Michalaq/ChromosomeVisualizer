@@ -1,8 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="bar">misc/tab_bar.svg</file>
         <file alias="location">icons/location_icon.svg</file>
-        <file alias="sphere">misc/sphere.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
         <file alias="unchecked">misc/checkbox_unchecked.svg</file>
@@ -13,15 +11,26 @@
         <file alias="right">misc/right_arrow.svg</file>
         <file alias="left">misc/left_arrow.svg</file>
         <file alias="down">misc/down_arrow.svg</file>
-        <file alias="bclosed">misc/branch_closed.svg</file>
-        <file alias="bopen">misc/branch_open.svg</file>
+        <file alias="branch-closed">misc/branch_closed.svg</file>
+        <file alias="branch-open">misc/branch_open.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>
+        <file alias="pick">icons/select_point_icon.svg</file>
     </qresource>
     <qresource prefix="/fonts">
         <file alias="Roboto-Regular">fonts/Roboto-Regular.ttf</file>
         <file alias="RobotoMono-Regular">fonts/RobotoMono-Regular.ttf</file>
         <file alias="Roboto-Bold">fonts/Roboto-Bold.ttf</file>
+    </qresource>
+    <qresource prefix="/tabwidget">
+        <file alias="tear">misc/tear_indicator.svg</file>
+        <file alias="bar">misc/tab_bar.svg</file>
+        <file alias="scroll-right">misc/scroll_right.svg</file>
+        <file alias="scroll-left">misc/scroll_left.svg</file>
+    </qresource>
+    <qresource prefix="/radio">
+        <file alias="checked">misc/radio_checked.svg</file>
+        <file alias="unchecked">misc/radio_unchecked.svg</file>
     </qresource>
 </RCC>

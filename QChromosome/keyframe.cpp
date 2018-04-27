@@ -1,5 +1,6 @@
 #include "keyframe.h"
 #include "ui_keyframe.h"
+#include "interpolator.h"
 
 Keyframes::Keyframes(QWidget *parent) :
     QWidget(parent),
@@ -13,17 +14,17 @@ Keyframes::Keyframes(QWidget *parent) :
     ui->label_3->hide(); ui->formLayout_2->removeWidget(ui->label_3);
     ui->comboBox->hide(); ui->formLayout_2->removeWidget(ui->comboBox);
 
-    connect(ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ip->changeKey(val);
+    connect(ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int key) {
+        interpolator->setKey(key);
     });
 
     connect(ui->checkBox, &QCheckBox::toggled, [this](bool b) {
-        ip->lockKey(b);
+        interpolator->lockTime(b);
         ui->spinBox->setEnabled(!b);
     });
 
     connect(ui->checkBox_2, &QCheckBox::toggled, [this](bool b) {
-        ip->lockValue(b);
+        interpolator->lockValue(b);
         ui->doubleSpinBox->setEnabled(!b);
     });
 }
@@ -33,14 +34,18 @@ Keyframes::~Keyframes()
     delete ui;
 }
 
-void Keyframes::setInterpolator(Interpolator *_ip)
+void Keyframes::setSplineInterpolator(SplineInterpolator *si)
 {
-    ip = _ip;
-}
+    interpolator = si;
 
-void Keyframes::updateContents()
-{
-    ui->spinBox->setValue(ip->selectedKeyframe(), false);
-    ui->checkBox->setChecked(ip->isKeyLocked());
-    ui->checkBox_2->setChecked(ip->isValueLocked(ip->selectedKeyframe()));
+    auto i = interpolator->selectedFrame();
+
+    if (i == interpolator->constEnd())
+        return hide();
+
+    ui->spinBox->setValue(i.key(), false);
+    ui->checkBox->setChecked(i.value().timeLocked());
+    ui->checkBox_2->setChecked(i.value().valueLocked());
+
+    show();
 }

@@ -5,7 +5,7 @@
 
 TreeModel::TreeModel(QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"Model", "", "", "", "", "Tags"}))
+      header(new TreeItem({"Name", "Type", "Id", "ViE", "ViR", "Tags", "Camera"}))
 {
 
 }
@@ -17,10 +17,8 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    return 6;
+    return 7;
 }
-
-#include <QIcon>
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
@@ -34,32 +32,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return item->data(index.column());
     case Qt::DecorationRole:
-        if (index.column() == 0)
-        {
-            QIcon icon;
-
-            switch (item->data(1).toInt())
-            {
-            case NodeType::LayerObject:
-                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
-                break;
-            case NodeType::ChainObject:
-                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
-                break;
-            case NodeType::ResidueObject:
-                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
-                break;
-            case NodeType::AtomObject:
-                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
-                icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
-                break;
-            }
-
-            return icon;
-        }
+        return item->decoration;
     case Qt::UserRole:
         return item->selected_children_count;
     case Qt::UserRole + 1:
@@ -76,17 +49,30 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
+    bool ans;
+
     switch (role)
     {
+    case Qt::DecorationRole:
+        item->decoration = value;
+        ans = true;
+        break;
     case Qt::UserRole:
         item->selected_children_count = value.toInt();
-        return true;
+        ans = true;
+        break;
     case Qt::UserRole + 1:
         item->selected_tag_index = value.toInt();
-        return true;
+        ans = true;
+        break;
     default:
-        return item->setData(index.column(), value);
+        ans = item->setData(index.column(), value);
     }
+
+    if (ans)
+        emit dataChanged(index, index, {role});
+
+    return ans;
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -141,45 +127,57 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
 
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    TreeItem *parentItem;
     if (parent.column() > 0)
         return 0;
 
-    if (!parent.isValid())
-        parentItem = header;
-    else
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
-
-    return parentItem->childCount();
+    return (parent.isValid() ? static_cast<TreeItem*>(parent.internalPointer()) : header)->childCount();
 }
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QModelIndex>& id)
-{
-    auto v = root.sibling(root.row(), 2).data();
+#include "material.h"
 
-    if (v.canConvert<uint>())
-        id[v.toUInt()] = root;
+void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
+{
+    // update current material
+    auto list = root.sibling(root.row(), 5).data().toList();
+
+    if (!list.isEmpty())
+    {
+        m = qobject_cast<Material*>(list.last().value<QObject*>());
+        m->assign(root.sibling(root.row(), 5));
+    }
+
+    // update index buffer
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+    {
+        id[root.sibling(root.row(), 2).data().toUInt()] = root;
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+    }
 
     for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), id);
+        dumpModel(model, model->index(r, 0, root), id, m);
 }
 
 #include "defaults.h"
 
-void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
+void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
 {
-    TreeItem* root = new TreeItem({QString("Chain") + (n ? QString(".") + QString::number(n) : ""), NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parent);
+    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, parent);
 
     QMap<int, TreeItem*> types;
 
-    for (auto atom = first; atom != last; atom++)
+    for (auto atom = atoms.begin() + range.first; atom != atoms.begin() + range.second; atom++)
     {
         int t = atom->type;
 
         if (!types.contains(t))
-            types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
+        {
+            types[t] = new ResidueItem(Defaults::typename2label(t), root);
 
-        types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atom->id), NodeType::AtomObject, atom->id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
+            if (init)
+                types[t]->setData(5, Defaults::typename2color(t));
+        }
+
+        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, types[t]));
     }
 
     for (auto t : types)
@@ -189,19 +187,27 @@ void appendSubmodel(const Atom *first, const Atom *last, unsigned int n, unsigne
 }
 
 #include <QBitArray>
+#include <QFileInfo>
 
-void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
 {
+    auto f = slc->getFrame(0);
+    auto& atoms = f->atoms;
+    auto& connectedRanges = f->connectedRanges;
+
     QBitArray used(atoms.size(), false);
 
-    TreeItem* root = new TreeItem({QString("Layer") + (n ? QString(".") + QString::number(n + 1) : ""), NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, header);
+    auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, header);
+
+    AtomItem::resizeBuffer(atoms.size());
 
     unsigned int i = 0;
 
     for (auto range : connectedRanges)
     {
-        used.fill(true, range.first - 1, range.second);
-        appendSubmodel(&atoms[range.first - 1], &atoms[range.second - 1] + 1, i++, offset, root, init);
+        range.first--;
+        used.fill(true, range.first, range.second);
+        appendSubmodel(range, atoms, i++, offset, root, init);
     }
 
     QMap<int, TreeItem*> types;
@@ -212,106 +218,323 @@ void TreeModel::setupModelData(const std::vector<Atom> &atoms, std::vector<std::
             int t = atoms[i].type;
 
             if (!types.contains(t))
-                types[t] = new TreeItem({Defaults::typename2label(t), NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, init ? Defaults::typename2color(t) : QVariant()}, root);
+            {
+                types[t] = new ResidueItem(Defaults::typename2label(t), root);
 
-            types[t]->appendChild(new TreeItem({QString("Atom.%1").arg(atoms[i].id), NodeType::AtomObject, atoms[i].id - 1 + offset, Visibility::Default, Visibility::Default, QVariant()}, types[t]));
+                if (init)
+                    types[t]->setData(5, Defaults::typename2color(t));
+            }
+
+            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, types[t]));
         }
 
     for (auto t : types)
         root->appendChild(t);
 
-    beginInsertRows(QModelIndex(), rowCount(), rowCount() + 1);
-
-    header->appendChild(root);
-
+    beginInsertRows(QModelIndex(), 0, 0);
+    header->prependChild(root);
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(this, index(rowCount() - 1, 0), indices);
+    dumpModel(this, index(0, 0), indices, Material::getDefault());
 }
 
-const QVector<QModelIndex>& TreeModel::getIndices() const
+const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
 {
     return indices;
 }
 
-#include <QJsonArray>
-#include <QJsonObject>
-
-void dumpModel3(QAbstractItemModel* model, const QModelIndex& root, const QJsonObject &json)
+bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    const QJsonObject object = json["Object"].toObject();
+    for (int i = row; i < row + count; i++)
+    {
+        if (data(index(i, 1, parent)).toInt() == NodeType::CameraObject)
+        {
+            beginRemoveRows(parent, i, i);
+            (parent.isValid() ? static_cast<LayerItem*>(parent.internalPointer()) : header)->removeRows(i, 1);
+            endRemoveRows();
+        }
+    }
+}
 
-    auto vie = object.find("Visible in editor");
+#include <QRegularExpression>
+#include <set>
 
-    if (vie != object.end())
-        model->setData(root.sibling(root.row(), 3), vie.value().toBool() ? On : Off);
+QString TreeModel::next_name() const
+{
+    static const QRegularExpression re("^Camera(.(?<label>[1-9][0-9]*))?$");
 
-    auto vir = object.find("Visible in renderer");
+    std::set<int> used;
 
-    if (vir != object.end())
-        model->setData(root.sibling(root.row(), 4), vir.value().toBool() ? On : Off);
+    for (int r = 0; r < rowCount(); r++)
+    {
+        QRegularExpressionMatch match = re.match(index(r, 0).data().toString());
 
-    const QJsonObject children = json["Descendants"].toObject();
+        if (match.hasMatch())
+            used.insert(match.captured("label").toInt());
+    }
 
-    for (auto child = children.begin(); child != children.end(); child++)
-        dumpModel3(model, model->index(child.key().toInt(), 0, root), child.value().toObject());
+    int i = 0;
+
+    for (auto j = used.begin(); j != used.end() && i == *j; i++, j++);
+
+    return i ? QString("Camera.") + QString::number(i) : "Camera";
+}
+
+void TreeModel::addCamera(Camera *camera)
+{
+    TreeItem* root = new CameraItem(next_name(), camera, header);
+
+    beginInsertRows(QModelIndex(), 0, 0);
+    header->prependChild(root);
+    endInsertRows();
+}
+
+void TreeModel::setCurrentCamera(QModelIndex index)
+{
+    auto tmp = currentCamera;
+
+    currentCamera = index;
+
+    if (tmp.isValid())
+        setData(tmp, false);
+
+    if (currentCamera.isValid())
+        setData(currentCamera, true);
+}
+
+Camera *TreeModel::getCurrentCamera() const
+{
+    return currentCamera.isValid() ? static_cast<CameraItem*>(currentCamera.internalPointer())->getCamera() : nullptr;
+}
+
+void TreeModel::propagateMaterial(const QModelIndex &root, const Material* m)
+{
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < rowCount(root); r++)
+    {
+        auto c = index(r, 0, root);
+
+        if (c.sibling(c.row(), 5).data().toList().isEmpty())
+            propagateMaterial(c, m);
+    }
+}
+
+void TreeModel::setMaterial(const QModelIndex &root, Material *m, int position)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    list.insert(position, QVariant::fromValue(m));
+
+    setData(index, list);
+
+    if (position >= list.length() - 1)
+        propagateMaterial(root.sibling(root.row(), 0), m);
+
+    m->assign(index);
+
+    emit propertyChanged();
+}
+
+Material *TreeModel::removeMaterial(const QModelIndex &root, int position)
+{
+    auto index = root.sibling(root.row(), 5);
+
+    auto list = index.data().toList();
+    auto m = list.takeAt(position).value<Material*>();
+
+    setData(index, list);
+
+    if (position == list.length())
+    {
+        auto index = root.sibling(root.row(), 0);
+        auto m = Material::getDefault();
+
+        while (index.isValid())
+        {
+            auto list = index.sibling(index.row(), 5).data().toList();
+
+            if (!list.isEmpty())
+            {
+                m = list.last().value<Material*>();
+                break;
+            }
+
+            index = index.parent();
+        }
+
+        propagateMaterial(root.sibling(root.row(), 0), m);
+    }
+
+    m->assign(index, false);
+
+    emit propertyChanged();
+
+    return m;
+}
+
+void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
+{
+    auto list = root.sibling(root.row(), 5).data().toList();
+
+    if (!list.isEmpty())
+    {
+        auto n = list.last().value<Material*>();
+        n->assign(root);
+        m = n;
+    }
+
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < rowCount(root); r++)
+        updateMaterial(index(r, 0, root), m);
+}
+
+void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v)
+{
+    reinterpret_cast<TreeItem*>(root.internalPointer())->setFlag(m == Editor ? VisibleInEditor : VisibleInRenderer, v);
+
+    for (int r = 0; r < rowCount(root); r++)
+    {
+        auto c = index(r, 0, root);
+
+        if (c.sibling(c.row(), m).data().toInt() == Default)
+            propagateVisibility(c, m, v);
+    }
+}
+
+void TreeModel::updateVisibility(const QModelIndex &root, QPair<bool, bool> v)
+{
+    if (root.isValid())
+    {
+        Visibility w;
+
+        w = (Visibility)root.sibling(root.row(), Editor).data().toInt();
+
+        if (w != Default)
+            v.first = w == On;
+
+        w = (Visibility)root.sibling(root.row(), Renderer).data().toInt();
+
+        if (w != Default)
+            v.second = w == On;
+
+        if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        {
+            AtomItem* a = reinterpret_cast<AtomItem*>(root.internalPointer());
+            a->setFlag(VisibleInEditor, v.first);
+            a->setFlag(VisibleInRenderer, v.second);
+        }
+    }
+
+    for (int r = 0; r < rowCount(root); r++)
+        updateVisibility(index(r, 0, root), v);
+}
+
+void TreeModel::setVisibility(const QModelIndex &index, Visibility v, VisibilityMode m)
+{
+    setVisibility(QModelIndexList({index}), v, m);
+}
+
+void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, VisibilityMode m)
+{
+    for (const auto& i : indices)
+    {
+        auto index = i.sibling(i.row(), m);
+
+        setData(index, v);
+
+        index = i.sibling(i.row(), 0);
+        auto v = On;
+
+        while (index.isValid())
+        {
+            Visibility w = (Visibility)index.sibling(index.row(), m).data().toInt();
+
+            if (w != Default)
+            {
+                v = w;
+                break;
+            }
+
+            index = index.parent();
+        }
+
+        propagateVisibility(i.sibling(i.row(), 0), m, v == On);
+    }
+
+    emit propertyChanged();
+    emit attributeChanged();
+}
+
+void TreeModel::propagateSelected(const QModelIndex &root, bool s)
+{
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(Selected, s);
+
+    for (int r = 0; r < rowCount(root); r++)
+        propagateSelected(index(r, 0, root), s);
+}
+
+void TreeModel::setSelected(const QModelIndexList &indices, bool s)
+{
+    for (const auto& i : indices)
+        if (i.column() == 0)
+            propagateSelected(i, s);
+
+    emit propertyChanged();
+}
+
+void TreeModel::setName(const QModelIndex &index, const QString &name)
+{
+    setName(QModelIndexList({index}), name);
+}
+
+void TreeModel::setName(const QModelIndexList &indices, const QString &name)
+{
+    if (!name.isEmpty())
+        for (const auto& i : indices)
+            setData(i.sibling(i.row(), 0), name);
+
+    emit attributeChanged();
 }
 
 void TreeModel::read(const QJsonObject &json)
 {
-    dumpModel3(this, index(0, 0), json);
-}
+    header->read(json);
 
-#include "material.h"
-#include "materialbrowser.h"
-
-void dumpModel2(const QAbstractItemModel* model, const QModelIndex& root, QJsonObject &json)
-{
-    QJsonObject object;
-
-    auto vie = (Visibility)root.sibling(root.row(), 3).data().toInt();
-
-    if (vie != Default)
-        object["Visible in editor"] = vie == On;
-
-    auto vir = (Visibility)root.sibling(root.row(), 4).data().toInt();
-
-    if (vir != Default)
-        object["Visible in renderer"] = vir == On;
-
-    auto t = root.sibling(root.row(), 5).data().toList();
-
-    if (!t.empty())
-    {
-        QJsonArray u;
-
-        for (auto i : t)
-            u.append(i.value<Material*>()->getId().toString());
-
-        object["Tags"] = u;
-    }
-
-    if (!object.empty())
-        json["Object"] = object;
-
-    QJsonObject children;
-
-    for (int r = 0; r < model->rowCount(root); r++)
-    {
-        QJsonObject child;
-
-        dumpModel2(model, model->index(r, 0, root), child);
-
-        if (!child.empty())
-            children[QString::number(r)] = child;
-    }
-
-    if (!children.empty())
-        json["Descendants"] = children;
+    updateMaterial(QModelIndex(), Material::getDefault());
+    updateVisibility(QModelIndex(), {true, true});
 }
 
 void TreeModel::write(QJsonObject &json) const
 {
-    dumpModel2(this, index(0, 0), json);
+    header->write(json);
+}
+
+#include <QSet>
+
+void TreeModel::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
+{
+    QSet<const Material*> used;
+    header->writePOVFrame(stream, frame, used);
+}
+
+void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
+{
+    QSet<const Material*> used;
+    header->writePOVFrames(stream, fbeg, fend, used);
+}
+
+void TreeModel::updateAttributes(const Material *m)
+{
+    for (auto i : m->getAssigned())
+        if (i.sibling(i.row(), 5).data().toList().last().value<Material*>() == m)
+            propagateMaterial(i.sibling(i.row(), 0), m);
+
+    emit propertyChanged();
 }

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QSplashScreen s(QPixmap(":/application/splash").scaled(600, 500), Qt::WindowStaysOnTopHint);
+    QSplashScreen s(QPixmap(":/application/splash"), Qt::WindowStaysOnTopHint);
     s.show();
 
     QApplication::setOrganizationName("Regulomics");
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     QSurfaceFormat format;
     format.setDepthBufferSize(24);
     format.setVersion(3, 3);
-    format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(format);
 
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular");
@@ -40,8 +40,6 @@ int main(int argc, char *argv[])
     delete CommonData::getInstance();
     delete MaterialBrowser::getInstance();
     delete RenderSettings::getInstance();
-
-    delete Material::getDefault();
 
     return ans;
 }

@@ -3,54 +3,35 @@
 
 #include <QTreeView>
 #include <QHeaderView>
-#include "treemodel.h"
-#include "material.h"
 #include <functional>
-
-class VizWidget;
-
-enum VisibilityMode
-{
-    Editor = 3,
-    Renderer = 4
-};
+#include "camera.h"
+#include "treemodel.h"
+#include "pickwidget.h"
 
 class HeaderView;
+class Simulation;
 
-class TreeView : public QTreeView
+class TreeView : public QTreeView, public Pickable
 {
     Q_OBJECT
+    Q_INTERFACES(Pickable)
 public:
     explicit TreeView(QWidget *parent = 0);
     ~TreeView();
 
     void setSelection(const QList<unsigned int>& indexes);
-    void setScene(VizWidget* s);
 
-    QVariant getName(const QList<unsigned int>& indexes) const;
-    void setName(const QList<unsigned int>& indexes, const QString& name);
-
-    Visibility getVisibility(const QList<unsigned int>& indexes, VisibilityMode m) const;
-    void setVisibility(const QList<unsigned int>& indexes, Visibility v, VisibilityMode m);
-
-    Material* getMaterial(const QList<unsigned int>& indexes) const;
-    void setMaterial(const QList<unsigned int>& indexes, Material* m);
-
-    void read(const QJsonObject& json);
-
-    void materializeTags(const QModelIndex& root = QModelIndex());
+    QPersistentModelIndex pick(const QPoint &pos);
 
 signals:
-    void visibilityChanged(VisibilityMode);
-
-public slots:
-    void updateAttributes(const Material* m);
+    void cameraChanged(Camera*);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -64,16 +45,7 @@ private:
     Visibility cv;
     VisibilityMode vm;
 
-    VizWidget* scene;
-
     void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
-    void dumpModel3(const QModelIndex& root, const QJsonObject &json);
-
-    Visibility getVisibility(const QModelIndex& root, VisibilityMode m) const;
-    void setVisibility(const QModelIndex& root, Visibility v, VisibilityMode m);
-
-    Material* getMaterial(const QModelIndex& root) const;
-    void setMaterial(const QModelIndex& root, Material* m, int pos = INT_MAX);
 
     Material* takeSelectedMaterial();
 
@@ -82,7 +54,8 @@ private:
         NoState,
         ResizeSection,
         ChangeVisibility,
-        DragTag
+        DragTag,
+        SetCamera
     } state;
 
     HeaderView *hv;

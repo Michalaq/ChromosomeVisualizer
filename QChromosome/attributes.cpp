@@ -1,46 +1,38 @@
 #include "attributes.h"
 #include "ui_attributes.h"
+#include "treemodel.h"
+
+MetaAttributes::MetaAttributes(QWidget *parent) : QWidget(parent)
+{
+
+}
+
+MetaAttributes::~MetaAttributes()
+{
+
+}
 
 Attributes::Attributes(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Attributes)
+    MetaAttributes(parent),
+    ui(new Ui::Attributes),
+    model(nullptr)
 {
     ui->setupUi(this);
 
-    // set name
+    // connect name
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
-        if (ui->lineEdit->isModified())
-        {
-            if (ui->lineEdit->text().isEmpty())
-                updateName();
-            else
-                vizWidget_->selectedSpheresObject().setName(ui->lineEdit->text());
-        }
+        model->setName(rows, ui->lineEdit->text());
     });
 
-    // set label
-    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
-        if (ui->lineEdit_2->isModified())
-            vizWidget_->selectedSpheresObject().setLabel(ui->lineEdit_2->text());
+    // connect vie
+    connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        model->setVisibility(rows, (Visibility)index, Editor);
     });
 
-    // set vie
-    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Editor);
+    // connect vir
+    connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        model->setVisibility(rows, (Visibility)index, Renderer);
     });
-
-    // set vir
-    connect(ui->comboBox_2, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        vizWidget_->selectedSpheresObject().setVisible(Visibility(i), Renderer);
-    });
-
-    // set radius
-    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
-        vizWidget_->selectedSpheresObject().setSize(val);
-    });
-
-    // set segments
-
 }
 
 Attributes::~Attributes()
@@ -48,77 +40,166 @@ Attributes::~Attributes()
     delete ui;
 }
 
-void Attributes::setVizWidget(VizWidget *vizWidget)
+void Attributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
-    vizWidget_ = vizWidget;
-}
+    Q_ASSERT(!selectedRows.empty());
 
-void Attributes::handleSelection(const AtomSelection &selection)
-{
-    if (!selection.atomCount())
-        return hide();
+    ui->tabWidget->setCurrentIndex(0);
+
+    model = selectedModel;
+    rows = selectedRows;
+
+    items.clear();
+    items.reserve(selectedRows.size());
+
+    for (const auto& i : selectedRows)
+        items.append(reinterpret_cast<TreeItem*>(i.internalPointer()));
+
+    connect(model, &TreeModel::attributeChanged, this, &Attributes::updateModelSelection);
 
     // set title
-    title = "Atom object ";
+    QString title = QString::number(rows.count()) + " elements ";
 
-    if (selection.atomCount() > 1)
-        title += "(" + QString::number(selection.atomCount()) + " elements) ";
+    ui->label->setTitle(title);
 
-    list.clear();
+    updateModelSelection();
 
-    for (auto i : selection.selectedIndices())
-        list += "Atom." + QString::number(i + 1) + ", ";
+    updatePosition();
+}
+
+void Attributes::unsetSelection()
+{
+    if (model) model->disconnect(this);
+    model = nullptr;
+}
+
+void Attributes::updateModelSelection()
+{
+    // set elements
+    QString list;
+
+    for (const auto& r : rows)
+        list += r.data().toString() + ", ";
 
     list.chop(2);
 
-    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+    ui->label->setElements(list);
+
+    auto fst = rows.first();
+    bool multiple;
 
     // set name
-    auto l = selection.getName();
-    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
+    QString name = fst.data().toString();
+    multiple = false;
 
-    // set label
-    l = selection.getLabel();
-    ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
+    for (const auto& r : rows)
+        if (name != r.data().toString())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->lineEdit->setMultipleValues();
+    else
+        ui->lineEdit->setText(name, false);
 
     // set vie
-    ui->comboBox->setCurrentIndex(selection.getVisibility(Editor), false);
+    int vie = fst.sibling(fst.row(), 3).data().toInt();
+    multiple = false;
+
+    for (const auto& r : rows)
+        if (vie != r.sibling(r.row(), 3).data().toInt())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->comboBox->setMultipleValues();
+    else
+        ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
-    ui->comboBox->setCurrentIndex(selection.getVisibility(Renderer), false);
+    int vir = fst.sibling(fst.row(), 4).data().toInt();
+    multiple = false;
 
-    // set coordinates
-    auto c = selection.getCoordinates();
+    for (const auto& r : rows)
+        if (vir != r.sibling(r.row(), 4).data().toInt())
+        {
+            multiple = true;
+            break;
+        }
 
-    ui->spinBox->setValue(std::get<0>(c), false);
-    ui->spinBox_2->setValue(std::get<1>(c), false);
-    ui->spinBox_3->setValue(std::get<2>(c), false);
-
-    // set radius
-    ui->doubleSpinBox->setValue(selection.getSize(), false);
-
-    // set segments
-
-    show();
-}
-
-void Attributes::resizeEvent(QResizeEvent *event)
-{
-    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
-
-    QWidget::resizeEvent(event);
-}
-
-void Attributes::updateName()
-{
-    auto l = vizWidget_->selectedSpheresObject().getName();
-    ui->lineEdit->setText(l.isValid() ? l.toString() : "<< multiple values >>");
-}
-
-void Attributes::updateVisibility(VisibilityMode m)
-{
-    if (m == Editor)
-        ui->comboBox->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Editor), false);
+    if (multiple)
+        ui->comboBox_2->setMultipleValues();
     else
-        ui->comboBox_2->setCurrentIndex(vizWidget_->selectedSpheresObject().getVisibility(Renderer), false);
+        ui->comboBox_2->setCurrentIndex(vir, false);
+}
+
+#include "treeitem.h"
+#include "camera.h"
+
+void Attributes::updatePosition()
+{
+    auto fst = items.first();
+    bool multiple;
+
+    // set P.X
+    double x = fst->getPosition().x();
+    multiple = false;
+
+    for (const auto& i : items)
+        if (x != i->getPosition().x())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox->setMultipleValues();
+    else
+        ui->doubleSpinBox->setValue(x, false);
+
+    // set P.Y
+    double y = fst->getPosition().y();
+    multiple = false;
+
+    for (const auto& i : items)
+        if (y != i->getPosition().y())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_2->setMultipleValues();
+    else
+        ui->doubleSpinBox_2->setValue(y, false);
+
+    // set P.Z
+    double z = fst->getPosition().z();
+    multiple = false;
+
+    for (const auto& i : items)
+        if (z != i->getPosition().z())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_3->setMultipleValues();
+    else
+        ui->doubleSpinBox_3->setValue(z, false);
+
+    // set camera origin
+    QVector3D g;
+
+    for (const auto& i : items)
+        g += i->getPosition();
+
+    g /= rows.count();
+
+    Camera::setOrigin(g);
 }

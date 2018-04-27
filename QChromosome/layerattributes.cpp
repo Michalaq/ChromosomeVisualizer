@@ -1,44 +1,28 @@
 #include "layerattributes.h"
 #include "ui_layerattributes.h"
+#include "treemodel.h"
 
 LayerAttributes::LayerAttributes(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LayerAttributes)
+    MetaAttributes(parent),
+    ui(new Ui::LayerAttributes),
+    model(nullptr)
 {
     ui->setupUi(this);
 
-    // set name
-
-    // set label
-    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
-        if (ui->lineEdit_2->isModified())
-            vizWidget_->selectedSpheresObject().setLabel(ui->lineEdit_2->text());
+    // connect name
+    connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
+        model->setName(rows, ui->lineEdit->text());
     });
 
-    // set vie
-    connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int i) {
-        switch (i) {
-        case 0: // default
-            break;
-        case 1: // on
-            vizWidget_->selectedSpheresObject().setVisible_(true);
-            break;
-        case 2: // off
-            vizWidget_->selectedSpheresObject().setVisible_(false);
-            break;
-        }
+    // connect vie
+    connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        model->setVisibility(rows, (Visibility)index, Editor);
     });
 
-    // set vir
-
-    // set radius
-    connect(ui->doubleSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] (double val) {
-        vizWidget_->selectedSpheresObject().setSize(val);
+    // connect vir
+    connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        model->setVisibility(rows, (Visibility)index, Renderer);
     });
-
-    // set segments
-
-    connect(ui->pushButton_2, SIGNAL(clicked(bool)), this, SLOT(appendLayer()));
 }
 
 LayerAttributes::~LayerAttributes()
@@ -46,98 +30,169 @@ LayerAttributes::~LayerAttributes()
     delete ui;
 }
 
-void LayerAttributes::setVizWidget(VizWidget *vizWidget)
+void LayerAttributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
-    vizWidget_ = vizWidget;
-}
+    Q_ASSERT(!selectedRows.empty());
 
-void LayerAttributes::setSimulation(std::shared_ptr<Simulation> s)
-{
-    simulation = s;
-}
+    ui->tabWidget->setCurrentIndex(0);
 
-void LayerAttributes::handleSelection(const AtomSelection &selection, const QList<unsigned int> &layers)
-{
-    if (!layers.count())
-        return hide();
+    model = selectedModel;
+    rows = selectedRows;
+
+    layers.clear();
+    layers.reserve(selectedRows.size());
+
+    for (const auto& i : selectedRows)
+        layers.append(reinterpret_cast<LayerItem*>(i.internalPointer()));
+
+    connect(model, &TreeModel::attributeChanged, this, &LayerAttributes::updateModelSelection);
 
     // set title
-    title = "Layer object ";
+    QString title("Layer object ");
 
-    if (layers.count() > 1)
-        title += "(" + QString::number(layers.count()) + " elements) ";
+    if (rows.count() > 1)
+        title += "(" + QString::number(rows.count()) + " elements) ";
 
-    list.clear();
+    ui->label->setTitle(title);
 
-    for (auto i : layers)
-        list += QString("Layer") + (i ? QString(".") + QString::number(i + 1) : "") + ", ";
+    updateModelSelection();
+
+    updatePosition();
+}
+
+void LayerAttributes::unsetSelection()
+{
+    if (model) model->disconnect(this);
+    model = nullptr;
+}
+
+void LayerAttributes::updateModelSelection()
+{
+    // set elements
+    QString list;
+
+    for (const auto& r : rows)
+        list += r.data().toString() + ", ";
 
     list.chop(2);
 
-    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
+    ui->label->setElements(list);
+
+    auto fst = rows.first();
+    bool multiple;
 
     // set name
+    QString name = fst.data().toString();
+    multiple = false;
 
-    // set label
-    auto l = selection.getLabel();
+    for (const auto& r : rows)
+        if (name != r.data().toString())
+        {
+            multiple = true;
+            break;
+        }
 
-    ui->lineEdit_2->setText(l.isValid() ? l.toString() : "<< multiple values >>");
+    if (multiple)
+        ui->lineEdit->setMultipleValues();
+    else
+        ui->lineEdit->setText(name, false);
 
     // set vie
-    ui->comboBox->setCurrentIndex(selection.getVisibility(Editor), false);
+    int vie = fst.sibling(fst.row(), 3).data().toInt();
+    multiple = false;
+
+    for (const auto& r : rows)
+        if (vie != r.sibling(r.row(), 3).data().toInt())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->comboBox->setMultipleValues();
+    else
+        ui->comboBox->setCurrentIndex(vie, false);
 
     // set vir
-    ui->comboBox_2->setCurrentIndex(selection.getVisibility(Renderer), false);
+    int vir = fst.sibling(fst.row(), 4).data().toInt();
+    multiple = false;
 
-    // set coordinates
-    auto c = selection.getCoordinates();
-
-    ui->spinBox->setValue(std::get<0>(c), false);
-    ui->spinBox_2->setValue(std::get<1>(c), false);
-    ui->spinBox_3->setValue(std::get<2>(c), false);
-
-    // set radius
-    ui->doubleSpinBox->setValue(selection.getSize(), false);
-
-    // set segments
-
-    show();
-
-    ui->pushButton_2->setVisible(layers.count() == 1);
-
-    id = layers.first();
-}
-
-void LayerAttributes::resizeEvent(QResizeEvent *event)
-{
-    ui->label_14->setText(title + "[" + ui->label_14->fontMetrics().elidedText(list, Qt::ElideRight, width() - ui->label_14->fontMetrics().width(title + "[]") - 58) + "]");
-
-    QWidget::resizeEvent(event);
-}
-
-#include <QFileDialog>
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
-#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
-#include <QMessageBox>
-#include <QStandardPaths>
-
-void LayerAttributes::appendLayer()
-{
-    try {
-        QString path = QFileDialog::getOpenFileName(0, "", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "Simulation file (*.pdb *.bin)");
-
-        if (!path.isEmpty())
+    for (const auto& r : rows)
+        if (vir != r.sibling(r.row(), 4).data().toInt())
         {
-            std::shared_ptr<SimulationLayer> simulationLayer;
-
-            if (path.endsWith(".pdb"))
-                simulationLayer = std::make_shared<PDBSimulationLayer>(path.toStdString());
-            else
-                simulationLayer = std::make_shared<ProtobufSimulationLayer>(path.toStdString());
-
-            simulation->getSimulationLayerConcatenation(id)->appendSimulationLayer(simulationLayer);
+            multiple = true;
+            break;
         }
-    } catch (std::exception& e) {
-        QMessageBox::critical(0, "Error occured.", e.what());
-    }
+
+    if (multiple)
+        ui->comboBox_2->setMultipleValues();
+    else
+        ui->comboBox_2->setCurrentIndex(vir, false);
+}
+
+#include "treeitem.h"
+#include "camera.h"
+
+void LayerAttributes::updatePosition()
+{
+    auto fst = layers.first();
+    bool multiple;
+
+    // set P.X
+    double x = fst->getPosition().x();
+    multiple = false;
+
+    for (const auto& l : layers)
+        if (x != l->getPosition().x())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox->setMultipleValues();
+    else
+        ui->doubleSpinBox->setValue(x, false);
+
+    // set P.Y
+    double y = fst->getPosition().y();
+    multiple = false;
+
+    for (const auto& l : layers)
+        if (y != l->getPosition().y())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_2->setMultipleValues();
+    else
+        ui->doubleSpinBox_2->setValue(y, false);
+
+    // set P.Z
+    double z = fst->getPosition().z();
+    multiple = false;
+
+    for (const auto& l : layers)
+        if (z != l->getPosition().z())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_3->setMultipleValues();
+    else
+        ui->doubleSpinBox_3->setValue(z, false);
+
+    // set camera origin
+    QVector3D g;
+
+    for (const auto& l : layers)
+        g += l->getPosition();
+
+    g /= rows.count();
+
+    Camera::setOrigin(g);
 }

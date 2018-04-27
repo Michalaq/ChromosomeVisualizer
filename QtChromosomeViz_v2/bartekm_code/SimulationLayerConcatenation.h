@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "SimulationLayer.h"
-#include "TimeTransformation.h"
 #include <memory>
 #include <cstdint>
 #include <vector>
@@ -14,7 +13,6 @@ class SimulationLayerConcatenation : public QObject {
 private:
     std::vector<std::shared_ptr<SimulationLayer>> layers_;
     std::vector<frameNumber_t> aggregatedFrameCounts_;
-    TimeTransformation transform_;
     frameNumber_t frameCount_;
     frameNumber_t getLayerBaseFrameNumber(int layer);
     int layerId_;
@@ -23,10 +21,10 @@ public:
     SimulationLayerConcatenation(std::shared_ptr<SimulationLayer> sl);
     ~SimulationLayerConcatenation();
     frameNumber_t getFrameCount() const;
+    const std::string & getSimulationLayerConcatenationName() const;
     void appendSimulationLayer(std::shared_ptr<SimulationLayer> sl);
     int getConnectionCount() const;
 
-    TimeTransformation & getTransform();
     void setLayerId(int layerId);
 
     // Returns a frame in absolute time.

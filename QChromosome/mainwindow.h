@@ -6,9 +6,11 @@
 
 #include "../QtChromosomeViz_v2/VizWidget.hpp"
 #include "rendersettings.h"
-#include "interpolator.h"
 #include "preferences.h"
 #include "materialbrowser.h"
+#include "camera.h"
+#include "pickwidget.h"
+#include "attributes.h"
 
 namespace Ui
 {
@@ -24,6 +26,8 @@ public:
     ~MainWindow();
 
     bool eventFilter(QObject *watched, QEvent *event);
+
+    void read(const QJsonObject& json);
 
 public slots:
     void newProject();
@@ -51,9 +55,8 @@ public slots:
 
     /* selection */
     void selectAll();
-    void handleSelection(const AtomSelection &selection, bool b = true);
-    void handleModelSelection();
-    void focusSelection(const AtomSelection &s);
+    void handleSceneSelection(const QItemSelection &selected, QItemSelectionModel::SelectionFlags flags);
+    void handleModelSelection(const QItemSelection &selected, const QItemSelection &deselected);
 
     /* actions */
     void setBaseAction(bool enabled);
@@ -86,7 +89,7 @@ private:
     QHash<Qt::Key, QAction*> bindings;
     QHash<Qt::Key, QLinkedList<QAction*>::Iterator> lookup;
 
-    QHash<QObject*, const char*> mappedSlot;
+    QHash<QObject*, Camera::Action> mappedSlot;
 
     RenderSettings *renderSettings;
     Preferences *preferences;
@@ -95,10 +98,14 @@ private:
     int softMinimum;
     int softMaximum;
 
-    Interpolator ip;
-    int ignore;
-
     QString currentFile;
+
+    void addCamera(Camera *camera);
+
+    PickWidget* pw;
+    QLabel* msg;
+
+    MetaAttributes* recent;
 };
 
 #endif // MAINWINDOW_H

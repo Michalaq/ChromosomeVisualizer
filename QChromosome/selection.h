@@ -1,21 +1,23 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 
-#include <QWidget>
+#include <QOpenGLWidget>
 
 enum SelectionType {
+    NO_SELECTION,
     CUSTOM_SHAPE_SELECTION,
     RECTANGULAR_SELECTION
 };
 
-class Selection : public QWidget
+class Selection : public QOpenGLWidget
 {
     Q_OBJECT
 public:
     explicit Selection(QWidget *parent = 0);
     ~Selection();
 
-    void setSelectionType(SelectionType t);
+    static void setSelectionType(SelectionType t);
+    const QPainterPath& getSelectionPath() const;
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -26,16 +28,10 @@ protected:
 
 private:
     QPoint tl, br;
-    bool isSelecting, isSelectingState;
+    bool isSelecting;
     QRect sr;
     QPainterPath path;
-    SelectionType st;
-
-signals:
-    void selectionPathChanged(const QPainterPath&, Qt::KeyboardModifiers);
-
-public slots:
-    void enableSelecting(bool b);
+    static SelectionType st;
 };
 
 #endif // SELECTION_H

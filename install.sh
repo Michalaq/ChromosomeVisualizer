@@ -1,9 +1,29 @@
-QT_PATH=/home/bartek/Qt
-PROJECT__PATH=.
-COMPILER=gcc_64
+QTDIR=/home/laurenthil/Qt/5.9.3/gcc_64
+#QTDIR=/Users/irina/Praca/5.9.3/clang_64
+DESTDIR=$(pwd)/build-QChromosome-Desktop_Qt_5_9_3-Debug
 
-mkdir -p build
-cd build
-$QT_PATH/5.5/$COMPILER/bin/qmake ../$PROJECT_PATH/QChromosome/QChromosome.pro
-make
+case $(uname) in
+    "Linux")
+        SPEC=linux-g++
+        ;;
+    "Darwin")
+        SPEC=macx-clang
+        ;;
+    *)
+        echo "System not supported."
+        exit 1
+        ;;
+esac
 
+mkdir -p .tmp
+cd .tmp
+cmake ..
+cd ..
+rm -rf .tmp
+
+CWD=$(pwd)
+
+mkdir -p $DESTDIR
+cd $DESTDIR
+$QTDIR/bin/qmake $CWD/QChromosome/QChromosome.pro -spec $SPEC CONFIG+=debug CONFIG+=qml_debug
+/usr/bin/make

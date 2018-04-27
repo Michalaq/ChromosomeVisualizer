@@ -13,12 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">.QLabel, .Label, .label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -53,7 +47,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/dialogs/document</normaloff>:/dialogs/document</iconset>
+         <normaloff>:/dialogs/project</normaloff>:/dialogs/project</iconset>
        </property>
       </widget>
      </item>
@@ -67,6 +61,9 @@
        </property>
        <property name="text">
         <string>QChromosome4D Document</string>
+       </property>
+       <property name="class" stdset="0">
+        <string>heading</string>
        </property>
       </widget>
      </item>
@@ -102,7 +99,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>208</height>
+            <height>214</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -123,6 +120,9 @@
                <property name="text">
                 <string>FPS</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="0">
@@ -130,12 +130,18 @@
                <property name="text">
                 <string>Minimum Time</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="4" column="0">
               <widget class="Label" name="label_9">
                <property name="text">
                 <string>Preview Min. Time</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -186,6 +192,9 @@
                <property name="text">
                 <string>Document Time</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="1">
@@ -206,6 +215,9 @@
                <property name="text">
                 <string>Maximum Time</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="3" column="1">
@@ -225,6 +237,9 @@
               <widget class="Label" name="label_12">
                <property name="text">
                 <string>Preview Max. Time</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -308,12 +323,18 @@
                <property name="text">
                 <string>Author</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_16">
                <property name="text">
                 <string>Info</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -322,6 +343,9 @@
                <property name="text">
                 <string>File Format</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="3" column="0">
@@ -329,12 +353,18 @@
                <property name="text">
                 <string>File Version</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="4" column="0">
               <widget class="Label" name="label_19">
                <property name="text">
                 <string>File Path</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -393,14 +423,14 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
-  </customwidget>
-  <customwidget>
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
   </customwidget>
   <customwidget>
    <class>LineEdit</class>

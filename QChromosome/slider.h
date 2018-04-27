@@ -3,8 +3,6 @@
 
 #include "softslider.h"
 #include "interpolator.h"
-#include <QShortcut>
-#include <QSvgRenderer>
 
 class Slider : public SoftSlider
 {
@@ -15,7 +13,7 @@ public:
 
     QSize minimumSizeHint() const;
 
-    void setInterpolator(Interpolator *_ip);
+    void setSplineInterpolator(SplineInterpolator *si);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -23,13 +21,14 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
     void paintEvent(QPaintEvent *event);
+    void keyPressEvent(QKeyEvent *event);
 
 public slots:
 
 private:
-    Interpolator *ip;
+    SplineInterpolator *interpolator;
     bool movemarker;
-    QShortcut *s;
+    int lastValue;
     QImage pin;
 };
 

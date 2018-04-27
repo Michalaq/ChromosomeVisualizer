@@ -1,16 +1,18 @@
 #include "spinbox.h"
-#include <QLineEdit>
 
-SpinBox::SpinBox(QWidget *parent) : QSpinBox(parent)
+SpinBox::SpinBox(QWidget *parent) :
+    QSpinBox(parent),
+    validator(QRegularExpression(QString("[+-]?\\d+")), this),
+    edit(new LineEdit(this)),
+    multiple(false)
 {
     setKeyboardTracking(false);
 
-    lineEdit()->setValidator(Q_NULLPTR);
+    edit->setValidator(&validator);
+    setLineEdit(edit);
 
-    re.setPattern("[+-]?\\d+");
-
-    connect(this, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] {
-        setSpecialValueText("");
+    connect(this, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        setValue(val);
     });
 }
 
@@ -26,29 +28,58 @@ void SpinBox::setValue(int val, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    if (val > std::numeric_limits<int>::lowest())
-    {
-        setSpecialValueText("");
-        QSpinBox::setValue(val);
-    }
-    else
-    {
-        setSpecialValueText("<< multiple values >>");
-        QSpinBox::setValue(minimum());
-    }
+    edit->setMultipleValues(multiple = false);
+    QSpinBox::setValue(val);
 
     if (!spontaneous)
         blockSignals(b);
 }
 
-QValidator::State SpinBox::validate(QString &input, int &) const
+QValidator::State SpinBox::validate(QString &input, int &pos) const
 {
-    return re.match(input).hasMatch() ? QValidator::Acceptable : QValidator::Intermediate;
+    return validator.validate(input, pos);
 }
 
 int SpinBox::valueFromText(const QString &text) const
 {
-    return locale().toInt(re.match(text).captured());
+    return locale().toInt(validator.regularExpression().match(text).captured());
+}
+
+QString SpinBox::textFromValue(int val) const
+{
+    if (multiple)
+        return "";
+
+    return locale().toString(val);
+}
+
+void SpinBox::setMultipleValues()
+{
+    setValue(0, false);
+
+    edit->setMultipleValues(multiple = true);
+}
+
+void SpinBox::setMaximum(int max)
+{
+    bool m = multiple;
+
+    bool b = blockSignals(true);
+    QSpinBox::setMaximum(max);
+    blockSignals(b);
+
+    if (m) setMultipleValues();
+}
+
+void SpinBox::setMinimum(int min)
+{
+    bool m = multiple;
+
+    bool b = blockSignals(true);
+    QSpinBox::setMinimum(min);
+    blockSignals(b);
+
+    if (m) setMultipleValues();
 }
 
 #include <QStyle>

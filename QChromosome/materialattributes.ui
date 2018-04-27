@@ -13,12 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">.QLabel, .Label, .label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -59,11 +53,8 @@
      </item>
      <item>
       <widget class="QLabel" name="label_14">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+       <property name="class" stdset="0">
+        <string>heading</string>
        </property>
       </widget>
      </item>
@@ -115,7 +106,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>134</height>
+            <height>125</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -136,24 +127,8 @@
                <property name="text">
                 <string>Color</string>
                </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="Picker" name="widget" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -161,6 +136,9 @@
               <widget class="Label" name="label_16">
                <property name="text">
                 <string>Transparency</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -185,6 +163,9 @@
                <property name="text">
                 <string>Finish</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="2" column="1">
@@ -205,6 +186,9 @@
                 </property>
                </item>
               </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="Picker" name="widget"/>
              </item>
             </layout>
            </item>
@@ -250,9 +234,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-27</y>
             <width>362</width>
-            <height>106</height>
+            <height>97</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -273,12 +257,18 @@
                <property name="text">
                 <string>Shininess exponent</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
               </widget>
              </item>
              <item row="1" column="0">
               <widget class="Label" name="label_19">
                <property name="text">
                 <string>Specular color</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
                </property>
               </widget>
              </item>
@@ -296,23 +286,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="Picker" name="widget_2" native="true">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>32</height>
-                </size>
-               </property>
-               <property name="focusPolicy">
-                <enum>Qt::StrongFocus</enum>
-               </property>
-              </widget>
+              <widget class="Picker" name="widget_2"/>
              </item>
             </layout>
            </item>
@@ -351,32 +325,29 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>DoubleSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>doublespinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Picker</class>
-   <extends>QWidget</extends>
-   <header>picker.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
    <header>combobox.h</header>
   </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Picker</class>
+   <extends>QComboBox</extends>
+   <header>picker.h</header>
+  </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>widget</tabstop>
   <tabstop>doubleSpinBox_2</tabstop>
   <tabstop>doubleSpinBox_3</tabstop>
-  <tabstop>widget_2</tabstop>
  </tabstops>
  <resources>
   <include location="icons.qrc"/>

@@ -10,15 +10,6 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">.QLabel, .Label, .label {
-	color: lightgray;
-}
-</string>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -68,6 +59,9 @@
        <property name="text">
         <string>Key frame</string>
        </property>
+       <property name="class" stdset="0">
+        <string>heading</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -107,6 +101,9 @@
            <property name="text">
             <string>Key Time</string>
            </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -114,12 +111,18 @@
            <property name="text">
             <string>Key Value</string>
            </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="Label" name="label_3">
            <property name="text">
             <string>Interpolation</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
            </property>
           </widget>
          </item>
@@ -180,12 +183,18 @@
            <property name="text">
             <string>Lock Time</string>
            </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="Label" name="label_6">
            <property name="text">
             <string>Lock Value</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
            </property>
           </widget>
          </item>
@@ -223,14 +232,9 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>DoubleSpinBox</class>
-   <extends>QDoubleSpinBox</extends>
-   <header>doublespinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
   <customwidget>
    <class>Label</class>
@@ -238,9 +242,14 @@
    <header>label.h</header>
   </customwidget>
   <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -1,51 +1,10 @@
-#include <cassert>
-#include <cstddef>
-#include "bartekm_code/PDBSimulationLayer.h"
 #include "VizWidget.hpp"
-
-static const float EPSILON = 1e-4;
-static const int SELECTED_FLAG = 1 << 2;
-static const int VISIBLE_FLAG = 1 << 3;
-
-inline static float triangleField(const QVector3D & a, const QVector3D & b, const QVector3D & c)
-{
-    return 0.5f * QVector3D::crossProduct(b - a, c - a).length();
-}
-
-inline static bool isDegenerate(const QVector3D & a, const QVector3D & b, const QVector3D & c)
-{
-    return triangleField(a, b, c) < EPSILON;
-}
-
-VizVertex VizVertex::rotated(const QQuaternion & q) const
-{
-    return {
-        q.rotatedVector(position),
-        q.rotatedVector(normal)
-    };
-}
-
-void VizLink::update(const QVector3D & p1, const QVector3D & p2)
-{
-    position = (p1 + p2) * 0.5f;
-    rotation = QQuaternion::rotationTo(QVector3D(0.f, 0.f, 1.f), (p2 - p1).normalized());
-    size[2] = (p1 - p2).length() * 0.5f;
-}
+#include <cassert>
 
 VizWidget::VizWidget(QWidget *parent)
-    : QOpenGLWidget(parent)
-    , simulation_(std::make_shared<Simulation>())
-    , needVBOUpdate_(true)
-    , fogDensity_(0.01f)
-    , fogContribution_(0.8f)
+    : Selection(parent)
     , pickingFramebuffer_(nullptr)
-    , currentSelection_(this)
-    , ballQualityParameters_(0, 0)
-    , labelRenderer_(QSizeF(800, 600))
-    , backgroundColor_(0, 0, 0)
-    , labelTextColor_(255, 255, 255)
-    , labelBackgroundColor_(0, 0, 0, 255)
-    , image(nullptr)
+    , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
 }
@@ -58,23 +17,14 @@ VizWidget::~VizWidget()
 void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
-    labelRenderer_.initGL();
 
-    glEnable(GL_DEPTH_TEST);
-
-    assert(sphereModel_.create());
-    sphereModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    assert(vaoSpheres_.create());
 
     assert(atomPositions_.create());
     atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    assert(vaoSpheres_.create());
-
-    // Create sphere model
-    setBallQuality(1.f);
     vaoSpheres_.bind();
-
-    sphereModel_.bind();
+    atomPositions_.bind();
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -82,72 +32,42 @@ void VizWidget::initializeGL()
         3,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, position)
     );
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
-    );
-
-    sphereModel_.release();
-    atomPositions_.bind();
-
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        nullptr
-    );
-
-    glEnableVertexAttribArray(3);
     glVertexAttribIPointer(
-        3,
         1,
-        GL_UNSIGNED_INT,
+        1,
+        GL_INT,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, flags)
     );
 
-    glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(
+        2,
         4,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, atomID)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribIPointer(
-        5,
-        1,
-        GL_UNSIGNED_INT,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, color)
     );
 
-    glEnableVertexAttribArray(6);
-    glVertexAttribIPointer(
-        6,
-        1,
-        GL_UNSIGNED_INT,
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(
+        3,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, specularColor)
     );
 
-    glEnableVertexAttribArray(7);
+    glEnableVertexAttribArray(4);
     glVertexAttribPointer(
-        7,
+        4,
         1,
         GL_FLOAT,
         GL_FALSE,
@@ -155,9 +75,9 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, specularExponent)
     );
 
-    glEnableVertexAttribArray(8);
+    glEnableVertexAttribArray(5);
     glVertexAttribPointer(
-        8,
+        5,
         1,
         GL_FLOAT,
         GL_FALSE,
@@ -165,34 +85,59 @@ void VizWidget::initializeGL()
         (void*)offsetof(VizBallInstance, size)
     );
 
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);
-    glVertexAttribDivisor(8, 1);
-
     atomPositions_.release();
     vaoSpheres_.release();
 
-    assert(cylinderModel_.create());
-    sphereModel_.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    assert(vaoCameras_.create());
 
-    assert(cylinderPositions_.create());
-    atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    assert(cameraPositions_.create());
+    cameraPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    assert(vaoCylinders_.create());
+    vaoCameras_.bind();
+    cameraPositions_.bind();
 
-    // Create cylinder model
-    QVector<VizVertex> cylinderVerts = generateCylinder(8);
-    cylinderVertCount_ = cylinderVerts.size();
-    cylinderModel_.bind();
-    cylinderModel_.allocate(cylinderVerts.data(), cylinderVerts.size() * sizeof(VizVertex));
-    cylinderModel_.release();
+    for (int i = 0; i < 4; i++)
+    {
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(
+            i,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(VizCameraInstance),
+            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
+        );
+    }
 
-    vaoCylinders_.bind();
-    cylinderModel_.bind();
+    for (int i = 0; i < 4; i++)
+    {
+        glEnableVertexAttribArray(i + 4);
+        glVertexAttribPointer(
+            i + 4,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(VizCameraInstance),
+            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
+        );
+    }
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribIPointer(
+        8,
+        1,
+        GL_INT,
+        sizeof(VizCameraInstance),
+        (void*)offsetof(VizCameraInstance, flags)
+    );
+
+    cameraPositions_.release();
+    vaoCameras_.release();
+
+    assert(vaoLabels_.create());
+
+    vaoLabels_.bind();
+    atomPositions_.bind();
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -200,105 +145,40 @@ void VizWidget::initializeGL()
         3,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, position)
     );
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         1,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizVertex),
-        nullptr
+        1,
+        GL_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, flags)
     );
-
-    cylinderModel_.release();
-    cylinderPositions_.bind();
 
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(
         2,
-        3,
+        1,
         GL_FLOAT,
         GL_FALSE,
-        sizeof(VizLink),
-        nullptr
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, size)
     );
 
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(
+    glVertexAttribIPointer(
         3,
         4,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, rotation)
+        GL_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, label)
     );
 
-    glEnableVertexAttribArray(4);
-    glVertexAttribIPointer(
-        4,
-        2,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, color)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribIPointer(
-        5,
-        2,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, specularColor)
-    );
-
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(
-        6,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, specularExponent)
-    );
-
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(
-        7,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, size)
-    );
-
-    glEnableVertexAttribArray(8);
-    glVertexAttribIPointer(
-        8,
-        1,
-        GL_UNSIGNED_INT,
-        sizeof(VizLink),
-        (void*)offsetof(VizLink, visible)
-    );
-
-    glVertexAttribDivisor(2, 1);
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);
-    glVertexAttribDivisor(8, 1);
-
-    cylinderPositions_.release();
-    vaoCylinders_.release();
-
-    planeVAO_.create();
-
-    // TODO: Getting the first frame should be somewhere else
-    setFirstFrame();
+    atomPositions_.release();
+    vaoLabels_.release();
 
     // Shaders
     assert(sphereProgram_.create());
@@ -313,33 +193,33 @@ void VizWidget::initializeGL()
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/cylinder/fragment.glsl");
     assert(cylinderProgram_.link());
 
+    assert(cameraProgram_.create());
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/camera/vertex.glsl");
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/camera/geometry.glsl");
+    cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/camera/fragment.glsl");
+    assert(cameraProgram_.link());
+
     assert(pickingProgram_.create());
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking.frag");
     assert(pickingProgram_.link());
+
+    assert(labelsProgram_.create());
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/labels/vertex.glsl");
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/labels/geometry.glsl");
+    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/labels/fragment.glsl");
+    assert(labelsProgram_.link());
+
+    AtomItem::getAtlas().initializeGL();
 }
+
+#include "viewport.h"
 
 void VizWidget::paintGL()
 {
-    if (needVBOUpdate_)
-    {
-        setFrame(frameNumber_);
-        needVBOUpdate_ = false;
-    }
-
-    // QPainter painter;
-    // painter.begin(this);
-    // painter.setRenderHint(QPainter::Antialiasing);
-
-    generateSortedState();
-    updateWholeFrameData();
-
-    // painter.beginNativePainting();
-
-    // Enable alpha blending
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Ensure taht buffers are up to date
+    allocate();
 
     // Enable culling
     glEnable(GL_CULL_FACE);
@@ -348,6 +228,8 @@ void VizWidget::paintGL()
 
     glEnable(GL_DEPTH_TEST);
 
+    auto backgroundColor_ = viewport_->getBackgroundColor();
+
     glClearColor(backgroundColor_.redF(),
                  backgroundColor_.greenF(),
                  backgroundColor_.blueF(),
@@ -355,12 +237,15 @@ void VizWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (sphereCount_ > 0)
+    if (!AtomItem::getBuffer().empty())
     {
-        vaoCylinders_.bind();
+        float fogDensity_ = viewport_->getFogDensity();
+        float fogContribution_ = viewport_->getFogContribution();
+
+        vaoSpheres_.bind();
         cylinderProgram_.bind();
 
-        cylinderProgram_.setUniformValue("mvp", modelViewProjection_);
+        cylinderProgram_.setUniformValue("pro", projection_);
         cylinderProgram_.setUniformValue("mv", modelView_);
         cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
         cylinderProgram_.setUniformValue("uvScreenSize",
@@ -373,17 +258,14 @@ void VizWidget::paintGL()
                                          backgroundColor_.greenF(),
                                          backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, cylinderVertCount_, connectionCount_);
+        for (auto& strip : ChainItem::getBuffer())
+            glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();
-        vaoCylinders_.release();
-
-        vaoSpheres_.bind();
         sphereProgram_.bind();
 
-        sphereProgram_.setUniformValue("mvp", modelViewProjection_);
+        sphereProgram_.setUniformValue("pro", projection_);
         sphereProgram_.setUniformValue("mv", modelView_);
-        sphereProgram_.setUniformValue("mvNormal", modelViewNormal_);
         sphereProgram_.setUniformValue("uvScreenSize",
                                 (float)size().width(),
                                 (float)size().height());
@@ -394,649 +276,137 @@ void VizWidget::paintGL()
                                        backgroundColor_.greenF(),
                                        backgroundColor_.blueF());
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
     }
 
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-
-    paintLabels();
-}
-
-void VizWidget::resizeGL(int w, int h)
-{
-    labelRenderer_.setViewportSize(QSizeF(w, h));
-}
-
-void VizWidget::paintLabels()
-{
-    labelRenderer_.begin();
-
-    for (auto it = sortedState_.begin(); it != sortedState_.end(); ++it)
+    if (CameraItem::getBuffer().count() > 1)
     {
-        auto it2 = atomLabels_.find(it->atomID);
-        if (it2 == atomLabels_.end())
-            continue;
+        vaoCameras_.bind();
+        cameraProgram_.bind();
 
-        auto position = frameState_[it2.key()].position;
-        auto transformedPosition = modelViewProjection_ * QVector4D(position, 1.f);
-        if (transformedPosition.z() >= 0.f)
-        {
-            QVector2D ndcPosition( transformedPosition.x() / transformedPosition.w(),
-                                  -transformedPosition.y() / transformedPosition.w());
-            QPointF screenPosition((float)width() * (0.5 + 0.5 * ndcPosition.x()),
-                                   (float)height() * (0.5 + 0.5 * ndcPosition.y()));
-            labelRenderer_.renderAt(screenPosition, it2.value(),
-                                    labelTextColor_, labelBackgroundColor_);
-        }
+        cameraProgram_.setUniformValue("pro", projection_);
+        cameraProgram_.setUniformValue("mv", modelView_);
+
+        glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
+
+        cameraProgram_.release();
+        vaoCameras_.release();
     }
 
-    labelRenderer_.end();
+    // If there are no spheres, my driver crashes
+    if (!AtomItem::getBuffer().empty())
+    {
+        vaoLabels_.bind();
+        labelsProgram_.bind();
+
+        auto& atlas = AtomItem::getAtlas();
+
+        labelsProgram_.setUniformValue("pro", projection_);
+        labelsProgram_.setUniformValue("mv", modelView_);
+        labelsProgram_.setUniformValue("uvScreenSize",
+                                (float)size().width(),
+                                (float)size().height());
+        labelsProgram_.setUniformValue("uvTextureSize",
+                                (float)atlas.size().width(),
+                                (float)atlas.size().height());
+        labelsProgram_.setUniformValue("SampleTexture", 0);
+
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, atlas.texture());
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+
+        labelsProgram_.release();
+        vaoLabels_.release();
+
+        glDisable(GL_BLEND);
+    }
+
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 }
 
 void VizWidget::setModelView(QMatrix4x4 mat)
 {
     modelView_ = mat;
     modelViewNormal_ = mat.normalMatrix();
-    modelViewProjection_ = projection_ * modelView_;
 
-    needVBOUpdate_ = true;
     update();
 }
 
 void VizWidget::setProjection(QMatrix4x4 mat)
 {
     projection_ = mat;
-    modelViewProjection_ = projection_ * modelView_;
 
-    needVBOUpdate_ = true;
     update();
 }
 
-void VizWidget::setSimulation(std::shared_ptr<Simulation> dp)
+QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 {
-    simulation_ = std::move(dp);
-    setFirstFrame();
-}
-
-void VizWidget::setTreeView(TreeView *tv)
-{
-    treeView = tv;
-}
-
-std::shared_ptr<Frame> VizWidget::currentFrame() const
-{
-    return simulation_->getFrame(frameNumber_);
-}
-
-void VizWidget::nextInterestingFrame()
-{
-    auto next = simulation_->getNextTime(frameNumber_);
-    setFrame(next);
-}
-
-void VizWidget::advanceFrame()
-{
-    setFrame(frameNumber_ + 1);
-}
-
-#include "defaults.h"
-
-void VizWidget::setFirstFrame()
-{
-    auto frame = simulation_->getFrame(0);
-
-    sphereCount_ = frame->atoms.size();
-
-    // Calculate connection count
-    connectionCount_ = 0;
-    for (const auto & conn : frame->connectedRanges)
-        connectionCount_ += conn.second - conn.first;
-
-    atomPositions_.bind();
-    atomPositions_.allocate(sphereCount_ * sizeof(VizBallInstance));
-    atomPositions_.release();
-
-    cylinderPositions_.bind();
-    cylinderPositions_.allocate(connectionCount_ * sizeof(VizLink));
-    cylinderPositions_.release();
-
-    selectedBitmap_.fill(false, sphereCount_);
-    visibleBitmap_.fill(true, sphereCount_);
-
-    VizBallInstance dummy;
-    dummy.color = 0xFF777777;
-    dummy.specularColor = 0xFFFFFFFF;
-    dummy.specularExponent = 10.f;
-    dummy.size = 1.f;
-    frameState_.fill(dummy, sphereCount_);
-
-    VizLink dummy2;
-    linksState_.fill(dummy2, connectionCount_);
-
-    Material* dummy3 = Material::getDefault();
-    materials.fill(dummy3, sphereCount_);
-
-    setFrame(0);
-
-    needVBOUpdate_ = true;
-    update();
-
-    // Run this again to update link colours
-    setFrame(0);
-}
-
-void VizWidget::setFrame(frameNumber_t frame)
-{
-    frameNumber_ = frame;
-    auto diff = simulation_->getFrame(frameNumber_);
-    for (const auto & a : diff->atoms)
-    {
-        frameState_[a.id - 1].position = QVector3D(a.x, a.y, a.z);
-        frameState_[a.id - 1].flags = 0;
-        if (selectedBitmap_[a.id - 1])
-            frameState_[a.id - 1].flags |= SELECTED_FLAG;
-        if (visibleBitmap_[a.id - 1])
-            frameState_[a.id - 1].flags |= VISIBLE_FLAG;
-        frameState_[a.id - 1].atomID = a.id - 1;
-    }
-
-    int linkNumber = 0;
-    for (const auto & conn : diff->connectedRanges)
-    {
-        for (int id = conn.first; id < conn.second; id++)
-        {
-            // linkState_ has atom IDs, which are numbered from 1, not 0
-            const int i = id - 1;
-            auto & link = linksState_[linkNumber++];
-
-            /*if ((frameState_[i].color     & 0xFF000000) != 0xFF000000 ||
-                (frameState_[i + 1].color & 0xFF000000) != 0xFF000000)
-            {
-                link.size[0] = 0.f;
-                link.size[1] = 0.f;
-                continue;
-            }*/
-
-            link.update(frameState_[i].position, frameState_[i + 1].position);
-            link.color[0] = frameState_[i].color;
-            link.color[1] = frameState_[i + 1].color;
-            link.specularColor[0] = frameState_[i].specularColor;
-            link.specularColor[1] = frameState_[i + 1].specularColor;
-            link.specularExponent[0] = frameState_[i].specularExponent;
-            link.specularExponent[1] = frameState_[i + 1].specularExponent;
-            link.size[0] = frameState_[i].size;
-            link.size[1] = frameState_[i + 1].size;
-            link.visible = visibleBitmap_[i] && visibleBitmap_[i + 1];
-        }
-    }
-
-    needVBOUpdate_ = true;
-}
-
-void VizWidget::setFrame(int frame)
-{
-    setFrame((frameNumber_t)frame);
-    update();
-}
-
-void VizWidget::setBallQuality(float quality)
-{
-    static const QVector<QPair<unsigned int, unsigned int>> parameters {
-        qMakePair(2u, 4u),
-        qMakePair(6u, 8u),
-        qMakePair(10u, 10u),
-    };
-
-    quality = std::max(0.f, std::min(.999f, quality));
-    unsigned int index = int(floor(quality * parameters.size()));
-
-    if (ballQualityParameters_ != parameters[index])
-    {
-        ballQualityParameters_ = parameters[index];
-
-        QVector<VizVertex> sphereVerts = generateSphere(
-                    parameters[index].first, parameters[index].second);
-        sphereVertCount_ = sphereVerts.size();
-        sphereModel_.bind();
-        sphereModel_.allocate(sphereVerts.data(), sphereVerts.size() * sizeof(VizVertex));
-        sphereModel_.release();
-    }
-}
-
-QVector<VizVertex> VizWidget::generateSolidOfRevolution(
-    const QVector<VizSegment> & quads,
-    QVector3D axis,
-    unsigned int segments
-)
-{
-    const auto rotatePair = [](
-        const QQuaternion & axis,
-        const VizSegment & p
-    ) -> VizSegment {
-        return{ p.first.rotated(axis), p.second.rotated(axis) };
-    };
-
-    assert(segments > 2);
-    assert(axis.lengthSquared() > 0.0);
-    axis.normalize();
-
-    QVector<VizVertex> ret;
-
-    const auto pushIfNotDegenerate = [&](
-        const VizVertex & a,
-        const VizVertex & b,
-        const VizVertex & c
-    ) {
-        if (!isDegenerate(a.position, b.position, c.position))
-        {
-            ret.push_back(a);
-            ret.push_back(b);
-            ret.push_back(c);
-        }
-    };
-
-    for (int i = 0; i < segments; i++)
-    {
-        const float angle0 = ((float)i / (float)segments) * 360.0;
-        const float angle1 = ((float)(i + 1) / (float)segments) * 360.0;
-        const auto q0 = QQuaternion::fromAxisAndAngle(axis, angle0);
-        const auto q1 = QQuaternion::fromAxisAndAngle(axis, angle1);
-
-        // Generate quads
-        for (const auto & p : quads)
-        {
-            const auto p0 = rotatePair(q0, p);
-            const auto p1 = rotatePair(q1, p);
-
-            pushIfNotDegenerate(p0.first, p0.second, p1.second);
-            pushIfNotDegenerate(p1.second, p1.first, p0.first);
-        }
-    }
-
-    return ret;
-}
-
-QVector<VizVertex> VizWidget::generateSphere(unsigned int rings, unsigned int segments)
-{
-    assert(rings > 1);
-
-    const QVector3D auxAxis { 1.0, 0.0, 0.0 };
-    const QVector3D mainAxis { 0.0, 0.0, 1.0 };
-    const VizVertex auxVertex {
-        { 0.0, 0.0, 1.0 },
-        { 0.0, 0.0, 1.0 }
-    };
-
-    // Generate quads outline
-    QVector<VizSegment> outline;
-    for (unsigned int i = 0; i < rings; i++)
-    {
-        const float angle0 = ((float)i / (float)rings) * 180.0;
-        const float angle1 = ((float)(i + 1) / (float)rings) * 180.0;
-        const auto q0 = QQuaternion::fromAxisAndAngle(auxAxis, angle0);
-        const auto q1 = QQuaternion::fromAxisAndAngle(auxAxis, angle1);
-
-        outline.push_back({
-            auxVertex.rotated(q0),
-            auxVertex.rotated(q1)
-        });
-    }
-
-    return generateSolidOfRevolution(outline, mainAxis, segments);
-}
-
-QVector<VizVertex> VizWidget::generateIcoSphere(unsigned int subdivisions)
-{
-    static const float phi = 1.6180339887498948482045868343656f;
-
-    return {};
-}
-
-QVector<VizVertex> VizWidget::generateCylinder(unsigned int segments)
-{
-    const auto flatSegment = [](
-        const QVector3D & a,
-        const QVector3D & b,
-        const QVector3D & n
-    ) -> VizSegment {
-        return { { a, n }, { b, n } };
-    };
-
-    static const QVector3D p0 { 0.f, 0.f, -1.f };
-    static const QVector3D p1 { 0.f, 1.f, -1.f };
-    static const QVector3D p2 { 0.f, 1.f, 1.f };
-    static const QVector3D p3 { 0.f, 0.f, 1.f };
-
-    static const QVector3D n0 { 0.f, 0.f, -1.f };
-    static const QVector3D n1 { 0.f, 1.f, 0.f };
-    static const QVector3D n2 { 0.f, 0.f, 1.f };
-
-    static const QVector3D axis { 0.f, 0.f, 1.f };
-
-    static const QVector<VizSegment> segs {
-        flatSegment(p0, p1, n0),
-        flatSegment(p1, p2, n1),
-        flatSegment(p2, p3, n2),
-    };
-
-    return generateSolidOfRevolution(segs, axis, segments);
-}
-
-void VizWidget::updateWholeFrameData()
-{
-    atomPositions_.bind();
-    auto * data = (VizBallInstance*)atomPositions_.map(QOpenGLBuffer::WriteOnly);
-    memcpy(data, sortedState_.constData(), sortedState_.size() * sizeof(VizBallInstance));
-    atomPositions_.unmap();
-    atomPositions_.release();
-
-    cylinderPositions_.bind();
-    auto * data2 = (VizLink*)cylinderPositions_.map(QOpenGLBuffer::WriteOnly);
-    memcpy(data2, linksState_.constData(), linksState_.size() * sizeof(VizLink));
-    cylinderPositions_.unmap();
-    cylinderPositions_.release();
-}
-
-void VizWidget::setSelectionPath(const QPainterPath& p, Qt::KeyboardModifiers m)
-{
-    const bool ctrl = m & Qt::ControlModifier;
-    const bool shift = m & Qt::ShiftModifier;
-
-    if (!(ctrl || shift))
-    {
-        // Clear old selection
-        for (auto & sphere : selectedBitmap_)
-            sphere = false;
-    }
-
-    auto oldAtoms = selectedSpheres();
-    auto oldIndices = selectedSphereIndices();
-
     pickSpheres();
 
-    auto mask = QPainterPath();
-    mask.addRect(image->rect());
-    mask = mask.subtracted(p);
+    auto color = image.pixel(pos);
 
-    QPainter(image).fillPath(mask, QColor(0xFFFFFFFFU));
+    return color != 0xFFFFFFFFU ? model_->getIndices()[color] : QPersistentModelIndex();
+}
 
-    QSet<unsigned int> ballIDs;
+void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
+{
+    model_ = model;
+    selectionModel_ = selectionModel;
+}
 
-    const auto r = p.boundingRect();
-    for (int y = r.top(); y <= r.bottom(); y++)
+void VizWidget::allocate()
+{
+    if (AtomItem::resized)
     {
-        for (int x = r.left(); x <= r.right(); x++)
-        {
-            auto color = image->pixel(x, y);
-            if (color != 0xFFFFFFFFU)
-                ballIDs.insert(color);
-        }
+        atomPositions_.bind();
+        atomPositions_.allocate(AtomItem::getBuffer().constData(), AtomItem::getBuffer().count() * sizeof(VizBallInstance));
+        atomPositions_.release();
+
+        AtomItem::resized = false;
+        AtomItem::modified = false;
     }
 
-    auto pickedIndices = ballIDs.toList();
-
-    // New selection
-    for (const auto & id : pickedIndices)
-        selectedBitmap_[id] = !ctrl;
-
-    // Now we can get the real list of all selected atoms
-    QList<unsigned int> newIndices;
-    for (unsigned int i = 0; i < selectedBitmap_.size(); i++)
+    if (AtomItem::modified)
     {
-        if (selectedBitmap_[i])
-            newIndices.push_back(i);
+        atomPositions_.bind();
+        atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
+        atomPositions_.release();
+
+        AtomItem::modified = false;
     }
 
-    AtomSelection nuSelectionObject(newIndices, this);
-    qSwap(currentSelection_, nuSelectionObject);
-
-    // That's a hack, but it forces updating the flags
-    setFrame(frameNumber_);
-    update();
-
-    emit selectionChangedIndices(newIndices, oldIndices);
-    emit selectionChanged(selectedSpheres(), oldAtoms);
-    emit selectionChangedObject(selectedSpheresObject());
-}
-
-QList<unsigned int> VizWidget::selectedSphereIndices() const
-{
-    return currentSelection_.selectedIndices();
-}
-
-QList<Atom> VizWidget::selectedSpheres() const
-{
-    QList<Atom> ret;
-    auto frame = simulation_->getFrame(frameNumber_);
-
-    for (unsigned int i : currentSelection_.selectedIndices())
-        ret.push_back(frame->atoms[i]);
-
-    return ret;
-}
-
-AtomSelection VizWidget::selectedSpheresObject() const
-{
-    return currentSelection_;
-}
-
-AtomSelection VizWidget::allSelection()
-{
-    QList<unsigned int> l;
-    for (unsigned int i = 0; i < sphereCount_; i++)
-        l.push_back(i);
-
-    return AtomSelection(l, this);
-}
-
-AtomSelection VizWidget::atomTypeSelection(const char * s)
-{
-    QList<unsigned int> l;
-    const auto frame = simulation_->getFrame(0);
-    for (unsigned int i = 0; i < sphereCount_; i++)
+    if (CameraItem::resized)
     {
-        if (Defaults::typename2label(frame->atoms[i].type) == s)
-            l.push_back(i);
+        cameraPositions_.bind();
+        cameraPositions_.allocate(CameraItem::getBuffer().constData(), CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
+        cameraPositions_.release();
+
+        CameraItem::resized = false;
+        CameraItem::modified = false;
     }
 
-    return AtomSelection(l, this);
-}
-
-AtomSelection VizWidget::atomTypeSelection(const std::string & s)
-{
-    return atomTypeSelection(s.c_str());
-}
-
-AtomSelection VizWidget::customSelection(const QList<unsigned int> &indices)
-{
-    return AtomSelection(indices, this);
-}
-
-void VizWidget::setVisibleSelection(AtomSelection s, bool e)
-{
-    for (const auto & id : currentSelection_.selectedIndices())
-        selectedBitmap_[id] = false;
-
-    auto oldAtoms = selectedSpheres();
-    qSwap(currentSelection_, s);
-    auto newAtoms = selectedSpheres();
-
-    for (const auto & id : currentSelection_.selectedIndices())
-        selectedBitmap_[id] = true;
-
-    if (e)
+    if (CameraItem::modified)
     {
-        emit selectionChangedIndices(
-                    currentSelection_.selectedIndices(),
-                    s.selectedIndices());
-        emit selectionChanged(selectedSpheres(), oldAtoms);
-        emit selectionChangedObject(selectedSpheresObject());
+        cameraPositions_.bind();
+        cameraPositions_.write(0, CameraItem::getBuffer().constData(), CameraItem::getBuffer().size() * sizeof(VizCameraInstance));
+        cameraPositions_.release();
+
+        CameraItem::modified = false;
     }
-
-    setFrame(frameNumber_);
-    update();
 }
 
-void VizWidget::setBackgroundColor(QColor color)
+void VizWidget::setViewport(Viewport* vp)
 {
-    backgroundColor_ = color;
-    update();
-}
-
-QColor VizWidget::backgroundColor() const
-{
-    return backgroundColor_;
-}
-
-void VizWidget::setLabelTextColor(QColor color)
-{
-    labelTextColor_ = color;
-    update();
-}
-
-QColor VizWidget::labelTextColor() const
-{
-    return labelTextColor_;
-}
-
-void VizWidget::setLabelBackgroundColor(QColor color)
-{
-    labelBackgroundColor_ = color;
-    update();
-}
-
-QColor VizWidget::labelBackgroundColor() const
-{
-    return labelBackgroundColor_;
-}
-
-const QMap<unsigned int, QString> & VizWidget::getLabels() const
-{
-    return atomLabels_;
-}
-
-void VizWidget::setFogDensity(float intensity)
-{
-    fogDensity_ = intensity;
-    update();
-}
-
-void VizWidget::setFogContribution(float contribution)
-{
-    fogContribution_ = contribution;
-    update();
-}
-
-float VizWidget::fogDensity() const
-{
-    return fogDensity_;
-}
-
-float VizWidget::fogContribution() const
-{
-    return fogContribution_;
-}
-
-void VizWidget::read(const QJsonObject& json)
-{
-    for (auto i = json.begin(); i != json.end(); i++)
-        changes[i.key().toInt()] = i.value().toObject().toVariantMap();
-
-    for (auto i = changes.begin(); i != changes.end(); i++)
-    {
-        unsigned int id = i.key();
-        QVariantMap& map = i.value();
-
-        auto j = map.find("Radius");
-        if (j != map.end()) frameState_[id].size = (*j).toFloat();
-
-        j = map.find("Label");
-        if (j != map.end()) { labelRenderer_.addRef((*j).toString()); atomLabels_[id] = (*j).toString(); }
-    }
-
-    needVBOUpdate_ = true;
-    update();
-}
-
-void VizWidget::write(QJsonObject& json) const
-{
-    for (auto i = changes.begin(); i != changes.end(); i++)
-        json[QString::number(i.key())] = QJsonObject::fromVariantMap(i.value());
-}
-
-#include "moviemaker.h"
-
-constexpr QVector3D vec3(const Atom& a)
-{
-    return {a.x, a.y, a.z};
-}
-
-void VizWidget::writePOVFrame(std::ostream &stream, frameNumber_t f) const
-{
-    // Materials
-    QSet<const Material*> used;
-
-    for (auto m : materials)
-        if (!used.contains(m))
-        {
-            stream << *m;
-            used.insert(m);
-        }
-
-    auto frame = simulation_->getFrame(f);
-
-    // Spheres
-    for (int i = 0; i < sphereCount_; i++)
-        MovieMaker::addSphere(stream, vec3(frame->atoms[i]), frameState_[i].size, materials[i]);
-
-    // Cylinders
-    for (auto r : frame->connectedRanges)
-        for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i - 1]), vec3(frame->atoms[i]), frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
-}
-
-void VizWidget::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend) const
-{
-    // Materials
-    QSet<const Material*> used;
-
-    for (auto m : materials)
-        if (!used.contains(m))
-        {
-            stream << *m;
-            used.insert(m);
-        }
-
-    simulation_->writePOVFrames(stream, fbeg, fend);
-
-    auto frame = simulation_->getFrame(0);
-
-    // Spheres
-    for (int i = 0; i < sphereCount_; i++)
-        MovieMaker::addSphere1(stream, frameState_[i].atomID, frameState_[i].size, materials[i]);
-
-    // Cylinders
-    for (auto r : frame->connectedRanges)
-        for (int i = r.first; i < r.second; i++)
-            MovieMaker::addCylinder1(stream, frameState_[i - 1].atomID, frameState_[i].atomID, frameState_[i - 1].size / 2, frameState_[i].size / 2, materials[i - 1], materials[i]);
-}
-
-void VizWidget::generateSortedState()
-{
-    auto sorter = [&](const VizBallInstance & a, const VizBallInstance & b) -> bool {
-        float z1 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(a.position, 1.f));
-        float z2 = QVector4D::dotProduct(modelViewProjection_.row(2),
-            QVector4D(b.position, 1.f));
-        return z1 > z2;
-    };
-
-    sortedState_ = frameState_;
-    qSort(sortedState_.begin(), sortedState_.end(), sorter); // Lol xD
+    viewport_ = vp;
 }
 
 void VizWidget::pickSpheres()
@@ -1076,16 +446,17 @@ void VizWidget::pickSpheres()
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
 
-    if (sphereCount_ > 0)
+    if (!AtomItem::getBuffer().empty())
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
 
-        pickingProgram_.setUniformValue("mvp", modelViewProjection_);
-        pickingProgram_.setUniformValue("mvNormal", modelViewNormal_);
+        sphereProgram_.setUniformValue("pro", projection_);
+        sphereProgram_.setUniformValue("mv", modelView_);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, sphereVertCount_, sphereCount_);
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 
         pickingProgram_.release();
         vaoSpheres_.release();
@@ -1093,13 +464,8 @@ void VizWidget::pickSpheres()
 
     assert(pickingFramebuffer_->release());
 
-    // Get rendered content
-    // Stupid workaround for avoiding premultiplied alpha
-    auto fboImage = pickingFramebuffer_->toImage();
-
-    delete image;
-    image = new QImage(fboImage.constBits(), fboImage.width(), fboImage.height(),
-                 QImage::Format_ARGB32);
+    // Get rendered content avoiding premultiplied alpha
+    image = pickingFramebuffer_->toImage().convertToFormat(QImage::Format_ARGB32);
 }
 
 void VizWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -1113,7 +479,7 @@ void VizWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void VizWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (image->pixel(event->pos()) != 0xFFFFFFFF)
+    if (image.pixel(event->pos()) != 0xFFFFFFFF)
         event->acceptProposedAction();
     else
         event->ignore();
@@ -1123,197 +489,63 @@ void VizWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    auto index = image->pixel(event->pos());
+    auto indices = model_->getIndices();
 
-    if (currentSelection_.selectedIndices_.contains(index))
-        treeView->setMaterial(currentSelection_.selectedIndices_, qobject_cast<Material*>(event->source()));
+    auto index = indices[image.pixel(event->pos())];
+    auto material = qobject_cast<Material*>(event->source());
+
+    if (selectionModel_ && selectionModel_->isSelected(index))
+        for (auto i : selectionModel_->selectedRows())
+            model_->setMaterial(i, material);
     else
-        treeView->setMaterial({index}, qobject_cast<Material*>(event->source()));
+        model_->setMaterial(index, material);
 }
 
-AtomSelection::AtomSelection(VizWidget * widget)
-    : widget_(widget)
+void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    Selection::mouseReleaseEvent(event);
 
-}
+    pickSpheres();
 
-AtomSelection::AtomSelection(QList<unsigned int> indices, VizWidget * widget)
-    : selectedIndices_(std::move(indices))
-    , widget_(widget)
-{
+    auto& p = getSelectionPath();
 
-}
+    auto mask = QPainterPath();
+    mask.addRect(image.rect());
+    mask = mask.subtracted(p);
 
-void AtomSelection::setMaterial(const Material *material)
-{
-    unsigned int alpha = 255 * (1. - material->getTransparency());
-    unsigned int code1 = (material->getColor().rgb() & 0xFFFFFF) | (alpha << 24);
-    unsigned int code2 = material->getSpecularColor().rgba();
-    float exponent = material->getSpecularExponent();
-    for (unsigned int i : selectedIndices_)
+    QPainter(&image).fillPath(mask, QColor(0xFFFFFFFFU));
+
+    QList<unsigned> tmp;
+
+    const auto r = p.boundingRect();
+    for (int y = r.top(); y <= r.bottom(); y++)
     {
-        widget_->frameState_[i].color = code1;
-        widget_->frameState_[i].specularColor = code2;
-        widget_->frameState_[i].specularExponent = exponent;
-        widget_->materials[i] = material;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setSize(float size)
-{
-    for (unsigned int i : selectedIndices_)
-    {
-        widget_->frameState_[i].size = size;
-        widget_->changes[i]["Radius"] = size;
-    }
-
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
-
-void AtomSelection::setName(const QString &name)
-{
-    widget_->treeView->setName(selectedIndices_, name);
-}
-
-void AtomSelection::setLabel(const QString & label)
-{
-    if (label == "")
-    {
-        for (unsigned int i : selectedIndices_)
+        for (int x = r.left(); x <= r.right(); x++)
         {
-            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
-            widget_->atomLabels_.remove(i);
-            widget_->changes[i].remove("Label");
-        }
-    }
-    else
-    {
-        widget_->labelRenderer_.addRef(label, selectedIndices_.size());
-
-        for (unsigned int i : selectedIndices_)
-        {
-            widget_->labelRenderer_.release(widget_->atomLabels_[i]);
-            widget_->atomLabels_[i] = label;
-            widget_->changes[i]["Label"] = label;
+            auto color = image.pixel(x, y);
+            if (color != 0xFFFFFFFFU)
+                tmp.append(color);
         }
     }
 
-    widget_->update();
-}
+    auto& buffer = model_->getIndices();
 
-void AtomSelection::setVisible(Visibility visible, VisibilityMode m)
-{
-    widget_->treeView->setVisibility(selectedIndices_, visible, m);
-}
+    QItemSelection selected;
 
-void AtomSelection::setVisible_(bool visible)
-{
-    for (unsigned int i : selectedIndices_)
-        widget_->visibleBitmap_[i] = visible;
+    for (auto i : tmp.toSet())
+        selected.select(buffer[i], buffer[i]);
 
-    widget_->needVBOUpdate_ = true;
-    widget_->update();
-}
+    QItemSelectionModel::SelectionFlags flags;
 
-double AtomSelection::getSize() const
-{
-    if (selectedIndices_.isEmpty())
-        return std::numeric_limits<double>::lowest();
+    auto m = event->modifiers();
 
-    float ans = widget_->frameState_[selectedIndices_.front()].size;
+    const bool ctrl = m & Qt::ControlModifier;
+    const bool shift = m & Qt::ShiftModifier;
 
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].size != ans)
-            return std::numeric_limits<double>::lowest();
+    if (!(ctrl || shift))
+        flags.setFlag(QItemSelectionModel::Clear);
 
-    return ans;
-}
+    flags.setFlag(ctrl ? QItemSelectionModel::Deselect : QItemSelectionModel::Select);
 
-QVariant AtomSelection::getName() const
-{
-    return widget_->treeView->getName(selectedIndices_);
-}
-
-QVariant AtomSelection::getLabel() const
-{
-    if (selectedIndices_.isEmpty())
-        return QVariant();
-
-    QString ans = widget_->atomLabels_.value(selectedIndices_.front());
-
-    for (auto i : selectedIndices_)
-        if (widget_->atomLabels_.value(i) != ans)
-            return QVariant();
-
-    return ans;
-}
-
-std::tuple<int, int, int> AtomSelection::getCoordinates() const
-{
-    int x = widget_->frameState_[selectedIndices_.front()].position.x();
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.x() != x)
-        {
-            x = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    int y = widget_->frameState_[selectedIndices_.front()].position.y();
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.y() != y)
-        {
-            y = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    int z = widget_->frameState_[selectedIndices_.front()].position.z();
-
-    for (auto i : selectedIndices_)
-        if (widget_->frameState_[i].position.z() != z)
-        {
-            z = std::numeric_limits<int>::lowest();
-            break;
-        }
-
-    return std::make_tuple(x, y, z);
-}
-
-Visibility AtomSelection::getVisibility(VisibilityMode m) const
-{
-    return widget_->treeView->getVisibility(selectedIndices_, m);
-}
-
-unsigned int AtomSelection::atomCount() const
-{
-    return selectedIndices_.size();
-}
-
-QVector3D AtomSelection::weightCenter() const
-{
-    if (atomCount() == 0)
-        return QVector3D(0.f, 0.f, 0.f);
-
-    QVector3D sum(0.f, 0.f, 0.f);
-    auto frame = widget_->simulation_->getFrame(0);
-
-    for (unsigned int i : selectedIndices_)
-    {
-        QVector3D atomPos(frame->atoms[i].x,
-                          frame->atoms[i].y,
-                          frame->atoms[i].z);
-        sum += atomPos;
-    }
-
-    return sum /= (float)atomCount();
-}
-
-const QList<unsigned int> & AtomSelection::selectedIndices() const
-{
-    return selectedIndices_;
+    emit selectionChanged(selected, flags);
 }

@@ -7,7 +7,7 @@ namespace Ui {
     class Keyframes;
 }
 
-#include "interpolator.h"
+class SplineInterpolator;
 
 class Keyframes : public QWidget
 {
@@ -16,16 +16,13 @@ public:
     explicit Keyframes(QWidget *parent = 0);
     ~Keyframes();
 
-    void setInterpolator(Interpolator* _ip);
+    void setSplineInterpolator(SplineInterpolator *si);
 
 signals:
 
-public slots:
-    void updateContents();
-
 private:
     Ui::Keyframes *ui;
-    Interpolator *ip;
+    SplineInterpolator *interpolator;
 };
 
 #endif // KEYFRAME_H

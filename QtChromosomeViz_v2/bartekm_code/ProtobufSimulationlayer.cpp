@@ -15,14 +15,14 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
     , positionCachedFor_(-1)
-    , SimulationLayer(name)
+    , UntransformedSimulationLayer(name)
 {
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());
 //    std::cout << header.simulation_name() << std::endl;
 //    std::cout << header.simulation_description() << std::endl;
     for (const auto& keyframe : rd_) {
-        keyframes_.resize(keyframes_.size() + 1);
+        keyframes_.emplace_back();
         keyframesData_.push_back(keyframe);
 
         if (!keyframes_.back().ParseFromString(keyframe.get())) {
@@ -277,7 +277,11 @@ frameNumber_t ProtobufSimulationLayer::getPositionInfo(frameNumber_t time, int o
     };
     auto it = std::lower_bound(keyframes_.rbegin(), keyframes_.rend(), time, compKeyframe);
     if (it == keyframes_.rend())
-        it = keyframes_.rbegin();
+    {
+        if (outPosition)
+            *outPosition = 0;
+        return keyframes_.front().step_counter();
+    }
 
     // Look for the right delta
     // qDebug() << keyframes_.size();

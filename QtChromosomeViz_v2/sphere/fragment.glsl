@@ -1,53 +1,77 @@
 #version 330 core
 
-uniform mat4 mvp;
-uniform mat3 mvNormal;
+uniform mat4 pro;
+uniform mat4 mv;
 uniform vec2 uvScreenSize;
 uniform float ufFogDensity;
 uniform float ufFogContribution;
 uniform vec3 ucFogColor;
 
 in vec4 vPosition;
-in vec4 vViewPosition;
+in vec3 vViewPosition;
+
 flat in vec3 vInstancePosition;
-flat in uint iFlags;
+flat in int iFlags;
 flat in vec4 cColor;
 flat in vec3 cSpecularColor;
 flat in float fSpecularExponent;
 flat in float fInstanceSize;
 
-out vec4 ocColor;
+out vec4 fragColor;
 
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = cColor;
     
+    vec2 vScreenPos = (0.5f * vPosition.xy / vPosition.w + 0.5f) * uvScreenSize;
+    ivec2 iScreenPos = ivec2(vScreenPos) & 1;
+    
+    if (baseColor.a <= 0.51)
+    {
+        if (iScreenPos.x == 0 && iScreenPos.y == 1)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.33)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 0)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.20)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 1)
+            discard;
+    }
+    
+    baseColor.a = 1.0;
+    
     // Normal
-    mat4 mvp = transpose(mvp);
+    float p = dot(vViewPosition, vViewPosition);
+    float q = dot(vViewPosition, vInstancePosition);
+    float r = dot(vInstancePosition, vInstancePosition);
+
+    float d = q * q - p * (r - fInstanceSize * fInstanceSize);
     
-    vec4 a = vPosition.w * mvp[0] - vPosition.x * mvp[3];
-    vec4 b = vPosition.w * mvp[1] - vPosition.y * mvp[3];
+    if (d < 0.0)
+        discard;
     
-    vec3 c = cross(a.xyz, b.xyz);
-    vec3 d = cross(a.xyw, b.xyw);
+    d = sqrt(d);
     
-    d = vec3(d.xy, 0.) - c.z * vInstancePosition;
+    float s = sign(q - d);
+    float t = (q - s * d) / p;
     
-    float p = dot(c, c);
-    float q = dot(c, d);
-    float r = dot(d, d) - (c.z * fInstanceSize) * (c.z * fInstanceSize);
+    vec3 vNormal = s * (t * vViewPosition - vInstancePosition) / fInstanceSize;
+    vec4 vFragCoord = pro * vec4(t * vViewPosition, 1.0);
     
-    float z = (sqrt(q * q - p * r) - q) / p;
-    
-    vec3 vNormal = normalize(c * z + d);
-    vec3 vFixedNormal = mvNormal * vNormal;
+    gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
 
     // Diffuse
-    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
+    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);
     vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);
 
     // Specular
-    vec3 reflected = reflect(-cvLightDirection, vFixedNormal);
+    vec3 reflected = reflect(-cvLightDirection, vNormal);
     float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
     vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
 
@@ -58,11 +82,11 @@ void main() {
                           ufFogContribution);
 
     // Calculate stripes for selected molecules
-    vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
-    float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;
+    float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
-    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    
+    fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }

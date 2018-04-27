@@ -1,45 +1,47 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "draggable.h"
+#include "interpolator.h"
 
 #include <QVector3D>
 #include <QMatrix4x4>
-#include <QStack>
-#include <QMetaMethod>
 
-class Camera : public Draggable
+class Viewport;
+struct VizCameraInstance;
+
+class Camera : public SplineInterpolator
 {
     Q_OBJECT
 public:
     explicit Camera(QWidget *parent = 0);
+    Camera(const Camera& camera);
     ~Camera();
 
-protected:
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
+    static void setViewport(Viewport* vp);
 
-    void connectNotify(const QMetaMethod &signal);
-
-public:
     /* sets new origin */
-    void setOrigin(const QVector3D& o);
+    static QVector3D getOrigin();
+    static void setOrigin(const QVector3D& o);
 
-    QVector3D position() const;
-    QVector3D EulerAngles() const;
-
-    QVector3D lookAt() const;
-
-    qreal angle() const;
+    QVector3D getPosition() const;
+    QVector3D getRotation() const;
+    qreal getFocalLength() const;
+    qreal getSensorSize() const;
+    qreal getHorizontalAngle() const;
+    qreal getVerticalAngle() const;
+    qreal getNearClipping() const;
+    qreal getFarClipping() const;
 
     void setPosition(const QVector3D& p);
-    void setEulerAgnles(qreal h_, qreal p_, qreal b_);
+    void setRotation(qreal h_, qreal p_, qreal b_);
     void setFocalLength(qreal fl);
-    void setApertureWidth(qreal aw);
-    void setFieldOfView(qreal fov);
-    void setRotationType(int rt);
+    void setSensorSize(qreal ss);
+    void setHorizontalAngle(qreal ha);
+    void setVerticalAngle(qreal va);
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
+
+    void setRotationType(int rt);
     void setLookAt(const QVector3D& target);
 
     enum RotationType
@@ -47,6 +49,35 @@ public:
         RT_World,
         RT_Camera
     };
+
+    static void lockCoordinates(bool x, bool y, bool z);
+
+    enum Action {
+        CA_Move,
+        CA_Rotate,
+        CA_Scale
+    };
+
+    static void setCurrentAction(Action ca);
+
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
+    SplineKeyframe saveFrame() const;
+    void loadFrame(const SplineKeyframe &frame);
+
+    void writePOVCamera(QTextStream &stream, bool interpolate) const;
+
+    static void setAutomaticKeyframing(bool b = true);
+
+    void setBase(const QModelIndex& index);
+    const QModelIndex& getBase() const;
+
+    void setTarget(const QModelIndex& index);
+    const QModelIndex& getTarget() const;
+
+    void setUp(const QModelIndex& index);
+    const QModelIndex& getUp() const;
 
 public slots:
     /* handles mouse move event */
@@ -61,7 +92,14 @@ public slots:
     /* updates aspect ratio */
     void setAspectRatio(qreal ar);
 
-    void lockCoordinates(bool x, bool y, bool z);
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
+    void connectNotify(const QMetaMethod &signal);
+    void showEvent(QShowEvent *event);
+
+    void paintEvent(QPaintEvent *event);
 
 private:
     /* eye position */
@@ -80,12 +118,12 @@ private:
     void rotate(qreal dh, qreal dp, qreal db);
 
     qreal focalLength;
-    qreal apertureWidth;
+    qreal sensorSize;
 
     qreal horizontalAngle;
     qreal verticalAngle;
 
-    QVector3D origin;
+    static QVector3D origin;
 
     QMatrix4x4 modelView;
     QMatrix4x4 projection;
@@ -110,13 +148,23 @@ private:
     qreal nearClipping;
     qreal farClipping;
 
-    bool lockX, lockY, lockZ;
+    static bool lockX, lockY, lockZ;
+
+    static Action currentAction;
+
+    static bool automaticKeyframing;
+
+    static Viewport* viewport;
+
+    QPersistentModelIndex base, target, up;
+
+    int id;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
     void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
 
-friend class CameraSettings;
+friend class CameraItem;
 };
 
 #endif // CAMERA_H

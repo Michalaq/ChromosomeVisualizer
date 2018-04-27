@@ -1,13 +1,25 @@
 <RCC>
     <qresource prefix="/">
         <file>picking.frag</file>
-        <file>label.vert</file>
-        <file>label.frag</file>
-        <file>cylinder/fragment.glsl</file>
-        <file>cylinder/vertex.glsl</file>
-        <file>sphere/fragment.glsl</file>
-        <file>sphere/geometry.glsl</file>
-        <file>sphere/vertex.glsl</file>
-        <file>cylinder/geometry.glsl</file>
+    </qresource>
+    <qresource prefix="/sphere">
+        <file alias="fragment.glsl">sphere/fragment.glsl</file>
+        <file alias="geometry.glsl">sphere/geometry.glsl</file>
+        <file alias="vertex.glsl">sphere/vertex.glsl</file>
+    </qresource>
+    <qresource prefix="/cylinder">
+        <file alias="vertex.glsl">cylinder/vertex.glsl</file>
+        <file alias="geometry.glsl">cylinder/geometry.glsl</file>
+        <file alias="fragment.glsl">cylinder/fragment.glsl</file>
+    </qresource>
+    <qresource prefix="/camera">
+        <file alias="fragment.glsl">camera/fragment.glsl</file>
+        <file alias="geometry.glsl">camera/geometry.glsl</file>
+        <file alias="vertex.glsl">camera/vertex.glsl</file>
+    </qresource>
+    <qresource prefix="/labels">
+        <file alias="fragment.glsl">labels/fragment.glsl</file>
+        <file alias="geometry.glsl">labels/geometry.glsl</file>
+        <file alias="vertex.glsl">labels/vertex.glsl</file>
     </qresource>
 </RCC>

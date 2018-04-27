@@ -10,14 +10,20 @@ public:
     explicit ComboBox(QWidget *parent = 0);
     ~ComboBox();
 
+    void setMultipleValues();
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *);
 
 signals:
 
 public slots:
     void setCurrentIndex(int index, bool spontaneous = true);
+
+private:
+    bool multiple;
 };
 
 #endif // COMBOBOX_H

@@ -9,10 +9,10 @@ PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::strin
     , file_(fileName)
     , positionCachedFor_(-1)
     , reachedEndOfFile_(false)
-    , SimulationLayer(name)
+    , UntransformedSimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
-    numbersAndPositions_.push_back(readFrameHeader());
+    numbersAndPositions_.push_back(frameCount_ = readFrameHeader());
 }
 
 PDBSimulationLayer::PDBSimulationLayer(const std::string & fileName)

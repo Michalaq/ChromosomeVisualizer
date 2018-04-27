@@ -175,7 +175,7 @@ double Nodes::maximum(unsigned lbound, unsigned rbound) const
     // teraz i to pierwszy przedział, którego lewy koniec jest mniejszy od lewego końca zakresu
 
     if (i != nodes.cend())
-        return std::max((*i)->maximum(lbound, rbound, {0, NAN}, rightm), ans);
+        return std::max((*i)->maximum(lbound, rbound, {0, Q_SNAN}, rightm), ans);
     else
         return std::max(leftm.value, ans);
 }
@@ -208,7 +208,7 @@ double Nodes::minimum(unsigned lbound, unsigned rbound) const
     // teraz i to pierwszy przedział, którego lewy koniec jest mniejszy od lewego końca zakresu
 
     if (i != nodes.cend())
-        return std::min((*i)->minimum(lbound, rbound, {0, NAN}, rightm), ans);
+        return std::min((*i)->minimum(lbound, rbound, {0, Q_SNAN}, rightm), ans);
     else
         return std::min(leftm.value, ans);
 }

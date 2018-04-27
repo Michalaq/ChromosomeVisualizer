@@ -6,6 +6,7 @@
 #include <QUuid>
 #include <QIcon>
 #include <QProcess>
+#include <QTextStream>
 
 class Material : public QWidget
 {
@@ -44,7 +45,7 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    std::ostream &operator<<(std::ostream &stream) const;
+    QTextStream &operator<<(QTextStream &stream) const;
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -79,7 +80,7 @@ signals:
 public slots:
 };
 
-std::ostream &operator<<(std::ostream &stream, const Material &mat);
-std::ostream &operator<<(std::ostream &stream, const Material *mat);
+QTextStream &operator<<(QTextStream &stream, const Material &mat);
+QTextStream &operator<<(QTextStream &stream, const Material *mat);
 
 #endif // MATERIAL_H

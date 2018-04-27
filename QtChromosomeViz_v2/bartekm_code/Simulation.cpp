@@ -117,9 +117,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
    
-    auto f = slc->getFrame(0);
-    model->setupModelData(f->atoms, f->connectedRanges, layerId, offset, init);
-
+    model->setupModelData(slc, layerId, offset, init);
 }
 
 std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)
@@ -132,38 +130,19 @@ TreeModel* Simulation::getModel()
     return model;
 }
 
-#include <QJsonArray>
-
-void Simulation::read(const QJsonArray &json)
+void Simulation::writePOVFrame(QTextStream &stream, frameNumber_t f)
 {
-    for (auto i : json)
-    {
-        auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-        simulationLayer->read(i.toArray());
-
-        addSimulationLayerConcatenation(simulationLayer, false);
-    }
-}
-
-void Simulation::write(QJsonArray &json) const
-{
-    for (auto i : layerConcatenations_)
-    {
-        QJsonArray simulationLayer;
-        i->write(simulationLayer);
-
-        json.append(simulationLayer);
-    }
+    model->writePOVFrame(stream, getFrame(f));
 }
 
 #include <QVector3D>
 
-static std::ostream& operator<<(std::ostream& out, const QVector3D & vec)
+static QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
-void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameNumber_t fend)
+void Simulation::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
 {
     int n = getFrame(0)->atoms.size();
 
@@ -193,4 +172,6 @@ void Simulation::writePOVFrames(std::ostream &stream, frameNumber_t fbeg, frameN
     }
 
     delete[] data;
+
+    model->writePOVFrames(stream, fbeg, fend);
 }

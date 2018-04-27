@@ -22,13 +22,10 @@ SOURCES += main.cpp\
     mediacontrol.cpp \
     dockwidget.cpp \
     spinbox.cpp \
-    ../QtChromosomeViz_v2/LabelRenderer.cpp \
     rangeslider.cpp \
-    axis.cpp \
     legend.cpp \
     toolbar.cpp \
     rendersettings.cpp \
-    blind.cpp \
     projectsettings.cpp \
     slider.cpp \
     softslider.cpp \
@@ -39,12 +36,11 @@ SOURCES += main.cpp\
     treeitem.cpp \
     treemodel.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
-    attributes.cpp \
+    atomattributes.cpp \
     picker.cpp \
     layerattributes.cpp \
     viewport.cpp \
     multimap.cpp \
-    camerasettings.cpp \
     doublespinbox.cpp \
     combobox.cpp \
     lineedit.cpp \
@@ -67,7 +63,13 @@ SOURCES += main.cpp\
     materialbrowser.cpp \
     tablemodel.cpp \
     tableview.cpp \
-    moviemaker.cpp
+    moviemaker.cpp \
+    attributes.cpp \
+    titlelabel.cpp \
+    pickwidget.cpp \
+    cameraattributes.cpp \
+    importdialog.cpp \
+    labelatlas.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -79,14 +81,11 @@ HEADERS  += mainwindow.h\
     mediacontrol.h \
     dockwidget.h \
     spinbox.h \
-    ../QtChromosomeViz_v2/LabelRenderer.hpp \
     rangeslider.h \
-    axis.h \
     legend.h \
     toolbar.h \
     rendersettings.h \
     moviemaker.h \
-    blind.h \
     projectsettings.h \
     slider.h \
     softslider.h \
@@ -112,13 +111,11 @@ HEADERS  += mainwindow.h\
     treeitem.h \
     treemodel.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
-    attributes.h \
+    atomattributes.h \
     picker.h \
-    ../QtChromosomeViz_v2/bartekm_code/TimeTransformation.h \
     layerattributes.h \
     viewport.h \
     multimap.h \
-    camerasettings.h \
     doublespinbox.h \
     combobox.h \
     lineedit.h \
@@ -141,37 +138,47 @@ HEADERS  += mainwindow.h\
     materialattributes.h \
     materialbrowser.h \
     tablemodel.h \
-    tableview.h
+    tableview.h \
+    attributes.h \
+    titlelabel.h \
+    pickwidget.h \
+    cameraattributes.h \
+    importdialog.h \
+    labelatlas.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
     projectsettings.ui \
     rendersettings.ui \
-    attributes.ui \
+    atomattributes.ui \
     layerattributes.ui \
     viewport.ui \
-    camerasettings.ui \
     keyframe.ui \
     defaults.ui \
     preferences.ui \
     materialattributes.ui \
-    materialbrowser.ui
+    materialbrowser.ui \
+    attributes.ui \
+    cameraattributes.ui \
+    importdialog.ui
 
 CONFIG += c++14
+CONFIG -= app_bundle
 
 RESOURCES += \
     icons.qrc \
     ../QtChromosomeViz_v2/shaders.qrc \
     misc.qrc
 
-OTHER_FILES +=
-
-BITSIZE = $$system(getconf LONG_BIT)
-if (contains(BITSIZE, 64)) {
+exists( /usr/lib/x86_64-linux-gnu/libprotobuf.a ) {
     LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
 }
-if (contains(BITSIZE, 32)) {
-    LIBS += /usr/lib/libprotobuf.a
+
+exists( /usr/local/lib/libprotobuf.a ) {
+    LIBS += /usr/local/lib/libprotobuf.a
 }
+
+INCLUDEPATH += /usr/local/include
+
 PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
 include(protobuf.pri)

@@ -13,7 +13,7 @@
 
 using framePositionInfo_t = std::pair<frameNumber_t, frameNumber_t>;
 
-class PDBSimulationLayer : public SimulationLayer {
+class PDBSimulationLayer : public UntransformedSimulationLayer {
 private:
     QMutex accessMutex_;
 

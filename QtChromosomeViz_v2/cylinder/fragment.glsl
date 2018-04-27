@@ -8,12 +8,12 @@ uniform vec3 ucFogColor;
 in vec4 vPosition;
 in vec4 vViewPosition;
 in vec3 vNormal;
-flat in uint iFlags;
+flat in int iFlags;
 in vec4 cColor;
 in vec3 cSpecularColor;
 in float fSpecularExponent;
 
-out vec4 ocColor;
+out vec4 fragColor;
 
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
@@ -40,7 +40,8 @@ void main() {
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
-    float isSelected = ((iFlags & 4u) == 4u) ? 1.f : 0.f;
+    float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
     vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
-    ocColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    
+    fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }

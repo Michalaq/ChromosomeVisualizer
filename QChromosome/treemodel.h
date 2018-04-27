@@ -44,28 +44,17 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
-#include <memory>
 
-#include "../QtChromosomeViz_v2/bartekm_code/common.h"
+#include "treeitem.h"
 
-enum NodeType
-{
-    HeaderObject,
-    LayerObject,
-    ChainObject,
-    ResidueObject,
-    AtomObject
-};
-
-enum Visibility
-{
-    Default,
-    On,
-    Off
-};
-
-class TreeItem;
 class Material;
+class Simulation;
+
+enum VisibilityMode
+{
+    Editor = 3,
+    Renderer = 4
+};
 
 class TreeModel : public QAbstractItemModel
 {
@@ -86,15 +75,53 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(const std::vector<Atom> &atoms, std::vector<std::pair<int, int>> &connectedRanges, unsigned int n, unsigned int offset, bool init = true);
-    const QVector<QModelIndex>& getIndices() const;
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init = true);
+    const QVector<QPersistentModelIndex> &getIndices() const;
+
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+
+    void addCamera(Camera* camera);
+    void setCurrentCamera(QModelIndex index);
+    Camera* getCurrentCamera() const;
+
+    void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
+    Material* removeMaterial(const QModelIndex& root, int position);
+
+    void setVisibility(const QModelIndex& index, Visibility v, VisibilityMode m);
+    void setVisibility(const QModelIndexList& indices, Visibility v, VisibilityMode m);
+
+    void setSelected(const QModelIndexList& indices, bool s);
+
+    void setName(const QModelIndex& index, const QString& name);
+    void setName(const QModelIndexList& indices, const QString& name);
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
+    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame);
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
+
+public slots:
+    void updateAttributes(const Material* m);
+
 private:
     TreeItem *header;
-    QVector<QModelIndex> indices;
+    QVector<QPersistentModelIndex> indices;
+    QPersistentModelIndex currentCamera;
+
+    QString next_name() const;
+
+    void propagateMaterial(const QModelIndex &root, const Material* m);
+    void updateMaterial(const QModelIndex &root, const Material* m);
+
+    void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
+    void updateVisibility(const QModelIndex &root, QPair<bool, bool> v);
+
+    void propagateSelected(const QModelIndex &root, bool s);
+
+signals:
+    void propertyChanged();
+    void attributeChanged();
 };
 
 #endif // TREEMODEL_H
