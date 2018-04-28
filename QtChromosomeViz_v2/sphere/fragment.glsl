@@ -10,7 +10,7 @@ layout (std140) uniform shader_data
     ivec2 uvScreenSize;
     float ufFogDensity;
     float ufFogContribution;
-    vec3 ucFogColor;
+    uint ucFogColor;
 };
 
 in vec4 vPosition;
@@ -92,7 +92,7 @@ void main() {
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
     float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
+    vec4 cResultColor = vec4(mix(unpackUnorm4x8(ucFogColor).bgr, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     
     fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }

@@ -21,7 +21,7 @@ struct shader_data_t
   QSize uvScreenSize __attribute__((aligned(16)));
   float ufFogDensity;
   float ufFogContribution;
-  float ucFogColor[3];
+  QRgb ucFogColor;
 } __attribute__((aligned(16)));
 
 class VizWidget :   public Selection,

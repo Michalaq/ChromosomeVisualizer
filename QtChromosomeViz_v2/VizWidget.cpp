@@ -230,6 +230,19 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
+    shader_data.pro = projection_;
+    shader_data.mv = modelView_;
+    shader_data.mvNormal = modelViewNormal_;
+    shader_data.uvScreenSize = size();
+    shader_data.ufFogDensity = viewport_->getFogDensity();
+    shader_data.ufFogContribution = viewport_->getFogContribution();
+    shader_data.ucFogColor = viewport_->getBackgroundColor().rgba();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+    memcpy(p, &shader_data, sizeof(shader_data));
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
+
     // Ensure taht buffers are up to date
     allocate();
 
@@ -247,21 +260,6 @@ void VizWidget::paintGL()
                  backgroundColor_.blueF(),
                  0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    shader_data.pro = projection_;
-    shader_data.mv = modelView_;
-    shader_data.mvNormal = modelViewNormal_;
-    shader_data.uvScreenSize = size();
-    shader_data.ufFogDensity = viewport_->getFogDensity();
-    shader_data.ufFogContribution = viewport_->getFogContribution();
-    shader_data.ucFogColor[0] = backgroundColor_.redF();
-    shader_data.ucFogColor[1] = backgroundColor_.greenF();
-    shader_data.ucFogColor[2] = backgroundColor_.blueF();
-
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &shader_data, sizeof(shader_data));
-    glUnmapBuffer(GL_UNIFORM_BUFFER);
 
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())

@@ -14,7 +14,7 @@ layout (std140) uniform shader_data
     ivec2 uvScreenSize;
     float ufFogDensity;
     float ufFogContribution;
-    vec3 ucFogColor;
+    uint ucFogColor;
 };
 
 flat in vec3 gvInstancePosition[1];
