@@ -5,7 +5,7 @@
 
 #include <QtGui>
 #include <QtOpenGL>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions_4_2_Core>
 
 #include "selection.h"
 #include "pickwidget.h"
@@ -25,7 +25,7 @@ struct shader_data_t
 } __attribute__((aligned(16)));
 
 class VizWidget :   public Selection,
-                    protected QOpenGLFunctions_3_3_Core,
+                    protected QOpenGLFunctions_4_2_Core,
                     public Pickable
 {
     Q_OBJECT
