@@ -9,7 +9,6 @@ layout (std140) uniform shader_data
     int pro_flagBits; 
     mat4 mv;
     int mv_flagBits;
-    mat3 mvNormal;
     ivec2 uvScreenSize;
     float ufFogDensity;
     float ufFogContribution;
@@ -54,6 +53,8 @@ void main() {
         
         vec3 vVertexPosition;
         vec3 vVertexNormal;
+        
+        mat3 mvNormal = transpose(inverse(mat3(mv)));
         
         for (int i = 0; i < 10; i++)
         {

@@ -238,7 +238,6 @@ void VizWidget::paintGL()
 {
     shader_data.pro = projection_;
     shader_data.mv = modelView_;
-    shader_data.mvNormal = modelViewNormal_;
     shader_data.uvScreenSize = size();
     shader_data.ufFogDensity = viewport_->getFogDensity();
     shader_data.ufFogContribution = viewport_->getFogContribution();

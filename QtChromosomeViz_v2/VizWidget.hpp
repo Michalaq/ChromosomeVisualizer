@@ -15,14 +15,13 @@ class Viewport;
 
 struct shader_data_t
 {
-  QMatrix4x4 pro;
-  QMatrix4x4 mv __attribute__((aligned(16)));
-  QMatrix3x3 mvNormal __attribute__((aligned(16)));
-  QSize uvScreenSize __attribute__((aligned(16)));
-  float ufFogDensity;
-  float ufFogContribution;
-  QRgb ucFogColor;
-} __attribute__((aligned(16)));
+  QMatrix4x4 pro            __attribute__((aligned(16)));
+  QMatrix4x4 mv             __attribute__((aligned(16)));
+  QSize uvScreenSize        __attribute__((aligned(8)));
+  float ufFogDensity        __attribute__((aligned(4)));
+  float ufFogContribution   __attribute__((aligned(4)));
+  QRgb ucFogColor           __attribute__((aligned(4)));
+}                           __attribute__((aligned(16)));
 
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_4_2_Core,
