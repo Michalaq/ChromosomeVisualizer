@@ -220,10 +220,16 @@ void VizWidget::initializeGL()
     glBindBuffer(GL_UNIFORM_BUFFER, ubo);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(shader_data), &shader_data, GL_DYNAMIC_DRAW);
 
-    unsigned int block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "shader_data");
-    GLuint binding_point_index = 0;
+    const GLuint binding_point_index = 0;
     glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
+
+    unsigned int block_index;
+
+    block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "shader_data");
     glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
+
+    block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "shader_data");
+    glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
 }
 
 #include "viewport.h"
@@ -264,24 +270,8 @@ void VizWidget::paintGL()
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())
     {
-        float fogDensity_ = viewport_->getFogDensity();
-        float fogContribution_ = viewport_->getFogContribution();
-
         vaoSpheres_.bind();
         cylinderProgram_.bind();
-
-        cylinderProgram_.setUniformValue("pro", projection_);
-        cylinderProgram_.setUniformValue("mv", modelView_);
-        cylinderProgram_.setUniformValue("mvNormal", modelViewNormal_);
-        cylinderProgram_.setUniformValue("uvScreenSize",
-                                (float)size().width(),
-                                (float)size().height());
-        cylinderProgram_.setUniformValue("ufFogDensity", fogDensity_);
-        cylinderProgram_.setUniformValue("ufFogContribution", fogContribution_);
-        cylinderProgram_.setUniformValue("ucFogColor",
-                                         backgroundColor_.redF(),
-                                         backgroundColor_.greenF(),
-                                         backgroundColor_.blueF());
 
         for (auto& strip : ChainItem::getBuffer())
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);

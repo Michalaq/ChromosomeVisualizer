@@ -1,9 +1,17 @@
 #version 420 core
 
-uniform vec2 uvScreenSize;
-uniform float ufFogDensity;
-uniform float ufFogContribution;
-uniform vec3 ucFogColor;
+layout (std140) uniform shader_data
+{
+    mat4 pro;
+    int pro_flagBits; 
+    mat4 mv;
+    int mv_flagBits;
+    mat3 mvNormal;
+    ivec2 uvScreenSize;
+    float ufFogDensity;
+    float ufFogContribution;
+    uint ucFogColor;
+};
 
 in vec4 vPosition;
 in vec4 vViewPosition;
@@ -41,7 +49,7 @@ void main() {
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
     float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(ucFogColor, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
+    vec4 cResultColor = vec4(mix(unpackUnorm4x8(ucFogColor).bgr, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     
     fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }
