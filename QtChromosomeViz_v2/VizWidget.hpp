@@ -13,6 +13,17 @@
 
 class Viewport;
 
+struct shader_data_t
+{
+  QMatrix4x4 pro;
+  QMatrix4x4 mv __attribute__((aligned(16)));
+  QMatrix3x3 mvNormal __attribute__((aligned(16)));
+  QSize uvScreenSize __attribute__((aligned(16)));
+  float ufFogDensity;
+  float ufFogContribution;
+  float ucFogColor[3];
+} __attribute__((aligned(16)));
+
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_3_3_Core,
                     public Pickable

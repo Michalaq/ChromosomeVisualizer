@@ -1,6 +1,9 @@
 #include "VizWidget.hpp"
 #include <cassert>
 
+shader_data_t shader_data;
+GLuint ubo = 0;
+
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , pickingFramebuffer_(nullptr)
@@ -212,6 +215,15 @@ void VizWidget::initializeGL()
     assert(labelsProgram_.link());
 
     AtomItem::getAtlas().initializeGL();
+
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(shader_data), &shader_data, GL_DYNAMIC_DRAW);
+
+    unsigned int block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "shader_data");
+    GLuint binding_point_index = 0;
+    glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
+    glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
 }
 
 #include "viewport.h"
@@ -235,6 +247,21 @@ void VizWidget::paintGL()
                  backgroundColor_.blueF(),
                  0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shader_data.pro = projection_;
+    shader_data.mv = modelView_;
+    shader_data.mvNormal = modelViewNormal_;
+    shader_data.uvScreenSize = size();
+    shader_data.ufFogDensity = viewport_->getFogDensity();
+    shader_data.ufFogContribution = viewport_->getFogContribution();
+    shader_data.ucFogColor[0] = backgroundColor_.redF();
+    shader_data.ucFogColor[1] = backgroundColor_.greenF();
+    shader_data.ucFogColor[2] = backgroundColor_.blueF();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+    memcpy(p, &shader_data, sizeof(shader_data));
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
 
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())
@@ -263,18 +290,6 @@ void VizWidget::paintGL()
 
         cylinderProgram_.release();
         sphereProgram_.bind();
-
-        sphereProgram_.setUniformValue("pro", projection_);
-        sphereProgram_.setUniformValue("mv", modelView_);
-        sphereProgram_.setUniformValue("uvScreenSize",
-                                (float)size().width(),
-                                (float)size().height());
-        sphereProgram_.setUniformValue("ufFogDensity", fogDensity_);
-        sphereProgram_.setUniformValue("ufFogContribution", fogContribution_);
-        sphereProgram_.setUniformValue("ucFogColor",
-                                       backgroundColor_.redF(),
-                                       backgroundColor_.greenF(),
-                                       backgroundColor_.blueF());
 
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 

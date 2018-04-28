@@ -4,8 +4,18 @@ layout (points) in;
 layout (triangle_strip) out;
 layout (max_vertices = 6) out;
 
-uniform mat4 pro;
-uniform mat4 mv;
+layout (std140) uniform shader_data
+{
+    mat4 pro;
+    int pro_flagBits; 
+    mat4 mv;
+    int mv_flagBits;
+    mat3 mvNormal;
+    ivec2 uvScreenSize;
+    float ufFogDensity;
+    float ufFogContribution;
+    vec3 ucFogColor;
+};
 
 flat in vec3 gvInstancePosition[1];
 flat in int giFlags[1];
