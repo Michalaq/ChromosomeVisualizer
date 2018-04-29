@@ -242,8 +242,6 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    shader_data.pro = projection_;
-    shader_data.mv = modelView_;
     shader_data.uvScreenSize = size();
     shader_data.ufFogDensity = viewport_->getFogDensity();
     shader_data.ufFogContribution = viewport_->getFogContribution();
@@ -335,15 +333,14 @@ void VizWidget::paintGL()
 
 void VizWidget::setModelView(QMatrix4x4 mat)
 {
-    modelView_ = mat;
-    modelViewNormal_ = mat.normalMatrix();
+    shader_data.mv = mat;
 
     update();
 }
 
 void VizWidget::setProjection(QMatrix4x4 mat)
 {
-    projection_ = mat;
+    shader_data.pro = mat;
 
     update();
 }

@@ -75,10 +75,6 @@ private:
     QOpenGLShaderProgram pickingProgram_;
     QOpenGLShaderProgram labelsProgram_;
 
-    QMatrix4x4 projection_;
-    QMatrix4x4 modelView_;
-    QMatrix3x3 modelViewNormal_;
-
     std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
 
     QImage image;
