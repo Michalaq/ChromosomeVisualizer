@@ -1,6 +1,16 @@
 #version 330 core
 
-uniform mat4 pro;
+layout (std140) uniform shader_data
+{
+    mat4 pro;
+    int pro_flagBits; 
+    mat4 mv;
+    int mv_flagBits;
+    ivec2 uvScreenSize;
+    float ufFogDensity;
+    float ufFogContribution;
+    uint ucFogColor;
+};
 
 in vec3 vViewPosition;
 flat in vec3 vInstancePosition;

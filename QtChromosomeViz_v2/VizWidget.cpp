@@ -230,6 +230,12 @@ void VizWidget::initializeGL()
 
     block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "shader_data");
     glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
+
+    block_index = glGetUniformBlockIndex(cameraProgram_.programId(), "shader_data");
+    glUniformBlockBinding(cameraProgram_.programId(), block_index, binding_point_index);
+
+    block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
+    glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
 }
 
 #include "viewport.h"
@@ -289,9 +295,6 @@ void VizWidget::paintGL()
         vaoCameras_.bind();
         cameraProgram_.bind();
 
-        cameraProgram_.setUniformValue("pro", projection_);
-        cameraProgram_.setUniformValue("mv", modelView_);
-
         glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
 
         cameraProgram_.release();
@@ -306,11 +309,6 @@ void VizWidget::paintGL()
 
         auto& atlas = AtomItem::getAtlas();
 
-        labelsProgram_.setUniformValue("pro", projection_);
-        labelsProgram_.setUniformValue("mv", modelView_);
-        labelsProgram_.setUniformValue("uvScreenSize",
-                                (float)size().width(),
-                                (float)size().height());
         labelsProgram_.setUniformValue("uvTextureSize",
                                 (float)atlas.size().width(),
                                 (float)atlas.size().height());
@@ -454,9 +452,6 @@ void VizWidget::pickSpheres()
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
-
-        sphereProgram_.setUniformValue("pro", projection_);
-        sphereProgram_.setUniformValue("mv", modelView_);
 
         glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
 

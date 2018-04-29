@@ -4,8 +4,17 @@ layout (points) in;
 layout (line_strip) out;
 layout (max_vertices = 58) out;
 
-uniform mat4 pro;
-uniform mat4 mv;
+layout (std140) uniform shader_data
+{
+    mat4 pro;
+    int pro_flagBits; 
+    mat4 mv;
+    int mv_flagBits;
+    ivec2 uvScreenSize;
+    float ufFogDensity;
+    float ufFogContribution;
+    uint ucFogColor;
+};
 
 flat in mat4 gModelView[1];
 flat in mat4 gProjection[1];
