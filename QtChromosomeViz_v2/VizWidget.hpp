@@ -1,8 +1,6 @@
 #ifndef VIZWINDOW_HPP
 #define VIZWINDOW_HPP
 
-#include <memory>
-
 #include <QtGui>
 #include <QtOpenGL>
 #include <QOpenGLFunctions_4_2_Core>
@@ -63,21 +61,20 @@ private:
 
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
+    QOpenGLVertexArrayObject vaoLabels_;
 
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
 
-    QOpenGLVertexArrayObject vaoLabels_;
-
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
-    QOpenGLShaderProgram pickingProgram_;
     QOpenGLShaderProgram labelsProgram_;
 
-    std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
-
+    GLuint texture;
+    QByteArray array;
     QImage image;
+
     void pickSpheres();
 
     Viewport* viewport_;
