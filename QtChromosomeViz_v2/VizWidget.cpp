@@ -6,23 +6,25 @@ GLuint ubo = 0;
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
-    , texture(0)
     , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
 
     connect(this, &QOpenGLWidget::resized, [this]() {
-        glDeleteTextures(1, &texture);
-        glGenTextures(1, &texture);
+        glDeleteTextures(2, texture);
+        glGenTextures(2, texture);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, texture[0]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, picking);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
+        glBindTexture(GL_TEXTURE_2D, texture[1]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
 
-        array.resize(sizeof(GLint) * width() * height());
-        image = QImage((uchar*)array.data(), width(), height(), QImage::Format_ARGB32);
+        glBindFramebuffer(GL_FRAMEBUFFER, picking);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
+
+        shader_data.uvScreenSize = size();
     });
 }
 
@@ -251,6 +253,9 @@ void VizWidget::initializeGL()
     block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
     glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
 
+    block_index = glGetUniformBlockIndex(pickingProgram_.programId(), "shader_data");
+    glUniformBlockBinding(pickingProgram_.programId(), block_index, binding_point_index);
+
     glGenFramebuffers(1, &picking);
 }
 
@@ -258,7 +263,6 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    shader_data.uvScreenSize = size();
     shader_data.ufFogDensity = viewport_->getFogDensity();
     shader_data.ufFogContribution = viewport_->getFogContribution();
     shader_data.ucFogColor = viewport_->getBackgroundColor().rgba();
@@ -425,6 +429,18 @@ void VizWidget::pickSpheres()
 
     glBindFramebuffer(GL_FRAMEBUFFER, picking);
 
+    shader_data.ufFogDensity = viewport_->getFogDensity();
+    shader_data.ufFogContribution = viewport_->getFogContribution();
+    shader_data.ucFogColor = viewport_->getBackgroundColor().rgba();
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+    memcpy(p, &shader_data, sizeof(shader_data));
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
+
+    // Ensure taht buffers are up to date
+    allocate();
+
     // Enable culling
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -448,8 +464,17 @@ void VizWidget::pickSpheres()
         vaoSpheres_.release();
     }
 
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+
+    auto array = new uchar[sizeof(GLint) * width() * height()];
+
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, array.data());
+    glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, array);
+
+    image = QImage(array, width(), height(), QImage::Format_ARGB32).mirrored();
+
+    delete[] array;
 }
 
 void VizWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -497,7 +522,7 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 
     QPainter(&image).fillPath(mask, QColor(-1));
 
-    auto first = (int*)array.constData();
+    auto first = (int*)image.constBits();
     auto last = first + width() * height();
 
     std::sort(first, last);

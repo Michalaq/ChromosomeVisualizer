@@ -73,8 +73,7 @@ private:
     QOpenGLShaderProgram pickingProgram_;
 
     GLuint picking;
-    GLuint texture;
-    QByteArray array;
+    GLuint texture[2];
     QImage image;
 
     void pickSpheres();
