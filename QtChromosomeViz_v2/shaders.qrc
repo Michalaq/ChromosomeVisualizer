@@ -19,4 +19,7 @@
         <file alias="geometry.glsl">labels/geometry.glsl</file>
         <file alias="vertex.glsl">labels/vertex.glsl</file>
     </qresource>
+    <qresource prefix="/picking">
+        <file alias="fragment.glsl">picking/fragment.glsl</file>
+    </qresource>
 </RCC>

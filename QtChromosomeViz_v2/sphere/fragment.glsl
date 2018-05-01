@@ -17,14 +17,12 @@ in vec3 vViewPosition;
 
 flat in vec3 vInstancePosition;
 flat in int iFlags;
-flat in int iInstanceID;
 flat in vec4 cColor;
 flat in vec3 cSpecularColor;
 flat in float fSpecularExponent;
 flat in float fInstanceSize;
 
-layout(location = 0) out vec4 fragColor;
-layout(location = 1) out int fragID;
+out vec4 fragColor;
 
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
@@ -96,5 +94,4 @@ void main() {
     vec4 cResultColor = vec4(mix(unpackUnorm4x8(ucFogColor).bgr, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     
     fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
-    fragID = iInstanceID;
 }

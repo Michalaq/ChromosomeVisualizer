@@ -18,7 +18,8 @@ VizWidget::VizWidget(QWidget *parent)
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
 
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, texture, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, picking);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
 
         array.resize(sizeof(GLint) * width() * height());
         image = QImage((uchar*)array.data(), width(), height(), QImage::Format_ARGB32);
@@ -221,6 +222,12 @@ void VizWidget::initializeGL()
     labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/labels/fragment.glsl");
     assert(labelsProgram_.link());
 
+    assert(pickingProgram_.create());
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
+    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
+    assert(pickingProgram_.link());
+
     AtomItem::getAtlas().initializeGL();
 
     glGenBuffers(1, &ubo);
@@ -243,12 +250,9 @@ void VizWidget::initializeGL()
 
     block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
     glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
-}
 
-static const GLenum buffers[] = {
-    GL_COLOR_ATTACHMENT0,
-    GL_COLOR_ATTACHMENT1
-};
+    glGenFramebuffers(1, &picking);
+}
 
 #include "viewport.h"
 
@@ -276,18 +280,8 @@ void VizWidget::paintGL()
 
     auto color = viewport_->getBackgroundColor();
 
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glClearColor(color.redF(), color.greenF(), color.blueF(), 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    int i = -1;
-    glDrawBuffer(GL_COLOR_ATTACHMENT1);
-    glClearColor(reinterpret_cast<float&>(i), 1.f, 1.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glDrawBuffers(sizeof(buffers) / sizeof(GLenum), buffers);
-
-    glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
     if (!AtomItem::getBuffer().empty())
@@ -429,9 +423,32 @@ void VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferObject());
+    glBindFramebuffer(GL_FRAMEBUFFER, picking);
 
-    glReadBuffer(GL_COLOR_ATTACHMENT1);
+    // Enable culling
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_DEPTH_TEST);
+
+    int color = -1;
+    glClearColor(reinterpret_cast<GLfloat&>(color), 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // If there are no spheres, my driver crashes
+    if (!AtomItem::getBuffer().empty())
+    {
+        vaoSpheres_.bind();
+        pickingProgram_.bind();
+
+        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+
+        pickingProgram_.release();
+        vaoSpheres_.release();
+    }
+
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, array.data());
 }
 

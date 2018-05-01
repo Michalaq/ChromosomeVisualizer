@@ -70,7 +70,9 @@ private:
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
     QOpenGLShaderProgram labelsProgram_;
+    QOpenGLShaderProgram pickingProgram_;
 
+    GLuint picking;
     GLuint texture;
     QByteArray array;
     QImage image;
