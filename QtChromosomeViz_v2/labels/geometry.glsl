@@ -11,10 +11,8 @@ layout (std140) uniform shader_data
     mat4 mv;
     int mv_flagBits;
     ivec2 uvScreenSize;
-    float ufFogDensity;
-    float ufFogContribution;
-    uint ucFogColor;
 };
+
 uniform vec2 uvTextureSize;
 
 flat in vec3 gvInstancePosition[1];

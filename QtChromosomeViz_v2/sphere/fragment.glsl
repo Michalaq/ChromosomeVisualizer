@@ -7,6 +7,10 @@ layout (std140) uniform shader_data
     mat4 mv;
     int mv_flagBits;
     ivec2 uvScreenSize;
+};
+
+layout (std140) uniform viewport_data
+{
     float ufFogDensity;
     float ufFogContribution;
     uint ucFogColor;

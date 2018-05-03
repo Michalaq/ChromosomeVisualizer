@@ -16,6 +16,13 @@ enum AxisPosition
     TopRight
 };
 
+struct viewport_data_t
+{
+  float ufFogDensity        __attribute__((aligned(4)));
+  float ufFogContribution   __attribute__((aligned(4)));
+  QRgb ucBackgroundColor    __attribute__((aligned(4)));
+}                           __attribute__((aligned(16)));
+
 class Viewport : public QWidget
 {
     Q_OBJECT
@@ -35,6 +42,9 @@ public:
     double getAxisScale() const;
     bool getAxisTextVisible() const;
 
+    static const viewport_data_t& getBuffer();
+    static bool modified;
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
@@ -45,6 +55,8 @@ public slots:
 
 private:
     Ui::Viewport *ui;
+
+    static viewport_data_t buffer;
 };
 
 #endif // VIEWPORT_H

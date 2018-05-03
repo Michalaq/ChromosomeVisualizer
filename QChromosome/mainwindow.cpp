@@ -137,13 +137,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    ui->scene->setViewport(ui->page_4);
     Camera::setViewport(ui->page_4);
 
-    connect(ui->page_4, &Viewport::viewportChanged, [this] {
-        ui->stackedWidget_2->currentWidget()->update();
-        ui->scene->update();
-    });
+    connect(ui->page_4, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");

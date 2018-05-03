@@ -9,16 +9,11 @@
 #include "pickwidget.h"
 #include "treemodel.h"
 
-class Viewport;
-
 struct shader_data_t
 {
   QMatrix4x4 pro            __attribute__((aligned(16)));
   QMatrix4x4 mv             __attribute__((aligned(16)));
   QSize uvScreenSize        __attribute__((aligned(8)));
-  float ufFogDensity        __attribute__((aligned(4)));
-  float ufFogContribution   __attribute__((aligned(4)));
-  QRgb ucFogColor           __attribute__((aligned(4)));
 }                           __attribute__((aligned(16)));
 
 class VizWidget :   public Selection,
@@ -34,8 +29,6 @@ public:
 
     virtual void initializeGL() override;
     virtual void paintGL() override;
-
-    void setViewport(Viewport* vp);
 
     QPersistentModelIndex pick(const QPoint& pos);
 
@@ -77,8 +70,6 @@ private:
     QImage image;
 
     void pickSpheres();
-
-    Viewport* viewport_;
 
     TreeModel *model_;
     QItemSelectionModel *selectionModel_;

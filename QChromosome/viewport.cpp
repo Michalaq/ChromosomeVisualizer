@@ -1,6 +1,9 @@
 #include "viewport.h"
 #include "ui_viewport.h"
 
+viewport_data_t Viewport::buffer;
+bool Viewport::modified = false;
+
 static const float DISPLAYED_TO_INTERNAL_FOG_DENSITY = 0.001f;
 
 Viewport::Viewport(QWidget *parent) :
@@ -15,6 +18,11 @@ Viewport::Viewport(QWidget *parent) :
     ui->widget_4->setValue(QColor(Qt::white));
     ui->doubleSpinBox_3->setValue(10);
     ui->doubleSpinBox_4->setValue(80);
+
+    buffer.ucBackgroundColor = ui->widget_2->value().rgb();
+    buffer.ufFogDensity = ui->doubleSpinBox_3->value() * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
+    buffer.ufFogContribution = ui->doubleSpinBox_4->value() / 100;
+    modified = true;
 
     // safe frames
     connect(ui->checkBox, &QCheckBox::toggled, [this] { emit viewportChanged(); });
@@ -35,13 +43,25 @@ Viewport::Viewport(QWidget *parent) :
     connect(ui->checkBox_2, &QCheckBox::toggled, [this] { emit viewportChanged(); });
 
     // background color
-    connect(ui->widget_2, &Picker::valueChanged, [this] { emit viewportChanged(); });
+    connect(ui->widget_2, &Picker::valueChanged, [this](QColor val) {
+        buffer.ucBackgroundColor = val.rgb();
+        modified = true;
+        emit viewportChanged();
+    });
 
     // fog density
-    connect(ui->doubleSpinBox_3, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
+    connect(ui->doubleSpinBox_3, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        buffer.ufFogDensity = val * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
+        modified = true;
+        emit viewportChanged();
+    });
 
     // fog contribution
-    connect(ui->doubleSpinBox_4, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this] { emit viewportChanged(); });
+    connect(ui->doubleSpinBox_4, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
+        buffer.ufFogContribution = val / 100;
+        modified = true;
+        emit viewportChanged();
+    });
 
     // labels background
     connect(ui->widget_3, &Picker::valueChanged, [this] { emit viewportChanged(); });
@@ -108,6 +128,11 @@ double Viewport::getAxisScale() const
 bool Viewport::getAxisTextVisible() const
 {
     return ui->checkBox_2->isChecked();
+}
+
+const viewport_data_t& Viewport::getBuffer()
+{
+    return buffer;
 }
 
 #include <QJsonObject>
