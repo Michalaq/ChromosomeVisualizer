@@ -9,13 +9,6 @@
 #include "pickwidget.h"
 #include "treemodel.h"
 
-struct shader_data_t
-{
-  QMatrix4x4 pro            __attribute__((aligned(16)));
-  QMatrix4x4 mv             __attribute__((aligned(16)));
-  QSize uvScreenSize        __attribute__((aligned(8)));
-}                           __attribute__((aligned(16)));
-
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_4_2_Core,
                     public Pickable
@@ -34,10 +27,6 @@ public:
 
     void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
     void reloadModel();
-
-public slots:
-    void setModelView(QMatrix4x4 mat);
-    void setProjection(QMatrix4x4 mat);
 
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
@@ -65,6 +54,7 @@ private:
     QOpenGLShaderProgram labelsProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
+    GLuint buffers[2];
     GLuint picking;
     GLuint texture[2];
     QImage image;

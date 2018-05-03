@@ -813,8 +813,8 @@ void MainWindow::addCamera(Camera* camera)
 {
     camera->blockSignals(true);
 
-    connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
-    connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
+    connect(camera, SIGNAL(modelViewChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
+    connect(camera, SIGNAL(projectionChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         ui->page_6->setSplineInterpolator(camera);

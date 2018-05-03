@@ -1,11 +1,6 @@
 #include "VizWidget.hpp"
 #include <cassert>
 
-shader_data_t shader_data;
-GLuint ubo = 0;
-
-GLuint buffers[2];
-
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
     , selectionModel_(nullptr)
@@ -25,8 +20,6 @@ VizWidget::VizWidget(QWidget *parent)
         glBindFramebuffer(GL_FRAMEBUFFER, picking);
         glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
         glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
-
-        shader_data.uvScreenSize = size();
     });
 }
 
@@ -35,6 +28,7 @@ VizWidget::~VizWidget()
 
 }
 
+#include "camera.h"
 #include "viewport.h"
 
 void VizWidget::initializeGL()
@@ -238,29 +232,31 @@ void VizWidget::initializeGL()
 
     glGenBuffers(2, buffers);
 
-    {glGenBuffers(1, &ubo);
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(shader_data_t), &shader_data, GL_DYNAMIC_DRAW);
+    {
+        glGenBuffers(1, buffers + 0);
+        glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &Camera::getBuffer(), GL_DYNAMIC_DRAW);
 
-    const GLuint binding_point_index = 0;
-    glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, ubo);
+        const GLuint binding_point_index = 0;
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[0]);
 
-    unsigned int block_index;
+        unsigned int block_index;
 
-    block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "shader_data");
-    glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "shader_data");
+        glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
 
-    block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "shader_data");
-    glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "shader_data");
+        glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
 
-    block_index = glGetUniformBlockIndex(cameraProgram_.programId(), "shader_data");
-    glUniformBlockBinding(cameraProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(cameraProgram_.programId(), "shader_data");
+        glUniformBlockBinding(cameraProgram_.programId(), block_index, binding_point_index);
 
-    block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
-    glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
+        glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
 
-    block_index = glGetUniformBlockIndex(pickingProgram_.programId(), "shader_data");
-    glUniformBlockBinding(pickingProgram_.programId(), block_index, binding_point_index);}
+        block_index = glGetUniformBlockIndex(pickingProgram_.programId(), "shader_data");
+        glUniformBlockBinding(pickingProgram_.programId(), block_index, binding_point_index);
+    }
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[1]);
@@ -283,11 +279,6 @@ void VizWidget::initializeGL()
 
 void VizWidget::paintGL()
 {
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &shader_data, sizeof(shader_data_t));
-    glUnmapBuffer(GL_UNIFORM_BUFFER);
-
     // Ensure taht buffers are up to date
     allocate();
 
@@ -364,20 +355,6 @@ void VizWidget::paintGL()
     glDisable(GL_DEPTH_TEST);
 }
 
-void VizWidget::setModelView(QMatrix4x4 mat)
-{
-    shader_data.mv = mat;
-
-    update();
-}
-
-void VizWidget::setProjection(QMatrix4x4 mat)
-{
-    shader_data.pro = mat;
-
-    update();
-}
-
 QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 {
     pickSpheres();
@@ -442,6 +419,11 @@ void VizWidget::allocate()
 
         Viewport::modified = false;
     }
+
+    glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
+    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+    memcpy(p, &Camera::getBuffer(), sizeof(camera_data_t));
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 
 void VizWidget::pickSpheres()
@@ -449,11 +431,6 @@ void VizWidget::pickSpheres()
     makeCurrent();
 
     glBindFramebuffer(GL_FRAMEBUFFER, picking);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &shader_data, sizeof(shader_data));
-    glUnmapBuffer(GL_UNIFORM_BUFFER);
 
     // Ensure taht buffers are up to date
     allocate();
