@@ -1,6 +1,7 @@
 #include "material.h"
 
 Material* Material::dm = nullptr;
+QVector<const Material*> Material::library;
 QVector<material_data_t> Material::buffer;
 bool Material::modified = false;
 bool Material::resized = false;
@@ -20,6 +21,8 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
 
     setFixedSize(45, 45);
     updateIcon();
+
+    library.push_back(this);
 
     buffer.push_back({color.rgba(), specularColor.rgba(), specularExponent});
     resized = true;
@@ -326,6 +329,18 @@ QTextStream &operator<<(QTextStream &stream, const Material *mat)
 int Material::getIndex() const
 {
     return index;
+}
+
+const Material* Material::fetch(int index)
+{
+    return library[index];
+}
+
+void Material::writePOVMaterials(QTextStream &stream)
+{
+    for (auto material : library)
+        if (!material->assignment.isEmpty())
+            stream << *material;
 }
 
 const QVector<material_data_t>& Material::getBuffer()

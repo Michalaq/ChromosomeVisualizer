@@ -56,6 +56,9 @@ public:
 
     int getIndex() const;
 
+    static const Material* fetch(int index);
+    static void writePOVMaterials(QTextStream &stream);
+
     static const QVector<material_data_t>& getBuffer();
     static bool modified;
     static bool resized;
@@ -88,6 +91,7 @@ private:
 
     int index;
     static QVector<material_data_t> buffer;
+    static QVector<const Material*> library;
 };
 
 QTextStream &operator<<(QTextStream &stream, const Material &mat);

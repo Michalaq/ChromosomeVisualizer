@@ -78,7 +78,7 @@ void VizWidget::initializeGL()
         1,
         GL_INT,
         sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, mat)
+        (void*)offsetof(VizBallInstance, material)
     );
 
     atomPositions_.release();

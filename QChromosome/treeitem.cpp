@@ -202,16 +202,16 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material*>& used) const
+void TreeItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
 {
     for (const auto c : m_childItems)
-        c->writePOVFrame(stream, frame, used);
+        c->writePOVFrame(stream, frame);
 }
 
-void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
 {
     for (const auto c : m_childItems)
-        c->writePOVFrames(stream, fbeg, fend, used);
+        c->writePOVFrames(stream, fbeg, fend);
 }
 
 LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
@@ -417,10 +417,7 @@ float AtomItem::getRadius() const
 
 void AtomItem::setMaterial(const Material *material)
 {
-    auto& buff = buffer[id];
-    buff.material = material;
-    buff.mat = material->getIndex();
-
+    buffer[id].material = material->getIndex();
     modified = true;
 }
 
@@ -473,40 +470,24 @@ constexpr QVector3D vec3(const Atom& a)
     return {a.x, a.y, a.z};
 }
 
-void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
+void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
 {
     const auto& atom = buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-    {
-        if (!used.contains(atom.material))
-        {
-            stream << *atom.material;
-            used.insert(atom.material);
-        }
-
         MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
-    }
 
-    TreeItem::writePOVFrame(stream, frame, used);
+    TreeItem::writePOVFrame(stream, frame);
 }
 
-void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
 {
     const auto& atom = buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-    {
-        if (!used.contains(atom.material))
-        {
-            stream << *atom.material;
-            used.insert(atom.material);
-        }
-
         MovieMaker::addSphere1(stream, id, atom.size, atom.material);
-    }
 
-    TreeItem::writePOVFrames(stream, fbeg, fend, used);
+    TreeItem::writePOVFrames(stream, fbeg, fend);
 }
 
 QVector<std::pair<int, int>> ChainItem::buffer;
@@ -538,9 +519,9 @@ void ChainItem::clearBuffer()
     buffer.clear();
 }
 
-void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const
+void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
 {
-    TreeItem::writePOVFrame(stream, frame, used);
+    TreeItem::writePOVFrame(stream, frame);
 
     auto buffer = AtomItem::getBuffer();
 
@@ -554,9 +535,9 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame,
     }
 }
 
-void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const
+void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
 {
-    TreeItem::writePOVFrames(stream, fbeg, fend, used);
+    TreeItem::writePOVFrames(stream, fbeg, fend);
 
     auto buffer = AtomItem::getBuffer();
 
