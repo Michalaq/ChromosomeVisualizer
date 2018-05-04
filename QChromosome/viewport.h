@@ -18,9 +18,9 @@ enum AxisPosition
 
 struct viewport_data_t
 {
-  float ufFogDensity        __attribute__((aligned(4)));
-  float ufFogContribution   __attribute__((aligned(4)));
-  QRgb ucBackgroundColor    __attribute__((aligned(4)));
+    float ufFogDensity      __attribute__((aligned(4)));
+    float ufFogContribution __attribute__((aligned(4)));
+    QRgb ucBackgroundColor  __attribute__((aligned(4)));
 }                           __attribute__((aligned(16)));
 
 class Viewport : public QWidget

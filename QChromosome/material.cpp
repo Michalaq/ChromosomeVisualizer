@@ -1,6 +1,9 @@
 #include "material.h"
 
 Material* Material::dm = nullptr;
+QVector<material_data_t> Material::buffer;
+bool Material::modified = false;
+bool Material::resized = false;
 
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
     QWidget(parent),
@@ -8,13 +11,18 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     id(QUuid::createUuid()),
     name(n),
     color(c),
-    transparency(t),
     specularColor(sc),
     specularExponent(se),
-    finish(0)
+    finish(0),
+    index(buffer.size())
 {
+    color.setAlphaF(1. - t);
+
     setFixedSize(45, 45);
     updateIcon();
+
+    buffer.push_back({color.rgba(), specularColor.rgba(), specularExponent});
+    resized = true;
 }
 
 Material::~Material()
@@ -44,19 +52,27 @@ QColor Material::getColor() const
 
 void Material::setColor(QColor c)
 {
+    c.setAlphaF(color.alphaF());
+
     color = c;
     updateIcon();
+
+    buffer[index].color = color.rgba();
+    modified = true;
 }
 
 float Material::getTransparency() const
 {
-    return transparency;
+    return 1. - color.alphaF();
 }
 
 void Material::setTransparency(float t)
 {
-    transparency = t;
+    color.setAlphaF(1. - t);
     updateIcon();
+
+    buffer[index].color = color.rgba();
+    modified = true;
 }
 
 QColor Material::getSpecularColor() const
@@ -68,6 +84,9 @@ void Material::setSpecularColor(QColor c)
 {
     specularColor = c;
     updateIcon();
+
+    buffer[index].specularColor = specularColor.rgba();
+    modified = true;
 }
 
 float Material::getSpecularExponent() const
@@ -79,6 +98,9 @@ void Material::setSpecularExponent(qreal e)
 {
     specularExponent = e;
     updateIcon();
+
+    buffer[index].specularExponent = e;
+    modified = true;
 }
 
 int Material::getFinish() const
@@ -129,13 +151,16 @@ void Material::read(const QJsonObject& json)
 
     const QJsonObject color_ = json["Color"].toObject();
     color = color_["Color"].toString();
-    transparency = color_["Transparency"].toDouble();
+    color.setAlphaF(1. - color_["Transparency"].toDouble());
 
     const QJsonObject specular = json["Specular"].toObject();
     specularExponent = specular["Shininess exponent"].toDouble();
     specularColor = specular["Specular color"].toString();
 
     updateIcon();
+
+    buffer[index] = {color.rgba(), specularColor.rgba(), specularExponent};
+    modified = true;
 }
 
 void Material::write(QJsonObject& json) const
@@ -145,7 +170,7 @@ void Material::write(QJsonObject& json) const
 
     QJsonObject color_;
     color_["Color"] = color.name();
-    color_["Transparency"] = transparency;
+    color_["Transparency"] = 1. - color.alphaF();
     json["Color"] = color_;
 
     QJsonObject specular;
@@ -249,7 +274,7 @@ QTextStream &Material::operator<<(QTextStream &stream) const
                << "texture {\n"
                << " pigment {\n"
                << "  color rgb<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ">\n"
-               << "  transmit " << 1. - (1. - transparency) * (1. - transparency) << "\n"
+               << "  transmit " << 1. - color.alphaF() * color.alphaF() << "\n"
                << " }\n"
                << " finish {\n"
                << "  ambient " << renderSettings->ambient() << "\n"
@@ -270,14 +295,14 @@ QTextStream &Material::operator<<(QTextStream &stream) const
     case 1://metal
         stream << "#declare Metal" << this << " =\n"
                << "finish { metallic ambient 0.2 diffuse 0.7 brilliance 6 reflection 0.25 phong 0.75 phong_size 80 }\n"
-               << "#declare " << this << "tex = texture { pigment{ rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << ">} finish{ Metal" << this << " }}\n"
+               << "#declare " << this << "tex = texture { pigment{ rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - color.alphaF() * color.alphaF() << ">} finish{ Metal" << this << " }}\n"
                << "#declare " << this << " = material {texture {" << this << "tex}}\n";
         break;
     case 2://glass
         stream << "#declare Glass_Interior" << this << " = interior {ior 1.5}\n"
                << "#declare " << this << "tex = \n"
                << "texture {\n"
-               << "pigment { rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - (1. - transparency) * (1. - transparency) << "> }\n"
+               << "pigment { rgbf <" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << 1. - color.alphaF() * color.alphaF() << "> }\n"
                << "finish  { ambient 0.1 diffuse 0.1 reflection 0.1 specular 0.8 roughness 0.0003 phong 1 phong_size 400}\n"
                << "}\n"
                << "#declare " << this << " = material {texture {" << this << "tex} interior {Glass_Interior" << this << "}}\n";
@@ -295,4 +320,15 @@ QTextStream &operator<<(QTextStream &stream, const Material &mat)
 QTextStream &operator<<(QTextStream &stream, const Material *mat)
 {
     return stream << "m" << QString::number(quintptr(mat), 16);
+}
+
+
+int Material::getIndex() const
+{
+    return index;
+}
+
+const QVector<material_data_t>& Material::getBuffer()
+{
+    return buffer;
 }

@@ -54,7 +54,7 @@ private:
     QOpenGLShaderProgram labelsProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
-    GLuint buffers[2];
+    GLuint buffers[3];
     GLuint picking;
     GLuint texture[2];
     QImage image;

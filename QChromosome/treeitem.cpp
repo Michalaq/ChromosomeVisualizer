@@ -417,14 +417,9 @@ float AtomItem::getRadius() const
 
 void AtomItem::setMaterial(const Material *material)
 {
-    auto color = material->getColor();
-    color.setAlphaF(1. - material->getTransparency());
-
     auto& buff = buffer[id];
-    buff.color = color.rgba();
-    buff.specularColor = material->getSpecularColor().rgba();
-    buff.specularExponent = material->getSpecularExponent();
     buff.material = material;
+    buff.mat = material->getIndex();
 
     modified = true;
 }

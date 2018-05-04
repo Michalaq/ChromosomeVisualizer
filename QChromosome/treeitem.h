@@ -177,11 +177,9 @@ struct VizBallInstance
 {
     QVector3D position;
     VizFlags flags = VisibleInEditor | VisibleInRenderer;
-    QRgb color;
-    QRgb specularColor;
-    float specularExponent;
     float size = 1.0;
     QRect label;
+    int mat;
     const Material* material;
 };
 

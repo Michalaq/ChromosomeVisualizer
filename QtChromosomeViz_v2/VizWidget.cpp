@@ -65,41 +65,20 @@ void VizWidget::initializeGL()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(
         2,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, color)
-    );
-
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(
-        3,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularColor)
-    );
-
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(
-        4,
-        1,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(VizBallInstance),
-        (void*)offsetof(VizBallInstance, specularExponent)
-    );
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(
-        5,
         1,
         GL_FLOAT,
         GL_FALSE,
         sizeof(VizBallInstance),
         (void*)offsetof(VizBallInstance, size)
+    );
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribIPointer(
+        3,
+        1,
+        GL_INT,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, mat)
     );
 
     atomPositions_.release();
@@ -230,10 +209,9 @@ void VizWidget::initializeGL()
 
     AtomItem::getAtlas().initializeGL();
 
-    glGenBuffers(2, buffers);
+    glGenBuffers(3, buffers);
 
     {
-        glGenBuffers(1, buffers + 0);
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &Camera::getBuffer(), GL_DYNAMIC_DRAW);
 
@@ -271,6 +249,19 @@ void VizWidget::initializeGL()
         glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
 
         block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "viewport_data");
+        glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
+    }
+
+    {
+        const GLuint binding_point_index = 2;
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[2]);
+
+        unsigned int block_index;
+
+        block_index = glGetUniformBlockIndex(sphereProgram_.programId(), "material_data");
+        glUniformBlockBinding(sphereProgram_.programId(), block_index, binding_point_index);
+
+        block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "material_data");
         glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
     }
 
@@ -418,6 +409,25 @@ void VizWidget::allocate()
         glUnmapBuffer(GL_UNIFORM_BUFFER);
 
         Viewport::modified = false;
+    }
+
+    if (Material::resized)
+    {
+        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(material_data_t) * Material::getBuffer().size(), Material::getBuffer().data(), GL_DYNAMIC_DRAW);
+
+        Material::resized = false;
+        Material::modified = false;
+    }
+
+    if (Material::modified)
+    {
+        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
+        GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
+        memcpy(p, Material::getBuffer().data(), sizeof(material_data_t) * Material::getBuffer().size());
+        glUnmapBuffer(GL_UNIFORM_BUFFER);
+
+        Material::modified = false;
     }
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);

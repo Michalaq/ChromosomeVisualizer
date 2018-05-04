@@ -16,21 +16,31 @@ layout (std140) uniform viewport_data
     uint ucFogColor;
 };
 
+struct Material
+{
+    uint cColor;
+    uint cSpecularColor;
+    float fSpecularExponent;
+};
+
+layout (std140) uniform material_data
+{
+    Material materials[50];
+};
+
 in vec4 vPosition;
 in vec3 vViewPosition;
 
 flat in vec3 vInstancePosition;
 flat in int iFlags;
-flat in vec4 cColor;
-flat in vec3 cSpecularColor;
-flat in float fSpecularExponent;
 flat in float fInstanceSize;
+flat in int iMaterialID;
 
 out vec4 fragColor;
 
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
-    vec4 baseColor = cColor;
+    vec4 baseColor = unpackUnorm4x8(materials[iMaterialID].cColor).bgra;
     
     vec2 vScreenPos = (0.5f * vPosition.xy / vPosition.w + 0.5f) * uvScreenSize;
     ivec2 iScreenPos = ivec2(vScreenPos) & 1;
@@ -81,8 +91,8 @@ void main() {
 
     // Specular
     vec3 reflected = reflect(-cvLightDirection, vNormal);
-    float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
-    vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
+    float specularFactor = pow(max(0.0, reflected.z), materials[iMaterialID].fSpecularExponent);
+    vec4 cSpecular = vec4(specularFactor * unpackUnorm4x8(materials[iMaterialID].cSpecularColor).bgr, 0.0);
 
     // Fog
     float linearDistance = length(vViewPosition.rgb);
