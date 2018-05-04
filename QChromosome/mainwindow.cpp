@@ -349,7 +349,7 @@ void MainWindow::newProject()
         ui->scene->update();
     });
 
-    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
 
     ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 

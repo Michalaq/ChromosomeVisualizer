@@ -525,12 +525,3 @@ void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 {
     header->writePOVFrames(stream, fbeg, fend);
 }
-
-void TreeModel::updateAttributes(const Material *m)
-{
-    for (auto i : m->getAssigned())
-        if (i.sibling(i.row(), 5).data().toList().last().value<Material*>() == m)
-            propagateMaterial(i.sibling(i.row(), 0), m);
-
-    emit propertyChanged();
-}
