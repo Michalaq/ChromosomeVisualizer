@@ -25,7 +25,7 @@ frameNumber_t PDBSimulationLayer::readFrameHeader()
     frameNumber_t step = -1;
 
     getline(file_, line);
-    sscanf(line.c_str(), "HEADER %*d %*d step %lld", &step);
+    sscanf(line.c_str(), "HEADER %*d %*d step %*lld");
 
     if (file_.fail()) {
         file_.clear(); // Clear the eofbit so seekg may work
