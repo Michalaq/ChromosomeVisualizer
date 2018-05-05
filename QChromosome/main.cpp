@@ -5,6 +5,7 @@
 #include <QSplashScreen>
 
 #include "commondata.h"
+#include "moviemaker.h"
 
 int main(int argc, char *argv[])
 {
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
     delete CommonData::getInstance();
     delete MaterialBrowser::getInstance();
     delete RenderSettings::getInstance();
+    delete MovieMaker::getInstance();
 
     return ans;
 }

@@ -5,17 +5,26 @@
 #include "viewport.h"
 #include "camera.h"
 
-namespace MovieMaker
+class MovieMaker : public QObject
 {
-void captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr);
-void captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix);
+    Q_OBJECT
+public:
+    static const MovieMaker* getInstance();
 
-void addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material* color);
-void addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material* colorA, const Material* colorB);
+    void captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr) const;
+    void captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix) const;
 
-void addSphere1(QTextStream& outFile, int id, float radius, const Material* color);
-void addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material* colorA, const Material* colorB);
-}
+    void addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material* color) const;
+    void addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material* colorA, const Material* colorB) const;
+
+    void addSphere1(QTextStream& outFile, int id, float radius, const Material* color) const;
+    void addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material* colorA, const Material* colorB) const;
+
+private:
+    explicit MovieMaker(QObject* parent = 0);
+
+    static MovieMaker* instance;
+};
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec);
 

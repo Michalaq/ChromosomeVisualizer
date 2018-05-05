@@ -490,7 +490,7 @@ void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, 
             used.insert(atom.material);
         }
 
-        MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+        MovieMaker::getInstance()->addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
     }
 
     TreeItem::writePOVFrame(stream, frame, used);
@@ -508,7 +508,7 @@ void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
             used.insert(atom.material);
         }
 
-        MovieMaker::addSphere1(stream, id, atom.size, atom.material);
+        MovieMaker::getInstance()->addSphere1(stream, id, atom.size, atom.material);
     }
 
     TreeItem::writePOVFrames(stream, fbeg, fend, used);
@@ -549,13 +549,15 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame,
 
     auto buffer = AtomItem::getBuffer();
 
+    auto mm = MovieMaker::getInstance();
+
     for (int i = range.first; i < range.second; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+            mm->addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
@@ -565,13 +567,15 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 
     auto buffer = AtomItem::getBuffer();
 
+    auto mm = MovieMaker::getInstance();
+
     for (int i = range.first; i < range.second; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
+            mm->addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 

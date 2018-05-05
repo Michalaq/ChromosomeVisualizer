@@ -1,5 +1,7 @@
 #include "moviemaker.h"
 
+MovieMaker* MovieMaker::instance = nullptr;
+
 #include "rendersettings.h"
 
 #include <QSettings>
@@ -13,6 +15,16 @@ QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 QTextStream& operator<<(QTextStream& out, const QColor & col)
 {
     return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
+}
+
+MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
+{
+
+}
+
+const MovieMaker* MovieMaker::getInstance()
+{
+    return instance ? instance : instance = new MovieMaker;
 }
 
 #include <QFile>
@@ -169,7 +181,7 @@ void setFog(QTextStream& outFile, const QColor & color, const float distance)
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr) const
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -299,7 +311,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix) const
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -375,7 +387,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
 #endif
 }
 
-void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material *color)
+void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material *color) const
 {
     outFile << "sphere {"
             << position << ", "
@@ -384,7 +396,7 @@ void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, flo
             << "}\n";
 }
 
-void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB) const
 {
     QVector3D direction = positionB - positionA;
 
@@ -397,7 +409,7 @@ void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, 
             << "}}\n";
 }
 
-void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, const Material *color)
+void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, const Material *color) const
 {
     outFile << "sphere {"
             << "Atom" << id << "Pos(clock), "
@@ -406,7 +418,7 @@ void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, const Ma
             << "}\n";
 }
 
-void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB)
+void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB) const
 {
     outFile << "cone{"
             << " Atom" << idA << "Pos(clock), " << radiusA
