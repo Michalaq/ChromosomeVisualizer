@@ -535,12 +535,40 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     if (*first == -1)
         first++;
 
+    QMap<QPersistentModelIndex, QVector<int>> tmp;
+
     auto& buffer = model_->getIndices();
+
+    for (int* i = first; i != last; i++)
+    {
+        auto& item = buffer[*i];
+        tmp[item.parent()].append(item.row());
+    }
 
     QItemSelection selected;
 
-    for (int* i = first; i != last; i++)
-        selected.select(buffer[*i], buffer[*i]);
+    for (auto i = tmp.begin(); i != tmp.end(); i++)
+    {
+        auto& parent = i.key();
+        auto& list = i.value();
+
+        qSort(list.begin(), list.end());
+
+        int first = 0;
+        int last = -1;
+
+        for (auto j : list)
+        {
+            if (j != last + 1)
+            {
+                selected.select(parent.child(first, 0), parent.child(last, 0));
+                first = j;
+            }
+
+            last = j;
+        }
+        selected.select(parent.child(first, 0), parent.child(last, 0));
+    }
 
     QItemSelectionModel::SelectionFlags flags;
 
