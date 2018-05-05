@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     preferences(new Preferences),
     materialBrowser(MaterialBrowser::getInstance()),
     pw(nullptr),
-    msg(new QLabel("Pick mode: Click on an object, material, tag ...")),
     recent(nullptr)
 {
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
@@ -210,14 +209,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->horizontalSlider->setSplineInterpolator(camera);
     });
 
-    msg->setStyleSheet("padding-left: 1px; padding-top: -1px; color: white;");
-    msg->hide();
-
-    statusBar()->addPermanentWidget(msg, 1);
-
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
         pw = qobject_cast<PickWidget*>(object);
-        msg->show();
+        ui->statusBar->showPermanentMessage("Pick mode: Click on an object, material, tag ...");
         QApplication::setOverrideCursor(Qt::WhatsThisCursor);
     });
 
@@ -244,7 +238,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     if (pw && event->type() == QEvent::MouseButtonPress)
     {
         QApplication::restoreOverrideCursor();
-        msg->hide();
+        ui->statusBar->clearPermanentMessage();
 
         auto p = ui->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
 

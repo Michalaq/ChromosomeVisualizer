@@ -103,7 +103,6 @@ private:
     void addCamera(Camera *camera);
 
     PickWidget* pw;
-    QLabel* msg;
 
     MetaAttributes* recent;
 };

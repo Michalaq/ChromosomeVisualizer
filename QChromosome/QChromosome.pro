@@ -69,7 +69,8 @@ SOURCES += main.cpp\
     pickwidget.cpp \
     cameraattributes.cpp \
     importdialog.cpp \
-    labelatlas.cpp
+    labelatlas.cpp \
+    statusbar.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -144,7 +145,8 @@ HEADERS  += mainwindow.h\
     pickwidget.h \
     cameraattributes.h \
     importdialog.h \
-    labelatlas.h
+    labelatlas.h \
+    statusbar.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
