@@ -8,6 +8,7 @@
 #include "namedelegate.h"
 #include "tagsdelegate.h"
 #include <QtConcurrent/QtConcurrentRun>
+#include "moviemaker.h"
 
 static const char * ext = ".qcs";
 
@@ -220,6 +221,8 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
+
+    connect(MovieMaker::getInstance(), &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
 
     newProject();
 
@@ -728,8 +731,6 @@ void MainWindow::setBaseAction(bool enabled)
         Camera::setCurrentAction(mappedSlot[sender()]);
     }
 }
-
-#include "moviemaker.h"
 
 void MainWindow::capture() const
 {

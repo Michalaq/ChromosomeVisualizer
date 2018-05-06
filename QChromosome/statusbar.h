@@ -2,6 +2,9 @@
 #define STATUSBAR_H
 
 #include <QStatusBar>
+#include <QStyleOptionProgressBar>
+#include <QTimer>
+#include <QTime>
 
 class StatusBar : public QStatusBar
 {
@@ -15,11 +18,20 @@ protected:
 private:
     QString permanent;
 
+    QStyleOptionProgressBar sopb;
+
+    QTimer tm;
+
+    int elapsed;
+    QTime t;
+
 signals:
 
 public slots:
     void clearPermanentMessage();
     void showPermanentMessage(const QString &text);
+
+    void setProgress(int progress);
 };
 
 #endif // STATUSBAR_H

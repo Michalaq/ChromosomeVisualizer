@@ -22,7 +22,7 @@ MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
 
 }
 
-const MovieMaker* MovieMaker::getInstance()
+MovieMaker *MovieMaker::getInstance()
 {
     return instance ? instance : instance = new MovieMaker;
 }
@@ -181,7 +181,7 @@ void setFog(QTextStream& outFile, const QColor & color, const float distance)
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr) const
+void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -239,7 +239,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
                 int c = 100 * (rf * b + a) / (tf * b);
 
                 if (last < c)
-                    qDebug() << (last = c) << "%";
+                    emit progressChanged(last = c);
 
                 if (match.captured(3) == "100")
                     rf++;
@@ -311,7 +311,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix) const
+void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -370,7 +370,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
                 int c = 100 * a / b;
 
                 if (last < c)
-                    qDebug() << (last = c) << "%";
+                    emit progressChanged(last = c);
 
                 match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }

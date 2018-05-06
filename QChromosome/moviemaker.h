@@ -9,10 +9,10 @@ class MovieMaker : public QObject
 {
     Q_OBJECT
 public:
-    static const MovieMaker* getInstance();
+    static MovieMaker* getInstance();
 
-    void captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr) const;
-    void captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix) const;
+    void captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr);
+    void captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix);
 
     void addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material* color) const;
     void addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material* colorA, const Material* colorB) const;
@@ -24,6 +24,9 @@ private:
     explicit MovieMaker(QObject* parent = 0);
 
     static MovieMaker* instance;
+
+signals:
+    void progressChanged(int);
 };
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec);
