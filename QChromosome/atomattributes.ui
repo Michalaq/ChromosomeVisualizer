@@ -353,8 +353,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
-            <height>192</height>
+            <width>362</width>
+            <height>229</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -373,18 +373,84 @@
              <item row="0" column="0">
               <widget class="Label" name="label_15">
                <property name="text">
-                <string>Label name</string>
+                <string>Text</string>
                </property>
                <property name="class" stdset="0">
                 <string>item</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="LineEdit" name="lineEdit_2">
-               <property name="clearButtonEnabled">
-                <bool>true</bool>
+             <item row="1" column="0">
+              <widget class="Label" name="label_13">
+               <property name="text">
+                <string>Font</string>
                </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QFontComboBox" name="fontComboBox"/>
+             </item>
+             <item row="3" column="0">
+              <widget class="Label" name="label_16">
+               <property name="text">
+                <string>Align</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="ComboBox" name="comboBox_3"/>
+             </item>
+             <item row="4" column="0">
+              <widget class="Label" name="label_17">
+               <property name="text">
+                <string>Height</string>
+               </property>
+               <property name="class" stdset="0">
+                <string>item</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="SpinBox" name="spinBox">
+               <property name="suffix">
+                <string> pt</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="TextEdit" name="textEdit"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="ComboBox" name="comboBox_4">
+               <property name="currentIndex">
+                <number>3</number>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Bold</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Bold Italic</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Italic</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Regular</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>
@@ -541,6 +607,16 @@
    <class>DoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>doublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>textedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

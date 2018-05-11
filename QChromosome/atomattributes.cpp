@@ -32,8 +32,8 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
     });
 
     // connect label
-    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this] {
-        QString val = ui->lineEdit_2->text();
+    connect(ui->textEdit, &QTextEdit::textChanged, [this] {
+        QString val = ui->textEdit->toPlainText();
         auto r = AtomItem::getAtlas().addLabel(val);
         for (auto a : atoms)
             a->setLabel(val, r);
@@ -106,9 +106,9 @@ void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLis
         }
 
     if (multiple)
-        ui->lineEdit_2->setMultipleValues();
+        ui->textEdit->setMultipleValues();
     else
-        ui->lineEdit_2->setText(l, false);
+        ui->textEdit->setText(l, false);
 }
 
 void AtomAttributes::unsetSelection()

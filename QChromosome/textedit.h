@@ -10,6 +10,8 @@ public:
     explicit TextEdit(QWidget *parent = 0);
     ~TextEdit();
 
+    void setMultipleValues(bool enabled = true);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
@@ -17,6 +19,10 @@ protected:
 signals:
 
 public slots:
+    void setText(const QString &text, bool spontaneous = true);
+
+private:
+    bool multiple;
 };
 
 #endif // TEXTEDIT_H
