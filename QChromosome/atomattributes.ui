@@ -391,7 +391,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QFontComboBox" name="fontComboBox"/>
+              <widget class="FontComboBox" name="fontComboBox"/>
              </item>
              <item row="3" column="0">
               <widget class="Label" name="label_16">
@@ -617,6 +617,11 @@
    <class>TextEdit</class>
    <extends>QTextEdit</extends>
    <header>textedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FontComboBox</class>
+   <extends>QFontComboBox</extends>
+   <header>fontcombobox.h</header>
   </customwidget>
  </customwidgets>
  <resources>

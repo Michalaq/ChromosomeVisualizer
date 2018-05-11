@@ -70,7 +70,8 @@ SOURCES += main.cpp\
     cameraattributes.cpp \
     importdialog.cpp \
     labelatlas.cpp \
-    statusbar.cpp
+    statusbar.cpp \
+    fontcombobox.cpp
 
 HEADERS  += mainwindow.h\
 ../QtChromosomeViz_v2/VizWidget.hpp\
@@ -146,7 +147,8 @@ HEADERS  += mainwindow.h\
     cameraattributes.h \
     importdialog.h \
     labelatlas.h \
-    statusbar.h
+    statusbar.h \
+    fontcombobox.h
 
 FORMS    += mainwindow.ui \
     dockwidget.ui \
