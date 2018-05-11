@@ -1,6 +1,17 @@
 #ifndef ATOMATTRIBUTES_H
 #define ATOMATTRIBUTES_H
 
+#include <QStyledItemDelegate>
+
+class QFontStyledDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    explicit QFontStyledDelegate(QObject *parent);
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
 #include "attributes.h"
 
 namespace Ui {

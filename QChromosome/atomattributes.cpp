@@ -2,12 +2,32 @@
 #include "ui_atomattributes.h"
 #include "treemodel.h"
 
+QFontStyledDelegate::QFontStyledDelegate(QObject *parent) : QStyledItemDelegate(parent)
+{
+
+}
+
+void QFontStyledDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem opt = option;
+    initStyleOption(&opt, index);
+
+    QString text = index.data(Qt::DisplayRole).toString();
+
+    opt.font.setBold(text.contains("Bold"));
+    opt.font.setItalic(text.contains("Italic"));
+
+    QStyledItemDelegate::paint(painter, opt, index);
+}
+
 AtomAttributes::AtomAttributes(QWidget *parent) :
     MetaAttributes(parent),
     ui(new Ui::AtomAttributes),
     model(nullptr)
 {
     ui->setupUi(this);
+
+    ui->comboBox_4->setItemDelegate(new QFontStyledDelegate(this));
 
     // connect name
     connect(ui->lineEdit, &QLineEdit::editingFinished, [this] {
