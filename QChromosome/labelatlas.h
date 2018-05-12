@@ -14,7 +14,7 @@ public:
     void initializeGL();
     GLuint texture() const;
 
-    QRect addLabel(const QString& text);
+    QRect addLabel(const QString& text, const QFont &font);
     QRect size() const;
 
 private:
@@ -23,8 +23,6 @@ private:
 
     int pos;
     int width;
-
-    QFont font;
 };
 
 #endif // LABELATLAS_H

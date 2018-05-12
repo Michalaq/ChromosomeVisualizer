@@ -53,8 +53,14 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
 
     // connect label
     connect(ui->textEdit, &QTextEdit::textChanged, [this] {
+        QFont font = ui->fontComboBox->currentFont();
+        font.setBold(ui->comboBox_4->currentText().contains("Bold"));
+        font.setItalic(ui->comboBox_4->currentText().contains("Italic"));
+        font.setPointSize(ui->spinBox->value());
+
         QString val = ui->textEdit->toPlainText();
-        auto r = AtomItem::getAtlas().addLabel(val);
+
+        auto r = AtomItem::getAtlas().addLabel(val, font);
         for (auto a : atoms)
             a->setLabel(val, r);
         emit attributeChanged();

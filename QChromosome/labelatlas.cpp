@@ -5,11 +5,8 @@ const int height = 24;
 LabelAtlas::LabelAtlas() :
     fbo(nullptr),
     pos(0),
-    width(1),
-    font(":/fonts/Roboto-Regular")
+    width(1)
 {
-    font.setPixelSize(height);
-
     //format.setSamples(16);
     format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
 }
@@ -37,7 +34,7 @@ QRect LabelAtlas::size() const
 #include <QOpenGLPaintDevice>
 #include <QPainter>
 
-QRect LabelAtlas::addLabel(const QString &text)
+QRect LabelAtlas::addLabel(const QString &text, const QFont& font)
 {
     if (text.isEmpty())
         return QRect();
