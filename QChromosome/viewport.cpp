@@ -12,20 +12,6 @@ Viewport::Viewport(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // fog color
-    ui->comboBox_3->setValue(QColor(Qt::black));
-    // fog strength
-    ui->doubleSpinBox_3->setValue(50);
-    // fog distance
-    ui->doubleSpinBox_4->setValue(2000);
-    // affect background
-    ui->checkBox_4->setChecked(false);
-
-    buffer.ucBackgroundColor = ui->widget_2->value().rgb();
-    buffer.ufFogDensity = 10. * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
-    buffer.ufFogContribution = 80. / 100;
-    modified = true;
-
     // safe frames
     connect(ui->checkBox, &QCheckBox::toggled, [this] { emit viewportChanged(); });
 
@@ -51,16 +37,51 @@ Viewport::Viewport(QWidget *parent) :
         emit viewportChanged();
     });
 
-    // fog density
-    connect(ui->doubleSpinBox_3, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        buffer.ufFogDensity = val * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
+    // environment color
+    connect(ui->comboBox_2, &Picker::valueChanged, [this](QColor val) {
+        buffer.ucEnvironmentColor = val.rgb();
         modified = true;
         emit viewportChanged();
     });
 
-    // fog contribution
-    connect(ui->doubleSpinBox_4, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        buffer.ufFogContribution = val / 100;
+    // environment strength
+    connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        buffer.ufEnvironmentStrength = val / 100;
+        modified = true;
+        emit viewportChanged();
+    });
+
+    // enable fog
+    connect(ui->checkBox_3, &QCheckBox::toggled, [this](bool checked) {
+        buffer.ubEnableFog = checked;
+        modified = true;
+        emit viewportChanged();
+    });
+
+    // fog color
+    connect(ui->comboBox_3, &Picker::valueChanged, [this](QColor val) {
+        buffer.ucFogColor = val.rgb();
+        modified = true;
+        emit viewportChanged();
+    });
+
+    // fog strength
+    connect(ui->doubleSpinBox_3, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        buffer.ufFogStrength = val / 100;
+        modified = true;
+        emit viewportChanged();
+    });
+
+    // fog distance
+    connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        buffer.ufFogDistance = val;
+        modified = true;
+        emit viewportChanged();
+    });
+
+    // affect background
+    connect(ui->checkBox_4, &QCheckBox::toggled, [this](bool checked) {
+        buffer.ubAffectBackground = checked;
         modified = true;
         emit viewportChanged();
     });
@@ -71,6 +92,14 @@ Viewport::Viewport(QWidget *parent) :
     // labels text
     connect(ui->widget_4, &Picker::valueChanged, [this] { emit viewportChanged(); });
 
+    // fog color
+    ui->comboBox_3->setValue(QColor(Qt::black));
+    // fog strength
+    ui->doubleSpinBox_3->setValue(50);
+    // fog distance
+    ui->doubleSpinBox_4->setValue(200);
+    // affect background
+    ui->checkBox_4->setChecked(false);
     // border color
     ui->widget->setValue(QColor(Qt::black));
     // background color
