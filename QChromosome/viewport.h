@@ -35,14 +35,9 @@ public:
     explicit Viewport(QWidget *parent = 0);
     ~Viewport();
 
-    QColor getBackgroundColor() const;
-    QColor getLabelTextColor() const;
-    QColor getLabelBackgroundColor() const;
     double getSFOpacity() const;
     QColor getSFColor() const;
     bool getSFVisible() const;
-    double getFogDensity() const;
-    double getFogContribution() const;
     AxisPosition getAxisPosition() const;
     double getAxisScale() const;
     bool getAxisTextVisible() const;

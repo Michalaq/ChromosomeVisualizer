@@ -4,8 +4,6 @@
 viewport_data_t Viewport::buffer;
 bool Viewport::modified = false;
 
-static const float DISPLAYED_TO_INTERNAL_FOG_DENSITY = 0.001f;
-
 Viewport::Viewport(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Viewport)
@@ -86,20 +84,6 @@ Viewport::Viewport(QWidget *parent) :
         emit viewportChanged();
     });
 
-    // labels background
-    connect(ui->widget_3, &Picker::valueChanged, [this] { emit viewportChanged(); });
-
-    // labels text
-    connect(ui->widget_4, &Picker::valueChanged, [this] { emit viewportChanged(); });
-
-    // fog color
-    ui->comboBox_3->setValue(QColor(Qt::black));
-    // fog strength
-    ui->doubleSpinBox_3->setValue(50);
-    // fog distance
-    ui->doubleSpinBox_4->setValue(200);
-    // affect background
-    ui->checkBox_4->setChecked(false);
     // border color
     ui->widget->setValue(QColor(Qt::black));
     // background color
@@ -109,27 +93,20 @@ Viewport::Viewport(QWidget *parent) :
     // environment strength
     ui->doubleSpinBox_5->setValue(50);
     // enable fog
-    ui->checkBox_3->setChecked(false);
+    ui->checkBox_3->setChecked(true);
+    // fog color
+    ui->comboBox_3->setValue(QColor(Qt::black));
+    // fog strength
+    ui->doubleSpinBox_3->setValue(50);
+    // fog distance
+    ui->doubleSpinBox_4->setValue(200);
+    // affect background
+    ui->checkBox_4->setChecked(false);
 }
 
 Viewport::~Viewport()
 {
     delete ui;
-}
-
-QColor Viewport::getBackgroundColor() const
-{
-    return ui->widget_2->value();
-}
-
-QColor Viewport::getLabelTextColor() const
-{
-    return ui->widget_4->value();
-}
-
-QColor Viewport::getLabelBackgroundColor() const
-{
-    return ui->widget_3->value();
 }
 
 double Viewport::getSFOpacity() const
@@ -145,16 +122,6 @@ QColor Viewport::getSFColor() const
 bool Viewport::getSFVisible() const
 {
     return ui->checkBox->isChecked();
-}
-
-double Viewport::getFogDensity() const
-{
-    return 10. * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
-}
-
-double Viewport::getFogContribution() const
-{
-    return 80. / 100;
 }
 
 AxisPosition Viewport::getAxisPosition() const

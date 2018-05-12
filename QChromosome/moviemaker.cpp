@@ -181,7 +181,7 @@ void setFog(QTextStream& outFile, const QColor & color, const float distance)
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -196,8 +196,10 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
         set360Camera(outFile, camera, camera->count() > 1);
     else
         setCamera(outFile, camera, camera->count() > 1);
-    setBackgroundColor(outFile, viewport->getBackgroundColor());
-    setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
+
+    auto& buffer = Viewport::getBuffer();
+    setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
+    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance / 3); //TODO: dobre rownanie dla ostatniego argumentu
 
     Material::writePOVMaterials(outFile);
 
@@ -313,7 +315,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, Viewport* viewport, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -328,8 +330,10 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
         set360Camera(outFile, camera, false);
     else
         setCamera(outFile, camera, false);
-    setBackgroundColor(outFile, viewport->getBackgroundColor());
-    setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
+
+    auto& buffer = Viewport::getBuffer();
+    setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
+    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance / 3); //TODO: dobre rownanie dla ostatniego argumentu
 
     Material::writePOVMaterials(outFile);
 
