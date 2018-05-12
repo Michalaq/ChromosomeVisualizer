@@ -9,12 +9,14 @@ Viewport::Viewport(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->widget->setValue(QColor(Qt::black));
-    ui->widget_2->setValue(QColor(Qt::black));
-    ui->widget_3->setValue(QColor(Qt::black));
-    ui->widget_4->setValue(QColor(Qt::white));
-    ui->doubleSpinBox_3->setValue(10);
-    ui->doubleSpinBox_4->setValue(80);
+    // fog color
+    ui->comboBox_3->setValue(QColor(Qt::black));
+    // fog strength
+    ui->doubleSpinBox_3->setValue(50);
+    // fog distance
+    ui->doubleSpinBox_4->setValue(2000);
+    // affect background
+    ui->checkBox_4->setChecked(false);
 
     // safe frames
     connect(ui->checkBox, &QCheckBox::toggled, [this] { emit viewportChanged(); });
@@ -48,6 +50,17 @@ Viewport::Viewport(QWidget *parent) :
 
     // labels text
     connect(ui->widget_4, &Picker::valueChanged, [this] { emit viewportChanged(); });
+
+    // border color
+    ui->widget->setValue(QColor(Qt::black));
+    // background color
+    ui->widget_2->setValue(QColor(Qt::black));
+    // environment color
+    ui->comboBox_2->setValue(QColor(Qt::black));
+    // environment strength
+    ui->doubleSpinBox_5->setValue(50);
+    // enable fog
+    ui->checkBox_3->setChecked(false);
 }
 
 Viewport::~Viewport()
@@ -87,12 +100,12 @@ bool Viewport::getSFVisible() const
 
 double Viewport::getFogDensity() const
 {
-    return ui->doubleSpinBox_3->value() * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
+    return 10. * DISPLAYED_TO_INTERNAL_FOG_DENSITY;
 }
 
 double Viewport::getFogContribution() const
 {
-    return ui->doubleSpinBox_4->value() / 100;
+    return 80. / 100;
 }
 
 AxisPosition Viewport::getAxisPosition() const
