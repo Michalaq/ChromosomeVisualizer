@@ -137,13 +137,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    ui->scene->setViewport(ui->page_4);
     Camera::setViewport(ui->page_4);
 
-    connect(ui->page_4, &Viewport::viewportChanged, [this] {
-        ui->stackedWidget_2->currentWidget()->update();
-        ui->scene->update();
-    });
+    connect(ui->page_4, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
@@ -350,7 +346,7 @@ void MainWindow::newProject()
         ui->scene->update();
     });
 
-    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), simulation->getModel(), SLOT(updateAttributes(const Material*)));
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
 
     ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 
@@ -812,8 +808,8 @@ void MainWindow::addCamera(Camera* camera)
 {
     camera->blockSignals(true);
 
-    connect(camera, &Camera::modelViewChanged, ui->scene, &VizWidget::setModelView);
-    connect(camera, &Camera::projectionChanged, ui->scene, &VizWidget::setProjection);
+    connect(camera, SIGNAL(modelViewChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
+    connect(camera, SIGNAL(projectionChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         ui->page_6->setSplineInterpolator(camera);

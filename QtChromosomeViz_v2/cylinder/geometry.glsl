@@ -1,11 +1,16 @@
-#version 330 core
+#version 420 core
 
 layout (lines) in;
 layout (triangle_strip, max_vertices = 20) out;
 
-uniform mat4 pro;
-uniform mat4 mv;
-uniform mat3 mvNormal;
+layout (std140) uniform shader_data
+{
+    mat4 pro;
+    int pro_flagBits; 
+    mat4 mv;
+    int mv_flagBits;
+    ivec2 uvScreenSize;
+};
 
 flat in vec3 gvInstancePosition[2];
 flat in int giFlags[2];
@@ -45,6 +50,8 @@ void main() {
         
         vec3 vVertexPosition;
         vec3 vVertexNormal;
+        
+        mat3 mvNormal = transpose(inverse(mat3(mv)));
         
         for (int i = 0; i < 10; i++)
         {

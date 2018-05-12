@@ -89,8 +89,8 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
     QList<TreeItem*> m_childItems;
@@ -177,12 +177,9 @@ struct VizBallInstance
 {
     QVector3D position;
     VizFlags flags = VisibleInEditor | VisibleInRenderer;
-    QRgb color;
-    QRgb specularColor;
-    float specularExponent;
     float size = 1.0;
     QRect label;
-    const Material* material;
+    int material;
 };
 
 #include "material.h"
@@ -219,8 +216,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
     int id;
@@ -238,8 +235,8 @@ public:
     static const QVector<std::pair<int, int>> &getBuffer();
     static void clearBuffer();
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame, QSet<const Material *> &used) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend, QSet<const Material *> &used) const;
+    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
     static QVector<std::pair<int, int>> buffer;

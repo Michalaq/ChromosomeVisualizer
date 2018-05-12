@@ -8,6 +8,13 @@
 #include <QProcess>
 #include <QTextStream>
 
+struct material_data_t
+{
+    QRgb color              __attribute__((aligned(4)));
+    QRgb specularColor      __attribute__((aligned(4)));
+    float specularExponent  __attribute__((aligned(4)));
+}                           __attribute__((aligned(16)));
+
 class Material : public QWidget
 {
     Q_OBJECT
@@ -47,6 +54,15 @@ public:
 
     QTextStream &operator<<(QTextStream &stream) const;
 
+    int getIndex() const;
+
+    static const Material* fetch(int index);
+    static void writePOVMaterials(QTextStream &stream);
+
+    static const QVector<material_data_t>& getBuffer();
+    static bool modified;
+    static bool resized;
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -58,7 +74,6 @@ private:
     QUuid id;
     QString name;
     QColor color;
-    float transparency;
     QColor specularColor;
     float specularExponent;
     int finish;
@@ -74,10 +89,9 @@ private:
     QMap<QWidget*, QRect> updates;
     QProcess p;
 
-
-signals:
-
-public slots:
+    int index;
+    static QVector<material_data_t> buffer;
+    static QVector<const Material*> library;
 };
 
 QTextStream &operator<<(QTextStream &stream, const Material &mat);

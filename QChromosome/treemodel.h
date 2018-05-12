@@ -101,9 +101,6 @@ public:
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame);
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
 
-public slots:
-    void updateAttributes(const Material* m);
-
 private:
     TreeItem *header;
     QVector<QPersistentModelIndex> indices;

@@ -1,20 +1,16 @@
 #ifndef VIZWINDOW_HPP
 #define VIZWINDOW_HPP
 
-#include <memory>
-
 #include <QtGui>
 #include <QtOpenGL>
-#include <QOpenGLFunctions_3_3_Core>
+#include <QOpenGLFunctions_4_2_Core>
 
 #include "selection.h"
 #include "pickwidget.h"
 #include "treemodel.h"
 
-class Viewport;
-
 class VizWidget :   public Selection,
-                    protected QOpenGLFunctions_3_3_Core,
+                    protected QOpenGLFunctions_4_2_Core,
                     public Pickable
 {
     Q_OBJECT
@@ -27,16 +23,10 @@ public:
     virtual void initializeGL() override;
     virtual void paintGL() override;
 
-    void setViewport(Viewport* vp);
-
     QPersistentModelIndex pick(const QPoint& pos);
 
     void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
     void reloadModel();
-
-public slots:
-    void setModelView(QMatrix4x4 mat);
-    void setProjection(QMatrix4x4 mat);
 
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
@@ -53,28 +43,23 @@ private:
 
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
+    QOpenGLVertexArrayObject vaoLabels_;
 
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
 
-    QOpenGLVertexArrayObject vaoLabels_;
-
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
-    QOpenGLShaderProgram pickingProgram_;
     QOpenGLShaderProgram labelsProgram_;
+    QOpenGLShaderProgram pickingProgram_;
 
-    QMatrix4x4 projection_;
-    QMatrix4x4 modelView_;
-    QMatrix3x3 modelViewNormal_;
-
-    std::unique_ptr<QOpenGLFramebufferObject> pickingFramebuffer_;
-
+    GLuint buffers[3];
+    GLuint picking;
+    GLuint texture[2];
     QImage image;
-    void pickSpheres();
 
-    Viewport* viewport_;
+    void pickSpheres();
 
     TreeModel *model_;
     QItemSelectionModel *selectionModel_;

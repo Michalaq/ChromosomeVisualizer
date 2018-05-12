@@ -516,25 +516,12 @@ void TreeModel::write(QJsonObject &json) const
     header->write(json);
 }
 
-#include <QSet>
-
 void TreeModel::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 {
-    QSet<const Material*> used;
-    header->writePOVFrame(stream, frame, used);
+    header->writePOVFrame(stream, frame);
 }
 
 void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
 {
-    QSet<const Material*> used;
-    header->writePOVFrames(stream, fbeg, fend, used);
-}
-
-void TreeModel::updateAttributes(const Material *m)
-{
-    for (auto i : m->getAssigned())
-        if (i.sibling(i.row(), 5).data().toList().last().value<Material*>() == m)
-            propagateMaterial(i.sibling(i.row(), 0), m);
-
-    emit propertyChanged();
+    header->writePOVFrames(stream, fbeg, fend);
 }

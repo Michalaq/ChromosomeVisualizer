@@ -9,6 +9,13 @@
 class Viewport;
 struct VizCameraInstance;
 
+struct camera_data_t
+{
+    QMatrix4x4 projection   __attribute__((aligned(16)));
+    QMatrix4x4 modelView    __attribute__((aligned(16)));
+    QSize uvScreenSize      __attribute__((aligned(8)));
+}                           __attribute__((aligned(16)));
+
 class Camera : public SplineInterpolator
 {
     Q_OBJECT
@@ -78,6 +85,8 @@ public:
 
     void setUp(const QModelIndex& index);
     const QModelIndex& getUp() const;
+
+    static const camera_data_t& getBuffer();
 
 public slots:
     /* handles mouse move event */
@@ -159,6 +168,8 @@ private:
     QPersistentModelIndex base, target, up;
 
     int id;
+
+    static camera_data_t buffer;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

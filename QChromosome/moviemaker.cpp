@@ -199,6 +199,8 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
     setBackgroundColor(outFile, viewport->getBackgroundColor());
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
+    Material::writePOVMaterials(outFile);
+
     simulation->writePOVFrames(outFile, fbeg, fend);
 
     outFile.flush();
@@ -329,6 +331,8 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
     setBackgroundColor(outFile, viewport->getBackgroundColor());
     setFog(outFile, viewport->getBackgroundColor(), 1.f / viewport->getFogDensity()); //TODO: dobre rownanie dla ostatniego argumentu
 
+    Material::writePOVMaterials(outFile);
+
     simulation->writePOVFrame(outFile, fn);
 
     outFile.flush();
@@ -387,43 +391,43 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
 #endif
 }
 
-void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, const Material *color) const
+void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, int color)
 {
     outFile << "sphere {"
             << position << ", "
             << radius << " "
-            << "material { " << color << " }"
+            << "material { " << Material::fetch(color) << " }"
             << "}\n";
 }
 
-void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, const Material *colorA, const Material *colorB) const
+void MovieMaker::addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, int colorA, int colorB)
 {
     QVector3D direction = positionB - positionA;
 
     outFile << "cone{"
             << " " << positionA << ", " << radiusA
             << " " << positionB << ", " << radiusB
-            << " texture{gradient" << direction << " texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
+            << " texture{gradient" << direction << " texture_map{[0.0 " << Material::fetch(colorA) << "tex][1.0 " << Material::fetch(colorB) << "tex]}"
             << " scale " << direction.length()
             << " translate " << positionA
             << "}}\n";
 }
 
-void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, const Material *color) const
+void MovieMaker::addSphere1(QTextStream& outFile, int id, float radius, int color)
 {
     outFile << "sphere {"
             << "Atom" << id << "Pos(clock), "
             << radius << " "
-            << "material { " << color << " }"
+            << "material { " << Material::fetch(color) << " }"
             << "}\n";
 }
 
-void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, const Material *colorA, const Material *colorB) const
+void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, int colorA, int colorB)
 {
     outFile << "cone{"
             << " Atom" << idA << "Pos(clock), " << radiusA
             << " Atom" << idB << "Pos(clock), " << radiusB
-            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 " << colorA << "tex][1.0 " << colorB << "tex]}"
+            << " texture{gradient (Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock)) texture_map{[0.0 " << Material::fetch(colorA) << "tex][1.0 " << Material::fetch(colorB) << "tex]}"
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";

@@ -1635,7 +1635,7 @@ QLineEdit {
    <sender>camera</sender>
    <signal>modelViewChanged(QMatrix4x4)</signal>
    <receiver>scene</receiver>
-   <slot>setModelView(QMatrix4x4)</slot>
+   <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>40</x>
@@ -1651,7 +1651,7 @@ QLineEdit {
    <sender>camera</sender>
    <signal>projectionChanged(QMatrix4x4)</signal>
    <receiver>scene</receiver>
-   <slot>setProjection(QMatrix4x4)</slot>
+   <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>93</x>

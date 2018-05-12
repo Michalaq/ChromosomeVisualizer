@@ -16,6 +16,8 @@ bool Camera::automaticKeyframing = false;
 
 Viewport* Camera::viewport = nullptr;
 
+camera_data_t Camera::buffer;
+
 #include "treeitem.h"
 
 Camera::Camera(QWidget *parent)
@@ -66,6 +68,8 @@ Camera::Camera(const Camera& camera)
       farClipping(camera.farClipping),
       id(CameraItem::emplace_back())
 {
+    resize(camera.size());
+
     connect(this, &Camera::delta, [this](int dx, int dy) {
         switch (currentAction) {
         case CA_Move:
@@ -127,8 +131,11 @@ void Camera::setViewport(Viewport *vp)
     viewport = vp;
 }
 
+#include <QResizeEvent>
+
 void Camera::resizeEvent(QResizeEvent *event)
 {
+    buffer.uvScreenSize = event->size();
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
@@ -158,8 +165,8 @@ void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(modelView);
-    emit projectionChanged(projection);
+    emit modelViewChanged(buffer.modelView = modelView);
+    emit projectionChanged(buffer.projection = projection);
 }
 
 #include <QPainter>
@@ -563,7 +570,7 @@ QMatrix4x4& Camera::updateModelView()
     update();
 
     CameraItem::modified = true;
-    return CameraItem::buffer[id].modelView = modelView = modelView.inverted();
+    return CameraItem::buffer[id].modelView = modelView = buffer.modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -584,7 +591,7 @@ QMatrix4x4& Camera::updateProjection()
     }
 
     CameraItem::modified = true;
-    return CameraItem::buffer[id].projection = projection;
+    return CameraItem::buffer[id].projection = buffer.projection = projection;
 }
 
 void Camera::updateAngles()
@@ -672,4 +679,9 @@ void Camera::setUp(const QModelIndex& index)
 const QModelIndex& Camera::getUp() const
 {
     return up;
+}
+
+const camera_data_t& Camera::getBuffer()
+{
+    return buffer;
 }
