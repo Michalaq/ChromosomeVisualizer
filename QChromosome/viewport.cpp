@@ -51,6 +51,7 @@ Viewport::Viewport(QWidget *parent) :
 
     // enable fog
     connect(ui->checkBox_3, &QCheckBox::toggled, [this](bool checked) {
+        ui->widget_5->setEnabled(checked);
         buffer.ubEnableFog = checked;
         modified = true;
         emit viewportChanged();
