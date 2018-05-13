@@ -101,15 +101,15 @@ void main() {
 
     // Fog
     float linearDistance = length(vViewPosition.xyz);
-    float fogFactor = min(linearDistance / ufFogDistance, 1.f);
-    if (!ubEnableFog) fogFactor = 0.f;
+    float fogFactor = exp(-linearDistance / ufFogDistance);
+    if (!ubEnableFog) fogFactor = 1.f;
 
     // Calculate stripes for selected molecules
     float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
     float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(cDiffuse.rgb + cSpecular.rgb, unpackUnorm4x8(ucFogColor).bgr * ufFogStrength, fogFactor), baseColor.a);
+    vec4 cResultColor = vec4(mix(unpackUnorm4x8(ucFogColor).bgr * ufFogStrength, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
     
     fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
 }

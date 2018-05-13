@@ -199,7 +199,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
-    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance / 3); //TODO: dobre rownanie dla ostatniego argumentu
+    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);
 
@@ -333,7 +333,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
-    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance / 3); //TODO: dobre rownanie dla ostatniego argumentu
+    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);
 
