@@ -13,6 +13,8 @@
         <file alias="down">misc/down_arrow.svg</file>
         <file alias="branch-closed">misc/branch_closed.svg</file>
         <file alias="branch-open">misc/branch_open.svg</file>
+        <file alias="branch-open_">misc/branch_open_.svg</file>
+        <file alias="branch-closed_">misc/branch_closed_.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
         <file alias="search">icons/search_icon.svg</file>

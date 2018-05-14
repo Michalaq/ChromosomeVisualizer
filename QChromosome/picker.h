@@ -2,7 +2,6 @@
 #define PICKER_H
 
 #include "combobox.h"
-#include <QVariant>
 
 class Picker : public ComboBox
 {

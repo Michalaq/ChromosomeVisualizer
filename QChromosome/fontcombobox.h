@@ -1,40 +1,29 @@
 #ifndef FONTCOMBOBOX_H
 #define FONTCOMBOBOX_H
 
-#include <QStyledItemDelegate>
+#include "combobox.h"
 
-class QFontFamilyStyledDelegate : public QStyledItemDelegate
-{
-    Q_OBJECT
-public:
-    explicit QFontFamilyStyledDelegate(QObject *parent);
-
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-};
-
-#include <QFontComboBox>
-
-class FontComboBox : public QFontComboBox
+class FontComboBox : public ComboBox
 {
     Q_OBJECT
 public:
     explicit FontComboBox(QWidget *parent = 0);
     ~FontComboBox();
 
-    void setMultipleValues();
+    const QFont& value() const;
+    void setValue(const QFont& f, bool spontaneous = true);
 
 protected:
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-    void paintEvent(QPaintEvent *);
-
-signals:
-
-public slots:
-    void setCurrentIndex(int index, bool spontaneous = true);
+    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 private:
-    bool multiple;
+    QFont font;
+
+signals:
+    void valueChanged(QFont);
+
+public slots:
 };
 
 #endif // FONTCOMBOBOX_H

@@ -166,9 +166,9 @@ void Viewport::read(const QJsonObject &json)
     ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
     ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
 
-    const QJsonObject atomLabels = json["Atom labels"].toObject();
+    /*const QJsonObject atomLabels = json["Atom labels"].toObject();
     ui->widget_3->setValue(atomLabels["Background color"].toString());
-    ui->widget_4->setValue(atomLabels["Text color"].toString());
+    ui->widget_4->setValue(atomLabels["Text color"].toString());*/
 }
 
 void Viewport::write(QJsonObject &json) const
@@ -194,8 +194,8 @@ void Viewport::write(QJsonObject &json) const
     environment["Fog contribution"] = ui->doubleSpinBox_4->value();
     json["Environment"] = environment;
 
-    QJsonObject atomLabels;
+    /*QJsonObject atomLabels;
     atomLabels["Background color"] = ui->widget_3->value().name();
     atomLabels["Text color"] = ui->widget_4->value().name();
-    json["Atom labels"] = atomLabels;
+    json["Atom labels"] = atomLabels;*/
 }

@@ -1,4 +1,4 @@
-#include "picker.h">
+#include "picker.h"
 
 Picker::Picker(QWidget *parent) : ComboBox(parent), alpha(true)
 {

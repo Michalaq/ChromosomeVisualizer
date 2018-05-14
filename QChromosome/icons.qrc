@@ -53,6 +53,7 @@
         <file alias="bin">icons/file_format_bin.svg</file>
         <file alias="pdb">icons/file_format_pdb.svg</file>
         <file alias="project">icons/project_icon.svg</file>
+        <file alias="ttf">icons/file_format_ttf.svg</file>
     </qresource>
     <qresource prefix="/application">
         <file alias="icon">icons/QChromosome_icon.svg</file>

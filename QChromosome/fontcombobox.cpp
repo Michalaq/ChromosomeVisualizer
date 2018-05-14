@@ -1,26 +1,8 @@
-#include "fontcombobox.h"
+#include "fontcombobox.h".h"
 
-QFontFamilyStyledDelegate::QFontFamilyStyledDelegate(QObject *parent) : QStyledItemDelegate(parent)
+FontComboBox::FontComboBox(QWidget *parent) : ComboBox(parent)
 {
 
-}
-
-void QFontFamilyStyledDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    QStyleOptionViewItem opt = option;
-    initStyleOption(&opt, index);
-
-    QString text = index.data(Qt::DisplayRole).toString();
-
-    if (QFontDatabase().writingSystems(text).contains(QFontDatabase::Latin))
-        opt.font.setFamily(text);
-
-    QStyledItemDelegate::paint(painter, opt, index);
-}
-
-FontComboBox::FontComboBox(QWidget *parent) : QFontComboBox(parent), multiple(false)
-{
-    setItemDelegate(new QFontFamilyStyledDelegate(this));
 }
 
 FontComboBox::~FontComboBox()
@@ -28,48 +10,17 @@ FontComboBox::~FontComboBox()
 
 }
 
-void FontComboBox::setMultipleValues()
+const QFont& FontComboBox::value() const
 {
-    bool b = blockSignals(true);
-
-    multiple = true;
-    QFontComboBox::setCurrentIndex(-1);
-
-    blockSignals(b);
+    return font;
 }
 
-void FontComboBox::setCurrentIndex(int index, bool spontaneous)
+void FontComboBox::setValue(const QFont& f, bool spontaneous)
 {
-    bool b;
+    font = f;
 
-    if (!spontaneous)
-        b = blockSignals(true);
-
-    multiple = false;
-    QFontComboBox::setCurrentIndex(index);
-
-    if (!spontaneous)
-        blockSignals(b);
-}
-
-#include <QStyle>
-
-void FontComboBox::focusInEvent(QFocusEvent *event)
-{
-    QFontComboBox::focusInEvent(event);
-
-    style()->unpolish(this);
-    style()->polish(this);
-
-    update();
-}
-
-void FontComboBox::focusOutEvent(QFocusEvent *event)
-{
-    QFontComboBox::focusOutEvent(event);
-
-    style()->unpolish(this);
-    style()->polish(this);
+    if (spontaneous)
+        emit valueChanged(font);
 
     update();
 }
@@ -81,14 +32,25 @@ void FontComboBox::paintEvent(QPaintEvent *)
     QStylePainter painter(this);
     painter.setPen(palette().color(QPalette::Text));
 
-    // draw the FontComboBox frame, focusrect and selected etc.
+    // draw the combobox frame, focusrect and selected etc.
     QStyleOptionComboBox opt;
     initStyleOption(&opt);
+    opt.currentText = font.family();
     painter.drawComplexControl(QStyle::CC_ComboBox, opt);
 
     // draw the icon and text
-    if (multiple)
-        opt.currentText = "<< multiple values >>";
-
     painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
+}
+
+#include <QFontDialog>
+
+void FontComboBox::mousePressEvent(QMouseEvent *event)
+{
+    QWidget::mousePressEvent(event);
+
+    bool ok;
+    QFont f = QFontDialog::getFont(&ok, font);
+
+    if (ok && f != font)
+        setValue(f);
 }
