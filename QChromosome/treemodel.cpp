@@ -509,7 +509,7 @@ void TreeModel::propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) c
 QVector3D TreeModel::getOrigin() const
 {
     QVector3D s;
-    int c;
+    int c = 0;
 
     propagateOrigin(QModelIndex(), s, c);
 
