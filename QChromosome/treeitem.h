@@ -211,6 +211,8 @@ public:
     void setMaterial(const Material* material);
     void setFlag(VizFlag flag, bool on = true);
 
+    bool isSelected() const;
+
     QVector3D getPosition() const;
 
     void read(const QJsonObject& json);

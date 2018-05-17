@@ -262,14 +262,4 @@ void AtomAttributes::updatePosition()
         ui->doubleSpinBox_3->setMultipleValues();
     else
         ui->doubleSpinBox_3->setValue(z, false);
-
-    // set camera origin
-    QVector3D g;
-
-    for (const auto& a : atoms)
-        g += a->getPosition();
-
-    g /= rows.count();
-
-    Camera::setOrigin(g);
 }

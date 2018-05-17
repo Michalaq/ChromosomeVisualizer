@@ -691,10 +691,11 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     if (!ui->treeView->selectionModel()->hasSelection())
     {
         recent = nullptr;
-        Camera::setOrigin(QVector3D());
         ui->stackedWidget->setCurrentIndex(8);
         return;
     }
+
+    Camera::setOrigin(model->getOrigin());
 
     QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows();
 

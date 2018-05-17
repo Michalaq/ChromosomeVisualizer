@@ -91,6 +91,7 @@ public:
     void setVisibility(const QModelIndexList& indices, Visibility v, VisibilityMode m);
 
     void setSelected(const QModelIndexList& indices, bool s);
+    QVector3D getOrigin() const;
 
     void setName(const QModelIndex& index, const QString& name);
     void setName(const QModelIndexList& indices, const QString& name);
@@ -115,6 +116,7 @@ private:
     void updateVisibility(const QModelIndex &root, QPair<bool, bool> v);
 
     void propagateSelected(const QModelIndex &root, bool s);
+    void propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) const;
 
 signals:
     void propertyChanged();

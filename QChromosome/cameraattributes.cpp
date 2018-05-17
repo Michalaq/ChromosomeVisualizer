@@ -423,16 +423,6 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_6->setMultipleValues();
     else
         ui->doubleSpinBox_6->setValue(b, false);
-
-    // set camera origin
-    QVector3D g;
-
-    for (const auto c : cameras)
-        g += c->getPosition();
-
-    g /= rows.count();
-
-    Camera::setOrigin(g);
 }
 
 void CameraAttributes::updateProjection()

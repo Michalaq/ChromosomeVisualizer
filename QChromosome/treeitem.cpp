@@ -427,6 +427,11 @@ void AtomItem::setFlag(VizFlag flag, bool on)
     modified = true;
 }
 
+bool AtomItem::isSelected() const
+{
+    return buffer[id].flags.testFlag(Selected);
+}
+
 void AtomItem::read(const QJsonObject &json)
 {
     TreeItem::read(json);
