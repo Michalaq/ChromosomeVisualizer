@@ -18,7 +18,6 @@ layout (std140) uniform viewport_data
     uint ucFogColor;
     float ufFogStrength;
     float ufFogDistance;
-    bool ubAffectBackground;
 };
 
 struct Material

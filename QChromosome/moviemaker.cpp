@@ -198,7 +198,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
         setCamera(outFile, camera, camera->count() > 1);
 
     auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
+    setBackgroundColor(outFile, buffer.ubEnableFog ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
     if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);
@@ -332,7 +332,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
         setCamera(outFile, camera, false);
 
     auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
+    setBackgroundColor(outFile, buffer.ubEnableFog ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
     if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);

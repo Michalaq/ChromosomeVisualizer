@@ -25,7 +25,6 @@ struct viewport_data_t
     QRgb ucFogColor             __attribute__((aligned(4)));
     float ufFogStrength         __attribute__((aligned(4)));
     float ufFogDistance         __attribute__((aligned(4)));
-    bool ubAffectBackground     __attribute__((aligned(1)));
 }                               __attribute__((aligned(16)));
 
 class Viewport : public QWidget

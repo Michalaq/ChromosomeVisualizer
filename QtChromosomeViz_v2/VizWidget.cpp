@@ -281,7 +281,7 @@ void VizWidget::paintGL()
     glEnable(GL_DEPTH_TEST);
 
     auto& buffer = Viewport::getBuffer();
-    QColor color = buffer.ubEnableFog && buffer.ubAffectBackground ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor);
+    QColor color = buffer.ubEnableFog ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor);
 
     glClearColor(color.redF(), color.greenF(), color.blueF(), 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

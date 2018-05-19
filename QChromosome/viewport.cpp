@@ -78,13 +78,6 @@ Viewport::Viewport(QWidget *parent) :
         emit viewportChanged();
     });
 
-    // affect background
-    connect(ui->checkBox_4, &QCheckBox::toggled, [this](bool checked) {
-        buffer.ubAffectBackground = checked;
-        modified = true;
-        emit viewportChanged();
-    });
-
     // border color
     ui->widget->setValue(QColor(Qt::black));
     // background color
@@ -101,8 +94,6 @@ Viewport::Viewport(QWidget *parent) :
     ui->doubleSpinBox_3->setValue(50);
     // fog distance
     ui->doubleSpinBox_4->setValue(200);
-    // affect background
-    ui->checkBox_4->setChecked(false);
 }
 
 Viewport::~Viewport()
