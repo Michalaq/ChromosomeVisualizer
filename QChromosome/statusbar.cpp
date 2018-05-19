@@ -24,7 +24,7 @@ void StatusBar::paintEvent(QPaintEvent *event)
 
     int offset = 0;
 
-    if (sopb.progress != 100)
+    if (tm.isActive())
     {
         p.drawControl(QStyle::CE_ProgressBar, sopb);
         offset += 103;
@@ -65,7 +65,7 @@ void StatusBar::setProgress(int progress)
         t.start();
     }
 
-    if (progress == 100)
+    if (progress == 101)
         tm.stop();
 
     update();

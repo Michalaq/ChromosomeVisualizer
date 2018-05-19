@@ -480,7 +480,7 @@ void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) 
     const auto& atom = buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::getInstance()->addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+        MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
 
     TreeItem::writePOVFrame(stream, frame);
 }
@@ -490,7 +490,7 @@ void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
     const auto& atom = buffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::getInstance()->addSphere1(stream, id, atom.size, atom.material);
+        MovieMaker::addSphere1(stream, id, atom.size, atom.material);
 
     TreeItem::writePOVFrames(stream, fbeg, fend);
 }
@@ -530,15 +530,13 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 
     auto buffer = AtomItem::getBuffer();
 
-    auto mm = MovieMaker::getInstance();
-
     for (int i = range.first; i < range.second; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            mm->addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+            MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
@@ -548,15 +546,13 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 
     auto buffer = AtomItem::getBuffer();
 
-    auto mm = MovieMaker::getInstance();
-
     for (int i = range.first; i < range.second; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            mm->addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
+            MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 

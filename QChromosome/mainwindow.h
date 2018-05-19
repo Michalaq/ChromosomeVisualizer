@@ -8,6 +8,7 @@
 #include "rendersettings.h"
 #include "preferences.h"
 #include "materialbrowser.h"
+#include "moviemaker.h"
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
@@ -94,6 +95,7 @@ private:
     RenderSettings *renderSettings;
     Preferences *preferences;
     MaterialBrowser *materialBrowser;
+    MovieMaker* movieMaker;
 
     int softMinimum;
     int softMaximum;

@@ -7,8 +7,6 @@
 #include "visibilitydelegate.h"
 #include "namedelegate.h"
 #include "tagsdelegate.h"
-#include <QtConcurrent/QtConcurrentRun>
-#include "moviemaker.h"
 
 static const char * ext = ".qcs";
 
@@ -19,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     renderSettings(RenderSettings::getInstance()),
     preferences(new Preferences),
     materialBrowser(MaterialBrowser::getInstance()),
+    movieMaker(MovieMaker::getInstance()),
     pw(nullptr),
     recent(nullptr)
 {
@@ -173,14 +172,6 @@ MainWindow::MainWindow(QWidget *parent) :
         Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
 
-    connect(ui->actionSnapshot, &QAction::triggered, [this] {
-        QtConcurrent::run(this, &MainWindow::capture);
-    });
-
-    connect(ui->actionFilm, &QAction::triggered, [this] {
-        QtConcurrent::run(this, &MainWindow::captureMovie);
-    });
-
     ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
     ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
     ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
@@ -218,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
-    connect(MovieMaker::getInstance(), &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
+    connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
 
     newProject();
 
@@ -732,19 +723,13 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::getInstance()->captureScene1(currentFrame, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
-
-    if (renderSettings->render() && renderSettings->openFile())
-        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".png"});
+    movieMaker->captureScene1(currentFrame, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 }
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    MovieMaker::getInstance()->MovieMaker::captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
-
-    if (renderSettings->render() && renderSettings->openFile())
-        QProcess::execute("xdg-open", {renderSettings->saveFile() + suffix + ".mp4"});
+    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
 }
 
 void MainWindow::updateLocks()

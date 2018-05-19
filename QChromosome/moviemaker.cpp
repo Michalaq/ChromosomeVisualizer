@@ -17,7 +17,7 @@ QTextStream& operator<<(QTextStream& out, const QColor & col)
     return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
-MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
+MovieMaker::MovieMaker(QObject *parent) : QThread(parent)
 {
 
 }
@@ -177,11 +177,25 @@ void setFog(QTextStream& outFile, const QColor & color, const float distance)
     outFile << "fog{color " << color << " distance " << distance << " }\n";
 }
 
+#include <QMessageBox>
 #include <QTemporaryDir>
+#include "viewport.h"
 #include <QRegularExpression>
 #include <QPainter>
 
 void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
+{
+    if (isRunning())
+    {
+        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
+        return;
+    }
+
+    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = simulation; camera_ = camera; suffix_ = suffix; fr_ = fr;
+    start();
+}
+
+void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -266,6 +280,8 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
         p.start("povray", argv);
         p.waitForFinished(-1);
 
+        emit progressChanged(101);
+
         int total = (fend - fbeg) * renderSettings->framerate();
         int fw1 = QString::number(total).length();
         int fw2 = QString::number(fend).length();
@@ -317,11 +333,26 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 
         p.start("ffmpeg", argv);
         p.waitForFinished(-1);
+
+        if (renderSettings->openFile())
+            QProcess::execute("xdg-open", {QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4")});
     }
 #endif
 }
 
 void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
+{
+    if (isRunning())
+    {
+        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
+        return;
+    }
+
+    snapshot = true; fn_ = fn; simulation_ = simulation; camera_ = camera; suffix_ = suffix;
+    start();
+}
+
+void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -393,6 +424,11 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
 
         p.start("povray", argv);
         p.waitForFinished(-1);
+
+        emit progressChanged(101);
+
+        if (renderSettings->openFile())
+            QProcess::execute("xdg-open", {QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")});
     }
 #endif
 }
@@ -437,4 +473,12 @@ void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radi
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";
+}
+
+void MovieMaker::run()
+{
+    if (snapshot)
+        captureScene1_(fn_, simulation_, camera_, suffix_);
+    else
+        captureScene_(fbeg_, fend_, simulation_, camera_, suffix_, fr_);
 }
