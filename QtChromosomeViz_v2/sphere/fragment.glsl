@@ -67,8 +67,6 @@ void main() {
             discard;
     }
     
-    baseColor.a = 1.0;
-    
     // Normal
     float p = dot(vViewPosition, vViewPosition);
     float q = dot(vViewPosition, vInstancePosition);
@@ -91,12 +89,12 @@ void main() {
 
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);
-    vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);
+    vec3 cDiffuse = vec3(baseColor.rgb * lightness);
 
     // Specular
     vec3 reflected = reflect(-cvLightDirection, vNormal);
     float specularFactor = pow(max(0.0, reflected.z), materials[iMaterialID].fSpecularExponent);
-    vec4 cSpecular = vec4(specularFactor * unpackUnorm4x8(materials[iMaterialID].cSpecularColor).bgr, 0.0);
+    vec3 cSpecular = vec3(specularFactor * unpackUnorm4x8(materials[iMaterialID].cSpecularColor).bgr);
 
     // Fog
     float linearDistance = length(vViewPosition.xyz);
@@ -108,7 +106,7 @@ void main() {
     float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
 
     float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(unpackUnorm4x8(ucFogColor).bgr * ufFogStrength, cDiffuse.rgb + cSpecular.rgb, fogFactor), baseColor.a);
+    vec4 cResultColor = vec4(mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), 1.f);
     
-    fragColor = mix(cResultColor, vec4(1.f, 1.f, 1.f, 1.f), isSelected * whitening);
+    fragColor = mix(cResultColor, vec4(1.f), isSelected * whitening);
 }

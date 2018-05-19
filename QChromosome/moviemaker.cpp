@@ -172,9 +172,9 @@ void setBackgroundColor(QTextStream& outFile, const QColor & color)
     outFile << "background{color " << color << "}\n";
 }
 
-void setFog(QTextStream& outFile, const QColor & color, const float distance)
+void setFog(QTextStream& outFile, const QColor & color, float transmittance, const float distance)
 {
-    outFile << "fog{color " << color << " distance " << distance << " }\n";
+    outFile << "fog{color rgbt<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << transmittance << "> distance " << distance << " }\n";
 }
 
 #include <QMessageBox>
@@ -212,8 +212,8 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
         setCamera(outFile, camera, camera->count() > 1);
 
     auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ubEnableFog ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
-    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
+    setBackgroundColor(outFile, buffer.ucBackgroundColor);
+    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);
 
@@ -369,8 +369,8 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
         setCamera(outFile, camera, false);
 
     auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ubEnableFog ? QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength) : QColor(buffer.ucBackgroundColor));
-    if (buffer.ubEnableFog) setFog(outFile, QColor(buffer.ucFogColor).darker(100. / buffer.ufFogStrength), buffer.ufFogDistance);
+    setBackgroundColor(outFile, buffer.ucBackgroundColor);
+    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
 
     Material::writePOVMaterials(outFile);
 
