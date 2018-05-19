@@ -225,28 +225,34 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
              << "+V"
              << renderSettings->saveFile() + ".pov";
 
+        QRegularExpression re1("Rendering frame (\\d+) of (\\d+) \\((#\\d+)\\)");
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
         QByteArray buffer;
 
-        int rf = 0, tf = (fend - fbeg) * renderSettings->framerate() + 1, last = -1;
+        int cf, tf;
 
         p.connect(&p, &QProcess::readyReadStandardError, [&] {
             buffer += p.readAllStandardError();
 
             int offset = 0;
+            auto match1 = re1.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
+
+            while (match1.hasMatch())
+            {
+                cf = match1.captured(1).toInt();
+                tf = match1.captured(2).toInt();
+
+                match1 = re1.match(buffer, offset = match1.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
+            }
+
             auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
 
             while (match.hasMatch())
             {
                 int a = match.captured(1).toInt();
                 int b = match.captured(2).toInt();
-                int c = 100 * (rf * b + a) / (tf * b);
 
-                if (last < c)
-                    emit progressChanged(last = c);
-
-                if (match.captured(3) == "100")
-                    rf++;
+                emit progressChanged(100 * ((cf - 1) * b + a) / (tf * b));
 
                 match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
@@ -363,8 +369,6 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
         QByteArray buffer;
 
-        int last = -1;
-
         p.connect(&p, &QProcess::readyReadStandardError, [&] {
             buffer += p.readAllStandardError();
 
@@ -375,10 +379,8 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
             {
                 int a = match.captured(1).toInt();
                 int b = match.captured(2).toInt();
-                int c = 100 * a / b;
 
-                if (last < c)
-                    emit progressChanged(last = c);
+                emit progressChanged(100 * a / b);
 
                 match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
