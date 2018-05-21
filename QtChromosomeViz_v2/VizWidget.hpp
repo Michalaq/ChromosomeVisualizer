@@ -3,14 +3,14 @@
 
 #include <QtGui>
 #include <QtOpenGL>
-#include <QOpenGLFunctions_4_2_Core>
+#include <QOpenGLFunctions_4_1_Core>
 
 #include "selection.h"
 #include "pickwidget.h"
 #include "treemodel.h"
 
 class VizWidget :   public Selection,
-                    protected QOpenGLFunctions_4_2_Core,
+                    protected QOpenGLFunctions_4_1_Core,
                     public Pickable
 {
     Q_OBJECT

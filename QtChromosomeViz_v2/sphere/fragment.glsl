@@ -1,4 +1,4 @@
-#version 420 core
+#version 410 core
 
 layout (std140) uniform shader_data
 {
