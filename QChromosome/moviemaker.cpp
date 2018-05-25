@@ -101,17 +101,6 @@ void createPOVFile(QTextStream& outFile)
             << "global_settings { assumed_gamma 1.0 }\n";
 }
 
-void setCamera(QTextStream& outFile, const Camera* camera, bool s)
-{
-    camera->writePOVCamera(outFile, s);
-
-    outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
-            << "parallel\n"
-            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
-            << "}\n";
-}
-
 void set360Camera(QTextStream& outFile, const Camera* camera, bool s)
 {
     outFile << "#declare odsIPD = 0.065;\n";
@@ -163,7 +152,8 @@ void set360Camera(QTextStream& outFile, const Camera* camera, bool s)
     outFile << "light_source {\n"
             << QVector3D() << "," << QColor(Qt::white) << "\n"
             << "parallel\n"
-            << "point_at " << -QVector3D(1., 1., 2.) << "\n"
+            << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+            << "rotate " << -camera->getRotation() << "\n"
             << "}\n";
 }
 
@@ -209,7 +199,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
     if (renderSettings->cam360())
         set360Camera(outFile, camera, camera->count() > 1);
     else
-        setCamera(outFile, camera, camera->count() > 1);
+        camera->writePOVCamera(outFile, camera->count() > 1);
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ucBackgroundColor);
@@ -366,7 +356,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
     if (renderSettings->cam360())
         set360Camera(outFile, camera, false);
     else
-        setCamera(outFile, camera, false);
+        camera->writePOVCamera(outFile, camera->count() > 1);
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ucBackgroundColor);

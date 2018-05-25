@@ -634,8 +634,16 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << "translate MySplinePos(clock)\n"
                << "}\n"
                << "\n";
+
+        stream << "light_source {\n"
+               << QVector3D() << "," << QColor(Qt::white) << "\n"
+               << "parallel\n"
+               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "rotate -MySplineAng(clock)\n"
+               << "}\n";
     }
     else
+    {
         stream << "camera { perspective\n"
                << "right x * " << aspectRatio << "\n"
                << "look_at -z\n"
@@ -644,6 +652,14 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << "translate " << eye << "\n"
                << "}\n"
                << "\n";
+
+        stream << "light_source {\n"
+               << QVector3D() << "," << QColor(Qt::white) << "\n"
+               << "parallel\n"
+               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "rotate " << -QVector3D(p, h, b) << "\n"
+               << "}\n";
+    }
 }
 
 void Camera::setAutomaticKeyframing(bool b)
