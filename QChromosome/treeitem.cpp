@@ -530,7 +530,7 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 
     auto buffer = AtomItem::getBuffer();
 
-    for (int i = range.first; i < range.second; i++)
+    for (int i = range.first; i < range.second - 1; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
@@ -546,7 +546,7 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 
     auto buffer = AtomItem::getBuffer();
 
-    for (int i = range.first; i < range.second; i++)
+    for (int i = range.first; i < range.second - 1; i++)
     {
         const auto& first = buffer[i];
         const auto& second = buffer[i + 1];
