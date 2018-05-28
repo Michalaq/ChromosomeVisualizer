@@ -697,6 +697,39 @@ const QModelIndex& Camera::getUp() const
     return up;
 }
 
+void Camera::callibrate(const std::vector<Atom>& atoms)
+{
+    QVector3D s;
+
+    for (const auto& atom : atoms)
+        s += QVector3D(atom.x, atom.y, atom.z);
+
+    s /= atoms.size();
+
+    Camera::setOrigin(s);
+    setLookAt(s);
+
+    qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2));
+    qreal tva = qTan(qDegreesToRadians(verticalAngle / 2));
+
+    qreal dx = -qInf(), dy = -qInf();
+
+    for (const auto& atom : atoms)
+    {
+        auto p = modelView.map(QVector4D(atom.x, atom.y, atom.z, 1)).toVector3DAffine();
+
+        qreal dx_ = qAbs(p.x()) / tha + p.z();
+        if (dx < dx_)
+            dx = dx_;
+
+        qreal dy_ = qAbs(p.y()) / tva + p.z();
+        if (dy < dy_)
+            dy = dy_;
+    }
+
+    setPosition(eye + qMax(dx, dy) * z);
+}
+
 const camera_data_t& Camera::getBuffer()
 {
     return buffer;

@@ -414,6 +414,8 @@ void MainWindow::addLayer()
 
                 ui->scene->update();
                 ui->plot->updateSimulation();
+
+                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(simulationLayer->getFrame(currentFrame)->atoms);
             }
         }
     } catch (std::exception& e) {

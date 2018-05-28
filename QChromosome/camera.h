@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "interpolator.h"
+#include "../QtChromosomeViz_v2/bartekm_code/common.h"
 
 #include <QVector3D>
 #include <QMatrix4x4>
@@ -85,6 +86,8 @@ public:
 
     void setUp(const QModelIndex& index);
     const QModelIndex& getUp() const;
+
+    void callibrate(const std::vector<Atom>& atoms);
 
     static const camera_data_t& getBuffer();
 
