@@ -185,6 +185,9 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
     start();
 }
 
+#include <QDesktopServices>
+#include <QUrl>
+
 void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
@@ -325,7 +328,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
         p.waitForFinished(-1);
 
         if (renderSettings->openFile())
-            QProcess::execute("xdg-open", {QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4")});
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4")));
     }
 #endif
 }
@@ -418,7 +421,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
         emit progressChanged(101);
 
         if (renderSettings->openFile())
-            QProcess::execute("xdg-open", {QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")});
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")));
     }
 #endif
 }
