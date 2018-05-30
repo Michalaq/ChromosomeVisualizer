@@ -14,7 +14,7 @@ struct Material
 
 layout (std140) uniform material_data
 {
-    Material materials[50];
+    uvec4 materials[50];
 };
 
 flat out vec3 gvInstancePosition;
@@ -27,8 +27,8 @@ flat out float gfInstanceSize;
 void main() {
     gvInstancePosition = vInstancePosition;
     giFlags = iInstanceFlags;
-    gcColor = unpackUnorm4x8(materials[iMaterialID].cColor).bgra;
-    gcSpecularColor = unpackUnorm4x8(materials[iMaterialID].cSpecularColor).bgr;
-    gfSpecularExponent = materials[iMaterialID].fSpecularExponent;
+    gcColor = unpackUnorm4x8(materials[iMaterialID].x).bgra;
+    gcSpecularColor = unpackUnorm4x8(materials[iMaterialID].y).bgr;
+    gfSpecularExponent = uintBitsToFloat(materials[iMaterialID].z);
     gfInstanceSize = fInstanceSize;
 }

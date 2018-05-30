@@ -29,7 +29,7 @@ struct Material
 
 layout (std140) uniform material_data
 {
-    Material materials[50];
+    uvec4 materials[50];
 };
 
 in vec4 vPosition;
@@ -44,7 +44,7 @@ out vec4 fragColor;
 
 void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
-    vec4 baseColor = unpackUnorm4x8(materials[iMaterialID].cColor).bgra;
+    vec4 baseColor = unpackUnorm4x8(materials[iMaterialID].x).bgra;
     
     vec2 vScreenPos = (0.5f * vPosition.xy / vPosition.w + 0.5f) * uvScreenSize;
     ivec2 iScreenPos = ivec2(vScreenPos) & 1;
@@ -93,8 +93,8 @@ void main() {
 
     // Specular
     vec3 reflected = reflect(-cvLightDirection, vNormal);
-    float specularFactor = pow(max(0.0, reflected.z), materials[iMaterialID].fSpecularExponent);
-    vec3 cSpecular = vec3(specularFactor * unpackUnorm4x8(materials[iMaterialID].cSpecularColor).bgr);
+    float specularFactor = pow(max(0.0, reflected.z), uintBitsToFloat(materials[iMaterialID].z));
+    vec3 cSpecular = vec3(specularFactor * unpackUnorm4x8(materials[iMaterialID].y).bgr);
 
     // Fog
     float linearDistance = length(vViewPosition.xyz);
