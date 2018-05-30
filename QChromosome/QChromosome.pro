@@ -186,3 +186,18 @@ INCLUDEPATH += /usr/local/include
 
 PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
 include(protobuf.pri)
+
+DISTFILES += \
+    ../QtChromosomeViz_v2/camera/fragment.glsl \
+    ../QtChromosomeViz_v2/camera/geometry.glsl \
+    ../QtChromosomeViz_v2/camera/vertex.glsl \
+    ../QtChromosomeViz_v2/cylinder/fragment.glsl \
+    ../QtChromosomeViz_v2/cylinder/geometry.glsl \
+    ../QtChromosomeViz_v2/cylinder/vertex.glsl \
+    ../QtChromosomeViz_v2/labels/fragment.glsl \
+    ../QtChromosomeViz_v2/labels/geometry.glsl \
+    ../QtChromosomeViz_v2/labels/vertex.glsl \
+    ../QtChromosomeViz_v2/picking/fragment.glsl \
+    ../QtChromosomeViz_v2/sphere/fragment.glsl \
+    ../QtChromosomeViz_v2/sphere/geometry.glsl \
+    ../QtChromosomeViz_v2/sphere/vertex.glsl
