@@ -12,10 +12,11 @@ TARGET = "QChromosome 4D Studio"
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp\
-../QtChromosomeViz_v2/VizWidget.cpp\
-../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
+SOURCES += \
+    main.cpp \
+    mainwindow.cpp \
+    ../QtChromosomeViz_v2/VizWidget.cpp \
+    ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     camera.cpp \
     plot.cpp \
@@ -73,10 +74,11 @@ SOURCES += main.cpp\
     statusbar.cpp \
     fontcombobox.cpp
 
-HEADERS  += mainwindow.h\
-../QtChromosomeViz_v2/VizWidget.hpp\
-../QtChromosomeViz_v2/bartekm_code/Simulation.h\
-../QtChromosomeViz_v2/bartekm_code/common.h \
+HEADERS += \
+    mainwindow.h \
+    ../QtChromosomeViz_v2/VizWidget.hpp \
+    ../QtChromosomeViz_v2/bartekm_code/Simulation.h \
+    ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     camera.h \
     plot.h \
@@ -150,7 +152,7 @@ HEADERS  += mainwindow.h\
     statusbar.h \
     fontcombobox.h
 
-FORMS    += mainwindow.ui \
+FORMS += mainwindow.ui \
     dockwidget.ui \
     projectsettings.ui \
     rendersettings.ui \
@@ -201,3 +203,6 @@ DISTFILES += \
     ../QtChromosomeViz_v2/sphere/fragment.glsl \
     ../QtChromosomeViz_v2/sphere/geometry.glsl \
     ../QtChromosomeViz_v2/sphere/vertex.glsl
+
+target.path = /usr/local/bin/
+INSTALLS += target

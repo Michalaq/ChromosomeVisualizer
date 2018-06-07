@@ -27,3 +27,4 @@ mkdir -p $DESTDIR
 cd $DESTDIR
 $QTDIR/bin/qmake $CWD/QChromosome/QChromosome.pro -spec $SPEC
 /usr/bin/make
+/usr/bin/make install
