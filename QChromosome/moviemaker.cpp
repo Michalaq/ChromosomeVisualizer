@@ -220,7 +220,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
-#ifdef __linux__
+#ifdef Q_OS_UNIX
     if (renderSettings->render())
     {
         QProcess p;
@@ -270,7 +270,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
                 buffer.clear();
         });
 
-        p.start("povray", argv);
+        p.start("/usr/local/bin/povray", argv);
         p.waitForFinished(-1);
 
         emit progressChanged(101);
@@ -377,7 +377,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
-#ifdef __linux__
+#ifdef Q_OS_UNIX
     if (renderSettings->render())
     {
         QProcess p;
@@ -415,7 +415,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
                 buffer.clear();
         });
 
-        p.start("povray", argv);
+        p.start("/usr/local/bin/povray", argv);
         p.waitForFinished(-1);
 
         emit progressChanged(101);
