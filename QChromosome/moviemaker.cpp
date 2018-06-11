@@ -232,8 +232,8 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
              << "+V"
              << renderSettings->saveFile() + ".pov";
 
-        QRegularExpression re1("Rendering frame (\\d+) of (\\d+) \\((#\\d+)\\)");
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
+        QRegularExpression re1("Rendering frame (\\d+) of (\\d+)");
+        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
         QByteArray buffer;
 
         int cf, tf;
@@ -324,7 +324,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
              << "-pix_fmt" << "yuv420p"
              << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
 
-        p.start("ffmpeg", argv);
+        p.start("/usr/local/bin/ffmpeg", argv);
         p.waitForFinished(-1);
 
         if (renderSettings->openFile())
@@ -390,7 +390,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
              << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
              << renderSettings->saveFile() + ".pov";
 
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels \\((\\d+)%\\)");
+        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
         QByteArray buffer;
 
         p.connect(&p, &QProcess::readyReadStandardError, [&] {
