@@ -1,14 +1,8 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-12-20T12:51:34
-#
-#-------------------------------------------------
-
 QT       += core gui opengl svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = "QChromosome 4D Studio"
+TARGET = QChromosome4DStudio
 TEMPLATE = app
 
 
