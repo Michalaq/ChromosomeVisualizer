@@ -397,6 +397,8 @@ void MainWindow::addLayer()
 
         if (!path.isEmpty())
         {
+            int offset = AtomItem::getBuffer().size();
+
             std::shared_ptr<SimulationLayer> simulationLayer;
 
             if (path.endsWith(".pdb"))
@@ -415,7 +417,7 @@ void MainWindow::addLayer()
                 ui->scene->update();
                 ui->plot->updateSimulation();
 
-                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(simulationLayer->getFrame(currentFrame)->atoms);
+                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(AtomItem::getBuffer().mid(offset));
             }
         }
     } catch (std::exception& e) {

@@ -697,37 +697,40 @@ const QModelIndex& Camera::getUp() const
     return up;
 }
 
-void Camera::callibrate(const std::vector<Atom>& atoms)
+void Camera::callibrate(const QVector<VizBallInstance> &atoms)
 {
-    QVector3D s;
-
-    for (const auto& atom : atoms)
-        s += QVector3D(atom.x, atom.y, atom.z);
-
-    s /= atoms.size();
-
-    Camera::setOrigin(s);
-    setLookAt(s);
+    setRotation(-135, -35.2644, 0);
 
     qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2));
     qreal tva = qTan(qDegreesToRadians(verticalAngle / 2));
 
-    qreal dx = -qInf(), dy = -qInf();
+    qreal sha = qSin(qDegreesToRadians(horizontalAngle / 2));
+    qreal sva = qSin(qDegreesToRadians(verticalAngle / 2));
+
+    qreal dxr = -qInf(), dxl = -qInf(), dyr = -qInf(), dyl = -qInf(), tmp;
 
     for (const auto& atom : atoms)
     {
-        auto p = modelView.map(QVector4D(atom.x, atom.y, atom.z, 1)).toVector3DAffine();
+        auto p = modelView.map(QVector4D(atom.position, 1)).toVector3DAffine();
 
-        qreal dx_ = qAbs(p.x()) / tha + p.z();
-        if (dx < dx_)
-            dx = dx_;
+        tmp = p.x() / (+tha) + p.z() + atom.size / sha;
+        if (dxr < tmp)
+            dxr = tmp;
 
-        qreal dy_ = qAbs(p.y()) / tva + p.z();
-        if (dy < dy_)
-            dy = dy_;
+        tmp = p.x() / (-tha) + p.z() + atom.size / sha;
+        if (dxl < tmp)
+            dxl = tmp;
+
+        tmp = p.y() / (+tva) + p.z() + atom.size / sva;
+        if (dyr < tmp)
+            dyr = tmp;
+
+        tmp = p.y() / (-tva) + p.z() + atom.size / sva;
+        if (dyl < tmp)
+            dyl = tmp;
     }
 
-    setPosition(eye + qMax(dx, dy) * z);
+    setPosition(eye + (dxr - dxl) / 2 * tha * x + (dyr - dyl) / 2 * tva * y + qMax((dxr + dxl) / 2, (dyr + dyl) / 2) * z);
 }
 
 const camera_data_t& Camera::getBuffer()
