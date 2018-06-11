@@ -94,6 +94,18 @@
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout">
+             <property name="labelAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="Label" name="label_3">
                <property name="text">
@@ -224,6 +236,18 @@
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout_2">
+             <property name="labelAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_7">
                <property name="text">
@@ -370,6 +394,18 @@
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout_4">
+             <property name="labelAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="Label" name="label_15">
                <property name="text">
@@ -512,6 +548,18 @@
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout_3">
+             <property name="labelAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>6</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>6</number>
+             </property>
              <item row="0" column="0">
               <widget class="Label" name="label_11">
                <property name="text">
@@ -584,6 +632,11 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
@@ -594,14 +647,14 @@
    <header>lineedit.h</header>
   </customwidget>
   <customwidget>
+   <class>TextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>textedit.h</header>
+  </customwidget>
+  <customwidget>
    <class>ComboBox</class>
    <extends>QComboBox</extends>
    <header>combobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TitleLabel</class>
-   <extends>QLabel</extends>
-   <header>titlelabel.h</header>
   </customwidget>
   <customwidget>
    <class>DoubleSpinBox</class>
@@ -609,19 +662,14 @@
    <header>doublespinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TextEdit</class>
-   <extends>QTextEdit</extends>
-   <header>textedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>FontComboBox</class>
-   <extends>QFontComboBox</extends>
+   <extends>QComboBox</extends>
    <header>fontcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TitleLabel</class>
+   <extends>QLabel</extends>
+   <header>titlelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>
