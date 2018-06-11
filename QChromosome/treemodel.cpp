@@ -471,6 +471,20 @@ void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, Visi
     emit attributeChanged();
 }
 
+void TreeModel::pickSelected(const QModelIndex &root, QVector<VizBallInstance> &buffer) const
+{
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+    {
+        auto atom = reinterpret_cast<AtomItem*>(root.internalPointer());
+
+        if (atom->isSelected())
+            buffer.append(atom->getInstance());
+    }
+
+    for (int r = 0; r < rowCount(root); r++)
+        pickSelected(index(r, 0, root), buffer);
+}
+
 void TreeModel::propagateSelected(const QModelIndex &root, bool s)
 {
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
@@ -478,6 +492,15 @@ void TreeModel::propagateSelected(const QModelIndex &root, bool s)
 
     for (int r = 0; r < rowCount(root); r++)
         propagateSelected(index(r, 0, root), s);
+}
+
+QVector<VizBallInstance> TreeModel::getSelected() const
+{
+    QVector<VizBallInstance> ans;
+
+    pickSelected(QModelIndex(), ans);
+
+    return ans;
 }
 
 void TreeModel::setSelected(const QModelIndexList &indices, bool s)

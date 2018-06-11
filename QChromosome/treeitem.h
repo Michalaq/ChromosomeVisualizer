@@ -212,6 +212,7 @@ public:
     void setFlag(VizFlag flag, bool on = true);
 
     bool isSelected() const;
+    const VizBallInstance& getInstance() const;
 
     QVector3D getPosition() const;
 

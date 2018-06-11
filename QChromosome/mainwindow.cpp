@@ -159,7 +159,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->setLookAt(Camera::getOrigin());
+        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(simulation->getModel())->getSelected());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {

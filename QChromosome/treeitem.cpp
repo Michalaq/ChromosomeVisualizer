@@ -432,6 +432,11 @@ bool AtomItem::isSelected() const
     return buffer[id].flags.testFlag(Selected);
 }
 
+const VizBallInstance& AtomItem::getInstance() const
+{
+    return buffer[id];
+}
+
 void AtomItem::read(const QJsonObject &json)
 {
     TreeItem::read(json);
