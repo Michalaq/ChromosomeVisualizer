@@ -270,7 +270,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
                 buffer.clear();
         });
 
-        p.start("/usr/local/bin/povray", argv);
+        p.start("povray", argv);
         p.waitForFinished(-1);
 
         emit progressChanged(101);
@@ -324,7 +324,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
              << "-pix_fmt" << "yuv420p"
              << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
 
-        p.start("/usr/local/bin/ffmpeg", argv);
+        p.start("ffmpeg", argv);
         p.waitForFinished(-1);
 
         if (renderSettings->openFile())
@@ -415,7 +415,7 @@ void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simula
                 buffer.clear();
         });
 
-        p.start("/usr/local/bin/povray", argv);
+        p.start("povray", argv);
         p.waitForFinished(-1);
 
         emit progressChanged(101);

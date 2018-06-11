@@ -9,6 +9,8 @@
 
 int main(int argc, char *argv[])
 {
+    qputenv("PATH", qgetenv("PATH") + ":/usr/local/bin:/usr/bin");
+
     QApplication a(argc, argv);
 
     QSplashScreen s(QPixmap(":/application/splash"), Qt::WindowStaysOnTopHint);
