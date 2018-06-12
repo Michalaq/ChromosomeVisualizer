@@ -699,6 +699,9 @@ const QModelIndex& Camera::getUp() const
 
 void Camera::callibrate(const QVector<VizBallInstance> &atoms)
 {
+    if (atoms.isEmpty())
+        return;
+
     setRotation(-135, -35.2644, 0);
 
     qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2));
