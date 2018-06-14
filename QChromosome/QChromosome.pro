@@ -66,7 +66,8 @@ SOURCES += \
     importdialog.cpp \
     labelatlas.cpp \
     statusbar.cpp \
-    fontcombobox.cpp
+    fontcombobox.cpp \
+    session.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -144,7 +145,8 @@ HEADERS += \
     importdialog.h \
     labelatlas.h \
     statusbar.h \
-    fontcombobox.h
+    fontcombobox.h \
+    session.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \

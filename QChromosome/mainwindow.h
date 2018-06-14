@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
+#include "session.h"
 
 namespace Ui
 {

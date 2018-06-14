@@ -346,6 +346,9 @@ void MainWindow::newProject()
     AtomItem::clearBuffer();
 
     ui->scene->update();
+
+    auto session = new Session();
+    ui->menuWindows->addAction(session->getAction());
 }
 
 #include <QStandardPaths>
