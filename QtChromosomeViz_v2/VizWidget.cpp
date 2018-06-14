@@ -318,12 +318,12 @@ void VizWidget::paintGL()
         vaoSpheres_.release();
     }
 
-    if (CameraItem::getBuffer().count() > 1)
+    if (session->cameraBuffer.get().count() > 1)
     {
         vaoCameras_.bind();
         cameraProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
+        glDrawArrays(GL_POINTS, 1, session->cameraBuffer.get().count() - 1);
 
         cameraProgram_.release();
         vaoCameras_.release();

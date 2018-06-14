@@ -250,14 +250,11 @@ void LayerItem::write(QJsonObject &json) const
 #include "camera.h"
 #include "session.h"
 
-QVector<VizCameraInstance> CameraItem::buffer;
-bool CameraItem::modified = false;
-bool CameraItem::resized = false;
-
-CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
+CameraItem::CameraItem(const QString &name, Camera *cam, Session *s, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
     camera(cam),
-    id(cam->id)
+    id(cam->id),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
@@ -268,27 +265,6 @@ CameraItem::CameraItem(const QString &name, Camera *cam, TreeItem *parentItem) :
 CameraItem::~CameraItem()
 {
 
-}
-
-const QVector<VizCameraInstance>& CameraItem::getBuffer()
-{
-    return buffer;
-}
-
-int CameraItem::emplace_back()
-{
-    int offset = buffer.size();
-
-    buffer.resize(offset + 1);
-    resized = true;
-
-    return offset;
-}
-
-void CameraItem::clearBuffer()
-{
-    buffer.resize(1);
-    resized = true;
 }
 
 QVector3D CameraItem::getPosition() const
@@ -303,8 +279,7 @@ void CameraItem::setPosition(const QVector3D& p)
 
 void CameraItem::setFlag(VizFlag flag, bool on)
 {
-    buffer[id].flags.setFlag(flag, on);
-    modified = true;
+    session->cameraBuffer[id].flags.setFlag(flag, on);
 }
 
 void CameraItem::write(QJsonObject &json) const

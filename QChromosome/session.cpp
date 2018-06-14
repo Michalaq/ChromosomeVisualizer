@@ -2,7 +2,8 @@
 
 Session::Session() :
     action(new QAction),
-    simulation(new Simulation(this))
+    simulation(new Simulation(this)),
+    editorCamera(new Camera(this))
 {
 
 }
@@ -11,6 +12,7 @@ Session::~Session()
 {
     delete action;
     delete simulation;
+    delete editorCamera;
 }
 
 #include <cassert>

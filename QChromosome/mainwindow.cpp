@@ -88,8 +88,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
-
     connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
     connect(ui->actionContent_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
 
@@ -150,14 +148,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->horizontalSlider->update();
     });
 
-    ui->horizontalSlider->setSplineInterpolator(ui->camera);
-
-    connect(ui->camera, &SplineInterpolator::selectionChanged, [this] {
-        ui->page_6->setSplineInterpolator(ui->camera);
-        ui->stackedWidget->setCurrentIndex(5);
-        ui->dockWidget_2->show();
-    });
-
     connect(ui->actionFocus, &QAction::triggered, [this] {
         qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(simulation->getModel())->getSelected());
     });
@@ -187,14 +177,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
         addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())));
-    });
-
-    connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
-        if (!camera) camera = ui->camera;
-        ui->stackedWidget_2->currentWidget()->blockSignals(true);
-        camera->blockSignals(false);
-        ui->stackedWidget_2->setCurrentWidget(camera);
-        ui->horizontalSlider->setSplineInterpolator(camera);
     });
 
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
@@ -290,7 +272,7 @@ void MainWindow::read(const QJsonObject &json)
 
         if (object["class"] == "Camera")
         {
-            auto camera = new Camera();
+            auto camera = new Camera(session);
             camera->read(object);
 
             addCamera(camera);
@@ -308,6 +290,23 @@ void MainWindow::newProject()
 
     session = new Session();
     simulation = std::shared_ptr<Simulation>(session->simulation);
+    connect(renderSettings, &RenderSettings::aspectRatioChanged, session->editorCamera, &Camera::setAspectRatio);
+    ui->horizontalSlider->setSplineInterpolator(session->editorCamera);
+    connect(session->editorCamera, &SplineInterpolator::selectionChanged, [this] {
+        ui->page_6->setSplineInterpolator(session->editorCamera);
+        ui->stackedWidget->setCurrentIndex(5);
+        ui->dockWidget_2->show();
+    });
+    connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
+        if (!camera) camera = session->editorCamera;
+        ui->stackedWidget_2->currentWidget()->blockSignals(true);
+        camera->blockSignals(false);
+        ui->stackedWidget_2->setCurrentWidget(camera);
+        ui->horizontalSlider->setSplineInterpolator(camera);
+    });
+    ui->stackedWidget_2->addWidget(session->editorCamera);
+    connect(session->editorCamera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
+    connect(session->editorCamera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
@@ -344,7 +343,6 @@ void MainWindow::newProject()
 
     ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 
-    CameraItem::clearBuffer();
     ChainItem::clearBuffer();
 
     ui->scene->update();
@@ -376,7 +374,7 @@ void MainWindow::openProject()
         ui->page_4->read(viewport);
 
         const QJsonObject camera = project["Camera"].toObject();
-        ui->camera->read(camera);
+        session->editorCamera->read(camera);
 
         const QJsonArray materials = project["Materials"].toArray();
         materialBrowser->read(materials);
@@ -450,7 +448,7 @@ void MainWindow::saveProject()
         project["Viewport"] = viewport;
 
         QJsonObject camera;
-        ui->camera->write(camera);
+        session->editorCamera->write(camera);
         project["Camera"] = camera;
 
         QJsonArray materials;

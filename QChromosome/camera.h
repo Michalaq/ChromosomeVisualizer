@@ -7,6 +7,7 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
+class Session;
 class Viewport;
 struct VizCameraInstance;
 
@@ -21,7 +22,7 @@ class Camera : public SplineInterpolator
 {
     Q_OBJECT
 public:
-    explicit Camera(QWidget *parent = 0);
+    explicit Camera(Session* s, QWidget *parent = 0);
     Camera(const Camera& camera);
     ~Camera();
 
@@ -170,6 +171,7 @@ private:
 
     QPersistentModelIndex base, target, up;
 
+    Session *session;
     int id;
 
     static camera_data_t buffer;

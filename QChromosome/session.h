@@ -35,6 +35,13 @@ public:
         }
     }
 
+    int emplace_back()
+    {
+        resized = true;
+        data.push_back(T());
+        return data.count() - 1;
+    }
+
     const QVector<T>& get() const
     {
         return data;
@@ -67,6 +74,7 @@ private:
 #include <QAction>
 #include "treeitem.h"
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "camera.h"
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -82,6 +90,8 @@ public:
 
     GLBuffer<VizCameraInstance> cameraBuffer;
     GLBuffer<VizBallInstance> atomBuffer;
+
+    Camera* editorCamera;
 
     void setFrame(std::shared_ptr<Frame> frame);
 };

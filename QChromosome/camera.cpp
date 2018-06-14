@@ -19,8 +19,9 @@ Viewport* Camera::viewport = nullptr;
 camera_data_t Camera::buffer;
 
 #include "treeitem.h"
+#include "session.h"
 
-Camera::Camera(QWidget *parent)
+Camera::Camera(Session *s, QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
       eye(60, 30, 60),
       focalLength(36),
@@ -28,7 +29,8 @@ Camera::Camera(QWidget *parent)
       rotationType(RT_World),
       nearClipping(.3),
       farClipping(1000.),
-      id(CameraItem::emplace_back())
+      session(s),
+      id(s->cameraBuffer.emplace_back())
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -66,7 +68,8 @@ Camera::Camera(const Camera& camera)
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
-      id(CameraItem::emplace_back())
+      session(camera.session),
+      id(camera.session->cameraBuffer.emplace_back())
 {
     resize(camera.size());
 
@@ -84,7 +87,7 @@ Camera::Camera(const Camera& camera)
         };
     });
 
-    CameraItem::buffer[id] = CameraItem::buffer[camera.id];
+    session->cameraBuffer[id] = session->cameraBuffer[camera.id];
 }
 
 Camera::~Camera()
@@ -569,8 +572,7 @@ QMatrix4x4& Camera::updateModelView()
 
     update();
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].modelView = modelView = buffer.modelView = modelView.inverted();
+    return session->cameraBuffer[id].modelView = modelView = buffer.modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -590,8 +592,7 @@ QMatrix4x4& Camera::updateProjection()
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].projection = buffer.projection = projection;
+    return session->cameraBuffer[id].projection = buffer.projection = projection;
 }
 
 void Camera::updateAngles()
