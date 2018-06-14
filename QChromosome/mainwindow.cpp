@@ -307,6 +307,7 @@ void MainWindow::newProject()
     ui->stackedWidget_2->addWidget(session->editorCamera);
     connect(session->editorCamera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(session->editorCamera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
+    ui->page_2->setSession(session);
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 

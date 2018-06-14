@@ -20,6 +20,8 @@ void QFontStyledDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QStyledItemDelegate::paint(painter, opt, index);
 }
 
+#include "session.h"
+
 AtomAttributes::AtomAttributes(QWidget *parent) :
     MetaAttributes(parent),
     ui(new Ui::AtomAttributes),
@@ -60,7 +62,7 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
 
         QString val = ui->textEdit->toPlainText();
 
-        auto r = AtomItem::getAtlas().addLabel(val, font);
+        auto r = session->labelAtlas.addLabel(val, font);
         for (auto a : atoms)
             a->setLabel(val, r);
         emit attributeChanged();
@@ -70,6 +72,11 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
 AtomAttributes::~AtomAttributes()
 {
     delete ui;
+}
+
+void AtomAttributes::setSession(Session *s)
+{
+    session = s;
 }
 
 void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)

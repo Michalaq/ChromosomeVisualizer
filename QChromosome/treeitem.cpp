@@ -302,8 +302,6 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-LabelAtlas AtomItem::atlas;
-
 AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     id(id),
@@ -325,11 +323,6 @@ AtomItem::~AtomItem()
 QVector3D AtomItem::getPosition() const
 {
     return session->atomBuffer[id].position;
-}
-
-LabelAtlas &AtomItem::getAtlas()
-{
-    return atlas;
 }
 
 void AtomItem::setLabel(const QString& l, const QRect &r)

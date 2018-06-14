@@ -58,6 +58,7 @@ private:
 #include "treeitem.h"
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "camera.h"
+#include "labelatlas.h"
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -76,6 +77,8 @@ public:
     QVector<std::pair<int, int>> chainBuffer;
 
     camera_data_t cameraUniformBuffer;
+
+    LabelAtlas labelAtlas;
 
     Camera* editorCamera;
 

@@ -19,6 +19,7 @@ class AtomAttributes;
 }
 
 class AtomItem;
+class Session;
 
 class AtomAttributes : public MetaAttributes
 {
@@ -27,6 +28,8 @@ class AtomAttributes : public MetaAttributes
 public:
     explicit AtomAttributes(QWidget *parent = 0);
     ~AtomAttributes();
+
+    void setSession(Session* s);
 
     void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
@@ -46,6 +49,8 @@ private:
 
     void updateModelSelection();
     void updatePosition();
+
+    Session* session;
 };
 
 #endif // ATOMATTRIBUTES_H

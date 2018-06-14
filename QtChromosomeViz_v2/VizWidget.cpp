@@ -208,7 +208,7 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
     assert(pickingProgram_.link());
 
-    AtomItem::getAtlas().initializeGL();
+    session->labelAtlas.initializeGL();
 
     glGenBuffers(3, buffers);
 
@@ -334,7 +334,7 @@ void VizWidget::paintGL()
         vaoLabels_.bind();
         labelsProgram_.bind();
 
-        auto& atlas = AtomItem::getAtlas();
+        auto& atlas = session->labelAtlas;
 
         labelsProgram_.setUniformValue("uvTextureSize",
                                 (float)atlas.size().width(),

@@ -177,15 +177,12 @@ struct VizBallInstance
 };
 
 #include "material.h"
-#include "labelatlas.h"
 
 class AtomItem : public TreeItem
 {
 public:
     explicit AtomItem(const Atom& atom, int id, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
-
-    static LabelAtlas& getAtlas();
 
     void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
@@ -211,7 +208,6 @@ private:
     int id;
     QString label;
     Session *session;
-    static LabelAtlas atlas;
 };
 
 class ChainItem : public TreeItem
