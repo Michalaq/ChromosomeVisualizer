@@ -343,8 +343,6 @@ void MainWindow::newProject()
 
     ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 
-    ChainItem::clearBuffer();
-
     ui->scene->update();
 
     ui->menuWindows->addAction(session->action);

@@ -73,6 +73,8 @@ public:
 
     GLBuffer<VizCameraInstance> cameraBuffer;
     GLBuffer<VizBallInstance> atomBuffer;
+    QVector<std::pair<int, int>> chainBuffer;
+
     camera_data_t cameraUniformBuffer;
 
     Camera* editorCamera;

@@ -305,7 +305,7 @@ void VizWidget::paintGL()
         vaoSpheres_.bind();
         cylinderProgram_.bind();
 
-        for (auto& strip : ChainItem::getBuffer())
+        for (auto& strip : session->chainBuffer)
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();

@@ -220,14 +220,10 @@ public:
     explicit ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
 
-    static const QVector<std::pair<int, int>> &getBuffer();
-    static void clearBuffer();
-
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
-    static QVector<std::pair<int, int>> buffer;
     std::pair<int, int> range;
     Session *session;
 };
