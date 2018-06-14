@@ -90,8 +90,6 @@ public:
 
     void callibrate(const QVector<VizBallInstance> &atoms);
 
-    static const camera_data_t& getBuffer();
-
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -173,8 +171,6 @@ private:
 
     Session *session;
     int id;
-
-    static camera_data_t buffer;
 
 signals:
     void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);

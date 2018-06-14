@@ -30,6 +30,7 @@ VizWidget::~VizWidget()
 
 #include "camera.h"
 #include "viewport.h"
+#include "session.h"
 
 void VizWidget::initializeGL()
 {
@@ -213,7 +214,7 @@ void VizWidget::initializeGL()
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &Camera::getBuffer(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &session->cameraUniformBuffer, GL_DYNAMIC_DRAW);
 
         const GLuint binding_point_index = 0;
         glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[0]);
@@ -267,8 +268,6 @@ void VizWidget::initializeGL()
 
     glGenFramebuffers(1, &picking);
 }
-
-#include "session.h"
 
 void VizWidget::paintGL()
 {
@@ -417,7 +416,7 @@ void VizWidget::allocate()
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &Camera::getBuffer(), sizeof(camera_data_t));
+    memcpy(p, &session->cameraUniformBuffer, sizeof(camera_data_t));
     glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 

@@ -16,8 +16,6 @@ bool Camera::automaticKeyframing = false;
 
 Viewport* Camera::viewport = nullptr;
 
-camera_data_t Camera::buffer;
-
 #include "treeitem.h"
 #include "session.h"
 
@@ -138,7 +136,7 @@ void Camera::setViewport(Viewport *vp)
 
 void Camera::resizeEvent(QResizeEvent *event)
 {
-    buffer.uvScreenSize = event->size();
+    session->cameraUniformBuffer.uvScreenSize = event->size();
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
@@ -168,8 +166,8 @@ void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(buffer.modelView = modelView);
-    emit projectionChanged(buffer.projection = projection);
+    emit modelViewChanged(session->cameraUniformBuffer.modelView = modelView);
+    emit projectionChanged(session->cameraUniformBuffer.projection = projection);
 }
 
 #include <QPainter>
@@ -572,7 +570,7 @@ QMatrix4x4& Camera::updateModelView()
 
     update();
 
-    return session->cameraBuffer[id].modelView = modelView = buffer.modelView = modelView.inverted();
+    return session->cameraBuffer[id].modelView = modelView = session->cameraUniformBuffer.modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -592,7 +590,7 @@ QMatrix4x4& Camera::updateProjection()
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
-    return session->cameraBuffer[id].projection = buffer.projection = projection;
+    return session->cameraBuffer[id].projection = session->cameraUniformBuffer.projection = projection;
 }
 
 void Camera::updateAngles()
@@ -735,9 +733,4 @@ void Camera::callibrate(const QVector<VizBallInstance> &atoms)
     }
 
     setPosition(eye + (dxr - dxl) / 2 * tha * x + (dyr - dyl) / 2 * tva * y + qMax((dxr + dxl) / 2, (dyr + dyl) / 2) * z);
-}
-
-const camera_data_t& Camera::getBuffer()
-{
-    return buffer;
 }

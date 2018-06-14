@@ -90,6 +90,7 @@ public:
 
     GLBuffer<VizCameraInstance> cameraBuffer;
     GLBuffer<VizBallInstance> atomBuffer;
+    camera_data_t cameraUniformBuffer;
 
     Camera* editorCamera;
 
