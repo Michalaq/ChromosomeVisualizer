@@ -300,7 +300,7 @@ void VizWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.get().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoSpheres_.bind();
         cylinderProgram_.bind();
@@ -311,25 +311,25 @@ void VizWidget::paintGL()
         cylinderProgram_.release();
         sphereProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.get().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
     }
 
-    if (session->cameraBuffer.get().count() > 1)
+    if (session->cameraBuffer.count() > 1)
     {
         vaoCameras_.bind();
         cameraProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 1, session->cameraBuffer.get().count() - 1);
+        glDrawArrays(GL_POINTS, 1, session->cameraBuffer.count() - 1);
 
         cameraProgram_.release();
         vaoCameras_.release();
     }
 
     // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.get().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoLabels_.bind();
         labelsProgram_.bind();
@@ -348,7 +348,7 @@ void VizWidget::paintGL()
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.get().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         labelsProgram_.release();
         vaoLabels_.release();
@@ -441,12 +441,12 @@ void VizWidget::pickSpheres()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.get().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.get().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         pickingProgram_.release();
         vaoSpheres_.release();

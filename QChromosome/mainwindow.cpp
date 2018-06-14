@@ -400,7 +400,7 @@ void MainWindow::addLayer()
 
         if (!path.isEmpty())
         {
-            int offset = session->atomBuffer.get().size();
+            int offset = session->atomBuffer.size();
 
             std::shared_ptr<SimulationLayer> simulationLayer;
 
@@ -420,7 +420,7 @@ void MainWindow::addLayer()
                 ui->scene->update();
                 ui->plot->updateSimulation();
 
-                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(session->atomBuffer.get().mid(offset));
+                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(session->atomBuffer.mid(offset));
             }
         }
     } catch (std::exception& e) {

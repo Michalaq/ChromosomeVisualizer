@@ -5,20 +5,15 @@
 #include <QOpenGLBuffer>
 
 template<typename T>
-class GLBuffer
+class GLBuffer : public QVector<T>
 {
 public:
-    GLBuffer()
-    {
-
-    }
-
     void allocate(QOpenGLBuffer& buffer)
     {
         if (resized)
         {
             buffer.bind();
-            buffer.allocate(data.constData(), data.count() * sizeof(T));
+            buffer.allocate(QVector<T>::constData(), QVector<T>::count() * sizeof(T));
             buffer.release();
 
             resized = false;
@@ -28,7 +23,7 @@ public:
         if (modified)
         {
             buffer.bind();
-            buffer.write(0, data.constData(), data.count() * sizeof(T));
+            buffer.write(0, QVector<T>::constData(), QVector<T>::count() * sizeof(T));
             buffer.release();
 
             modified = false;
@@ -38,37 +33,25 @@ public:
     int emplace_back()
     {
         resized = true;
-        data.push_back(T());
-        return data.count() - 1;
+        QVector<T>::push_back(T());
+        return QVector<T>::count() - 1;
     }
 
-    const QVector<T>& get() const
-    {
-        return data;
-    }
-
-    void resize(size_t s)
+    void resize(int size)
     {
         resized = true;
-        data.resize(data.size() + s);
+        QVector<T>::resize(QVector<T>::size() + size);
     }
 
-    const T& operator[](int n) const
-    {
-        return data[n];
-    }
-
-    T& operator[](int n)
+    inline T& operator[](int i)
     {
         modified = true;
-        return data[n];
+        return QVector<T>::operator[](i);
     }
 
 private:
     bool modified;
     bool resized;
-
-    QVector<T> data;
 };
 
 #include <QAction>

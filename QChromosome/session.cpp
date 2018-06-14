@@ -19,7 +19,7 @@ Session::~Session()
 
 void Session::setFrame(std::shared_ptr<Frame> frame)
 {
-    assert(frame->atoms.size() == atomBuffer.get().size());
+    assert(frame->atoms.size() == atomBuffer.size());
 
     auto& atoms = frame->atoms;
 
