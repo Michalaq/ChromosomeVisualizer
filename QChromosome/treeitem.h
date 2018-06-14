@@ -139,6 +139,7 @@ struct VizCameraInstance
 };
 
 class Camera;
+class Session;
 
 class CameraItem : public TreeItem
 {
@@ -188,19 +189,10 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom& atom, int id, TreeItem *parentItem = 0);
+    explicit AtomItem(const Atom& atom, int id, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
-    static const QVector<VizBallInstance>& getBuffer();
-    static void resizeBuffer(int count);
-    static void clearBuffer();
-
-    static bool modified;
-    static bool resized;
-
     static LabelAtlas& getAtlas();
-
-    static void setFrame(std::shared_ptr<Frame> frame);
 
     void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
@@ -224,15 +216,15 @@ public:
 
 private:
     int id;
-    static QVector<VizBallInstance> buffer;
     QString label;
+    Session *session;
     static LabelAtlas atlas;
 };
 
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem = 0);
+    explicit ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
 
     static const QVector<std::pair<int, int>> &getBuffer();
@@ -244,6 +236,7 @@ public:
 private:
     static QVector<std::pair<int, int>> buffer;
     std::pair<int, int> range;
+    Session *session;
 };
 
 class ResidueItem : public TreeItem

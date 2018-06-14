@@ -248,6 +248,7 @@ void LayerItem::write(QJsonObject &json) const
 }
 
 #include "camera.h"
+#include "session.h"
 
 QVector<VizCameraInstance> CameraItem::buffer;
 bool CameraItem::modified = false;
@@ -326,22 +327,19 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-QVector<VizBallInstance> AtomItem::buffer;
-bool AtomItem::modified = false;
-bool AtomItem::resized = false;
 LabelAtlas AtomItem::atlas;
 
-AtomItem::AtomItem(const Atom &atom, int id, TreeItem *parentItem) :
+AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
     TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(id)
+    id(id),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
 
-    buffer[id].position = QVector3D(atom.x, atom.y, atom.z);
-    modified = true;
+    session->atomBuffer[id].position = QVector3D(atom.x, atom.y, atom.z);
 }
 
 AtomItem::~AtomItem()
@@ -349,26 +347,9 @@ AtomItem::~AtomItem()
 
 }
 
-const QVector<VizBallInstance>& AtomItem::getBuffer()
-{
-    return buffer;
-}
-
 QVector3D AtomItem::getPosition() const
 {
-    return buffer[id].position;
-}
-
-void AtomItem::resizeBuffer(int count)
-{
-    buffer.resize(buffer.size() + count);
-    resized = true;
-}
-
-void AtomItem::clearBuffer()
-{
-    buffer.clear();
-    resized = true;
+    return session->atomBuffer[id].position;
 }
 
 LabelAtlas &AtomItem::getAtlas()
@@ -376,27 +357,10 @@ LabelAtlas &AtomItem::getAtlas()
     return atlas;
 }
 
-void AtomItem::setFrame(std::shared_ptr<Frame> frame)
-{
-    assert(frame->atoms.size() == buffer.size());
-
-    auto& atoms = frame->atoms;
-
-    for (int i = 0; i < atoms.size(); i++)
-    {
-        auto& atom = atoms[i];
-        buffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
-
-    modified = true;
-}
-
 void AtomItem::setLabel(const QString& l, const QRect &r)
 {
     label = l;
-
-    buffer[id].label = r;
-    modified = true;
+    session->atomBuffer[id].label = r;
 }
 
 const QString& AtomItem::getLabel() const
@@ -406,35 +370,32 @@ const QString& AtomItem::getLabel() const
 
 void AtomItem::setRadius(float r)
 {
-    buffer[id].size = r;
-    modified = true;
+    session->atomBuffer[id].size = r;
 }
 
 float AtomItem::getRadius() const
 {
-    return buffer[id].size;
+    return session->atomBuffer[id].size;
 }
 
 void AtomItem::setMaterial(const Material *material)
 {
-    buffer[id].material = material->getIndex();
-    modified = true;
+    session->atomBuffer[id].material = material->getIndex();
 }
 
 void AtomItem::setFlag(VizFlag flag, bool on)
 {
-    buffer[id].flags.setFlag(flag, on);
-    modified = true;
+    session->atomBuffer[id].flags.setFlag(flag, on);
 }
 
 bool AtomItem::isSelected() const
 {
-    return buffer[id].flags.testFlag(Selected);
+    return session->atomBuffer[id].flags.testFlag(Selected);
 }
 
 const VizBallInstance& AtomItem::getInstance() const
 {
-    return buffer[id];
+    return session->atomBuffer[id];
 }
 
 void AtomItem::read(const QJsonObject &json)
@@ -444,7 +405,7 @@ void AtomItem::read(const QJsonObject &json)
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) buffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) session->atomBuffer[id].size = (*rad).toDouble();
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
@@ -461,16 +422,14 @@ void AtomItem::write(QJsonObject &json) const
 
     object["class"] = "Atom";
 
-    if (buffer[id].size != 1)
-        object["Radius"] = buffer[id].size;
+    if (session->atomBuffer[id].size != 1)
+        object["Radius"] = session->atomBuffer[id].size;
 
     if (!label.isEmpty())
         object["Label"] = label;
 
     if (object.size() > 1)
         json["Object"] = object;
-
-    modified = true;
 }
 
 #include "moviemaker.h"
@@ -482,7 +441,7 @@ constexpr QVector3D vec3(const Atom& a)
 
 void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
 {
-    const auto& atom = buffer[id];
+    const auto& atom = session->atomBuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
         MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
@@ -492,7 +451,7 @@ void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) 
 
 void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
 {
-    const auto& atom = buffer[id];
+    const auto& atom = session->atomBuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
         MovieMaker::addSphere1(stream, id, atom.size, atom.material);
@@ -502,9 +461,10 @@ void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
 
 QVector<std::pair<int, int>> ChainItem::buffer;
 
-ChainItem::ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem) :
+ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
     TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    range(r)
+    range(r),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
@@ -533,12 +493,10 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 {
     TreeItem::writePOVFrame(stream, frame);
 
-    auto buffer = AtomItem::getBuffer();
-
     for (int i = range.first; i < range.second - 1; i++)
     {
-        const auto& first = buffer[i];
-        const auto& second = buffer[i + 1];
+        const auto& first = session->atomBuffer[i];
+        const auto& second = session->atomBuffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
@@ -549,12 +507,10 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 {
     TreeItem::writePOVFrames(stream, fbeg, fend);
 
-    auto buffer = AtomItem::getBuffer();
-
     for (int i = range.first; i < range.second - 1; i++)
     {
-        const auto& first = buffer[i];
-        const auto& second = buffer[i + 1];
+        const auto& first = session->atomBuffer[i];
+        const auto& second = session->atomBuffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);

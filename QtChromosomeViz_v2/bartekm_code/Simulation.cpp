@@ -1,12 +1,10 @@
 #include "Simulation.h"
 
-#include <QDebug>
-
-
-Simulation::Simulation()
+Simulation::Simulation(Session *s)
     : frameCount_(0),
       nextUnreadFrame_(0),
-      model(new TreeModel(this))
+      model(new TreeModel(s, this)),
+      session(s)
 {}
 
 Simulation::~Simulation()

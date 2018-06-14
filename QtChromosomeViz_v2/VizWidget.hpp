@@ -9,6 +9,8 @@
 #include "pickwidget.h"
 #include "treemodel.h"
 
+class Session;
+
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_4_1_Core,
                     public Pickable
@@ -25,6 +27,7 @@ public:
 
     QPersistentModelIndex pick(const QPoint& pos);
 
+    void setSession(Session* s);
     void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
     void reloadModel();
 
@@ -61,6 +64,7 @@ private:
 
     void pickSpheres();
 
+    Session* session;
     TreeModel *model_;
     QItemSelectionModel *selectionModel_;
 };

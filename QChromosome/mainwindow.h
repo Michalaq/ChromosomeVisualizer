@@ -12,7 +12,8 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
-#include "session.h"
+
+class Session;
 
 namespace Ui
 {
@@ -108,6 +109,8 @@ private:
     PickWidget* pw;
 
     MetaAttributes* recent;
+
+    Session* session;
 };
 
 #endif // MAINWINDOW_H

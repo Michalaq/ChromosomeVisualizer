@@ -49,6 +49,7 @@
 
 class Material;
 class Simulation;
+class Session;
 
 enum VisibilityMode
 {
@@ -61,7 +62,7 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit TreeModel(QObject *parent = 0);
+    explicit TreeModel(Session *s, QObject *parent = 0);
     ~TreeModel();
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
@@ -108,6 +109,7 @@ private:
     TreeItem *header;
     QVector<QPersistentModelIndex> indices;
     QPersistentModelIndex currentCamera;
+    Session *session;
 
     QString next_name() const;
 

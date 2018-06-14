@@ -5,13 +5,14 @@
 #include "legend.h"
 #include <QPainter>
 #include <QSvgRenderer>
+#include "session.h"
 
 // MathWorks predefined colorOrder
 const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
 
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
-    simulation_(std::make_shared<Simulation>()),
+    simulation_(std::make_shared<Simulation>(new Session)),
     lastBuffered(-1)
 {
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());

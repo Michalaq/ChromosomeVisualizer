@@ -298,13 +298,16 @@ void MainWindow::read(const QJsonObject &json)
     }
 }
 
+#include "session.h"
+
 void MainWindow::newProject()
 {
     currentFile.clear();
     ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
-    simulation = std::make_shared<Simulation>();
+    session = new Session();
+    simulation = std::shared_ptr<Simulation>(session->simulation);
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
@@ -343,12 +346,11 @@ void MainWindow::newProject()
 
     CameraItem::clearBuffer();
     ChainItem::clearBuffer();
-    AtomItem::clearBuffer();
 
     ui->scene->update();
 
-    auto session = new Session();
-    ui->menuWindows->addAction(session->getAction());
+    ui->menuWindows->addAction(session->action);
+    ui->scene->setSession(session);
 }
 
 #include <QStandardPaths>
@@ -400,7 +402,7 @@ void MainWindow::addLayer()
 
         if (!path.isEmpty())
         {
-            int offset = AtomItem::getBuffer().size();
+            int offset = session->atomBuffer.get().size();
 
             std::shared_ptr<SimulationLayer> simulationLayer;
 
@@ -420,7 +422,7 @@ void MainWindow::addLayer()
                 ui->scene->update();
                 ui->plot->updateSimulation();
 
-                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(AtomItem::getBuffer().mid(offset));
+                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(session->atomBuffer.get().mid(offset));
             }
         }
     } catch (std::exception& e) {
@@ -513,7 +515,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    AtomItem::setFrame(simulation->getFrame(n));
+    session->setFrame(simulation->getFrame(n));
     ui->page->ui->spinBox_5->setValue(n, false);
 }
 
