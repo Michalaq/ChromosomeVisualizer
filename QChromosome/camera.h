@@ -87,7 +87,7 @@ public:
     void setUp(const QModelIndex& index);
     const QModelIndex& getUp() const;
 
-    void callibrate(const QVector<VizBallInstance> &atoms);
+    void callibrate(const QVector<VizBallInstance> &atoms, qreal scale = .75);
 
     static const camera_data_t& getBuffer();
 

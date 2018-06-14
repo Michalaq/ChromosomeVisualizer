@@ -697,18 +697,18 @@ const QModelIndex& Camera::getUp() const
     return up;
 }
 
-void Camera::callibrate(const QVector<VizBallInstance> &atoms)
+void Camera::callibrate(const QVector<VizBallInstance> &atoms, qreal scale)
 {
     if (atoms.isEmpty())
         return;
 
     setRotation(-135, -35.2644, 0);
 
-    qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2));
-    qreal tva = qTan(qDegreesToRadians(verticalAngle / 2));
+    qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2)) * scale;
+    qreal tva = qTan(qDegreesToRadians(verticalAngle / 2)) * scale;
 
-    qreal sha = qSin(qDegreesToRadians(horizontalAngle / 2));
-    qreal sva = qSin(qDegreesToRadians(verticalAngle / 2));
+    qreal sha = tha / qSqrt(1 + tha * tha);
+    qreal sva = tva / qSqrt(1 + tva * tva);
 
     qreal dxr = -qInf(), dxl = -qInf(), dyr = -qInf(), dyl = -qInf(), tmp;
 
