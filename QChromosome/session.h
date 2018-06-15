@@ -59,6 +59,10 @@ private:
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "camera.h"
 #include "labelatlas.h"
+#include "treeview.h"
+#include "namedelegate.h"
+#include "visibilitydelegate.h"
+#include "tagsdelegate.h"
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -82,7 +86,14 @@ public:
 
     Camera* editorCamera;
 
+    TreeView* treeView;
+
     void setFrame(std::shared_ptr<Frame> frame);
+
+private:
+    NameDelegate *nd;
+    VisibilityDelegate *vd;
+    TagsDelegate *td;
 };
 
 #endif // SESSION_H

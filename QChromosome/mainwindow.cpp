@@ -4,9 +4,6 @@
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
-#include "visibilitydelegate.h"
-#include "namedelegate.h"
-#include "tagsdelegate.h"
 
 static const char * ext = ".qcs";
 
@@ -162,10 +159,6 @@ MainWindow::MainWindow(QWidget *parent) :
         Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
 
-    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
-    ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
-    ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
-
     ui->plot->followSlider(ui->horizontalSlider);
 
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
@@ -185,25 +178,19 @@ MainWindow::MainWindow(QWidget *parent) :
         QApplication::setOverrideCursor(Qt::WhatsThisCursor);
     });
 
-    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
-        ui->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    });
-
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
 
     newProject();
-
-    ui->treeView->header()->resizeSection(3, 40);
-    ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+#include "session.h"
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -212,11 +199,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         QApplication::restoreOverrideCursor();
         ui->statusBar->clearPermanentMessage();
 
-        auto p = ui->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
+        auto p = session->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
 
-        if (ui->treeView->rect().contains(p))
+        if (session->treeView->rect().contains(p))
         {
-            pw->pick(ui->treeView->pick(p));
+            pw->pick(session->treeView->pick(p));
             pw = nullptr;
             return true;
         }
@@ -280,8 +267,6 @@ void MainWindow::read(const QJsonObject &json)
     }
 }
 
-#include "session.h"
-
 void MainWindow::newProject()
 {
     currentFile.clear();
@@ -297,7 +282,7 @@ void MainWindow::newProject()
         ui->stackedWidget->setCurrentIndex(5);
         ui->dockWidget_2->show();
     });
-    connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
+    connect(session->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
         if (!camera) camera = session->editorCamera;
         ui->stackedWidget_2->currentWidget()->blockSignals(true);
         camera->blockSignals(false);
@@ -308,6 +293,10 @@ void MainWindow::newProject()
     connect(session->editorCamera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(session->editorCamera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     ui->page_2->setSession(session);
+    ui->stackedWidget_3->addWidget(session->treeView);
+    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
+        session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    });
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
@@ -323,26 +312,17 @@ void MainWindow::newProject()
 
     ui->plot->setSimulation(simulation);
 
-    ui->treeView->setModel(simulation->getModel());
-    ui->treeView->hideColumn(1);
-    ui->treeView->hideColumn(2);
-    ui->treeView->hideColumn(4);
-    ui->treeView->hideColumn(6);
-    ui->treeView->setColumnWidth(3, 48);
-
-    connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+    connect(session->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
     ui->stackedWidget->setCurrentIndex(0);
 
     connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
-        ui->treeView->update();
+        session->treeView->update();
         ui->scene->update();
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
-
-    ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
 
     ui->scene->update();
 
@@ -668,12 +648,12 @@ void MainWindow::end()
 
 void MainWindow::selectAll()
 {
-    ui->treeView->selectAll();
+    session->treeView->selectAll();
 }
 
 void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelectionModel::SelectionFlags flags)
 {
-    ui->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
+    session->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
@@ -685,7 +665,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
     if (recent) recent->unsetSelection();
 
-    if (!ui->treeView->selectionModel()->hasSelection())
+    if (!session->treeView->selectionModel()->hasSelection())
     {
         recent = nullptr;
         ui->stackedWidget->setCurrentIndex(8);
@@ -694,7 +674,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
 
     Camera::setOrigin(model->getOrigin());
 
-    QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows();
+    QModelIndexList selectedRows = session->treeView->selectionModel()->selectedRows();
 
     auto index = selectedRows.first();
 
@@ -811,5 +791,5 @@ void MainWindow::addCamera(Camera* camera)
 
     ui->stackedWidget_2->addWidget(camera);
 
-    ((TreeModel*)ui->treeView->model())->addCamera(camera);
+    ((TreeModel*)session->treeView->model())->addCamera(camera);
 }

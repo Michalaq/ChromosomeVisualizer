@@ -28,8 +28,6 @@ public:
     QPersistentModelIndex pick(const QPoint& pos);
 
     void setSession(Session* s);
-    void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
-    void reloadModel();
 
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);

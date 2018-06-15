@@ -3,7 +3,6 @@
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
-    , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
 
@@ -372,12 +371,8 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 void VizWidget::setSession(Session *s)
 {
     session = s;
-}
-
-void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
-{
-    model_ = model;
-    selectionModel_ = selectionModel;
+    model_ = session->simulation->getModel();
+    selectionModel_ = session->treeView->selectionModel();
 }
 
 void VizWidget::allocate()

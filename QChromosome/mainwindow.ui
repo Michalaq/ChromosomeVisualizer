@@ -870,27 +870,8 @@ Label {
   </widget>
   <widget class="StatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
-   <property name="windowTitle">
-    <string>Objects</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_6">
-     <item row="0" column="0">
-      <widget class="TreeView" name="treeView">
-       <property name="mouseTracking">
-        <bool>true</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTreeView {
+   <property name="styleSheet">
+    <string notr="true">QTreeView {
 	color: gray;
 	border: none;
 	background: #1a1a1a;
@@ -930,20 +911,17 @@ QLineEdit {
 	padding: 1px;
 }
 </string>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
-       </property>
-       <property name="uniformRowHeights">
-        <bool>true</bool>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
+   </property>
+   <property name="windowTitle">
+    <string>Objects</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_6">
+     <item row="0" column="0">
+      <widget class="QStackedWidget" name="stackedWidget_3"/>
      </item>
     </layout>
    </widget>
@@ -1585,11 +1563,6 @@ QLineEdit {
    <extends>QWidget</extends>
    <header>keyframe.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TreeView</class>
-   <extends>QTreeView</extends>
-   <header>treeview.h</header>
   </customwidget>
   <customwidget>
    <class>MaterialAttributes</class>
