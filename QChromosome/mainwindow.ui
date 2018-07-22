@@ -918,13 +918,7 @@ QLineEdit {
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_6">
-     <item row="0" column="0">
-      <widget class="QStackedWidget" name="stackedWidget_3"/>
-     </item>
-    </layout>
-   </widget>
+   <widget class="QStackedWidget" name="stackedWidget_3"/>
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
@@ -933,34 +927,16 @@ QLineEdit {
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QStackedWidget" name="stackedWidget">
-       <widget class="ProjectSettings" name="page"/>
-       <widget class="AtomAttributes" name="page_2"/>
-       <widget class="LayerAttributes" name="page_3"/>
-       <widget class="Viewport" name="page_4"/>
-       <widget class="CameraAttributes" name="page_5"/>
-       <widget class="Keyframes" name="page_6"/>
-       <widget class="MaterialAttributes" name="page_7"/>
-       <widget class="Attributes" name="page_8"/>
-       <widget class="QWidget" name="page_9"/>
-      </widget>
-     </item>
-    </layout>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <widget class="ProjectSettings" name="page"/>
+    <widget class="AtomAttributes" name="page_2"/>
+    <widget class="LayerAttributes" name="page_3"/>
+    <widget class="Viewport" name="page_4"/>
+    <widget class="CameraAttributes" name="page_5"/>
+    <widget class="Keyframes" name="page_6"/>
+    <widget class="MaterialAttributes" name="page_7"/>
+    <widget class="Attributes" name="page_8"/>
+    <widget class="QWidget" name="page_9"/>
    </widget>
   </widget>
   <widget class="DockWidget" name="dockWidget_3">
