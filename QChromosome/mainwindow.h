@@ -80,7 +80,6 @@ private:
 
     std::shared_ptr<Simulation> simulation;
 
-    int currentFrame;
     int lastFrame;
 
     QTimer timer;

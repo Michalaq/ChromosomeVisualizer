@@ -306,7 +306,6 @@ void MainWindow::newProject()
     ui->horizontalSlider->setRange(0, 0);
     ui->horizontalSlider_2->setRange(0, 0);
 
-    currentFrame = 0;
     lastFrame = 0;
 
     softMinimum = 0;
@@ -499,7 +498,7 @@ void MainWindow::updateFrameCount(int n)
 
 void MainWindow::setFrame(int n)
 {
-    currentFrame = n;
+    session->documentTime = n;
 
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
@@ -539,33 +538,24 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
+    frameNumber_t previousFrame = simulation->getPreviousTime(session->documentTime);
 
-    if (currentFrame > 0)
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
+    if (session->documentTime > 0)
+        setFrame(previousFrame);
 }
 
 void MainWindow::reverse_previous()
 {
-    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+    qint64 previousFrame = qMax(session->documentTime - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
 
-    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
+    if (session->documentTime > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+        setFrame(previousFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->reverse->click();
         else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMaximum : lastFrame;
-            setFrame(currentFrame);
-        }
+            setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
     }
 }
 
@@ -579,7 +569,7 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
+        if (ui->actionPreview_range->isChecked() && (session->documentTime <= softMinimum || session->documentTime > softMaximum))
             setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
@@ -604,7 +594,7 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
+        if (ui->actionPreview_range->isChecked() && (session->documentTime < softMinimum || session->documentTime >= softMaximum))
             setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
@@ -621,37 +611,28 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
+    frameNumber_t nextFrame = simulation->getNextTime(session->documentTime);
     simulation->getFrame(nextFrame);
 
-    if (currentFrame < lastFrame)
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
+    if (session->documentTime < lastFrame)
+        setFrame(nextFrame);
 }
 
 void MainWindow::play_next()
 {
-    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+    qint64 nextFrame = session->documentTime + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
 
-    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
+    if (session->documentTime < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+        setFrame(nextFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->play->click();
         else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMinimum : 0;
-            setFrame(currentFrame);
-        }
+            setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
     }
 
-    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    simulation->getFrame(session->documentTime+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
@@ -723,7 +704,7 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(currentFrame, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    movieMaker->captureScene1(session->documentTime, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 }
 
 void MainWindow::captureMovie() const
