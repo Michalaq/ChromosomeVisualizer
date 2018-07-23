@@ -1,4 +1,6 @@
 #include "session.h"
+#include <QDir>
+#include <QStandardPaths>
 
 Session::Session() :
     action(new QAction),
@@ -33,6 +35,8 @@ Session::Session() :
     header->resizeSection(3, 42);
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     header->setSectionResizeMode(5, QHeaderView::Fixed);
+
+    filePath.setFile(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
 }
 
 Session::~Session()

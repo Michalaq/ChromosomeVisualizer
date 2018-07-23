@@ -102,8 +102,6 @@ private:
     int softMinimum;
     int softMaximum;
 
-    QString currentFile;
-
     void addCamera(Camera *camera);
 
     PickWidget* pw;

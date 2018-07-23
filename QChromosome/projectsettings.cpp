@@ -28,4 +28,5 @@ void ProjectSettings::setSession(Session *s)
     ui->textEdit->setText(session->info, true);
     ui->lineEdit_4->setText(session->fileFormat, true);
     ui->lineEdit_5->setText(session->fileVersion, true);
+    ui->lineEdit_6->setText(session->filePath.filePath(), true);
 }

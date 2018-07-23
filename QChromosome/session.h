@@ -63,6 +63,7 @@ private:
 #include "namedelegate.h"
 #include "visibilitydelegate.h"
 #include "tagsdelegate.h"
+#include <QFileInfo>
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -102,6 +103,7 @@ public:
     QString info;
     QString fileFormat;
     QString fileVersion;
+    QFileInfo filePath;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
