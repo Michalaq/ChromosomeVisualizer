@@ -5,6 +5,7 @@ Session::Session() :
     simulation(new Simulation(this)),
     editorCamera(new Camera(this)),
     treeView(new TreeView),
+    FPS(30),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate)
@@ -56,4 +57,42 @@ void Session::setFrame(std::shared_ptr<Frame> frame)
         auto& atom = atoms[i];
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
+}
+
+#include <QJsonObject>
+
+void Session::read(const QJsonObject &json)
+{
+    const QJsonObject projectSettings = json["Project Settings"].toObject();
+    FPS = projectSettings["FPS"].toInt();
+    documentTime = projectSettings["Document Time"].toInt();
+    minimumTime = projectSettings["Minimum Time"].toInt();
+    maximumTime = projectSettings["Maximum Time"].toInt();
+    previewMinTime = projectSettings["Preview Min. Time"].toInt();
+    previewMaxTime = projectSettings["Preview Max. Time"].toInt();
+
+    const QJsonObject projectInfo = json["Info"].toObject();
+    author = projectInfo["Author"].toString();
+    info = projectInfo["Info"].toString();
+    fileFormat = projectInfo["File Format"].toString();
+    fileVersion = projectInfo["File Version"].toString();
+}
+
+void Session::write(QJsonObject &json) const
+{
+    QJsonObject projectSettings;
+    projectSettings["FPS"] = FPS;
+    projectSettings["Document Time"] = documentTime;
+    projectSettings["Minimum Time"] = minimumTime;
+    projectSettings["Maximum Time"] = maximumTime;
+    projectSettings["Preview Min. Time"] = previewMinTime;
+    projectSettings["Preview Max. Time"] = previewMaxTime;
+    json["Project Settings"] = projectSettings;
+
+    QJsonObject projectInfo;
+    projectInfo["Author"] = author;
+    projectInfo["Info"] = info;
+    projectInfo["File Format"] = fileFormat;
+    projectInfo["File Version"] = fileVersion;
+    json["Info"] = projectInfo;
 }

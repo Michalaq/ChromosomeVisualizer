@@ -90,6 +90,22 @@ public:
 
     void setFrame(std::shared_ptr<Frame> frame);
 
+    // Project Settings
+    int FPS;
+    int documentTime;
+    int maximumTime;
+    int minimumTime;
+    int previewMinTime;
+    int previewMaxTime;
+
+    QString author;
+    QString info;
+    QString fileFormat;
+    QString fileVersion;
+
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;

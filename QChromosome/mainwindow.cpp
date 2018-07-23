@@ -341,6 +341,7 @@ void MainWindow::setCurrentSession(Session *s)
 {
     session = s;
     ui->stackedWidget->setCurrentIndex(8);
+    ui->page->setSession(session);
 }
 
 #include <QStandardPaths>
@@ -379,7 +380,7 @@ void MainWindow::openProject()
         ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
-        ui->page->read(projectSettings);
+        session->read(projectSettings);
     }
 }
 
@@ -432,7 +433,7 @@ void MainWindow::saveProject()
         ui->page->ui->lineEdit_5->setText("1.01");
 
         QJsonObject projectSettings;
-        ui->page->write(projectSettings);
+        session->write(projectSettings);
         project["Project Settings"] = projectSettings;
 
         QJsonObject viewport;
