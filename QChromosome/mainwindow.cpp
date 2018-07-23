@@ -273,7 +273,10 @@ void MainWindow::newProject()
     ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
     setWindowTitle("QChromosome 4D Studio - [Untitled]");
 
-    session = new Session();
+    auto s = new Session();
+    ui->menuWindows->addAction(s->action);
+    //
+    session = s;
     simulation = std::shared_ptr<Simulation>(session->simulation);
     connect(renderSettings, &RenderSettings::aspectRatioChanged, session->editorCamera, &Camera::setAspectRatio);
     ui->horizontalSlider->setSplineInterpolator(session->editorCamera);
@@ -297,6 +300,9 @@ void MainWindow::newProject()
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
+    connect(session->action, &QAction::triggered, [=]() {
+        setCurrentSession(s);
+    });
 
     connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
@@ -315,8 +321,6 @@ void MainWindow::newProject()
     connect(session->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
-    ui->stackedWidget->setCurrentIndex(0);
-
     connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
         session->treeView->update();
         ui->scene->update();
@@ -324,10 +328,19 @@ void MainWindow::newProject()
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
 
-    ui->scene->update();
-
-    ui->menuWindows->addAction(session->action);
     ui->scene->setSession(session);
+    ui->scene->update();
+    //
+    setCurrentSession(s);
+
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->dockWidget_2->show();
+}
+
+void MainWindow::setCurrentSession(Session *s)
+{
+    session = s;
+    ui->stackedWidget->setCurrentIndex(8);
 }
 
 #include <QStandardPaths>

@@ -111,6 +111,7 @@ private:
     MetaAttributes* recent;
 
     Session* session;
+    void setCurrentSession(Session* s);
 };
 
 #endif // MAINWINDOW_H
