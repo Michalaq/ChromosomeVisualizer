@@ -127,13 +127,9 @@ MainWindow::MainWindow(QWidget *parent) :
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentWidget(ui->page_4);
+        ui->stackedWidget->setCurrentWidget(session->viewport);
         ui->dockWidget_2->show();
     });
-
-    Camera::setViewport(ui->page_4);
-
-    connect(ui->page_4, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
 
     connect(ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
@@ -271,6 +267,7 @@ void MainWindow::newProject()
 {
     auto s = new Session();
     ui->menuWindows->addAction(s->action);
+
     //
     session = s;
     simulation = std::shared_ptr<Simulation>(session->simulation);
@@ -357,7 +354,7 @@ void MainWindow::openProject()
         file.close();
 
         const QJsonObject viewport = project["Viewport"].toObject();
-        ui->page_4->read(viewport);
+        session->viewport->read(viewport);
 
         const QJsonObject camera = project["Camera"].toObject();
         session->editorCamera->read(camera);
@@ -437,7 +434,7 @@ void MainWindow::saveProject()
         project["Project Settings"] = projectSettings;
 
         QJsonObject viewport;
-        ui->page_4->write(viewport);
+        session->viewport->write(viewport);
         project["Viewport"] = viewport;
 
         QJsonObject camera;

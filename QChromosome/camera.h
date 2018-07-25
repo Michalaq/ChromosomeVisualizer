@@ -8,7 +8,6 @@
 #include <QMatrix4x4>
 
 class Session;
-class Viewport;
 struct VizCameraInstance;
 
 struct camera_data_t
@@ -25,8 +24,6 @@ public:
     explicit Camera(Session* s, QWidget *parent = 0);
     Camera(const Camera& camera);
     ~Camera();
-
-    static void setViewport(Viewport* vp);
 
     /* sets new origin */
     static QVector3D getOrigin();
@@ -164,8 +161,6 @@ private:
     static Action currentAction;
 
     static bool automaticKeyframing;
-
-    static Viewport* viewport;
 
     QPersistentModelIndex base, target, up;
 

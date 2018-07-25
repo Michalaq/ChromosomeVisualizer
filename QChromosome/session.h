@@ -64,6 +64,7 @@ private:
 #include "visibilitydelegate.h"
 #include "tagsdelegate.h"
 #include <QFileInfo>
+#include "viewport.h"
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -88,6 +89,8 @@ public:
     Camera* editorCamera;
 
     TreeView* treeView;
+
+    Viewport* viewport;
 
     void setFrame(std::shared_ptr<Frame> frame);
 

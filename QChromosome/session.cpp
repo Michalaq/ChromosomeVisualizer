@@ -7,6 +7,7 @@ Session::Session() :
     simulation(new Simulation(this)),
     editorCamera(new Camera(this)),
     treeView(new TreeView),
+    viewport(new Viewport),
     FPS(30),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),

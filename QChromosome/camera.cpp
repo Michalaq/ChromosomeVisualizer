@@ -14,8 +14,6 @@ Camera::Action Camera::currentAction;
 
 bool Camera::automaticKeyframing = false;
 
-Viewport* Camera::viewport = nullptr;
-
 #include "treeitem.h"
 #include "session.h"
 
@@ -127,11 +125,6 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     updateAngles();
 }
 
-void Camera::setViewport(Viewport *vp)
-{
-    viewport = vp;
-}
-
 #include <QResizeEvent>
 
 void Camera::resizeEvent(QResizeEvent *event)
@@ -171,13 +164,12 @@ void Camera::showEvent(QShowEvent *event)
 }
 
 #include <QPainter>
-#include "viewport.h"
 
 void Camera::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (viewport->getSFVisible())
+    if (session->viewport->getSFVisible())
     {
         int w = std::min(width(), int(qreal(height()) * aspectRatio + 0.5));
         int h = std::min(height(), int(qreal(width()) / aspectRatio + 0.5));
@@ -185,8 +177,8 @@ void Camera::paintEvent(QPaintEvent *event)
         QRect view(0, 0, w, h);
         view.moveCenter(rect().center());
 
-        auto opacity = viewport->getSFOpacity();
-        auto color = viewport->getSFColor();
+        auto opacity = session->viewport->getSFOpacity();
+        auto color = session->viewport->getSFColor();
 
         QPainter p(this);
         p.setOpacity(opacity);
@@ -198,7 +190,7 @@ void Camera::paintEvent(QPaintEvent *event)
         p.fillRect(QRect(view.bottomLeft() + QPoint(0, 1), rect().bottomRight()), color);
     }
 
-    auto position = viewport->getAxisPosition();
+    auto position = session->viewport->getAxisPosition();
 
     if (position != Off_)
     {
@@ -224,7 +216,7 @@ void Camera::paintEvent(QPaintEvent *event)
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
 
-        auto scale = viewport->getAxisScale();
+        auto scale = session->viewport->getAxisScale();
 
         p.translate(position == TopLeft || position == BottomLeft ? 50 * scale : width() - 50 * scale,
                     position == TopLeft || position == TopRight ? 50 * scale : height() - 50 * scale);
@@ -235,7 +227,7 @@ void Camera::paintEvent(QPaintEvent *event)
             p.setPen(QPen(a.color, 2, Qt::SolidLine, Qt::RoundCap));
             p.drawLine({0,0}, QPointF(a.vector.x(), -a.vector.y()) * 30);
 
-            if (viewport->getAxisTextVisible())
+            if (session->viewport->getAxisTextVisible())
             {
                 r.moveCenter(QPointF(a.vector.x(), -a.vector.y()) * 40);
                 p.drawText(r, Qt::AlignCenter, a.label);
