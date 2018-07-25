@@ -410,7 +410,11 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="FileEdit" name="lineEdit_6"/>
+              <widget class="FileEdit" name="lineEdit_6">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item row="1" column="1">
               <widget class="TextEdit" name="textEdit"/>
@@ -447,6 +451,11 @@
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
@@ -460,11 +469,6 @@
    <class>LineEdit</class>
    <extends>QLineEdit</extends>
    <header>lineedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
   </customwidget>
   <customwidget>
    <class>TextEdit</class>

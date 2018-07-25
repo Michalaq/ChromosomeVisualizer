@@ -162,7 +162,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        addCamera(new Camera(*session->currentCamera));
+        auto camera = new Camera(*session->currentCamera);
+
+        addCamera(camera);
+        qobject_cast<TreeModel*>(session->treeView->model())->addCamera(camera);
     });
 
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
@@ -174,6 +177,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
+
+    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
+
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
+
+    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
+        session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    });
 }
 
 MainWindow::~MainWindow()
@@ -232,7 +243,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 #include <QJsonObject>
 
-void MainWindow::read(const QJsonObject &json)
+void MainWindow::read(const QJsonObject &json, Session* s)
 {
     const QJsonObject children = json["Descendants"].toObject();
 
@@ -245,54 +256,63 @@ void MainWindow::read(const QJsonObject &json)
             auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
             simulationLayer->read(object["paths"].toArray());
 
-            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
+            s->simulation->addSimulationLayerConcatenation(simulationLayer, false);
         }
 
         if (object["class"] == "Camera")
         {
-            auto camera = new Camera(session);
+            auto camera = new Camera(s);
             camera->read(object);
 
             addCamera(camera);
+            qobject_cast<TreeModel*>(s->treeView->model())->addCamera(camera);
         }
     }
 }
 
-void MainWindow::newProject()
+Session* MainWindow::makeSession()
 {
     auto s = new Session();
-    ui->menuWindows->addAction(s->action);
 
-    //
-    session = s;
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, session->editorCamera, &Camera::setAspectRatio);
-    ui->horizontalSlider->setSplineInterpolator(session->editorCamera);
-    connect(session->editorCamera, &SplineInterpolator::selectionChanged, [this] {
-        ui->page_6->setSplineInterpolator(session->editorCamera);
-        ui->stackedWidget->setCurrentWidget(ui->page_6);
-        ui->dockWidget_2->show();
-    });
-    connect(session->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
-        if (!camera) camera = session->editorCamera;
-        ui->stackedWidget_2->currentWidget()->blockSignals(true);
-        camera->blockSignals(false);
-        ui->stackedWidget_2->setCurrentWidget(camera);
-        ui->horizontalSlider->setSplineInterpolator(camera);
-    });
-    ui->stackedWidget_2->addWidget(session->editorCamera);
-    connect(session->editorCamera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
-    connect(session->editorCamera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
-    ui->page_2->setSession(session);
-    ui->stackedWidget_3->addWidget(session->treeView);
-    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
-        session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    });
-    connect(session->action, &QAction::triggered, [=]() {
+    // add action to menu
+    ui->menuWindows->addAction(s->action);
+    connect(s->action, &QAction::triggered, [=]() {
         setCurrentSession(s);
     });
 
-    connect(session->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    // connect tree model with GUI
+    connect(s->simulation->getModel(), &TreeModel::propertyChanged, [this] {
+        session->treeView->update();
+        ui->scene->update();
+    });
 
+    // add tree view to objects
+    ui->stackedWidget_3->addWidget(s->treeView);
+    connect(s->treeView, &TreeView::cameraChanged, this, &MainWindow::changeCamera);
+    connect(s->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+
+    // add project settings to attributes
+    ui->stackedWidget->addWidget(s->projectSettings);
+
+    // add viewport settings to attributes
+    ui->stackedWidget->addWidget(s->viewport);
+    connect(s->viewport, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
+
+    // add editor camera to available cameras
+    addCamera(s->editorCamera);
+
+    //
+    connect(s->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    //
+
+    return s;
+}
+
+void MainWindow::newProject()
+{
+    setCurrentSession(makeSession());
+
+    //
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
     ui->horizontalSlider_2->setRange(0, 0);
@@ -301,23 +321,7 @@ void MainWindow::newProject()
 
     softMinimum = 0;
     softMaximum = 0;
-
-    ui->plot->setSimulation(session->simulation);
-
-    connect(session->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
-    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
-
-    connect(session->simulation->getModel(), &TreeModel::propertyChanged, [this] {
-        session->treeView->update();
-        ui->scene->update();
-    });
-
-    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
-
-    ui->scene->setSession(session);
-    ui->scene->update();
     //
-    setCurrentSession(s);
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
     ui->dockWidget_2->show();
@@ -330,13 +334,25 @@ void MainWindow::setCurrentSession(Session *s)
     // update window title
     setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
 
+    // update objects
+    ui->stackedWidget_3->setCurrentWidget(session->treeView);
+
+    // clear attributes
+    MetaAttributes::setSession(session);
     ui->stackedWidget->setCurrentWidget(ui->page_9);
 
     // update camera
-    ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
+    changeCamera(session->currentCamera);
+
+    // update view
+    ui->scene->setSession(session);
 
     // update materials
     materialBrowser->setSession(session);
+
+    //
+    ui->plot->setSimulation(s->simulation);
+    //
 }
 
 #include <QStandardPaths>
@@ -347,7 +363,7 @@ void MainWindow::openProject()
 
     if (!path.isEmpty())
     {
-        newProject();
+        auto s = makeSession();
 
         QFile file(path);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -364,11 +380,8 @@ void MainWindow::openProject()
         qobject_cast<MaterialListModel*>(s->listView->model())->read(materials);
 
         const QJsonObject objects = project["Objects"].toObject();
-        read(objects);
+        read(objects, s);
         s->simulation->getModel()->read(objects);
-
-        ui->scene->update();
-        ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
         s->projectSettings->read(projectSettings);
@@ -747,6 +760,16 @@ void MainWindow::addCamera(Camera* camera)
     });
 
     ui->stackedWidget_2->addWidget(camera);
+}
 
-    ((TreeModel*)session->treeView->model())->addCamera(camera);
+void MainWindow::changeCamera(Camera *camera)
+{
+    if (!camera)
+        camera = session->editorCamera;
+
+    ui->stackedWidget_2->currentWidget()->blockSignals(true);
+    camera->blockSignals(false);
+    ui->stackedWidget_2->setCurrentWidget(camera);
+
+    ui->horizontalSlider->setSplineInterpolator(camera);
 }

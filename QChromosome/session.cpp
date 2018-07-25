@@ -47,6 +47,10 @@ Session::~Session()
 {
     delete action;
     delete simulation;
+    delete editorCamera;
+    delete treeView;
+    delete projectSettings;
+    delete viewport;
     delete nd;
     delete vd;
     delete td;

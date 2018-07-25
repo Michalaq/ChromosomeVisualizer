@@ -29,7 +29,7 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *event);
 
-    void read(const QJsonObject& json);
+    void read(const QJsonObject& json, Session *s);
 
 public slots:
     void newProject();
@@ -99,13 +99,16 @@ private:
     int softMaximum;
 
     void addCamera(Camera *camera);
+    void changeCamera(Camera* camera);
 
     PickWidget* pw;
 
     MetaAttributes* recent;
 
-    Session* session;
+    Session* makeSession();
     void setCurrentSession(Session* s);
+
+    Session* session;
 };
 
 #endif // MAINWINDOW_H

@@ -74,11 +74,6 @@ AtomAttributes::~AtomAttributes()
     delete ui;
 }
 
-void AtomAttributes::setSession(Session *s)
-{
-    session = s;
-}
-
 void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexList &selectedRows)
 {
     Q_ASSERT(!selectedRows.empty());
