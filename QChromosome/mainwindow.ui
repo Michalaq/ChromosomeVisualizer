@@ -928,7 +928,6 @@ QLineEdit {
     <number>2</number>
    </attribute>
    <widget class="QStackedWidget" name="stackedWidget">
-    <widget class="ProjectSettings" name="page"/>
     <widget class="AtomAttributes" name="page_2"/>
     <widget class="LayerAttributes" name="page_3"/>
     <widget class="CameraAttributes" name="page_5"/>

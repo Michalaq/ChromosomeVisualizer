@@ -12,8 +12,7 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
-
-class Session;
+#include "session.h"
 
 namespace Ui
 {

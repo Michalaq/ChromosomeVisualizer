@@ -63,7 +63,7 @@ private:
 #include "namedelegate.h"
 #include "visibilitydelegate.h"
 #include "tagsdelegate.h"
-#include <QFileInfo>
+#include "projectsettings.h"
 #include "viewport.h"
 
 template class GLBuffer<VizCameraInstance>;
@@ -90,26 +90,10 @@ public:
 
     TreeView* treeView;
 
+    ProjectSettings* projectSettings;
     Viewport* viewport;
 
     void setFrame(std::shared_ptr<Frame> frame);
-
-    // Project Settings
-    int FPS;
-    int documentTime;
-    int maximumTime;
-    int minimumTime;
-    int previewMinTime;
-    int previewMaxTime;
-
-    QString author;
-    QString info;
-    QString fileFormat;
-    QString fileVersion;
-    QFileInfo filePath;
-
-    void read(const QJsonObject& json);
-    void write(QJsonObject& json) const;
 
 private:
     NameDelegate *nd;

@@ -18,14 +18,14 @@ MainWindow::MainWindow(QWidget *parent) :
     pw(nullptr),
     recent(nullptr)
 {
-    setWindowTitle("QChromosome 4D Studio - [Untitled]");
-
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     ui->setupUi(this);
+
+    newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
         QMessageBox::about(0, "About QChromosome 4D", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
@@ -56,17 +56,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
         ui->horizontalSlider_2->setMinimum(val);
         ui->spinBox_3->setMinimum(val);
-        ui->page->ui->spinBox_6->setMinimum(val);
-        ui->page->ui->spinBox_4->setMinimum(val);
-        ui->page->ui->spinBox_3->setValue(val, false);
+        session->projectSettings->ui->spinBox_6->setMinimum(val);
+        session->projectSettings->ui->spinBox_4->setMinimum(val);
+        session->projectSettings->ui->spinBox_3->setValue(val, false);
     });
 
     connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
         ui->horizontalSlider_2->setMaximum(val);
         ui->spinBox_2->setMaximum(val);
-        ui->page->ui->spinBox_3->setMaximum(val);
-        ui->page->ui->spinBox_7->setMaximum(val);
-        ui->page->ui->spinBox_6->setValue(val, false);
+        session->projectSettings->ui->spinBox_3->setMaximum(val);
+        session->projectSettings->ui->spinBox_7->setMaximum(val);
+        session->projectSettings->ui->spinBox_6->setValue(val, false);
     });
 
     /* connect actions */
@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentWidget(ui->page);
+        ui->stackedWidget->setCurrentWidget(session->projectSettings);
         ui->dockWidget_2->show();
     });
 
@@ -92,17 +92,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
 
-    connect(ui->page->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
+    connect(session->projectSettings->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
         timer.setInterval(1000 / value);
     });
 
-    timer.setInterval(1000 / ui->page->ui->spinBox->value());
+    timer.setInterval(1000 / session->projectSettings->ui->spinBox->value());
 
-    connect(ui->page->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
-    connect(ui->page->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(ui->page->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
+    connect(session->projectSettings->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
+    connect(session->projectSettings->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
+    connect(session->projectSettings->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
+    connect(session->projectSettings->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
+    connect(session->projectSettings->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -110,7 +110,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
                                                 ui->mainToolBar->toggleViewAction(),
-
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
@@ -177,8 +176,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
-
-    newProject();
 }
 
 MainWindow::~MainWindow()
@@ -325,17 +322,18 @@ void MainWindow::newProject()
     //
     setCurrentSession(s);
 
-    ui->stackedWidget->setCurrentWidget(ui->page);
+    ui->stackedWidget->setCurrentWidget(session->projectSettings);
     ui->dockWidget_2->show();
 }
 
 void MainWindow::setCurrentSession(Session *s)
 {
     session = s;
-    ui->stackedWidget->setCurrentWidget(ui->page_9);
 
-    ui->page->setSession(session);
-    setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->filePath.fileName()));
+    // update window title
+    setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
+
+    ui->stackedWidget->setCurrentWidget(ui->page_9);
 }
 
 #include <QStandardPaths>
@@ -370,12 +368,11 @@ void MainWindow::openProject()
         ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
-        session->read(projectSettings);
+        session->projectSettings->read(projectSettings);
 
-        session->filePath.setFile(path);
-
-        ui->page->setSession(session);
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->filePath.fileName()));
+        session->projectSettings->filePath.setFile(path);
+        session->projectSettings->ui->lineEdit_6->setText(path);
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->filePath.fileName()));
     }
 }
 
@@ -418,19 +415,17 @@ void MainWindow::addLayer()
 
 void MainWindow::saveProject()
 {
-    if (session->fileFormat != QString("QChromosome 4D File (*.%1)").arg(ext))
+    if (session->projectSettings->ui->lineEdit_4->text() != QString("QChromosome 4D File (*.%1)").arg(ext))
         saveProjectAs();
     else
     {
-        session->fileVersion = "1.01";
-
-        ui->page->setSession(session);
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->filePath.fileName()));
+        session->projectSettings->ui->lineEdit_5->setText("1.01");
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->filePath.fileName()));
 
         QJsonObject project;
 
         QJsonObject projectSettings;
-        session->write(projectSettings);
+        session->projectSettings->write(projectSettings);
         project["Project Settings"] = projectSettings;
 
         QJsonObject viewport;
@@ -449,7 +444,7 @@ void MainWindow::saveProject()
         simulation->getModel()->write(objects);
         project["Objects"] = objects;
 
-        QFile file(session->filePath.filePath());
+        QFile file(session->projectSettings->filePath.filePath());
         file.open(QIODevice::WriteOnly | QIODevice::Text);
         file.write(QJsonDocument(project).toJson());
         file.close();
@@ -458,15 +453,16 @@ void MainWindow::saveProject()
 
 void MainWindow::saveProjectAs()
 {
-    QString path = QFileDialog::getSaveFileName(0, "", session->filePath.exists() ? session->filePath.path() : QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ext));
+    QString path = QFileDialog::getSaveFileName(0, "", session->projectSettings->filePath.exists() ? session->projectSettings->filePath.path() : QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ext));
 
     if (!path.isEmpty())
     {
         if (QFileInfo(path).suffix() != ext)
             path += QString(".") + ext;
 
-        session->fileFormat = QString("QChromosome 4D File (*.%1)").arg(ext);
-        session->filePath.setFile(path);
+        session->projectSettings->ui->lineEdit_4->setText(QString("QChromosome 4D File (*.%1)").arg(ext));
+        session->projectSettings->filePath.setFile(path);
+        session->projectSettings->ui->lineEdit_6->setText(path);
 
         saveProject();
     }
@@ -483,8 +479,8 @@ void MainWindow::updateFrameCount(int n)
     ui->spinBox_3->setMaximum(lastFrame);
     ui->horizontalSlider->setMaximum(lastFrame);
     ui->plot->setMaximum(lastFrame);
-    ui->page->ui->spinBox_5->setMaximum(lastFrame);
-    ui->page->ui->spinBox_6->setMaximum(lastFrame);
+    session->projectSettings->ui->spinBox_5->setMaximum(lastFrame);
+    session->projectSettings->ui->spinBox_6->setMaximum(lastFrame);
 
     if (expandRange)
         ui->spinBox_3->setValue(lastFrame);
@@ -495,15 +491,13 @@ void MainWindow::updateFrameCount(int n)
 
 void MainWindow::setFrame(int n)
 {
-    session->documentTime = n;
-
     ui->horizontalSlider->setValue(n);
     ui->spinBox->setValue(n);
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
     session->setFrame(simulation->getFrame(n));
-    ui->page->ui->spinBox_5->setValue(n, false);
+    session->projectSettings->ui->spinBox_5->setValue(n, false);
 }
 
 void MainWindow::setSoftMinimum(int min)
@@ -511,8 +505,8 @@ void MainWindow::setSoftMinimum(int min)
     ui->horizontalSlider->setSoftMinimum(min);
     ui->horizontalSlider_2->setLowerBound(min, false);
     ui->plot->setSoftMinimum(min);
-    ui->page->ui->spinBox_7->setMinimum(min);
-    ui->page->ui->spinBox_4->setValue(min, false);
+    session->projectSettings->ui->spinBox_7->setMinimum(min);
+    session->projectSettings->ui->spinBox_4->setValue(min, false);
 
     softMinimum = min;
 }
@@ -522,8 +516,8 @@ void MainWindow::setSoftMaximum(int max)
     ui->horizontalSlider->setSoftMaximum(max);
     ui->horizontalSlider_2->setUpperBound(max, false);
     ui->plot->setSoftMaximum(max);
-    ui->page->ui->spinBox_4->setMaximum(max);
-    ui->page->ui->spinBox_7->setValue(max, false);
+    session->projectSettings->ui->spinBox_4->setMaximum(max);
+    session->projectSettings->ui->spinBox_7->setValue(max, false);
 
     softMaximum = max;
 }
@@ -535,17 +529,17 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    frameNumber_t previousFrame = simulation->getPreviousTime(session->documentTime);
+    frameNumber_t previousFrame = simulation->getPreviousTime(session->projectSettings->getDocumentTime());
 
-    if (session->documentTime > 0)
+    if (session->projectSettings->getDocumentTime() > 0)
         setFrame(previousFrame);
 }
 
 void MainWindow::reverse_previous()
 {
-    qint64 previousFrame = qMax(session->documentTime - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
+    qint64 previousFrame = qMax(session->projectSettings->getDocumentTime() - qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000), 0);
 
-    if (session->documentTime > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+    if (session->projectSettings->getDocumentTime() > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
         setFrame(previousFrame);
     else
     {
@@ -566,7 +560,7 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        if (ui->actionPreview_range->isChecked() && (session->documentTime <= softMinimum || session->documentTime > softMaximum))
+        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() <= softMinimum || session->projectSettings->getDocumentTime() > softMaximum))
             setFrame(softMaximum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
@@ -591,7 +585,7 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        if (ui->actionPreview_range->isChecked() && (session->documentTime < softMinimum || session->documentTime >= softMaximum))
+        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() < softMinimum || session->projectSettings->getDocumentTime() >= softMaximum))
             setFrame(softMinimum);
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
@@ -608,18 +602,18 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    frameNumber_t nextFrame = simulation->getNextTime(session->documentTime);
+    frameNumber_t nextFrame = simulation->getNextTime(session->projectSettings->getDocumentTime());
     simulation->getFrame(nextFrame);
 
-    if (session->documentTime < lastFrame)
+    if (session->projectSettings->getDocumentTime() < lastFrame)
         setFrame(nextFrame);
 }
 
 void MainWindow::play_next()
 {
-    qint64 nextFrame = session->documentTime + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
+    qint64 nextFrame = session->projectSettings->getDocumentTime() + qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000);
 
-    if (session->documentTime < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
         setFrame(nextFrame);
     else
     {
@@ -629,7 +623,7 @@ void MainWindow::play_next()
             setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
     }
 
-    simulation->getFrame(session->documentTime+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    simulation->getFrame(session->projectSettings->getDocumentTime()+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
@@ -701,13 +695,13 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(session->documentTime, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    movieMaker->captureScene1(session->projectSettings->getDocumentTime(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 }
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->projectSettings->ui->spinBox->value());
 }
 
 void MainWindow::updateLocks()
@@ -755,7 +749,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->filePath.fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
+    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->projectSettings->getFileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:
         saveProject();

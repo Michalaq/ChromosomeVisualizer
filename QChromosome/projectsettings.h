@@ -2,11 +2,11 @@
 #define PROJECTSETTINGS_H
 
 #include <QWidget>
-#include "session.h"
+#include <QFileInfo>
 
 namespace Ui
 {
-    class Form;
+    class ProjectSettings;
 }
 
 class ProjectSettings : public QWidget
@@ -16,12 +16,16 @@ public:
     explicit ProjectSettings(QWidget *parent = 0);
     ~ProjectSettings();
 
-    void setSession(Session* s);
+    int getDocumentTime() const;
+    QString getFileName() const;
+
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
 
 private:
-    Ui::Form *ui;
+    Ui::ProjectSettings *ui;
 
-    Session* session;
+    QFileInfo filePath;
 
 signals:
 
