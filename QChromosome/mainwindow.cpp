@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(0);
+        ui->stackedWidget->setCurrentWidget(ui->page);
         ui->dockWidget_2->show();
     });
 
@@ -127,7 +127,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(3);
+        ui->stackedWidget->setCurrentWidget(ui->page_4);
         ui->dockWidget_2->show();
     });
 
@@ -163,7 +163,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
-        ui->stackedWidget->setCurrentIndex(6);
+        ui->stackedWidget->setCurrentWidget(ui->page_7);
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
@@ -278,7 +278,7 @@ void MainWindow::newProject()
     ui->horizontalSlider->setSplineInterpolator(session->editorCamera);
     connect(session->editorCamera, &SplineInterpolator::selectionChanged, [this] {
         ui->page_6->setSplineInterpolator(session->editorCamera);
-        ui->stackedWidget->setCurrentIndex(5);
+        ui->stackedWidget->setCurrentWidget(ui->page_6);
         ui->dockWidget_2->show();
     });
     connect(session->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
@@ -328,14 +328,14 @@ void MainWindow::newProject()
     //
     setCurrentSession(s);
 
-    ui->stackedWidget->setCurrentIndex(0);
+    ui->stackedWidget->setCurrentWidget(ui->page);
     ui->dockWidget_2->show();
 }
 
 void MainWindow::setCurrentSession(Session *s)
 {
     session = s;
-    ui->stackedWidget->setCurrentIndex(8);
+    ui->stackedWidget->setCurrentWidget(ui->page_9);
 
     ui->page->setSession(session);
     setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->filePath.fileName()));
@@ -663,7 +663,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     if (!session->treeView->selectionModel()->hasSelection())
     {
         recent = nullptr;
-        ui->stackedWidget->setCurrentIndex(8);
+        ui->stackedWidget->setCurrentWidget(ui->page_9);
         return;
     }
 
@@ -780,7 +780,7 @@ void MainWindow::addCamera(Camera* camera)
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         ui->page_6->setSplineInterpolator(camera);
-        ui->stackedWidget->setCurrentIndex(5);
+        ui->stackedWidget->setCurrentWidget(ui->page_6);
         ui->dockWidget_2->show();
     });
 
