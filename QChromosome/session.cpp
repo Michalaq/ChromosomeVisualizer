@@ -9,7 +9,8 @@ Session::Session() :
     viewport(new Viewport),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
-    td(new TagsDelegate)
+    td(new TagsDelegate),
+    md(new MaterialDelegate)
 {
     treeView->setMouseTracking(true);
     treeView->setFocusPolicy(Qt::NoFocus);
@@ -34,6 +35,11 @@ Session::Session() :
     header->resizeSection(3, 42);
     header->setSectionResizeMode(3, QHeaderView::Fixed);
     header->setSectionResizeMode(5, QHeaderView::Fixed);
+
+    listView = MaterialBrowser::getInstance()->makeListView();
+
+    listView->setFocusPolicy(Qt::NoFocus);
+    listView->setItemDelegate(md);
 }
 
 Session::~Session()
@@ -43,6 +49,7 @@ Session::~Session()
     delete nd;
     delete vd;
     delete td;
+    delete md;
 }
 
 #include <cassert>

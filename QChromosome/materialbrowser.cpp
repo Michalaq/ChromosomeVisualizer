@@ -1,6 +1,7 @@
 #include "materialbrowser.h"
 #include "ui_materialbrowser.h"
 #include "material.h"
+#include "session.h"
 
 MaterialBrowser* MaterialBrowser::instance = nullptr;
 
@@ -11,27 +12,15 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
 
-    ui->listView->setItemDelegate(new MaterialDelegate(this));
+    mat[0] = new Material("Mat", Qt::red);
+    mat[1] = new Material("Mat.1", Qt::green);
+    mat[2] = new Material("Mat.2", Qt::blue);
+    mat[3] = new Material("Mat.3", Qt::white, .5);
 
-    auto * m = new MaterialListModel;
-    m->prepend(mat[0] = new Material(m->next_name(), Qt::red));
-    m->prepend(mat[1] = new Material(m->next_name(), Qt::green));
-    m->prepend(mat[2] = new Material(m->next_name(), Qt::blue));
-    m->prepend(mat[3] = new Material(m->next_name(), Qt::white, .5));
-
-    ui->listView->setModel(m);
-
-    connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
-        if (index.isValid())
-            emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
-        else
-            emit materialsSelected({});
-        update();
-    });
-
-    connect(ui->actionNew_Material, &QAction::triggered, [=]() {
+    connect(ui->actionNew_Material, &QAction::triggered, [this]() {
+        auto m = qobject_cast<MaterialListModel*>(listView->model());
         m->prepend(new Material(m->next_name()));
-        ui->listView->setCurrentIndex(m->index(0));
+        listView->setCurrentIndex(m->index(0));
     });
 
     connect(ui->actionClose_Manager, SIGNAL(triggered(bool)), this, SLOT(close()));
@@ -50,18 +39,20 @@ MaterialBrowser* MaterialBrowser::getInstance()
 
 Material* MaterialBrowser::getMaterialById(const QUuid &id)
 {
-    return qobject_cast<MaterialListModel*>(instance->ui->listView->model())->getMaterialById(id);
+    return qobject_cast<MaterialListModel*>(instance->listView->model())->getMaterialById(id);
 }
 
-void MaterialBrowser::read(const QJsonArray& json)
+ListView* MaterialBrowser::makeListView()
 {
-    auto * m = new MaterialListModel;
-    m->read(json);
+    ListView* lv = new ListView;
 
-    ui->listView->setModel(m);
-    ui->listView->setCurrentIndex(QModelIndex());
+    auto* mlm = new MaterialListModel;
+    for (auto material : mat)
+        mlm->prepend(material);
 
-    connect(ui->listView->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
+    lv->setModel(mlm);
+
+    connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
         if (index.isValid())
             emit materialsSelected({index.data(Qt::DecorationRole).value<Material*>()});
         else
@@ -69,15 +60,14 @@ void MaterialBrowser::read(const QJsonArray& json)
         update();
     });
 
-    connect(ui->actionNew_Material, &QAction::triggered, [=]() {
-        m->prepend(new Material(m->next_name()));
-        ui->listView->setCurrentIndex(m->index(0));
-    });
+    ui->stackedWidget->addWidget(lv);
+
+    return lv;
 }
 
-void MaterialBrowser::write(QJsonArray& json) const
+void MaterialBrowser::setSession(Session *s)
 {
-    qobject_cast<MaterialListModel*>(ui->listView->model())->write(json);
+    ui->stackedWidget->setCurrentWidget(listView = s->listView);
 }
 
 #include <QPainter>
@@ -88,8 +78,8 @@ void MaterialBrowser::paintEvent(QPaintEvent *event)
 
     QPainter p(this);
 
-    if (ui->listView->selectionModel()->hasSelection())
-        ui->listView->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, ui->widget_3->geometry().translated(ui->splitter->pos() + ui->centralwidget->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
+    if (listView->selectionModel()->hasSelection())
+        listView->selectionModel()->currentIndex().data(Qt::DecorationRole).value<Material*>()->paint(&p, ui->widget_3->geometry().translated(ui->splitter->pos() + ui->centralwidget->pos()).marginsRemoved(QMargins(10, 10, 10, 10)));
 }
 
 ListView::ListView(QWidget *parent) : QListView(parent)
@@ -283,13 +273,13 @@ void MaterialListModel::write(QJsonArray &json) const
 }
 
 #include <QRegularExpression>
-#include <set>
+#include <QSet>
 
 QString MaterialListModel::next_name()
 {
     static const QRegularExpression re("^Mat(.(?<label>[1-9][0-9]*))?$");
 
-    std::set<int> used;
+    QSet<int> used;
 
     for (auto * m : materials)
     {
@@ -299,9 +289,12 @@ QString MaterialListModel::next_name()
             used.insert(match.captured("label").toInt());
     }
 
+    auto values = used.values();
+    qSort(values);
+
     int i = 0;
 
-    for (auto j = used.begin(); j != used.end() && i == *j; i++, j++);
+    for (auto j = values.begin(); j != values.end() && i == *j; i++, j++);
 
     return i ? QString("Mat.") + QString::number(i) : "Mat";
 }

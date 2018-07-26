@@ -334,6 +334,9 @@ void MainWindow::setCurrentSession(Session *s)
     setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
 
     ui->stackedWidget->setCurrentWidget(ui->page_9);
+
+    // update materials
+    materialBrowser->setSession(session);
 }
 
 #include <QStandardPaths>
@@ -358,7 +361,7 @@ void MainWindow::openProject()
         session->editorCamera->read(camera);
 
         const QJsonArray materials = project["Materials"].toArray();
-        materialBrowser->read(materials);
+        qobject_cast<MaterialListModel*>(session->listView->model())->read(materials);
 
         const QJsonObject objects = project["Objects"].toObject();
         read(objects);
@@ -437,7 +440,7 @@ void MainWindow::saveProject()
         project["Camera"] = camera;
 
         QJsonArray materials;
-        materialBrowser->write(materials);
+        qobject_cast<MaterialListModel*>(session->listView->model())->write(materials);
         project["Materials"] = materials;
 
         QJsonObject objects;

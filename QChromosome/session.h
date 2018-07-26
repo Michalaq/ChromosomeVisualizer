@@ -65,6 +65,7 @@ private:
 #include "tagsdelegate.h"
 #include "projectsettings.h"
 #include "viewport.h"
+#include "materialbrowser.h"
 
 template class GLBuffer<VizCameraInstance>;
 template class GLBuffer<VizBallInstance>;
@@ -89,6 +90,7 @@ public:
     Camera* editorCamera;
 
     TreeView* treeView;
+    ListView* listView;
 
     ProjectSettings* projectSettings;
     Viewport* viewport;
@@ -99,6 +101,7 @@ private:
     NameDelegate *nd;
     VisibilityDelegate *vd;
     TagsDelegate *td;
+    MaterialDelegate *md;
 };
 
 #endif // SESSION_H
