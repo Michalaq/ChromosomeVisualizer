@@ -88,6 +88,7 @@ public:
     LabelAtlas labelAtlas;
 
     Camera* editorCamera;
+    Camera* currentCamera;
 
     TreeView* treeView;
     ListView* listView;

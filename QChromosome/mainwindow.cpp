@@ -134,12 +134,12 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->key, &MediaControl::clicked, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
+        session->currentCamera->captureFrame();
         ui->horizontalSlider->update();
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
+        session->currentCamera->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -162,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())));
+        addCamera(new Camera(*session->currentCamera));
     });
 
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
@@ -223,7 +223,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
     if (watched == ui->scene && event->type() == QEvent::Wheel)
     {
-        QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
+        QApplication::sendEvent(session->currentCamera, event);
         return true;
     }
 
@@ -332,6 +332,9 @@ void MainWindow::setCurrentSession(Session *s)
 
     ui->stackedWidget->setCurrentWidget(ui->page_9);
 
+    // update camera
+    ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
+
     // update materials
     materialBrowser->setSession(session);
 }
@@ -406,7 +409,7 @@ void MainWindow::addLayer()
                 ui->scene->update();
                 ui->plot->updateSimulation();
 
-                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(session->atomBuffer.mid(offset));
+                session->currentCamera->callibrate(session->atomBuffer.mid(offset));
             }
         }
     } catch (std::exception& e) {
@@ -663,13 +666,13 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(session->projectSettings->getDocumentTime(), session->simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    movieMaker->captureScene1(session->projectSettings->getDocumentTime(), session->simulation, session->currentCamera, suffix);
 }
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->projectSettings->ui->spinBox->value());
+    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, session->currentCamera, suffix, session->projectSettings->ui->spinBox->value());
 }
 
 void MainWindow::updateLocks()

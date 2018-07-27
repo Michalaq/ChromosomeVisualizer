@@ -4,6 +4,7 @@ Session::Session() :
     action(new QAction),
     simulation(new Simulation(this)),
     editorCamera(new Camera(this)),
+    currentCamera(editorCamera),
     treeView(new TreeView),
     projectSettings(new ProjectSettings),
     viewport(new Viewport),
