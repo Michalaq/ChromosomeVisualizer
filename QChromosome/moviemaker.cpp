@@ -173,7 +173,7 @@ void setFog(QTextStream& outFile, const QColor & color, float transmittance, con
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, Simulation *simulation, const Camera* camera, QString suffix, int fr)
 {
     if (isRunning())
     {
@@ -188,7 +188,7 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
 #include <QDesktopServices>
 #include <QUrl>
 
-void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -333,7 +333,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(int fn, Simulation *simulation, const Camera* camera, QString suffix)
 {
     if (isRunning())
     {
@@ -345,7 +345,7 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
     start();
 }
 
-void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();

@@ -12,7 +12,7 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 
 Plot::Plot(QWidget *parent) :
     SoftSlider(parent),
-    simulation_(std::make_shared<Simulation>(new Session)),
+    simulation_(new Simulation(new Session)),
     lastBuffered(-1)
 {
     simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
@@ -27,9 +27,9 @@ Plot::~Plot()
 
 }
 
-void Plot::setSimulation(std::shared_ptr<Simulation> dp)
+void Plot::setSimulation(Simulation *dp)
 {
-    simulation_ = std::move(dp);
+    simulation_ = dp;
 
     data.clear();
 

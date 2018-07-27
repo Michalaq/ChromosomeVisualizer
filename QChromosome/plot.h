@@ -3,7 +3,6 @@
 
 #include "softslider.h"
 
-#include <memory>
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
@@ -16,7 +15,7 @@ public:
     explicit Plot(QWidget *parent = 0);
     ~Plot();
 
-    void setSimulation(std::shared_ptr<Simulation> dp);
+    void setSimulation(Simulation* dp);
     void updateSimulation();
 
     void setMaximum(int max);
@@ -29,7 +28,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    std::shared_ptr<Simulation> simulation_;
+    Simulation* simulation_;
 
     QHash<QString, QVector<QPointF> > data;
     Tree minimax;

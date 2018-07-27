@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(simulation->getModel())->getSelected());
+        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -245,7 +245,7 @@ void MainWindow::read(const QJsonObject &json)
             auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
             simulationLayer->read(object["paths"].toArray());
 
-            simulation->addSimulationLayerConcatenation(simulationLayer, false);
+            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
         }
 
         if (object["class"] == "Camera")
@@ -265,7 +265,6 @@ void MainWindow::newProject()
 
     //
     session = s;
-    simulation = std::shared_ptr<Simulation>(session->simulation);
     connect(renderSettings, &RenderSettings::aspectRatioChanged, session->editorCamera, &Camera::setAspectRatio);
     ui->horizontalSlider->setSplineInterpolator(session->editorCamera);
     connect(session->editorCamera, &SplineInterpolator::selectionChanged, [this] {
@@ -292,7 +291,7 @@ void MainWindow::newProject()
         setCurrentSession(s);
     });
 
-    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
+    connect(session->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
 
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
@@ -303,12 +302,12 @@ void MainWindow::newProject()
     softMinimum = 0;
     softMaximum = 0;
 
-    ui->plot->setSimulation(simulation);
+    ui->plot->setSimulation(session->simulation);
 
     connect(session->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
     connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
-    connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
+    connect(session->simulation->getModel(), &TreeModel::propertyChanged, [this] {
         session->treeView->update();
         ui->scene->update();
     });
@@ -402,7 +401,7 @@ void MainWindow::addLayer()
             if (impd.exec() == QDialog::Accepted)
             {
                 setFrame(0);
-                simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+                session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
                 ui->scene->update();
                 ui->plot->updateSimulation();
@@ -465,7 +464,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    session->setFrame(simulation->getFrame(n));
+    session->setFrame(session->simulation->getFrame(n));
     session->projectSettings->ui->spinBox_5->setValue(n, false);
 }
 
@@ -498,7 +497,7 @@ void MainWindow::start()
 
 void MainWindow::previous()
 {
-    frameNumber_t previousFrame = simulation->getPreviousTime(session->projectSettings->getDocumentTime());
+    frameNumber_t previousFrame = session->simulation->getPreviousTime(session->projectSettings->getDocumentTime());
 
     if (session->projectSettings->getDocumentTime() > 0)
         setFrame(previousFrame);
@@ -571,8 +570,8 @@ void MainWindow::play(bool checked)
 
 void MainWindow::next()
 {
-    frameNumber_t nextFrame = simulation->getNextTime(session->projectSettings->getDocumentTime());
-    simulation->getFrame(nextFrame);
+    frameNumber_t nextFrame = session->simulation->getNextTime(session->projectSettings->getDocumentTime());
+    session->simulation->getFrame(nextFrame);
 
     if (session->projectSettings->getDocumentTime() < lastFrame)
         setFrame(nextFrame);
@@ -592,13 +591,13 @@ void MainWindow::play_next()
             setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
     }
 
-    simulation->getFrame(session->projectSettings->getDocumentTime()+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    session->simulation->getFrame(session->projectSettings->getDocumentTime()+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::end()
 {
     setFrame(lastFrame);
-    simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    session->simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::selectAll()
@@ -613,7 +612,7 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    auto model = qobject_cast<TreeModel*>(simulation->getModel());
+    auto model = qobject_cast<TreeModel*>(session->simulation->getModel());
 
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
@@ -647,7 +646,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;
 
-    recent->setSelection(simulation->getModel(), selectedRows);
+    recent->setSelection(session->simulation->getModel(), selectedRows);
     ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
 }
@@ -664,13 +663,13 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(session->projectSettings->getDocumentTime(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    movieMaker->captureScene1(session->projectSettings->getDocumentTime(), session->simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
 }
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->projectSettings->ui->spinBox->value());
+    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session->simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, session->projectSettings->ui->spinBox->value());
 }
 
 void MainWindow::updateLocks()

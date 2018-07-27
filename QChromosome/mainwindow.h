@@ -77,8 +77,6 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    std::shared_ptr<Simulation> simulation;
-
     int lastFrame;
 
     QTimer timer;
