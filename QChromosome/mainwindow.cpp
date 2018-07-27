@@ -5,8 +5,6 @@
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 
-static const char * ext = "qcs";
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -343,7 +341,7 @@ void MainWindow::setCurrentSession(Session *s)
 
 void MainWindow::openProject()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ext));
+    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ProjectSettings::suffix));
 
     if (!path.isEmpty())
     {
@@ -355,27 +353,28 @@ void MainWindow::openProject()
         file.close();
 
         const QJsonObject viewport = project["Viewport"].toObject();
-        session->viewport->read(viewport);
+        s->viewport->read(viewport);
 
         const QJsonObject camera = project["Camera"].toObject();
-        session->editorCamera->read(camera);
+        s->editorCamera->read(camera);
 
         const QJsonArray materials = project["Materials"].toArray();
-        qobject_cast<MaterialListModel*>(session->listView->model())->read(materials);
+        qobject_cast<MaterialListModel*>(s->listView->model())->read(materials);
 
         const QJsonObject objects = project["Objects"].toObject();
         read(objects);
-        simulation->getModel()->read(objects);
+        s->simulation->getModel()->read(objects);
 
         ui->scene->update();
         ui->plot->updateSimulation();
 
         const QJsonObject projectSettings = project["Project Settings"].toObject();
-        session->projectSettings->read(projectSettings);
+        s->projectSettings->read(projectSettings);
 
-        session->projectSettings->filePath.setFile(path);
-        session->projectSettings->ui->lineEdit_6->setText(path);
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->filePath.fileName()));
+        s->projectSettings->filePath.setFile(path);
+        s->projectSettings->ui->lineEdit_6->setText(path);
+
+        setCurrentSession(s);
     }
 }
 
@@ -418,56 +417,23 @@ void MainWindow::addLayer()
 
 void MainWindow::saveProject()
 {
-    if (session->projectSettings->ui->lineEdit_4->text() != QString("QChromosome 4D File (*.%1)").arg(ext))
-        saveProjectAs();
-    else
+    if (session->projectSettings->getSaveFileName())
     {
-        session->projectSettings->ui->lineEdit_5->setText("1.01");
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->filePath.fileName()));
-
         QJsonObject project;
+        session->write(project);
 
-        QJsonObject projectSettings;
-        session->projectSettings->write(projectSettings);
-        project["Project Settings"] = projectSettings;
-
-        QJsonObject viewport;
-        session->viewport->write(viewport);
-        project["Viewport"] = viewport;
-
-        QJsonObject camera;
-        session->editorCamera->write(camera);
-        project["Camera"] = camera;
-
-        QJsonArray materials;
-        qobject_cast<MaterialListModel*>(session->listView->model())->write(materials);
-        project["Materials"] = materials;
-
-        QJsonObject objects;
-        simulation->getModel()->write(objects);
-        project["Objects"] = objects;
-
-        QFile file(session->projectSettings->filePath.filePath());
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(QJsonDocument(project).toJson());
-        file.close();
+        session->projectSettings->writeSaveFile(QJsonDocument(project));
     }
 }
 
 void MainWindow::saveProjectAs()
 {
-    QString path = QFileDialog::getSaveFileName(0, "", session->projectSettings->filePath.exists() ? session->projectSettings->filePath.path() : QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ext));
-
-    if (!path.isEmpty())
+    if (session->projectSettings->getNewSaveFileName())
     {
-        if (QFileInfo(path).suffix() != ext)
-            path += QString(".") + ext;
+        QJsonObject project;
+        session->write(project);
 
-        session->projectSettings->ui->lineEdit_4->setText(QString("QChromosome 4D File (*.%1)").arg(ext));
-        session->projectSettings->filePath.setFile(path);
-        session->projectSettings->ui->lineEdit_6->setText(path);
-
-        saveProject();
+        session->projectSettings->writeSaveFile(QJsonDocument(project));
     }
 }
 

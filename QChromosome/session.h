@@ -97,6 +97,8 @@ public:
 
     void setFrame(std::shared_ptr<Frame> frame);
 
+    void write(QJsonObject& project) const;
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;

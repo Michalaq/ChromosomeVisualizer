@@ -66,3 +66,29 @@ void Session::setFrame(std::shared_ptr<Frame> frame)
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 }
+
+#include <QJsonObject>
+#include <QJsonArray>
+
+void Session::write(QJsonObject& project) const
+{
+    QJsonObject projectSettings_;
+    projectSettings->write(projectSettings_);
+    project["Project Settings"] = projectSettings_;
+
+    QJsonObject viewport_;
+    viewport->write(viewport_);
+    project["Viewport"] = viewport_;
+
+    QJsonObject camera_;
+    editorCamera->write(camera_);
+    project["Camera"] = camera_;
+
+    QJsonArray materials_;
+    qobject_cast<MaterialListModel*>(listView->model())->write(materials_);
+    project["Materials"] = materials_;
+
+    QJsonObject objects_;
+    simulation->getModel()->write(objects_);
+    project["Objects"] = objects_;
+}

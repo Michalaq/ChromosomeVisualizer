@@ -19,8 +19,16 @@ public:
     int getDocumentTime() const;
     QString getFileName() const;
 
+    bool getSaveFileName();
+    bool getNewSaveFileName();
+
+    void writeSaveFile(const QJsonDocument &project);
+
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
+
+    static const char * suffix;
+    static const char * version;
 
 private:
     Ui::ProjectSettings *ui;

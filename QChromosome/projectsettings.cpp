@@ -3,6 +3,9 @@
 #include <QDir>
 #include <QStandardPaths>
 
+const char * ProjectSettings::suffix = "qcs";
+const char * ProjectSettings::version = "1.01";
+
 ProjectSettings::ProjectSettings(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProjectSettings)
@@ -25,6 +28,48 @@ int ProjectSettings::getDocumentTime() const
 QString ProjectSettings::getFileName() const
 {
     return filePath.fileName();
+}
+
+#include <QFileDialog>
+
+bool ProjectSettings::getSaveFileName()
+{
+    if (filePath.exists())
+        return true;
+    else
+        return getNewSaveFileName();
+}
+
+bool ProjectSettings::getNewSaveFileName()
+{
+    QString path = QFileDialog::getSaveFileName(0, "", filePath.exists() ? filePath.path() : QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(suffix));
+
+    if (!path.isEmpty())
+    {
+        if (QFileInfo(path).suffix() != suffix)
+            path += QString(".") + suffix;
+
+        filePath.setFile(path);
+
+        ui->lineEdit_4->setText(QString("QChromosome 4D File (*.%1)").arg(suffix));
+        ui->lineEdit_6->setText(path);
+
+        return true;
+    }
+
+    return false;
+}
+
+#include <QJsonDocument>
+
+void ProjectSettings::writeSaveFile(const QJsonDocument& project)
+{
+    ui->lineEdit_5->setText(version);
+
+    QFile file(filePath.filePath());
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    file.write(project.toJson());
+    file.close();
 }
 
 #include <QJsonObject>
@@ -61,6 +106,6 @@ void ProjectSettings::write(QJsonObject &json) const
     info["Author"] = ui->lineEdit_3->text();
     info["Info"] = ui->textEdit->toPlainText();
     info["File Format"] = ui->lineEdit_4->text();
-    info["File Version"] = ui->lineEdit_5->text();
+    info["File Version"] = version;
     json["Info"] = info;
 }
