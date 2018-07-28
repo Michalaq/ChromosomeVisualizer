@@ -42,7 +42,6 @@ public:
     Material *mat[4];
 
     static MaterialBrowser* getInstance();
-    static Material* getMaterialById(const QUuid& id);
 
     ListView* makeListView();
     void setSession(Session* s);

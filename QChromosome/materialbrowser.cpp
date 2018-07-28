@@ -37,11 +37,6 @@ MaterialBrowser* MaterialBrowser::getInstance()
     return instance ? instance : instance = new MaterialBrowser();
 }
 
-Material* MaterialBrowser::getMaterialById(const QUuid &id)
-{
-    return qobject_cast<MaterialListModel*>(instance->listView->model())->getMaterialById(id);
-}
-
 ListView* MaterialBrowser::makeListView()
 {
     ListView* lv = new ListView;

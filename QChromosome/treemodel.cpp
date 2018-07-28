@@ -386,7 +386,16 @@ void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
 
     if (!list.isEmpty())
     {
-        auto n = list.last().value<Material*>();
+        auto model = qobject_cast<MaterialListModel*>(session->listView->model());
+
+        QVariantList u;
+
+        for (auto i : list)
+            u.append(QVariant::fromValue(model->getMaterialById(i.toString())));
+
+        setData(root.sibling(root.row(), 5), u);
+
+        auto n = u.last().value<Material*>();
         n->assign(root);
         m = n;
     }

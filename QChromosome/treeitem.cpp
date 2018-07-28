@@ -142,14 +142,7 @@ void TreeItem::read(const QJsonObject &json)
     auto t = object.find("Tags");
 
     if (t != object.end())
-    {
-        QVariantList u;
-
-        for (auto i : t.value().toArray())
-            u.append(QVariant::fromValue(MaterialBrowser::getMaterialById(i.toString())));
-
-        m_itemData[5] = u;
-    }
+        m_itemData[5] = t.value().toArray().toVariantList();
 
     const QJsonObject children = json["Descendants"].toObject();
 
