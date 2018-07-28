@@ -89,6 +89,7 @@ public:
 
     Camera* editorCamera;
     Camera* currentCamera;
+    QList<Camera*> userCameras;
 
     TreeView* treeView;
     ListView* listView;
@@ -98,7 +99,12 @@ public:
 
     void setFrame(std::shared_ptr<Frame> frame);
 
-    void write(QJsonObject& project) const;
+    void fromJson(const QJsonDocument& json);
+    QJsonDocument toJson() const;
+
+    bool openProject();
+    void saveProject() const;
+    void saveProjectAs() const;
 
 private:
     NameDelegate *nd;

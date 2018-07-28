@@ -72,11 +72,34 @@ void Session::setFrame(std::shared_ptr<Frame> frame)
     }
 }
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 
-void Session::write(QJsonObject& project) const
+void Session::fromJson(const QJsonDocument &json)
 {
+    const QJsonObject project = json.object();
+
+    const QJsonObject projectSettings_ = project["Project Settings"].toObject();
+    projectSettings->read(projectSettings_);
+
+    const QJsonObject viewport_ = project["Viewport"].toObject();
+    viewport->read(viewport_);
+
+    const QJsonObject camera_ = project["Editor Camera"].toObject();
+    editorCamera->read(camera_);
+
+    const QJsonArray materials_ = project["Materials"].toArray();
+    qobject_cast<MaterialListModel*>(listView->model())->read(materials_);
+
+    const QJsonObject objects = project["Objects"].toObject();
+    simulation->getModel()->read(objects);
+}
+
+QJsonDocument Session::toJson() const
+{
+    QJsonObject project;
+
     QJsonObject projectSettings_;
     projectSettings->write(projectSettings_);
     project["Project Settings"] = projectSettings_;
@@ -87,7 +110,7 @@ void Session::write(QJsonObject& project) const
 
     QJsonObject camera_;
     editorCamera->write(camera_);
-    project["Camera"] = camera_;
+    project["Editor Camera"] = camera_;
 
     QJsonArray materials_;
     qobject_cast<MaterialListModel*>(listView->model())->write(materials_);
@@ -96,4 +119,29 @@ void Session::write(QJsonObject& project) const
     QJsonObject objects_;
     simulation->getModel()->write(objects_);
     project["Objects"] = objects_;
+
+    return QJsonDocument(project);
+}
+
+bool Session::openProject()
+{
+    if (projectSettings->getOpenFileName())
+    {
+        fromJson(projectSettings->readSaveFile());
+        return true;
+    }
+
+    return false;
+}
+
+void Session::saveProject() const
+{
+    if (projectSettings->getSaveFileName())
+        projectSettings->writeSaveFile(toJson());
+}
+
+void Session::saveProjectAs() const
+{
+    if (projectSettings->getNewSaveFileName())
+        projectSettings->writeSaveFile(toJson());
 }

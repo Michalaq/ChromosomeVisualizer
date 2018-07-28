@@ -241,35 +241,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-#include <QJsonObject>
-
-void MainWindow::read(const QJsonObject &json, Session* s)
-{
-    const QJsonObject children = json["Descendants"].toObject();
-
-    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
-    {
-        const QJsonObject object = child.value().toObject()["Object"].toObject();
-
-        if (object["class"] == "Layer")
-        {
-            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-            simulationLayer->read(object["paths"].toArray());
-
-            s->simulation->addSimulationLayerConcatenation(simulationLayer, false);
-        }
-
-        if (object["class"] == "Camera")
-        {
-            auto camera = new Camera(s);
-            camera->read(object);
-
-            addCamera(camera);
-            qobject_cast<TreeModel*>(s->treeView->model())->addCamera(camera);
-        }
-    }
-}
-
 Session* MainWindow::makeSession()
 {
     auto s = new Session();
@@ -355,42 +326,19 @@ void MainWindow::setCurrentSession(Session *s)
     //
 }
 
-#include <QStandardPaths>
-
 void MainWindow::openProject()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(ProjectSettings::suffix));
+    auto s = makeSession();
 
-    if (!path.isEmpty())
+    if (s->openProject())
     {
-        auto s = makeSession();
-
-        QFile file(path);
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        const QJsonObject project = QJsonDocument::fromJson(file.readAll()).object();
-        file.close();
-
-        const QJsonObject viewport = project["Viewport"].toObject();
-        s->viewport->read(viewport);
-
-        const QJsonObject camera = project["Camera"].toObject();
-        s->editorCamera->read(camera);
-
-        const QJsonArray materials = project["Materials"].toArray();
-        qobject_cast<MaterialListModel*>(s->listView->model())->read(materials);
-
-        const QJsonObject objects = project["Objects"].toObject();
-        read(objects, s);
-        s->simulation->getModel()->read(objects);
-
-        const QJsonObject projectSettings = project["Project Settings"].toObject();
-        s->projectSettings->read(projectSettings);
-
-        s->projectSettings->filePath.setFile(path);
-        s->projectSettings->ui->lineEdit_6->setText(path);
+        for (Camera* camera : s->userCameras)
+            addCamera(camera);
 
         setCurrentSession(s);
     }
+    else
+        delete s;
 }
 
 #include "importdialog.h"
@@ -432,24 +380,12 @@ void MainWindow::addLayer()
 
 void MainWindow::saveProject()
 {
-    if (session->projectSettings->getSaveFileName())
-    {
-        QJsonObject project;
-        session->write(project);
-
-        session->projectSettings->writeSaveFile(QJsonDocument(project));
-    }
+    session->saveProject();
 }
 
 void MainWindow::saveProjectAs()
 {
-    if (session->projectSettings->getNewSaveFileName())
-    {
-        QJsonObject project;
-        session->write(project);
-
-        session->projectSettings->writeSaveFile(QJsonDocument(project));
-    }
+    session->saveProjectAs();
 }
 
 void MainWindow::updateFrameCount(int n)

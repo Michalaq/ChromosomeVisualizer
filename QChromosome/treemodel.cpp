@@ -290,6 +290,8 @@ void TreeModel::addCamera(Camera *camera)
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
+
+    session->userCameras.append(camera);
 }
 
 void TreeModel::setCurrentCamera(QModelIndex index)
@@ -555,8 +557,29 @@ void TreeModel::setName(const QModelIndexList &indices, const QString &name)
     emit attributeChanged();
 }
 
+#include <QJsonObject>
+#include <QJsonArray>
+
 void TreeModel::read(const QJsonObject &json)
 {
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
+    {
+        const QJsonObject object = child.value().toObject()["Object"].toObject();
+
+        if (object["class"] == "Layer")
+        {
+            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
+            simulationLayer->read(object["paths"].toArray());
+
+            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
+        }
+
+        if (object["class"] == "Camera")
+            qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));
+    }
+
     header->read(json);
 
     updateMaterial(QModelIndex(), Material::getDefault());

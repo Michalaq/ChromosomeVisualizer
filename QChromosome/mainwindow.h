@@ -29,14 +29,14 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *event);
 
-    void read(const QJsonObject& json, Session *s);
-
 public slots:
     void newProject();
     void openProject();
-    void addLayer();
+
     void saveProject();
     void saveProjectAs();
+
+    void addLayer();
 
     void setFrame(int n);
     void updateFrameCount(int n);

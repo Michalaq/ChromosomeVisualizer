@@ -32,6 +32,21 @@ QString ProjectSettings::getFileName() const
 
 #include <QFileDialog>
 
+bool ProjectSettings::getOpenFileName()
+{
+    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(suffix));
+
+    if (!path.isEmpty())
+    {
+        filePath.setFile(path);
+        ui->lineEdit_6->setText(path);
+
+        return true;
+    }
+
+    return false;
+}
+
 bool ProjectSettings::getSaveFileName()
 {
     if (filePath.exists())
@@ -50,8 +65,6 @@ bool ProjectSettings::getNewSaveFileName()
             path += QString(".") + suffix;
 
         filePath.setFile(path);
-
-        ui->lineEdit_4->setText(QString("QChromosome 4D File (*.%1)").arg(suffix));
         ui->lineEdit_6->setText(path);
 
         return true;
@@ -62,8 +75,19 @@ bool ProjectSettings::getNewSaveFileName()
 
 #include <QJsonDocument>
 
+QJsonDocument ProjectSettings::readSaveFile() const
+{
+    QFile file(filePath.filePath());
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    const QJsonDocument project = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    return project;
+}
+
 void ProjectSettings::writeSaveFile(const QJsonDocument& project)
 {
+    ui->lineEdit_4->setText(QString("QChromosome 4D File (*.%1)").arg(suffix));
     ui->lineEdit_5->setText(version);
 
     QFile file(filePath.filePath());

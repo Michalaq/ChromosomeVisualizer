@@ -152,6 +152,7 @@ public:
 
     void setFlag(VizFlag flag, bool on = true);
 
+    void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;

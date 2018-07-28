@@ -19,9 +19,11 @@ public:
     int getDocumentTime() const;
     QString getFileName() const;
 
+    bool getOpenFileName();
     bool getSaveFileName();
     bool getNewSaveFileName();
 
+    QJsonDocument readSaveFile() const;
     void writeSaveFile(const QJsonDocument &project);
 
     void read(const QJsonObject& json);

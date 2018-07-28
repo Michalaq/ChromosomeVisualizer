@@ -282,6 +282,14 @@ void CameraItem::setFlag(VizFlag flag, bool on)
     session->cameraBuffer[id].flags.setFlag(flag, on);
 }
 
+void CameraItem::read(const QJsonObject &json)
+{
+    TreeItem::read(json);
+
+    const QJsonObject object = json["Object"].toObject();
+    camera->read(object);
+}
+
 void CameraItem::write(QJsonObject &json) const
 {
     TreeItem::write(json);
