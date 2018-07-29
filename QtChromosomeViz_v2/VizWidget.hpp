@@ -38,6 +38,7 @@ protected:
     void dropEvent(QDropEvent *event);
 
     void mouseReleaseEvent(QMouseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void allocate();
@@ -56,7 +57,7 @@ private:
     QOpenGLShaderProgram pickingProgram_;
 
     GLuint buffers[3];
-    GLuint picking;
+    GLuint picking[1];
     GLuint texture[2];
     QImage image;
 

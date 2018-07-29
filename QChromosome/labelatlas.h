@@ -2,7 +2,8 @@
 #define LABELATLAS_H
 
 
-#include <QOpenGLFramebufferObject>
+#include <QOpenGLTexture>
+#include <QImage>
 #include <QFont>
 
 class LabelAtlas
@@ -11,18 +12,19 @@ public:
     explicit LabelAtlas();
     ~LabelAtlas();
 
-    void initializeGL();
-    GLuint texture() const;
+    void allocate();
+    GLuint textureId() const;
 
     QRect addLabel(const QString& text, const QFont &font);
-    QRect size() const;
+    QSize size() const;
 
 private:
-    QOpenGLFramebufferObjectFormat format;
-    QOpenGLFramebufferObject *fbo;
+    QOpenGLTexture texture;
+    QImage image;
 
-    int pos;
-    int width;
+    int offset;
+
+    bool modified;
 };
 
 #endif // LABELATLAS_H

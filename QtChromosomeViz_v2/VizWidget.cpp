@@ -5,21 +5,6 @@ VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
 {
     setAcceptDrops(true);
-
-    connect(this, &QOpenGLWidget::resized, [this]() {
-        glDeleteTextures(2, texture);
-        glGenTextures(2, texture);
-
-        glBindTexture(GL_TEXTURE_2D, texture[0]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
-
-        glBindTexture(GL_TEXTURE_2D, texture[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, picking);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
-    });
 }
 
 VizWidget::~VizWidget()
@@ -207,8 +192,6 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
     assert(pickingProgram_.link());
 
-    session->labelAtlas.initializeGL();
-
     glGenBuffers(3, buffers);
 
     {
@@ -265,7 +248,8 @@ void VizWidget::initializeGL()
         glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
     }
 
-    glGenFramebuffers(1, &picking);
+    glGenFramebuffers(1, picking);
+    glGenTextures(2, texture);
 }
 
 void VizWidget::paintGL()
@@ -333,16 +317,12 @@ void VizWidget::paintGL()
         vaoLabels_.bind();
         labelsProgram_.bind();
 
-        auto& atlas = session->labelAtlas;
-
-        labelsProgram_.setUniformValue("uvTextureSize",
-                                (float)atlas.size().width(),
-                                (float)atlas.size().height());
+        labelsProgram_.setUniformValue("uvTextureSize", QSizeF(session->labelAtlas.size()));
         labelsProgram_.setUniformValue("SampleTexture", 0);
 
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, atlas.texture());
+        glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -379,6 +359,7 @@ void VizWidget::allocate()
 {
     session->cameraBuffer.allocate(cameraPositions_);
     session->atomBuffer.allocate(atomPositions_);
+    session->labelAtlas.allocate();
 
     if (Viewport::modified)
     {
@@ -419,7 +400,7 @@ void VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, picking);
+    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
 
     // Ensure taht buffers are up to date
     allocate();
@@ -562,4 +543,19 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     flags.setFlag(ctrl ? QItemSelectionModel::Deselect : QItemSelectionModel::Select);
 
     emit selectionChanged(selected, flags);
+}
+
+void VizWidget::resizeEvent(QResizeEvent* event)
+{
+    QOpenGLWidget::resizeEvent(event);
+
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
+
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
 }
