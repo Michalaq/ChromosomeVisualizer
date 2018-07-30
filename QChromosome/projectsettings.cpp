@@ -30,6 +30,11 @@ QString ProjectSettings::getFileName() const
     return filePath.fileName();
 }
 
+int ProjectSettings::getFPS() const
+{
+    return ui->spinBox->value();
+}
+
 #include <QFileDialog>
 
 bool ProjectSettings::getOpenFileName()

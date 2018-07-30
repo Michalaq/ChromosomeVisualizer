@@ -18,6 +18,7 @@ public:
 
     int getDocumentTime() const;
     QString getFileName() const;
+    int getFPS() const;
 
     bool getOpenFileName();
     bool getSaveFileName();

@@ -16,9 +16,6 @@
 #include "viewport.h"
 #include "materialbrowser.h"
 
-template class GLBuffer<VizCameraInstance>;
-template class GLBuffer<VizBallInstance>;
-
 class Session
 {
 public:

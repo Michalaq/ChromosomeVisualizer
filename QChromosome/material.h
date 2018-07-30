@@ -16,8 +16,6 @@ struct material_data_t
     float specularExponent  __attribute__((aligned(4)));
 }                           __attribute__((aligned(16)));
 
-template class GLBuffer<material_data_t>;
-
 class Material : public QWidget
 {
     Q_OBJECT

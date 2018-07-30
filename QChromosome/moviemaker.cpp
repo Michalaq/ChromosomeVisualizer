@@ -173,7 +173,7 @@ void setFog(QTextStream& outFile, const QColor & color, float transmittance, con
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, Simulation *simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suffix)
 {
     if (isRunning())
     {
@@ -181,7 +181,7 @@ void MovieMaker::captureScene(int fbeg, int fend, Simulation *simulation, const 
         return;
     }
 
-    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = simulation; camera_ = camera; suffix_ = suffix; fr_ = fr;
+    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix; fr_ = session->projectSettings->getFPS();
     start();
 }
 
@@ -333,7 +333,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, Simulation *simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(Session *session, QString suffix)
 {
     if (isRunning())
     {
@@ -341,7 +341,7 @@ void MovieMaker::captureScene1(int fn, Simulation *simulation, const Camera* cam
         return;
     }
 
-    snapshot = true; fn_ = fn; simulation_ = simulation; camera_ = camera; suffix_ = suffix;
+    snapshot = true; fn_ = session->projectSettings->getDocumentTime(); simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix;
     start();
 }
 
