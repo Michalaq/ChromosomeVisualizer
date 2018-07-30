@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QProcess>
 #include <QTextStream>
+#include "glbuffer.h"
 
 struct material_data_t
 {
@@ -14,6 +15,8 @@ struct material_data_t
     QRgb specularColor      __attribute__((aligned(4)));
     float specularExponent  __attribute__((aligned(4)));
 }                           __attribute__((aligned(16)));
+
+template class GLBuffer<material_data_t>;
 
 class Material : public QWidget
 {
@@ -59,9 +62,7 @@ public:
     static const Material* fetch(int index);
     static void writePOVMaterials(QTextStream &stream);
 
-    static const QVector<material_data_t>& getBuffer();
-    static bool modified;
-    static bool resized;
+    static GLBuffer<material_data_t>& getBuffer();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -90,7 +91,7 @@ private:
     QProcess p;
 
     int index;
-    static QVector<material_data_t> buffer;
+    static GLBuffer<material_data_t> buffer;
     static QVector<const Material*> library;
 };
 

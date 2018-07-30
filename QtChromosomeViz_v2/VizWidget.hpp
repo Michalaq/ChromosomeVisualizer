@@ -50,13 +50,15 @@ private:
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
 
+    QOpenGLBuffer materials_;
+
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
     QOpenGLShaderProgram labelsProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
-    GLuint buffers[3];
+    GLuint buffers[2];
     GLuint picking[1];
     GLuint texture[2];
     QImage image;

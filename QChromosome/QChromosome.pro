@@ -146,7 +146,8 @@ HEADERS += \
     labelatlas.h \
     statusbar.h \
     fontcombobox.h \
-    session.h
+    session.h \
+    glbuffer.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \

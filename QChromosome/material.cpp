@@ -1,10 +1,8 @@
 #include "material.h"
 
 Material* Material::dm = nullptr;
+GLBuffer<material_data_t> Material::buffer;
 QVector<const Material*> Material::library;
-QVector<material_data_t> Material::buffer;
-bool Material::modified = false;
-bool Material::resized = false;
 
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
     QWidget(parent),
@@ -15,17 +13,15 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     specularColor(sc),
     specularExponent(se),
     finish(0),
-    index(buffer.size())
+    index(buffer.emplace_back())
 {
     color.setAlphaF(1. - t);
 
     setFixedSize(45, 45);
     updateIcon();
 
+    buffer[index] = {color.rgba(), specularColor.rgba(), specularExponent};
     library.push_back(this);
-
-    buffer.push_back({color.rgba(), specularColor.rgba(), specularExponent});
-    resized = true;
 }
 
 Material::~Material()
@@ -61,7 +57,6 @@ void Material::setColor(QColor c)
     updateIcon();
 
     buffer[index].color = color.rgba();
-    modified = true;
 }
 
 float Material::getTransparency() const
@@ -75,7 +70,6 @@ void Material::setTransparency(float t)
     updateIcon();
 
     buffer[index].color = color.rgba();
-    modified = true;
 }
 
 QColor Material::getSpecularColor() const
@@ -89,7 +83,6 @@ void Material::setSpecularColor(QColor c)
     updateIcon();
 
     buffer[index].specularColor = specularColor.rgba();
-    modified = true;
 }
 
 float Material::getSpecularExponent() const
@@ -103,7 +96,6 @@ void Material::setSpecularExponent(qreal e)
     updateIcon();
 
     buffer[index].specularExponent = e;
-    modified = true;
 }
 
 int Material::getFinish() const
@@ -163,7 +155,6 @@ void Material::read(const QJsonObject& json)
     updateIcon();
 
     buffer[index] = {color.rgba(), specularColor.rgba(), specularExponent};
-    modified = true;
 }
 
 void Material::write(QJsonObject& json) const
@@ -343,7 +334,7 @@ void Material::writePOVMaterials(QTextStream &stream)
             stream << *material;
 }
 
-const QVector<material_data_t>& Material::getBuffer()
+GLBuffer<material_data_t> &Material::getBuffer()
 {
     return buffer;
 }

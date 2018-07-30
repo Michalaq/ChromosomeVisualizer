@@ -192,7 +192,10 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
     assert(pickingProgram_.link());
 
-    glGenBuffers(3, buffers);
+    assert(materials_.create());
+    materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    glGenBuffers(2, buffers);
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
@@ -237,7 +240,7 @@ void VizWidget::initializeGL()
 
     {
         const GLuint binding_point_index = 2;
-        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[2]);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, materials_.bufferId());
 
         unsigned int block_index;
 
@@ -371,24 +374,7 @@ void VizWidget::allocate()
         Viewport::modified = false;
     }
 
-    if (Material::resized)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(material_data_t) * Material::getBuffer().size(), Material::getBuffer().data(), GL_DYNAMIC_DRAW);
-
-        Material::resized = false;
-        Material::modified = false;
-    }
-
-    if (Material::modified)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
-        GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-        memcpy(p, Material::getBuffer().data(), sizeof(material_data_t) * Material::getBuffer().size());
-        glUnmapBuffer(GL_UNIFORM_BUFFER);
-
-        Material::modified = false;
-    }
+    Material::getBuffer().allocate(materials_);
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
