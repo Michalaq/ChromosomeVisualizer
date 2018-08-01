@@ -246,6 +246,7 @@ void MaterialListModel::prepend(Material *m)
 
 void MaterialListModel::read(const QJsonArray &json)
 {
+    materials.clear();
     id2mat.clear();
 
     for (auto i = json.begin(); i != json.end(); i++)
