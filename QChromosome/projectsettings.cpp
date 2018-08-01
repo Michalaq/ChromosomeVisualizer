@@ -12,7 +12,14 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    filePath.setFile(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
+    const QString path = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled");
+
+    filePath.setFile(path);
+    ui->lineEdit_6->setText(path);
+
+    connect(ui->lineEdit_6, &FileEdit::textChanged, [this]() {
+        emit fileNameChanged(getFileName());
+    });
 }
 
 ProjectSettings::~ProjectSettings()

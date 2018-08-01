@@ -264,6 +264,9 @@ Session* MainWindow::makeSession()
 
     // add project settings to attributes
     ui->stackedWidget->addWidget(s->projectSettings);
+    connect(s->projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(fileName));
+    });
 
     // add viewport settings to attributes
     ui->stackedWidget->addWidget(s->viewport);

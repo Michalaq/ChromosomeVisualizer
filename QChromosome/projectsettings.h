@@ -39,6 +39,7 @@ private:
     QFileInfo filePath;
 
 signals:
+    void fileNameChanged(const QString&);
 
 public slots:
 

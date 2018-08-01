@@ -41,6 +41,12 @@ Session::Session() :
 
     listView->setFocusPolicy(Qt::NoFocus);
     listView->setItemDelegate(md);
+
+    QObject::connect(projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
+        action->setText(fileName);
+    });
+
+    action->setText(projectSettings->getFileName());
 }
 
 Session::~Session()
