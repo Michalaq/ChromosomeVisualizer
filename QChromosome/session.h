@@ -43,7 +43,7 @@ public:
     ProjectSettings* projectSettings;
     Viewport* viewport;
 
-    void setFrame(int n);
+    void setDocumentTime(int documentTime);
 
     void fromJson(const QJsonDocument& json);
     QJsonDocument toJson() const;

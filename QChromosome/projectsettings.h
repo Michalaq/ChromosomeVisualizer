@@ -18,10 +18,13 @@ public:
 
     int getFPS() const;
     int getDocumentTime() const;
+    int getMinimumTime() const;
     int getMaximumTime() const;
     int getPreviewMinTime() const;
     int getPreviewMaxTime() const;
     QString getFileName() const;
+
+    void setDocumentTime(int documentTime);
 
     bool getOpenFileName();
     bool getSaveFileName();
@@ -47,6 +50,7 @@ signals:
 public slots:
 
 friend class MainWindow;
+friend class MediaPanel;
 };
 
 #endif // PROJECTSETTINGS_H

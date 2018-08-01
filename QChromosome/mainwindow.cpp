@@ -188,17 +188,10 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     // connect media panel
-    connect(ui->widget->ui->start, &QPushButton::clicked, this, &MainWindow::start);
-    connect(ui->widget->ui->previous, &QPushButton::clicked, this, &MainWindow::previous);
-    connect(ui->widget->ui->next, &QPushButton::clicked, this, &MainWindow::next);
-    connect(ui->widget->ui->end, &QPushButton::clicked, this, &MainWindow::end);
-    connect(ui->widget->ui->play, &QPushButton::clicked, this, &MainWindow::play);
     connect(ui->widget->ui->horizontalSlider, &QSlider::valueChanged, this, &MainWindow::setFrame);
-    connect(ui->widget->ui->start, &QPushButton::clicked, this, &MainWindow::setFrame);
     connect(ui->widget->ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
     connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, this, &MainWindow::setSoftMinimum);
     connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, this, &MainWindow::setSoftMaximum);
-    connect(ui->widget->ui->reverse, &QPushButton::clicked, this, &MainWindow::reverse);
 }
 
 MainWindow::~MainWindow()
@@ -337,6 +330,7 @@ void MainWindow::setCurrentSession(Session *s)
     materialBrowser->setSession(session);
 
     //
+    ui->widget->setSession(session);
     ui->plot->setSimulation(s->simulation);
     //
 }
@@ -431,8 +425,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    session->setFrame(n);
-    session->projectSettings->ui->spinBox_5->setValue(n, false);
+    session->setDocumentTime(n);
 }
 
 void MainWindow::setSoftMinimum(int min)

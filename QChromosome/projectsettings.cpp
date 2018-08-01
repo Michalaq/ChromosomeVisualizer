@@ -37,6 +37,11 @@ int ProjectSettings::getDocumentTime() const
     return ui->spinBox_5->value();
 }
 
+int ProjectSettings::getMinimumTime() const
+{
+    return ui->spinBox_3->value();
+}
+
 int ProjectSettings::getMaximumTime() const
 {
     return ui->spinBox_6->value();
@@ -50,6 +55,11 @@ int ProjectSettings::getPreviewMinTime() const
 int ProjectSettings::getPreviewMaxTime() const
 {
     return ui->spinBox_7->value();
+}
+
+void ProjectSettings::setDocumentTime(int documentTime)
+{
+    ui->spinBox_5->setValue(documentTime);
 }
 
 QString ProjectSettings::getFileName() const

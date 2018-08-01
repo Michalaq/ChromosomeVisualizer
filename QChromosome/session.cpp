@@ -63,20 +63,18 @@ Session::~Session()
     delete md;
 }
 
-#include <cassert>
-
-void Session::setFrame(int n)
+void Session::setDocumentTime(int documentTime)
 {
-    auto frame = simulation->getFrame(n);
-    assert(frame->atoms.size() == atomBuffer.size());
-
-    auto& atoms = frame->atoms;
+    const auto frame = simulation->getFrame(documentTime);
+    const auto& atoms = frame->atoms;
 
     for (int i = 0; i < atoms.size(); i++)
     {
-        auto& atom = atoms[i];
+        const auto& atom = atoms[i];
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
+
+    projectSettings->setDocumentTime(documentTime);
 }
 
 #include <QJsonDocument>
