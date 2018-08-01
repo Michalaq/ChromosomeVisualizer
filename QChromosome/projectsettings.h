@@ -18,6 +18,7 @@ public:
 
     int getFPS() const;
     int getDocumentTime() const;
+    int getMaximumTime() const;
     int getPreviewMinTime() const;
     int getPreviewMaxTime() const;
     QString getFileName() const;

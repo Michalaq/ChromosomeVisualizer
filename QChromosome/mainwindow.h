@@ -77,8 +77,6 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    int lastFrame;
-
     QTimer timer;
     QTime time;
 

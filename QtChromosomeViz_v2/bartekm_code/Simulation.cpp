@@ -15,6 +15,11 @@ frameNumber_t Simulation::getFrameCount() const
     return nextUnreadFrame_ + 1;
 }
 
+frameNumber_t Simulation::getLastFrame() const
+{
+    return frameCount_ - 1;
+}
+
 std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
 {
     Frame f = {

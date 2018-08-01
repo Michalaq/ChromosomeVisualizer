@@ -290,8 +290,6 @@ void MainWindow::newProject()
     ui->plot->setRange(0, 0);
     ui->horizontalSlider->setRange(0, 0);
     ui->horizontalSlider_2->setRange(0, 0);
-
-    lastFrame = 0;
     //
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
@@ -393,10 +391,10 @@ void MainWindow::saveProjectAs()
 
 void MainWindow::updateFrameCount(int n)
 {
-    bool expandRange = ui->spinBox_3->value() == lastFrame;
-    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
+    bool expandRange = ui->spinBox_3->value() == session->projectSettings->getMaximumTime();
+    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == session->projectSettings->getMaximumTime();
 
-    lastFrame = n - 1;
+    int lastFrame = n - 1;
 
     ui->spinBox->setMaximum(lastFrame);
     ui->spinBox_3->setMaximum(lastFrame);
@@ -465,7 +463,7 @@ void MainWindow::reverse_previous()
         if (ui->actionSimple->isChecked())
             ui->reverse->click();
         else
-            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : lastFrame);
+            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : session->simulation->getLastFrame());
     }
 }
 
@@ -524,7 +522,7 @@ void MainWindow::next()
     frameNumber_t nextFrame = session->simulation->getNextTime(session->projectSettings->getDocumentTime());
     session->simulation->getFrame(nextFrame);
 
-    if (session->projectSettings->getDocumentTime() < lastFrame)
+    if (session->projectSettings->getDocumentTime() < session->simulation->getLastFrame())
         setFrame(nextFrame);
 }
 
@@ -532,7 +530,7 @@ void MainWindow::play_next()
 {
     qint64 nextFrame = session->projectSettings->getDocumentTime() + qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000);
 
-    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : lastFrame))
+    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : session->simulation->getLastFrame()))
         setFrame(nextFrame);
     else
     {
@@ -547,8 +545,8 @@ void MainWindow::play_next()
 
 void MainWindow::end()
 {
-    setFrame(lastFrame);
-    session->simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    setFrame(session->simulation->getLastFrame());
+    session->simulation->getFrame(session->simulation->getLastFrame()+1);//TODO paskudny hack, usunąć po dodaniu wątku
 }
 
 void MainWindow::selectAll()

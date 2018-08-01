@@ -23,6 +23,7 @@ public:
     Simulation(Session *s);
     virtual ~Simulation();
     frameNumber_t getFrameCount() const;
+    frameNumber_t getLastFrame() const;
     void setSimulationName(const std::string & name);
     const std::string & getSimulationName() const;
     void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc, bool init = true);

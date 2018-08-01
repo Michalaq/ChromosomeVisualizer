@@ -37,6 +37,11 @@ int ProjectSettings::getDocumentTime() const
     return ui->spinBox_5->value();
 }
 
+int ProjectSettings::getMaximumTime() const
+{
+    return ui->spinBox_6->value();
+}
+
 int ProjectSettings::getPreviewMinTime() const
 {
     return ui->spinBox_4->value();
