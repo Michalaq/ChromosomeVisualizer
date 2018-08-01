@@ -95,9 +95,6 @@ private:
     MaterialBrowser *materialBrowser;
     MovieMaker* movieMaker;
 
-    int softMinimum;
-    int softMaximum;
-
     void addCamera(Camera *camera);
     void changeCamera(Camera* camera);
 

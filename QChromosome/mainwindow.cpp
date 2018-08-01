@@ -292,9 +292,6 @@ void MainWindow::newProject()
     ui->horizontalSlider_2->setRange(0, 0);
 
     lastFrame = 0;
-
-    softMinimum = 0;
-    softMaximum = 0;
     //
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
@@ -433,8 +430,6 @@ void MainWindow::setSoftMinimum(int min)
     ui->plot->setSoftMinimum(min);
     session->projectSettings->ui->spinBox_7->setMinimum(min);
     session->projectSettings->ui->spinBox_4->setValue(min, false);
-
-    softMinimum = min;
 }
 
 void MainWindow::setSoftMaximum(int max)
@@ -444,8 +439,6 @@ void MainWindow::setSoftMaximum(int max)
     ui->plot->setSoftMaximum(max);
     session->projectSettings->ui->spinBox_4->setMaximum(max);
     session->projectSettings->ui->spinBox_7->setValue(max, false);
-
-    softMaximum = max;
 }
 
 void MainWindow::start()
@@ -465,14 +458,14 @@ void MainWindow::reverse_previous()
 {
     qint64 previousFrame = qMax(session->projectSettings->getDocumentTime() - qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000), 0);
 
-    if (session->projectSettings->getDocumentTime() > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
+    if (session->projectSettings->getDocumentTime() > (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMinTime() : 0))
         setFrame(previousFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->reverse->click();
         else
-            setFrame(ui->actionPreview_range->isChecked() ? softMaximum : lastFrame);
+            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : lastFrame);
     }
 }
 
@@ -486,8 +479,8 @@ void MainWindow::reverse(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() <= softMinimum || session->projectSettings->getDocumentTime() > softMaximum))
-            setFrame(softMaximum);
+        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() <= session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() > session->projectSettings->getPreviewMaxTime()))
+            setFrame(session->projectSettings->getPreviewMaxTime());
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
 
@@ -511,8 +504,8 @@ void MainWindow::play(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() < softMinimum || session->projectSettings->getDocumentTime() >= softMaximum))
-            setFrame(softMinimum);
+        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() < session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() >= session->projectSettings->getPreviewMaxTime()))
+            setFrame(session->projectSettings->getPreviewMinTime());
 
         connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
 
@@ -539,14 +532,14 @@ void MainWindow::play_next()
 {
     qint64 nextFrame = session->projectSettings->getDocumentTime() + qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000);
 
-    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
+    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : lastFrame))
         setFrame(nextFrame);
     else
     {
         if (ui->actionSimple->isChecked())
             ui->play->click();
         else
-            setFrame(ui->actionPreview_range->isChecked() ? softMinimum : 0);
+            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMinTime() : 0);
     }
 
     session->simulation->getFrame(session->projectSettings->getDocumentTime()+1);//TODO paskudny hack, usunąć po dodaniu wątku

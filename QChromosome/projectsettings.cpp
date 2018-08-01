@@ -27,19 +27,29 @@ ProjectSettings::~ProjectSettings()
     delete ui;
 }
 
+int ProjectSettings::getFPS() const
+{
+    return ui->spinBox->value();
+}
+
 int ProjectSettings::getDocumentTime() const
 {
     return ui->spinBox_5->value();
 }
 
+int ProjectSettings::getPreviewMinTime() const
+{
+    return ui->spinBox_4->value();
+}
+
+int ProjectSettings::getPreviewMaxTime() const
+{
+    return ui->spinBox_7->value();
+}
+
 QString ProjectSettings::getFileName() const
 {
     return filePath.fileName();
-}
-
-int ProjectSettings::getFPS() const
-{
-    return ui->spinBox->value();
 }
 
 #include <QFileDialog>

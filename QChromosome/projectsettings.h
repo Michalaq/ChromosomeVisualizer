@@ -16,9 +16,11 @@ public:
     explicit ProjectSettings(QWidget *parent = 0);
     ~ProjectSettings();
 
-    int getDocumentTime() const;
-    QString getFileName() const;
     int getFPS() const;
+    int getDocumentTime() const;
+    int getPreviewMinTime() const;
+    int getPreviewMaxTime() const;
+    QString getFileName() const;
 
     bool getOpenFileName();
     bool getSaveFileName();
