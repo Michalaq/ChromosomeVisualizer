@@ -123,12 +123,35 @@ void ProjectSettings::writeSaveFile(const QJsonDocument& project)
 void ProjectSettings::read(const QJsonObject &json)
 {
     const QJsonObject projectSettings = json["Project Settings"].toObject();
-    ui->spinBox->setValue(projectSettings["FPS"].toInt());
-    ui->spinBox_5->setValue(projectSettings["Document Time"].toInt());
-    ui->spinBox_3->setValue(projectSettings["Minimum Time"].toInt());
-    ui->spinBox_6->setValue(projectSettings["Maximum Time"].toInt());
-    ui->spinBox_4->setValue(projectSettings["Preview Min. Time"].toInt());
-    ui->spinBox_7->setValue(projectSettings["Preview Max. Time"].toInt());
+
+    int FPS = projectSettings["FPS"].toInt();
+    int documentTime = projectSettings["Document Time"].toInt();
+    int minimumTime = projectSettings["Minimum Time"].toInt();
+    int maximumTime = projectSettings["Maximum Time"].toInt();
+    int previewMinTime = projectSettings["Preview Min. Time"].toInt();
+    int previewMaxTime = projectSettings["Preview Max. Time"].toInt();
+
+    ui->spinBox->setValue(FPS);
+
+    ui->spinBox_5->setMinimum(minimumTime);
+    ui->spinBox_5->setMaximum(maximumTime);
+    ui->spinBox_5->setValue(documentTime);
+
+    Q_ASSERT(ui->spinBox_3->minimum() == 0);
+    ui->spinBox_3->setMaximum(maximumTime - 1);
+    ui->spinBox_3->setValue(minimumTime);
+
+    ui->spinBox_6->setMinimum(minimumTime + 1);
+    ui->spinBox_6->setMaximum(maximumTime);
+    ui->spinBox_6->setValue(maximumTime);
+
+    ui->spinBox_4->setMinimum(minimumTime);
+    ui->spinBox_4->setMaximum(previewMaxTime - 1);
+    ui->spinBox_4->setValue(previewMinTime);
+
+    ui->spinBox_7->setMinimum(previewMinTime + 1);
+    ui->spinBox_7->setMaximum(maximumTime);
+    ui->spinBox_7->setValue(previewMaxTime);
 
     const QJsonObject info = json["Info"].toObject();
     ui->lineEdit_3->setText(info["Author"].toString());

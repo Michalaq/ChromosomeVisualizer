@@ -65,8 +65,9 @@ Session::~Session()
 
 #include <cassert>
 
-void Session::setFrame(std::shared_ptr<Frame> frame)
+void Session::setFrame(int n)
 {
+    auto frame = simulation->getFrame(n);
     assert(frame->atoms.size() == atomBuffer.size());
 
     auto& atoms = frame->atoms;

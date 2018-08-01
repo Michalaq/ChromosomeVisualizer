@@ -43,7 +43,7 @@ public:
     ProjectSettings* projectSettings;
     Viewport* viewport;
 
-    void setFrame(std::shared_ptr<Frame> frame);
+    void setFrame(int n);
 
     void fromJson(const QJsonDocument& json);
     QJsonDocument toJson() const;

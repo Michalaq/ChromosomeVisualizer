@@ -419,7 +419,7 @@ void MainWindow::setFrame(int n)
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    session->setFrame(session->simulation->getFrame(n));
+    session->setFrame(n);
     session->projectSettings->ui->spinBox_5->setValue(n, false);
 }
 
