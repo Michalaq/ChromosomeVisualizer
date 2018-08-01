@@ -48,6 +48,8 @@ public:
     void fromJson(const QJsonDocument& json);
     QJsonDocument toJson() const;
 
+    void reallocateBuffers();
+
     bool openProject();
     void saveProject() const;
     void saveProjectAs() const;

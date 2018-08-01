@@ -308,6 +308,9 @@ void MainWindow::setCurrentSession(Session *s)
     // update window title
     setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
 
+    // reallocate OpenGL buffers
+    session->reallocateBuffers();
+
     // update objects
     ui->stackedWidget_3->setCurrentWidget(session->treeView);
 

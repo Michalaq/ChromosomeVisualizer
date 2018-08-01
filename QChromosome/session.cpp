@@ -129,6 +129,13 @@ QJsonDocument Session::toJson() const
     return QJsonDocument(project);
 }
 
+void Session::reallocateBuffers()
+{
+    cameraBuffer.forceReallocate();
+    atomBuffer.forceReallocate();
+    Material::getBuffer().forceReallocate();
+}
+
 bool Session::openProject()
 {
     if (projectSettings->getOpenFileName())

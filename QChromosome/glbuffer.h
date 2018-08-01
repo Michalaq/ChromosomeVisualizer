@@ -49,6 +49,11 @@ public:
         return QVector<T>::operator[](i);
     }
 
+    void forceReallocate()
+    {
+        resized = true;
+    }
+
 private:
     bool modified;
     bool resized;
