@@ -167,3 +167,16 @@ void Slider::keyPressEvent(QKeyEvent *event)
         update();
     }
 }
+
+void Slider::setValue(int val, bool spontaneous)
+{
+    bool b;
+
+    if (!spontaneous)
+        b = blockSignals(true);
+
+    QSlider::setValue(val);
+
+    if (!spontaneous)
+        blockSignals(b);
+}

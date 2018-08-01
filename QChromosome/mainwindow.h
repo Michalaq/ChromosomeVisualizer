@@ -39,21 +39,6 @@ public slots:
     void addLayer();
 
     void setFrame(int n);
-    void updateFrameCount(int n);
-
-    void setSoftMinimum(int min);
-    void setSoftMaximum(int max);
-
-    /* animation */
-    void start();
-    void previous();
-    void reverse(bool checked);
-    void play(bool checked);
-    void next();
-    void end();
-
-    void reverse_previous();
-    void play_next();
 
     /* selection */
     void selectAll();

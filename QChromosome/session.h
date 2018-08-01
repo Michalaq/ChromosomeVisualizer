@@ -17,8 +17,10 @@
 #include "materialbrowser.h"
 #include "mediapanel.h"
 
-class Session
+class Session : public QObject
 {
+    Q_OBJECT
+
 public:
     Session();
     ~Session();
@@ -46,8 +48,6 @@ public:
 
     MediaPanel* mediaPanel;
 
-    void setDocumentTime(int documentTime);
-
     void fromJson(const QJsonDocument& json);
     QJsonDocument toJson() const;
 
@@ -57,11 +57,24 @@ public:
     void saveProject() const;
     void saveProjectAs() const;
 
+    void setFPS(int fps);
+    void setDocumentTime(int time);
+    void setMinimumTime(int time);
+    void setMaximumTime(int time);
+    void setPreviewMinTime(int time);
+    void setPreviewMaxTime(int time);
+    void setLastFrame(int time);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;
     TagsDelegate *td;
     MaterialDelegate *md;
+
+    int lastFrame;
+
+signals:
+    void documentTimeChanged(int);
 };
 
 #endif // SESSION_H

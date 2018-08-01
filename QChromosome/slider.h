@@ -24,6 +24,7 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 public slots:
+    void setValue(int val, bool spontaneous = true);
 
 private:
     SplineInterpolator *interpolator;

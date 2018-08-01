@@ -28,6 +28,14 @@ public:
     void goToNextFrame();
     void goToPreviousFrame();
 
+    void setFPS(int fps);
+    void setDocumentTime(int time);
+    void setMinimumTime(int time);
+    void setMaximumTime(int time);
+    void setPreviewMinTime(int time);
+    void setPreviewMaxTime(int time);
+    void setLastFrame(int time);
+
 private:
     Ui::MediaPanel *ui;
     Session* session;

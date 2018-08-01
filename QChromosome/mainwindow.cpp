@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     materialBrowser(MaterialBrowser::getInstance()),
     movieMaker(MovieMaker::getInstance()),
     pw(nullptr),
-    recent(nullptr)
+    recent(nullptr),
+    session(nullptr)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -52,22 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    connect(ui->widget->ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->widget->ui->horizontalSlider_2->setMinimum(val);
-        ui->widget->ui->spinBox_3->setMinimum(val);
-        session->projectSettings->ui->spinBox_6->setMinimum(val);
-        session->projectSettings->ui->spinBox_4->setMinimum(val);
-        session->projectSettings->ui->spinBox_3->setValue(val, false);
-    });
-
-    connect(ui->widget->ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->widget->ui->horizontalSlider_2->setMaximum(val);
-        ui->widget->ui->spinBox_2->setMaximum(val);
-        session->projectSettings->ui->spinBox_3->setMaximum(val);
-        session->projectSettings->ui->spinBox_7->setMaximum(val);
-        session->projectSettings->ui->spinBox_6->setValue(val, false);
-    });
-
     /* connect actions */
     mappedSlot[ui->actionMove] = Camera::CA_Move;
     mappedSlot[ui->actionRotate] = Camera::CA_Rotate;
@@ -90,18 +75,6 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
-
-    connect(session->projectSettings->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        timer.setInterval(1000 / value);
-    });
-
-    timer.setInterval(1000 / session->projectSettings->ui->spinBox->value());
-
-    connect(session->projectSettings->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->widget->ui->spinBox_2, SLOT(setValue(int)));
-    connect(session->projectSettings->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
-    connect(session->projectSettings->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(session->projectSettings->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->widget->ui->spinBox_3, SLOT(setValue(int)));
-    connect(session->projectSettings->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -174,12 +147,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
-
-    // connect media panel
-    connect(ui->widget->ui->horizontalSlider, &QSlider::valueChanged, this, &MainWindow::setFrame);
-    connect(ui->widget->ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, this, &MainWindow::setSoftMinimum);
-    connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, this, &MainWindow::setSoftMaximum);
 }
 
 MainWindow::~MainWindow()
@@ -273,6 +240,7 @@ Session* MainWindow::makeSession()
     // add media panel to available panels
     ui->stackedWidget_4->addWidget(s->mediaPanel);
 
+    //
     connect(s->mediaPanel->ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
         Camera::setAutomaticKeyframing(checked);
@@ -282,10 +250,10 @@ Session* MainWindow::makeSession()
         session->currentCamera->captureFrame();
         //s->mediaPanel->ui->horizontalSlider->update();
     });
+    //
 
-    //
-    connect(s->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-    //
+    s->blockSignals(true);
+    connect(s, &Session::documentTimeChanged, this, &MainWindow::setFrame);
 
     return s;
 }
@@ -296,8 +264,6 @@ void MainWindow::newProject()
 
     //
     ui->plot->setRange(0, 0);
-    ui->widget->ui->horizontalSlider->setRange(0, 0);
-    ui->widget->ui->horizontalSlider_2->setRange(0, 0);
     //
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
@@ -306,6 +272,9 @@ void MainWindow::newProject()
 
 void MainWindow::setCurrentSession(Session *s)
 {
+    if (session)
+        session->blockSignals(true);
+
     session = s;
 
     // update window title
@@ -337,6 +306,9 @@ void MainWindow::setCurrentSession(Session *s)
     ui->plot->setSimulation(s->simulation);
     ui->plot->followSlider(s->mediaPanel->ui->horizontalSlider);
     //
+
+    session->blockSignals(false);
+    session->setDocumentTime(session->projectSettings->getDocumentTime());
 }
 
 void MainWindow::openProject()
@@ -349,6 +321,9 @@ void MainWindow::openProject()
             addCamera(camera);
 
         setCurrentSession(s);
+
+        ui->stackedWidget->setCurrentWidget(session->projectSettings);
+        ui->dockWidget_2->show();
     }
     else
         delete s;
@@ -377,7 +352,7 @@ void MainWindow::addLayer()
 
             if (impd.exec() == QDialog::Accepted)
             {
-                setFrame(0);
+                session->setDocumentTime(0);
                 session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
                 ui->scene->update();
@@ -401,163 +376,13 @@ void MainWindow::saveProjectAs()
     session->saveProjectAs();
 }
 
-void MainWindow::updateFrameCount(int n)
-{
-    bool expandRange = ui->widget->ui->spinBox_3->value() == session->projectSettings->getMaximumTime();
-    bool expandInterval = ui->widget->ui->horizontalSlider_2->getUpperBound() == session->projectSettings->getMaximumTime();
-
-    int lastFrame = n - 1;
-
-    ui->widget->ui->spinBox->setMaximum(lastFrame);
-    ui->widget->ui->spinBox_3->setMaximum(lastFrame);
-    ui->widget->ui->horizontalSlider->setMaximum(lastFrame);
-    ui->plot->setMaximum(lastFrame);
-    session->projectSettings->ui->spinBox_5->setMaximum(lastFrame);
-    session->projectSettings->ui->spinBox_6->setMaximum(lastFrame);
-
-    if (expandRange)
-        ui->widget->ui->spinBox_3->setValue(lastFrame);
-
-    if (expandInterval)
-        ui->widget->ui->horizontalSlider_2->setUpperBound(lastFrame);
-}
-
 void MainWindow::setFrame(int n)
 {
-    ui->widget->ui->horizontalSlider->setValue(n);
-    ui->widget->ui->spinBox->setValue(n);
     ui->scene->update();
-    ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
-    session->setDocumentTime(n);
-}
-
-void MainWindow::setSoftMinimum(int min)
-{
-    ui->widget->ui->horizontalSlider->setSoftMinimum(min);
-    ui->widget->ui->horizontalSlider_2->setLowerBound(min, false);
-    ui->plot->setSoftMinimum(min);
-    session->projectSettings->ui->spinBox_7->setMinimum(min);
-    session->projectSettings->ui->spinBox_4->setValue(min, false);
-}
-
-void MainWindow::setSoftMaximum(int max)
-{
-    ui->widget->ui->horizontalSlider->setSoftMaximum(max);
-    ui->widget->ui->horizontalSlider_2->setUpperBound(max, false);
-    ui->plot->setSoftMaximum(max);
-    session->projectSettings->ui->spinBox_4->setMaximum(max);
-    session->projectSettings->ui->spinBox_7->setValue(max, false);
-}
-
-void MainWindow::start()
-{
-    setFrame(0);
-}
-
-void MainWindow::previous()
-{
-    frameNumber_t previousFrame = session->simulation->getPreviousTime(session->projectSettings->getDocumentTime());
-
-    if (session->projectSettings->getDocumentTime() > 0)
-        setFrame(previousFrame);
-}
-
-void MainWindow::reverse_previous()
-{
-    qint64 previousFrame = qMax(session->projectSettings->getDocumentTime() - qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000), 0);
-
-    if (session->projectSettings->getDocumentTime() > (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMinTime() : 0))
-        setFrame(previousFrame);
-    else
-    {
-        if (ui->actionSimple->isChecked())
-            ui->widget->ui->reverse->click();
-        else
-            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : session->simulation->getLastFrame());
-    }
-}
-
-void MainWindow::reverse(bool checked)
-{
-    ui->actionPlay_backwards->setChecked(checked);
-    ui->widget->ui->reverse->setChecked(checked);
-
-    if (checked)
-    {
-        if (ui->widget->ui->play->isChecked())
-            ui->widget->ui->play->click();
-
-        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() <= session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() > session->projectSettings->getPreviewMaxTime()))
-            setFrame(session->projectSettings->getPreviewMaxTime());
-
-        connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
-
-        time.restart();
-        timer.start();
-    }
-    else
-    {
-        timer.stop();
-        timer.disconnect();
-    }
-}
-
-void MainWindow::play(bool checked)
-{
-    ui->actionPlay_forwards->setChecked(checked);
-    ui->widget->ui->play->setChecked(checked);
-
-    if (checked)
-    {
-        if (ui->widget->ui->reverse->isChecked())
-            ui->widget->ui->reverse->click();
-
-        if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() < session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() >= session->projectSettings->getPreviewMaxTime()))
-            setFrame(session->projectSettings->getPreviewMinTime());
-
-        connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
-
-        time.restart();
-        timer.start();
-    }
-    else
-    {
-        timer.stop();
-        timer.disconnect();
-    }
-}
-
-void MainWindow::next()
-{
-    frameNumber_t nextFrame = session->simulation->getNextTime(session->projectSettings->getDocumentTime());
-    session->simulation->getFrame(nextFrame);
-
-    if (session->projectSettings->getDocumentTime() < session->simulation->getLastFrame())
-        setFrame(nextFrame);
-}
-
-void MainWindow::play_next()
-{
-    qint64 nextFrame = session->projectSettings->getDocumentTime() + qRound(1. * time.restart() * session->projectSettings->ui->spinBox->value() / 1000);
-
-    if (session->projectSettings->getDocumentTime() < (ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : session->simulation->getLastFrame()))
-        setFrame(nextFrame);
-    else
-    {
-        if (ui->actionSimple->isChecked())
-            ui->widget->ui->play->click();
-        else
-            setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMinTime() : 0);
-    }
-
-    session->simulation->getFrame(session->projectSettings->getDocumentTime()+1);//TODO paskudny hack, usunąć po dodaniu wątku
-}
-
-void MainWindow::end()
-{
-    setFrame(session->simulation->getLastFrame());
-    session->simulation->getFrame(session->simulation->getLastFrame()+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    //
+    ui->plot->setValue(n);
+    //
 }
 
 void MainWindow::selectAll()

@@ -9,11 +9,13 @@ namespace Ui
     class ProjectSettings;
 }
 
+class Session;
+
 class ProjectSettings : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ProjectSettings(QWidget *parent = 0);
+    explicit ProjectSettings(Session* s, QWidget *parent = 0);
     ~ProjectSettings();
 
     int getFPS() const;
@@ -24,7 +26,13 @@ public:
     int getPreviewMaxTime() const;
     QString getFileName() const;
 
-    void setDocumentTime(int documentTime);
+    void setFPS(int fps);
+    void setDocumentTime(int time);
+    void setMinimumTime(int time);
+    void setMaximumTime(int time);
+    void setPreviewMinTime(int time);
+    void setPreviewMaxTime(int time);
+    void setLastFrame(int time);
 
     bool getOpenFileName();
     bool getSaveFileName();
@@ -41,6 +49,7 @@ public:
 
 private:
     Ui::ProjectSettings *ui;
+    Session* session;
 
     QFileInfo filePath;
 
@@ -49,8 +58,6 @@ signals:
 
 public slots:
 
-friend class MainWindow;
-friend class MediaPanel;
 };
 
 #endif // PROJECTSETTINGS_H

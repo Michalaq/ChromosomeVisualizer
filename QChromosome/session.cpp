@@ -1,18 +1,20 @@
 #include "session.h"
 
 Session::Session() :
+    QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
     treeView(new TreeView),
-    projectSettings(new ProjectSettings),
+    projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this)),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),
-    md(new MaterialDelegate)
+    md(new MaterialDelegate),
+    lastFrame(0)
 {
     treeView->setMouseTracking(true);
     treeView->setFocusPolicy(Qt::NoFocus);
@@ -43,7 +45,7 @@ Session::Session() :
     listView->setFocusPolicy(Qt::NoFocus);
     listView->setItemDelegate(md);
 
-    QObject::connect(projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
+    connect(projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
         action->setText(fileName);
     });
 
@@ -62,20 +64,6 @@ Session::~Session()
     delete vd;
     delete td;
     delete md;
-}
-
-void Session::setDocumentTime(int documentTime)
-{
-    const auto frame = simulation->getFrame(documentTime);
-    const auto& atoms = frame->atoms;
-
-    for (int i = 0; i < atoms.size(); i++)
-    {
-        const auto& atom = atoms[i];
-        atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
-
-    projectSettings->setDocumentTime(documentTime);
 }
 
 #include <QJsonDocument>
@@ -100,6 +88,8 @@ void Session::fromJson(const QJsonDocument &json)
 
     const QJsonObject objects = project["Objects"].toObject();
     simulation->getModel()->read(objects);
+
+    simulation->getFrame(projectSettings->getMaximumTime());
 }
 
 QJsonDocument Session::toJson() const
@@ -157,4 +147,73 @@ void Session::saveProjectAs() const
 {
     if (projectSettings->getNewSaveFileName())
         projectSettings->writeSaveFile(toJson());
+}
+
+void Session::setFPS(int fps)
+{
+    mediaPanel->setFPS(fps);
+    projectSettings->setFPS(fps);
+}
+
+void Session::setDocumentTime(int time)
+{
+    const auto frame = simulation->getFrame(time);
+    const auto& atoms = frame->atoms;
+
+    Q_ASSERT(atoms.size() == atomBuffer.size());
+
+    for (int i = 0; i < atoms.size(); i++)
+    {
+        const auto& atom = atoms[i];
+        atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
+    }
+
+    if (lastFrame < simulation->getLastFrame())
+        setLastFrame(simulation->getLastFrame());
+
+    mediaPanel->setDocumentTime(time);
+    projectSettings->setDocumentTime(time);
+
+    emit documentTimeChanged(time);
+}
+
+void Session::setMinimumTime(int time)
+{
+    mediaPanel->setMinimumTime(time);
+    projectSettings->setMinimumTime(time);
+}
+
+void Session::setMaximumTime(int time)
+{
+    mediaPanel->setMaximumTime(time);
+    projectSettings->setMaximumTime(time);
+}
+
+void Session::setPreviewMinTime(int time)
+{
+    mediaPanel->setPreviewMinTime(time);
+    projectSettings->setPreviewMinTime(time);
+}
+
+void Session::setPreviewMaxTime(int time)
+{
+    mediaPanel->setPreviewMaxTime(time);
+    projectSettings->setPreviewMaxTime(time);
+}
+
+void Session::setLastFrame(int time)
+{
+    bool expandTime = projectSettings->getMaximumTime() == lastFrame;
+    bool expandPreviewTime = projectSettings->getPreviewMaxTime() == lastFrame;
+
+    lastFrame = time;
+
+    mediaPanel->setLastFrame(lastFrame);
+    projectSettings->setLastFrame(lastFrame);
+
+    if (expandTime)
+        setMaximumTime(lastFrame);
+
+    if (expandPreviewTime)
+        setPreviewMaxTime(lastFrame);
 }

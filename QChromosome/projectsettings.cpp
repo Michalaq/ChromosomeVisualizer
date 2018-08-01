@@ -2,13 +2,15 @@
 #include "ui_projectsettings.h"
 #include <QDir>
 #include <QStandardPaths>
+#include "session.h"
 
 const char * ProjectSettings::suffix = "qcs";
 const char * ProjectSettings::version = "1.01";
 
-ProjectSettings::ProjectSettings(QWidget *parent) :
+ProjectSettings::ProjectSettings(Session* s, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ProjectSettings)
+    ui(new Ui::ProjectSettings),
+    session(s)
 {
     ui->setupUi(this);
 
@@ -20,6 +22,13 @@ ProjectSettings::ProjectSettings(QWidget *parent) :
     connect(ui->lineEdit_6, &FileEdit::textChanged, [this]() {
         emit fileNameChanged(getFileName());
     });
+
+    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setFPS);
+    connect(ui->spinBox_5, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setDocumentTime);
+    connect(ui->spinBox_3, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setMinimumTime);
+    connect(ui->spinBox_6, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setMaximumTime);
+    connect(ui->spinBox_4, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setPreviewMinTime);
+    connect(ui->spinBox_7, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setPreviewMaxTime);
 }
 
 ProjectSettings::~ProjectSettings()
@@ -57,9 +66,46 @@ int ProjectSettings::getPreviewMaxTime() const
     return ui->spinBox_7->value();
 }
 
-void ProjectSettings::setDocumentTime(int documentTime)
+void ProjectSettings::setFPS(int fps)
 {
-    ui->spinBox_5->setValue(documentTime);
+    ui->spinBox->setValue(fps, false);
+}
+
+void ProjectSettings::setDocumentTime(int time)
+{
+    ui->spinBox_5->setValue(time, false);
+}
+
+void ProjectSettings::setMinimumTime(int time)
+{
+    ui->spinBox_3->setValue(time, false);
+    ui->spinBox_6->setMinimum(time + 1);
+    ui->spinBox_4->setMinimum(time);
+}
+
+void ProjectSettings::setMaximumTime(int time)
+{
+    ui->spinBox_6->setValue(time, false);
+    ui->spinBox_3->setMaximum(time > 0 ? time - 1 : 0);
+    ui->spinBox_7->setMaximum(time);
+}
+
+void ProjectSettings::setPreviewMinTime(int time)
+{
+    ui->spinBox_4->setValue(time, false);
+    ui->spinBox_7->setMinimum(time + 1);
+}
+
+void ProjectSettings::setPreviewMaxTime(int time)
+{
+    ui->spinBox_7->setValue(time, false);
+    ui->spinBox_4->setMaximum(time > 0 ? time - 1 : 0);
+}
+
+void ProjectSettings::setLastFrame(int time)
+{
+    ui->spinBox_5->setMaximum(time);
+    ui->spinBox_6->setMaximum(time);
 }
 
 QString ProjectSettings::getFileName() const
@@ -138,35 +184,13 @@ void ProjectSettings::writeSaveFile(const QJsonDocument& project)
 void ProjectSettings::read(const QJsonObject &json)
 {
     const QJsonObject projectSettings = json["Project Settings"].toObject();
-
-    int FPS = projectSettings["FPS"].toInt();
-    int documentTime = projectSettings["Document Time"].toInt();
-    int minimumTime = projectSettings["Minimum Time"].toInt();
-    int maximumTime = projectSettings["Maximum Time"].toInt();
-    int previewMinTime = projectSettings["Preview Min. Time"].toInt();
-    int previewMaxTime = projectSettings["Preview Max. Time"].toInt();
-
-    ui->spinBox->setValue(FPS);
-
-    ui->spinBox_5->setMinimum(minimumTime);
-    ui->spinBox_5->setMaximum(maximumTime);
-    ui->spinBox_5->setValue(documentTime);
-
-    Q_ASSERT(ui->spinBox_3->minimum() == 0);
-    ui->spinBox_3->setMaximum(maximumTime - 1);
-    ui->spinBox_3->setValue(minimumTime);
-
-    ui->spinBox_6->setMinimum(minimumTime + 1);
-    ui->spinBox_6->setMaximum(maximumTime);
-    ui->spinBox_6->setValue(maximumTime);
-
-    ui->spinBox_4->setMinimum(minimumTime);
-    ui->spinBox_4->setMaximum(previewMaxTime - 1);
-    ui->spinBox_4->setValue(previewMinTime);
-
-    ui->spinBox_7->setMinimum(previewMinTime + 1);
-    ui->spinBox_7->setMaximum(maximumTime);
-    ui->spinBox_7->setValue(previewMaxTime);
+    session->setFPS(projectSettings["FPS"].toInt());
+    session->setLastFrame(projectSettings["Maximum Time"].toInt());
+    session->setMinimumTime(projectSettings["Minimum Time"].toInt());
+    session->setMaximumTime(projectSettings["Maximum Time"].toInt());
+    session->setDocumentTime(projectSettings["Document Time"].toInt());
+    session->setPreviewMinTime(projectSettings["Preview Min. Time"].toInt());
+    session->setPreviewMaxTime(projectSettings["Preview Max. Time"].toInt());
 
     const QJsonObject info = json["Info"].toObject();
     ui->lineEdit_3->setText(info["Author"].toString());
