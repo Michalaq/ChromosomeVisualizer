@@ -7,6 +7,8 @@
 const char * ProjectSettings::suffix = "qcs";
 const char * ProjectSettings::version = "1.01";
 
+int ProjectSettings::count = 0;
+
 ProjectSettings::ProjectSettings(Session* s, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ProjectSettings),
@@ -14,7 +16,7 @@ ProjectSettings::ProjectSettings(Session* s, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    const QString path = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled");
+    const QString path = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath(QString("Untitled %1").arg(++count));
 
     filePath.setFile(path);
     ui->lineEdit_6->setText(path);
@@ -164,6 +166,8 @@ QJsonDocument ProjectSettings::readSaveFile() const
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     const QJsonDocument project = QJsonDocument::fromJson(file.readAll());
     file.close();
+
+    count--;
 
     return project;
 }

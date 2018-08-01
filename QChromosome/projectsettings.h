@@ -53,6 +53,8 @@ private:
 
     QFileInfo filePath;
 
+    static int count;
+
 signals:
     void fileNameChanged(const QString&);
 
