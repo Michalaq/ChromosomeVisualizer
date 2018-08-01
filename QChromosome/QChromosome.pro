@@ -67,7 +67,8 @@ SOURCES += \
     labelatlas.cpp \
     statusbar.cpp \
     fontcombobox.cpp \
-    session.cpp
+    session.cpp \
+    mediapanel.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -147,7 +148,8 @@ HEADERS += \
     statusbar.h \
     fontcombobox.h \
     session.h \
-    glbuffer.h
+    glbuffer.h \
+    mediapanel.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -163,7 +165,8 @@ FORMS += mainwindow.ui \
     materialbrowser.ui \
     attributes.ui \
     cameraattributes.ui \
-    importdialog.ui
+    importdialog.ui \
+    mediapanel.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle

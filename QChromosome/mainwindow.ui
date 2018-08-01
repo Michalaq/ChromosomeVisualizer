@@ -388,331 +388,11 @@ Label {
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="SpinBox" name="spinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="accelerated">
-         <bool>true</bool>
-        </property>
-        <property name="suffix">
-         <string>F</string>
-        </property>
-        <property name="maximum">
-         <number>0</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="Slider" name="horizontalSlider">
-        <property name="maximum">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <property name="spacing">
-       <number>24</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="SpinBox" name="spinBox_2">
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>F</string>
-          </property>
-          <property name="maximum">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="RangeSlider" name="horizontalSlider_2">
-          <property name="maximum">
-           <number>0</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SpinBox" name="spinBox_3">
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>F</string>
-          </property>
-          <property name="maximum">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="spacing">
-         <number>12</number>
-        </property>
-        <item>
-         <widget class="MediaControl" name="start">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to start of animation [Shortcut F6]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/start</normaloff>:/media/start</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="previous">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to previous frame [Shortcut F]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="reverse">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Play backwards</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #0066ff;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/reverse</normaloff>
-            <normalon>:/media/pause</normalon>:/media/reverse</iconset>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="play">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Play forwards [Shortcut F7]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #0066ff;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/play</normaloff>
-            <normalon>:/media/pause</normalon>:/media/play</iconset>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="next">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to next frame [Shortcut G]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/next</normaloff>:/media/next</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="end">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to end of animation [Shortcut F8]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/end</normaloff>:/media/end</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>12</number>
-        </property>
-        <item>
-         <widget class="MediaControl" name="key">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Record Position, Rotation and PLA of Active Camera [Shortcut F9]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #d40000;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/key</normaloff>:/media/key</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="shortcut">
-           <string>F9</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="record">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #d40000;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/record</normaloff>:/media/record</iconset>
-          </property>
-          <property name="shortcut">
-           <string>Ctrl+F9</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     <widget class="MediaPanel" name="widget" native="true"/>
     </item>
    </layout>
    <zorder></zorder>
+   <zorder>widget</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1451,16 +1131,6 @@ QLineEdit {
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
@@ -1478,31 +1148,9 @@ QLineEdit {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RangeSlider</class>
-   <extends>QSlider</extends>
-   <header>rangeslider.h</header>
-   <slots>
-    <signal>lowerBoundChanged(int)</signal>
-    <signal>upperBoundChanged(int)</signal>
-    <slot>setLowerBound(int)</slot>
-    <slot>setUpperBound(int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>ToolBar</class>
    <extends>QToolBar</extends>
    <header>toolbar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ProjectSettings</class>
-   <extends>QWidget</extends>
-   <header>projectsettings.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Slider</class>
-   <extends>QSlider</extends>
-   <header>slider.h</header>
   </customwidget>
   <customwidget>
    <class>Plot</class>
@@ -1555,6 +1203,12 @@ QLineEdit {
    <extends>QStatusBar</extends>
    <header>statusbar.h</header>
   </customwidget>
+  <customwidget>
+   <class>MediaPanel</class>
+   <extends>QWidget</extends>
+   <header>mediapanel.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
@@ -1572,102 +1226,6 @@ QLineEdit {
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>start</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>start()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>44</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>previous</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>previous()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>106</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>next</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>next()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>292</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>end</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>end()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>354</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>play</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>play(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>230</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
      <y>149</y>
     </hint>
    </hints>
@@ -1737,22 +1295,6 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>411</x>
-     <y>244</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>plot</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1761,38 +1303,6 @@ QLineEdit {
     <hint type="sourcelabel">
      <x>423</x>
      <y>436</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>lowerBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMinimum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>upperBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMaximum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
     </hint>
     <hint type="destinationlabel">
      <x>423</x>
@@ -1989,22 +1499,6 @@ QLineEdit {
     <hint type="destinationlabel">
      <x>423</x>
      <y>248</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>reverse</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reverse(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>168</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
     </hint>
    </hints>
   </connection>

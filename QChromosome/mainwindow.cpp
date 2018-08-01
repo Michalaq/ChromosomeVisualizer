@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_projectsettings.h"
+#include "ui_mediapanel.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
@@ -51,17 +52,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->horizontalSlider_2->setMinimum(val);
-        ui->spinBox_3->setMinimum(val);
+    connect(ui->widget->ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->widget->ui->horizontalSlider_2->setMinimum(val);
+        ui->widget->ui->spinBox_3->setMinimum(val);
         session->projectSettings->ui->spinBox_6->setMinimum(val);
         session->projectSettings->ui->spinBox_4->setMinimum(val);
         session->projectSettings->ui->spinBox_3->setValue(val, false);
     });
 
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->horizontalSlider_2->setMaximum(val);
-        ui->spinBox_2->setMaximum(val);
+    connect(ui->widget->ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
+        ui->widget->ui->horizontalSlider_2->setMaximum(val);
+        ui->widget->ui->spinBox_2->setMaximum(val);
         session->projectSettings->ui->spinBox_3->setMaximum(val);
         session->projectSettings->ui->spinBox_7->setMaximum(val);
         session->projectSettings->ui->spinBox_6->setValue(val, false);
@@ -96,10 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     timer.setInterval(1000 / session->projectSettings->ui->spinBox->value());
 
-    connect(session->projectSettings->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
+    connect(session->projectSettings->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->widget->ui->spinBox_2, SLOT(setValue(int)));
     connect(session->projectSettings->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
     connect(session->projectSettings->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(session->projectSettings->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
+    connect(session->projectSettings->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->widget->ui->spinBox_3, SLOT(setValue(int)));
     connect(session->projectSettings->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
 
     auto s = new QAction(this), t = new QAction(this);
@@ -128,14 +129,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(ui->record, &MediaControl::toggled, [this](bool checked) {
+    connect(ui->widget->ui->record, &MediaControl::toggled, [this](bool checked) {
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
         Camera::setAutomaticKeyframing(checked);
     });
 
-    connect(ui->key, &MediaControl::clicked, [this] {
+    connect(ui->widget->ui->key, &MediaControl::clicked, [this] {
         session->currentCamera->captureFrame();
-        ui->horizontalSlider->update();
+        ui->widget->ui->horizontalSlider->update();
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
@@ -152,7 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
         Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
 
-    ui->plot->followSlider(ui->horizontalSlider);
+    ui->plot->followSlider(ui->widget->ui->horizontalSlider);
 
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
@@ -185,6 +186,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
+
+    // connect media panel
+    connect(ui->widget->ui->start, &QPushButton::clicked, this, &MainWindow::start);
+    connect(ui->widget->ui->previous, &QPushButton::clicked, this, &MainWindow::previous);
+    connect(ui->widget->ui->next, &QPushButton::clicked, this, &MainWindow::next);
+    connect(ui->widget->ui->end, &QPushButton::clicked, this, &MainWindow::end);
+    connect(ui->widget->ui->play, &QPushButton::clicked, this, &MainWindow::play);
+    connect(ui->widget->ui->horizontalSlider, &QSlider::valueChanged, this, &MainWindow::setFrame);
+    connect(ui->widget->ui->start, &QPushButton::clicked, this, &MainWindow::setFrame);
+    connect(ui->widget->ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
+    connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, this, &MainWindow::setSoftMinimum);
+    connect(ui->widget->ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, this, &MainWindow::setSoftMaximum);
+    connect(ui->widget->ui->reverse, &QPushButton::clicked, this, &MainWindow::reverse);
 }
 
 MainWindow::~MainWindow()
@@ -288,8 +302,8 @@ void MainWindow::newProject()
 
     //
     ui->plot->setRange(0, 0);
-    ui->horizontalSlider->setRange(0, 0);
-    ui->horizontalSlider_2->setRange(0, 0);
+    ui->widget->ui->horizontalSlider->setRange(0, 0);
+    ui->widget->ui->horizontalSlider_2->setRange(0, 0);
     //
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
@@ -391,29 +405,29 @@ void MainWindow::saveProjectAs()
 
 void MainWindow::updateFrameCount(int n)
 {
-    bool expandRange = ui->spinBox_3->value() == session->projectSettings->getMaximumTime();
-    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == session->projectSettings->getMaximumTime();
+    bool expandRange = ui->widget->ui->spinBox_3->value() == session->projectSettings->getMaximumTime();
+    bool expandInterval = ui->widget->ui->horizontalSlider_2->getUpperBound() == session->projectSettings->getMaximumTime();
 
     int lastFrame = n - 1;
 
-    ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_3->setMaximum(lastFrame);
-    ui->horizontalSlider->setMaximum(lastFrame);
+    ui->widget->ui->spinBox->setMaximum(lastFrame);
+    ui->widget->ui->spinBox_3->setMaximum(lastFrame);
+    ui->widget->ui->horizontalSlider->setMaximum(lastFrame);
     ui->plot->setMaximum(lastFrame);
     session->projectSettings->ui->spinBox_5->setMaximum(lastFrame);
     session->projectSettings->ui->spinBox_6->setMaximum(lastFrame);
 
     if (expandRange)
-        ui->spinBox_3->setValue(lastFrame);
+        ui->widget->ui->spinBox_3->setValue(lastFrame);
 
     if (expandInterval)
-        ui->horizontalSlider_2->setUpperBound(lastFrame);
+        ui->widget->ui->horizontalSlider_2->setUpperBound(lastFrame);
 }
 
 void MainWindow::setFrame(int n)
 {
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
+    ui->widget->ui->horizontalSlider->setValue(n);
+    ui->widget->ui->spinBox->setValue(n);
     ui->scene->update();
     ui->plot->setValue(n);
     SplineInterpolator::setFrame(n);
@@ -423,8 +437,8 @@ void MainWindow::setFrame(int n)
 
 void MainWindow::setSoftMinimum(int min)
 {
-    ui->horizontalSlider->setSoftMinimum(min);
-    ui->horizontalSlider_2->setLowerBound(min, false);
+    ui->widget->ui->horizontalSlider->setSoftMinimum(min);
+    ui->widget->ui->horizontalSlider_2->setLowerBound(min, false);
     ui->plot->setSoftMinimum(min);
     session->projectSettings->ui->spinBox_7->setMinimum(min);
     session->projectSettings->ui->spinBox_4->setValue(min, false);
@@ -432,8 +446,8 @@ void MainWindow::setSoftMinimum(int min)
 
 void MainWindow::setSoftMaximum(int max)
 {
-    ui->horizontalSlider->setSoftMaximum(max);
-    ui->horizontalSlider_2->setUpperBound(max, false);
+    ui->widget->ui->horizontalSlider->setSoftMaximum(max);
+    ui->widget->ui->horizontalSlider_2->setUpperBound(max, false);
     ui->plot->setSoftMaximum(max);
     session->projectSettings->ui->spinBox_4->setMaximum(max);
     session->projectSettings->ui->spinBox_7->setValue(max, false);
@@ -461,7 +475,7 @@ void MainWindow::reverse_previous()
     else
     {
         if (ui->actionSimple->isChecked())
-            ui->reverse->click();
+            ui->widget->ui->reverse->click();
         else
             setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMaxTime() : session->simulation->getLastFrame());
     }
@@ -470,12 +484,12 @@ void MainWindow::reverse_previous()
 void MainWindow::reverse(bool checked)
 {
     ui->actionPlay_backwards->setChecked(checked);
-    ui->reverse->setChecked(checked);
+    ui->widget->ui->reverse->setChecked(checked);
 
     if (checked)
     {
-        if (ui->play->isChecked())
-            ui->play->click();
+        if (ui->widget->ui->play->isChecked())
+            ui->widget->ui->play->click();
 
         if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() <= session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() > session->projectSettings->getPreviewMaxTime()))
             setFrame(session->projectSettings->getPreviewMaxTime());
@@ -495,12 +509,12 @@ void MainWindow::reverse(bool checked)
 void MainWindow::play(bool checked)
 {
     ui->actionPlay_forwards->setChecked(checked);
-    ui->play->setChecked(checked);
+    ui->widget->ui->play->setChecked(checked);
 
     if (checked)
     {
-        if (ui->reverse->isChecked())
-            ui->reverse->click();
+        if (ui->widget->ui->reverse->isChecked())
+            ui->widget->ui->reverse->click();
 
         if (ui->actionPreview_range->isChecked() && (session->projectSettings->getDocumentTime() < session->projectSettings->getPreviewMinTime() || session->projectSettings->getDocumentTime() >= session->projectSettings->getPreviewMaxTime()))
             setFrame(session->projectSettings->getPreviewMinTime());
@@ -535,7 +549,7 @@ void MainWindow::play_next()
     else
     {
         if (ui->actionSimple->isChecked())
-            ui->play->click();
+            ui->widget->ui->play->click();
         else
             setFrame(ui->actionPreview_range->isChecked() ? session->projectSettings->getPreviewMinTime() : 0);
     }
@@ -618,7 +632,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), session, suffix);
+    movieMaker->captureScene(ui->widget->ui->horizontalSlider_2->getLowerBound(), ui->widget->ui->horizontalSlider_2->getUpperBound(), session, suffix);
 }
 
 void MainWindow::updateLocks()
@@ -704,5 +718,5 @@ void MainWindow::changeCamera(Camera *camera)
     camera->blockSignals(false);
     ui->stackedWidget_2->setCurrentWidget(camera);
 
-    ui->horizontalSlider->setSplineInterpolator(camera);
+    ui->widget->ui->horizontalSlider->setSplineInterpolator(camera);
 }
