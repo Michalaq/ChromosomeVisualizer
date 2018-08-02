@@ -236,7 +236,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
         QByteArray buffer;
 
-        int cf, tf;
+        int cf = 1, tf = 1;
 
         p.connect(&p, &QProcess::readyReadStandardError, [&] {
             buffer += p.readAllStandardError();
@@ -272,6 +272,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
 
         p.start("povray", argv);
         p.waitForFinished(-1);
+        p.disconnect();
 
         emit progressChanged(101);
 
