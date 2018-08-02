@@ -15,6 +15,7 @@
 #include "projectsettings.h"
 #include "viewport.h"
 #include "materialbrowser.h"
+#include "mediapanel.h"
 
 class Session
 {
@@ -42,6 +43,8 @@ public:
 
     ProjectSettings* projectSettings;
     Viewport* viewport;
+
+    MediaPanel* mediaPanel;
 
     void setDocumentTime(int documentTime);
 

@@ -8,6 +8,7 @@ Session::Session() :
     treeView(new TreeView),
     projectSettings(new ProjectSettings),
     viewport(new Viewport),
+    mediaPanel(new MediaPanel(this)),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),

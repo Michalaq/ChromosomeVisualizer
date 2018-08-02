@@ -3,9 +3,10 @@
 #include "session.h"
 #include "ui_projectsettings.h"
 
-MediaPanel::MediaPanel(QWidget *parent) :
+MediaPanel::MediaPanel(Session* s, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MediaPanel)
+    ui(new Ui::MediaPanel),
+    session(s)
 {
     ui->setupUi(this);
 
@@ -16,25 +17,20 @@ MediaPanel::MediaPanel(QWidget *parent) :
     connect(ui->next, &QPushButton::clicked, this, &MediaPanel::goToNextFrame);
     connect(ui->previous, &QPushButton::clicked, this, &MediaPanel::goToPreviousFrame);
 
+    timer.setInterval(1000 / session->projectSettings->getFPS());
+
     connect(&timer, &QTimer::timeout, [this]() {
         session->setDocumentTime(session->projectSettings->getDocumentTime() + direction * (time.restart() * session->projectSettings->getFPS() + 500) / 1000);
+    });
+
+    connect(session->projectSettings->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
+        timer.setInterval(1000 / value);
     });
 }
 
 MediaPanel::~MediaPanel()
 {
     delete ui;
-}
-
-void MediaPanel::setSession(Session* s)
-{
-    session = s;
-
-    timer.setInterval(1000 / session->projectSettings->getFPS());
-
-    connect(session->projectSettings->ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
-        timer.setInterval(1000 / value);
-    });
 }
 
 void MediaPanel::playForwards(bool checked)

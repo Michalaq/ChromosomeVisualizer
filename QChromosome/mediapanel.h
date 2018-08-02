@@ -16,10 +16,8 @@ class MediaPanel : public QWidget
     Q_OBJECT
 
 public:
-    explicit MediaPanel(QWidget *parent = nullptr);
+    explicit MediaPanel(Session* s, QWidget *parent = nullptr);
     ~MediaPanel();
-
-    void setSession(Session* s);
 
     void playForwards(bool checked);
     void playBackwards(bool checked);

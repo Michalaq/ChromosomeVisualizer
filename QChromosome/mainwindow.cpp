@@ -129,16 +129,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(ui->widget->ui->record, &MediaControl::toggled, [this](bool checked) {
-        ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
-        Camera::setAutomaticKeyframing(checked);
-    });
-
-    connect(ui->widget->ui->key, &MediaControl::clicked, [this] {
-        session->currentCamera->captureFrame();
-        ui->widget->ui->horizontalSlider->update();
-    });
-
     connect(ui->actionFocus, &QAction::triggered, [this] {
         session->currentCamera->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
     });
@@ -152,8 +142,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->stackedWidget_2->setAttribute(Qt::WA_TransparentForMouseEvents, checked);
         Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
-
-    ui->plot->followSlider(ui->widget->ui->horizontalSlider);
 
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
@@ -282,6 +270,19 @@ Session* MainWindow::makeSession()
     // add editor camera to available cameras
     addCamera(s->editorCamera);
 
+    // add media panel to available panels
+    ui->stackedWidget_4->addWidget(s->mediaPanel);
+
+    connect(s->mediaPanel->ui->record, &MediaControl::toggled, [this](bool checked) {
+        ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
+        Camera::setAutomaticKeyframing(checked);
+    });
+
+    connect(s->mediaPanel->ui->key, &MediaControl::clicked, [this] {
+        session->currentCamera->captureFrame();
+        //s->mediaPanel->ui->horizontalSlider->update();
+    });
+
     //
     connect(s->simulation, SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
     //
@@ -329,9 +330,12 @@ void MainWindow::setCurrentSession(Session *s)
     // update materials
     materialBrowser->setSession(session);
 
+    // update media panel
+    ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
+
     //
-    ui->widget->setSession(session);
     ui->plot->setSimulation(s->simulation);
+    ui->plot->followSlider(s->mediaPanel->ui->horizontalSlider);
     //
 }
 
@@ -625,7 +629,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->widget->ui->horizontalSlider_2->getLowerBound(), ui->widget->ui->horizontalSlider_2->getUpperBound(), session, suffix);
+    movieMaker->captureScene(session->mediaPanel->ui->horizontalSlider_2->getLowerBound(), session->mediaPanel->ui->horizontalSlider_2->getUpperBound(), session, suffix);
 }
 
 void MainWindow::updateLocks()
@@ -711,5 +715,5 @@ void MainWindow::changeCamera(Camera *camera)
     camera->blockSignals(false);
     ui->stackedWidget_2->setCurrentWidget(camera);
 
-    ui->widget->ui->horizontalSlider->setSplineInterpolator(camera);
+    session->mediaPanel->ui->horizontalSlider->setSplineInterpolator(camera);
 }

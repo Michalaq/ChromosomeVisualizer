@@ -388,11 +388,18 @@ Label {
      </layout>
     </item>
     <item>
-     <widget class="MediaPanel" name="widget" native="true"/>
+     <widget class="QStackedWidget" name="stackedWidget_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
     </item>
    </layout>
+   <zorder>stackedWidget_4</zorder>
    <zorder></zorder>
-   <zorder>widget</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1202,12 +1209,6 @@ QLineEdit {
    <class>StatusBar</class>
    <extends>QStatusBar</extends>
    <header>statusbar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>MediaPanel</class>
-   <extends>QWidget</extends>
-   <header>mediapanel.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
