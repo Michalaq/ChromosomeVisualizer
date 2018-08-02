@@ -97,7 +97,6 @@ std::shared_ptr<Frame> PDBSimulationLayer::readFrameContents(framePositionInfo_t
     if (file_.fail()) {
         file_.clear(); // Clear the eofbit so seekg may work
         reachedEndOfFile_ = true;
-        return nullptr;
     }
 
     Frame d = {
