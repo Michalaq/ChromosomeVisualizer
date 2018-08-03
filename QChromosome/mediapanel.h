@@ -47,7 +47,6 @@ private:
     QTime time;
 
     int direction;
-friend class MainWindow;
 };
 
 #endif // MEDIAPANEL_H

@@ -21,6 +21,10 @@ MediaPanel::MediaPanel(Session* s, QWidget *parent) :
         ui->horizontalSlider->update();
     });
 
+    connect(ui->record, &QPushButton::toggled, [this](bool checked) {
+        Camera::setAutomaticKeyframing(checked);
+    });
+
     timer.setInterval(1000 / session->projectSettings->getFPS());
 
     connect(&timer, &QTimer::timeout, [this]() {

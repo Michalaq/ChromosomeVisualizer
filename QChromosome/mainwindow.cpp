@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_projectsettings.h"
-#include "ui_mediapanel.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
@@ -147,6 +145,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
+
+    Camera::setCanvas(ui->canvas);
 }
 
 MainWindow::~MainWindow()
@@ -240,13 +240,6 @@ Session* MainWindow::makeSession()
     // add media panel to available panels
     ui->stackedWidget_4->addWidget(s->mediaPanel);
 
-    //
-    connect(s->mediaPanel->ui->record, &MediaControl::toggled, [this](bool checked) {
-        ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
-        Camera::setAutomaticKeyframing(checked);
-    });
-    //
-
     s->blockSignals(true);
     connect(s, &Session::documentTimeChanged, this, &MainWindow::setFrame);
 
@@ -299,7 +292,7 @@ void MainWindow::setCurrentSession(Session *s)
 
     //
     ui->plot->setSimulation(s->simulation);
-    ui->plot->followSlider(s->mediaPanel->ui->horizontalSlider);
+    //ui->plot->followSlider(s->mediaPanel->ui->horizontalSlider);
     //
 
     session->blockSignals(false);
@@ -449,7 +442,7 @@ void MainWindow::capture() const
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(session->mediaPanel->ui->horizontalSlider_2->getLowerBound(), session->mediaPanel->ui->horizontalSlider_2->getUpperBound(), session, suffix);
+    movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
 }
 
 void MainWindow::updateLocks()

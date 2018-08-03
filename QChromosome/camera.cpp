@@ -12,6 +12,7 @@ QVector3D Camera::origin = {0, 0, 0};
 
 Camera::Action Camera::currentAction;
 
+QWidget* Camera::canvas;
 bool Camera::automaticKeyframing = false;
 
 #include "treeitem.h"
@@ -654,8 +655,14 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
     }
 }
 
+void Camera::setCanvas(QWidget* c)
+{
+    canvas = c;
+}
+
 void Camera::setAutomaticKeyframing(bool b)
 {
+    canvas->setStyleSheet(b ? "background: #d40000;" : "background: #4d4d4d;");
     automaticKeyframing = b;
 }
 
