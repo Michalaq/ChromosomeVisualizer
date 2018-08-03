@@ -536,12 +536,6 @@ void MainWindow::addCamera(Camera* camera)
 
 void MainWindow::changeCamera(Camera *camera)
 {
-    if (!camera)
-        camera = session->editorCamera;
-
-    ui->stackedWidget_2->currentWidget()->blockSignals(true);
-    camera->blockSignals(false);
-    ui->stackedWidget_2->setCurrentWidget(camera);
-
-    session->mediaPanel->ui->horizontalSlider->setSplineInterpolator(camera);
+    session->changeCamera(camera);
+    ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
 }

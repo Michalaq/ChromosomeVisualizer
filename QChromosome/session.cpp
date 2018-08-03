@@ -126,6 +126,18 @@ void Session::reallocateBuffers()
     Material::getBuffer().forceReallocate();
 }
 
+void Session::changeCamera(Camera* camera)
+{
+    if (!camera)
+        camera = editorCamera;
+
+    currentCamera->blockSignals(true);
+    currentCamera = camera;
+    currentCamera->blockSignals(false);
+
+    mediaPanel->changeCamera(currentCamera);
+}
+
 bool Session::openProject()
 {
     if (projectSettings->getOpenFileName())

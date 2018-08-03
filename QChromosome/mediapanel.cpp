@@ -135,3 +135,8 @@ void MediaPanel::setLastFrame(int time)
     ui->horizontalSlider->setMaximum(time);
     ui->spinBox_3->setMaximum(time);
 }
+
+void MediaPanel::changeCamera(Camera* camera)
+{
+    ui->horizontalSlider->setSplineInterpolator(camera);
+}

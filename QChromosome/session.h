@@ -52,6 +52,7 @@ public:
     QJsonDocument toJson() const;
 
     void reallocateBuffers();
+    void changeCamera(Camera* camera);
 
     bool openProject();
     void saveProject() const;

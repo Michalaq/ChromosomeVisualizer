@@ -10,6 +10,7 @@ class MediaPanel;
 }
 
 class Session;
+class Camera;
 
 class MediaPanel : public QWidget
 {
@@ -35,6 +36,8 @@ public:
     void setPreviewMinTime(int time);
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
+
+    void changeCamera(Camera* camera);
 
 private:
     Ui::MediaPanel *ui;
