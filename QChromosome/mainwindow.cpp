@@ -146,7 +146,7 @@ MainWindow::MainWindow(QWidget *parent) :
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
 
-    Camera::setCanvas(ui->canvas);
+    SplineInterpolator::setCanvas(ui->canvas);
 }
 
 MainWindow::~MainWindow()

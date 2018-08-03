@@ -74,9 +74,6 @@ public:
 
     void writePOVCamera(QTextStream &stream, bool interpolate) const;
 
-    static void setCanvas(QWidget* c);
-    static void setAutomaticKeyframing(bool b = true);
-
     void setBase(const QModelIndex& index);
     const QModelIndex& getBase() const;
 
@@ -160,9 +157,6 @@ private:
     static bool lockX, lockY, lockZ;
 
     static Action currentAction;
-
-    static QWidget* canvas;
-    static bool automaticKeyframing;
 
     QPersistentModelIndex base, target, up;
 

@@ -83,9 +83,16 @@ public:
 
     int count() const;
 
+    static void setCanvas(QWidget* c);
+    static void setAutomaticKeyframing(bool b = true);
+
 signals:
     void interpolationChanged();
     void selectionChanged();
+
+protected:
+    static QWidget* canvas;
+    static bool automaticKeyframing;
 
 private:
     static int currentFrame;

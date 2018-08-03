@@ -65,6 +65,9 @@ void SplineKeyframe::write(QJsonObject &json) const
     json["Lock value"] = _valueLocked;
 }
 
+QWidget* SplineInterpolator::canvas;
+bool SplineInterpolator::automaticKeyframing = false;
+
 int SplineInterpolator::currentFrame = 0;
 
 QSet<SplineInterpolator*> SplineInterpolator::interpolators;
@@ -339,4 +342,14 @@ void SplineInterpolator::writePOVSpline(QTextStream &stream, std::function<void(
 int SplineInterpolator::count() const
 {
     return keyframes.size();
+}
+
+void SplineInterpolator::setCanvas(QWidget* c)
+{
+    canvas = c;
+}
+
+void SplineInterpolator::setAutomaticKeyframing(bool b)
+{
+    canvas->setStyleSheet((automaticKeyframing = b) ? "background: #d40000;" : "background: #4d4d4d;");
 }
