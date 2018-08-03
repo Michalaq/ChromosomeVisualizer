@@ -32,7 +32,7 @@ public:
     GLBuffer<VizBallInstance> atomBuffer;
     QVector<std::pair<int, int>> chainBuffer;
 
-    camera_data_t cameraUniformBuffer;
+    camera_data_t* cameraUniformBuffer;
 
     LabelAtlas labelAtlas;
 

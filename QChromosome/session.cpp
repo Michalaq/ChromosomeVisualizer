@@ -136,6 +136,8 @@ void Session::changeCamera(Camera* camera)
     currentCamera->blockSignals(false);
 
     mediaPanel->changeCamera(currentCamera);
+
+    cameraUniformBuffer = &currentCamera->cameraUniformBuffer;
 }
 
 bool Session::openProject()

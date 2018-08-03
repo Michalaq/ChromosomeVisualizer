@@ -378,7 +378,7 @@ void VizWidget::allocate()
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &session->cameraUniformBuffer, sizeof(camera_data_t));
+    memcpy(p, session->cameraUniformBuffer, sizeof(camera_data_t));
     glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 

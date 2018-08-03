@@ -167,11 +167,14 @@ private:
     Session *session;
     int id;
 
+    camera_data_t cameraUniformBuffer;
+
 signals:
     void modelViewChanged(QMatrix4x4);
     void projectionChanged(QMatrix4x4);
 
 friend class CameraItem;
+friend class Session;
 };
 
 #endif // CAMERA_H
