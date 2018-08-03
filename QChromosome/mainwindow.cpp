@@ -245,11 +245,6 @@ Session* MainWindow::makeSession()
         ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
         Camera::setAutomaticKeyframing(checked);
     });
-
-    connect(s->mediaPanel->ui->key, &MediaControl::clicked, [this] {
-        session->currentCamera->captureFrame();
-        //s->mediaPanel->ui->horizontalSlider->update();
-    });
     //
 
     s->blockSignals(true);
@@ -523,9 +518,17 @@ void MainWindow::addCamera(Camera* camera)
     connect(camera, SIGNAL(projectionChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
-        ui->page_6->setSplineInterpolator(camera);
-        ui->stackedWidget->setCurrentWidget(ui->page_6);
-        ui->dockWidget_2->show();
+        if (camera->hasSelection())
+        {
+            ui->page_6->setSplineInterpolator(camera);
+            ui->stackedWidget->setCurrentWidget(ui->page_6);
+            ui->dockWidget_2->show();
+        }
+        else
+        {
+            ui->stackedWidget->setCurrentWidget(ui->page_9);
+            ui->dockWidget_2->show();
+        }
     });
 
     ui->stackedWidget_2->addWidget(camera);

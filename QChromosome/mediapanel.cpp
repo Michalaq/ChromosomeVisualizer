@@ -16,6 +16,11 @@ MediaPanel::MediaPanel(Session* s, QWidget *parent) :
     connect(ui->next, &QPushButton::clicked, this, &MediaPanel::goToNextFrame);
     connect(ui->previous, &QPushButton::clicked, this, &MediaPanel::goToPreviousFrame);
 
+    connect(ui->key, &QPushButton::clicked, [this] {
+        session->currentCamera->captureFrame();
+        ui->horizontalSlider->update();
+    });
+
     timer.setInterval(1000 / session->projectSettings->getFPS());
 
     connect(&timer, &QTimer::timeout, [this]() {

@@ -46,8 +46,10 @@ public:
     void setKey(int key);
     void lockTime(bool b = true);
     void lockValue(bool b = true);
+
     QMap<int, SplineKeyframe>::const_iterator selectedFrame() const;
     QMap<int, SplineKeyframe>::const_iterator constEnd() const;
+    bool hasSelection() const;
 
     /* captures current state */
     void captureFrame();
