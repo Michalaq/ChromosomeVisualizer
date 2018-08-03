@@ -168,8 +168,8 @@ private:
     int id;
 
 signals:
-    void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
-    void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
+    void modelViewChanged(QMatrix4x4);
+    void projectionChanged(QMatrix4x4);
 
 friend class CameraItem;
 };
