@@ -21,9 +21,7 @@ MediaPanel::MediaPanel(Session* s, QWidget *parent) :
         ui->horizontalSlider->update();
     });
 
-    connect(ui->record, &QPushButton::toggled, [this](bool checked) {
-        SplineInterpolator::setAutomaticKeyframing(checked);
-    });
+    connect(ui->record, &QPushButton::toggled, session, &Session::setAutomaticKeyframing);
 
     timer.setInterval(1000 / session->projectSettings->getFPS());
 

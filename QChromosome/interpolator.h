@@ -90,10 +90,6 @@ signals:
     void interpolationChanged();
     void selectionChanged();
 
-protected:
-    static QWidget* canvas;
-    static bool automaticKeyframing;
-
 private:
     static int currentFrame;
     bool needsUpdate;

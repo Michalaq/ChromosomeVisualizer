@@ -145,8 +145,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
-
-    SplineInterpolator::setCanvas(ui->canvas);
 }
 
 MainWindow::~MainWindow()
@@ -240,6 +238,8 @@ Session* MainWindow::makeSession()
     // add media panel to available panels
     ui->stackedWidget_4->addWidget(s->mediaPanel);
 
+    s->canvas = ui->canvas;
+
     s->blockSignals(true);
     connect(s, &Session::documentTimeChanged, this, &MainWindow::setFrame);
 
@@ -289,6 +289,9 @@ void MainWindow::setCurrentSession(Session *s)
 
     // update media panel
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
+
+    // update automatic keyframing
+    session->setAutomaticKeyframing(session->automaticKeyframing);
 
     //
     ui->plot->setSimulation(s->simulation);

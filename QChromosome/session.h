@@ -66,6 +66,11 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
+    QWidget* canvas;
+    bool automaticKeyframing;
+
+    void setAutomaticKeyframing(bool b = true);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;

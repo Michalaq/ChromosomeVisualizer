@@ -10,6 +10,7 @@ Session::Session() :
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this)),
+    automaticKeyframing(false),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),
@@ -230,4 +231,9 @@ void Session::setLastFrame(int time)
 
     if (expandPreviewTime)
         setPreviewMaxTime(lastFrame);
+}
+
+void Session::setAutomaticKeyframing(bool b)
+{
+    canvas->setStyleSheet((automaticKeyframing = b) ? "background: #d40000;" : "background: #4d4d4d;");
 }
