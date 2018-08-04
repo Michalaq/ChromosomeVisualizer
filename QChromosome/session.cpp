@@ -11,6 +11,7 @@ Session::Session() :
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this)),
+    plot(new Plot(this)),
     automaticKeyframing(false),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
@@ -76,6 +77,12 @@ void Session::fromJson(const QJsonDocument &json)
 {
     const QJsonObject project = json.object();
 
+    const QJsonArray materials_ = project["Materials"].toArray();
+    qobject_cast<MaterialListModel*>(listView->model())->read(materials_);
+
+    const QJsonObject objects = project["Objects"].toObject();
+    simulation->getModel()->read(objects);
+
     const QJsonObject projectSettings_ = project["Project Settings"].toObject();
     projectSettings->read(projectSettings_);
 
@@ -84,14 +91,6 @@ void Session::fromJson(const QJsonDocument &json)
 
     const QJsonObject camera_ = project["Editor Camera"].toObject();
     editorCamera->read(camera_);
-
-    const QJsonArray materials_ = project["Materials"].toArray();
-    qobject_cast<MaterialListModel*>(listView->model())->read(materials_);
-
-    const QJsonObject objects = project["Objects"].toObject();
-    simulation->getModel()->read(objects);
-
-    simulation->getFrame(projectSettings->getMaximumTime());
 }
 
 QJsonDocument Session::toJson() const
@@ -189,6 +188,7 @@ void Session::setDocumentTime(int time)
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);
+    plot->setValue(time, false);
 
     emit documentTimeChanged(time);
 }
@@ -209,12 +209,14 @@ void Session::setPreviewMinTime(int time)
 {
     mediaPanel->setPreviewMinTime(time);
     projectSettings->setPreviewMinTime(time);
+    plot->setSoftMinimum(time);
 }
 
 void Session::setPreviewMaxTime(int time)
 {
     mediaPanel->setPreviewMaxTime(time);
     projectSettings->setPreviewMaxTime(time);
+    plot->setSoftMaximum(time);
 }
 
 void Session::setLastFrame(int time)
@@ -226,6 +228,7 @@ void Session::setLastFrame(int time)
 
     mediaPanel->setLastFrame(lastFrame);
     projectSettings->setLastFrame(lastFrame);
+    plot->setMaximum(lastFrame);
 
     if (expandTime)
         setMaximumTime(lastFrame);

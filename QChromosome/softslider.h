@@ -26,6 +26,7 @@ protected:
 signals:
 
 public slots:
+    void setValue(int val, bool spontaneous = true);
     void setSoftMinimum(int min);
     void setSoftMaximum(int max);
 };

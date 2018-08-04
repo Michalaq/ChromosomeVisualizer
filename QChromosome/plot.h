@@ -4,22 +4,19 @@
 #include "softslider.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
 #include "multimap.h"
+
+class Session;
 
 class Plot : public SoftSlider
 {
     Q_OBJECT
 public:
-    explicit Plot(QWidget *parent = 0);
+    explicit Plot(Session* s, QWidget *parent = 0);
     ~Plot();
 
-    void setSimulation(Simulation* dp);
     void updateSimulation();
-
-    void setMaximum(int max);
-    void followSlider(QAbstractSlider *s);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -35,8 +32,8 @@ private:
 
     int lastBuffered;
 
-    int padding_top = 39;
-    int padding_bottom = 24;
+    int padding_top = 48;
+    int padding_bottom = 33;
 
     QAbstractSlider *slider;
 
@@ -55,6 +52,7 @@ private:
 signals:
 
 public slots:
+    void setMaximum(int max);
 };
 
 #endif // PLOT_H

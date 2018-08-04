@@ -238,6 +238,9 @@ Session* MainWindow::makeSession()
     // add media panel to available panels
     ui->stackedWidget_4->addWidget(s->mediaPanel);
 
+    // add plot to available plots
+    ui->stackedWidget_5->addWidget(s->plot);
+
     s->canvas = ui->canvas;
 
     s->blockSignals(true);
@@ -249,10 +252,6 @@ Session* MainWindow::makeSession()
 void MainWindow::newProject()
 {
     setCurrentSession(makeSession());
-
-    //
-    ui->plot->setRange(0, 0);
-    //
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
     ui->dockWidget_2->show();
@@ -290,13 +289,11 @@ void MainWindow::setCurrentSession(Session *s)
     // update media panel
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
 
+    // update plot
+    ui->stackedWidget_5->setCurrentWidget(session->plot);
+
     // update automatic keyframing
     session->setAutomaticKeyframing(session->automaticKeyframing);
-
-    //
-    ui->plot->setSimulation(s->simulation);
-    //ui->plot->followSlider(s->mediaPanel->ui->horizontalSlider);
-    //
 
     session->blockSignals(false);
     session->setDocumentTime(session->projectSettings->getDocumentTime());
@@ -347,7 +344,7 @@ void MainWindow::addLayer()
                 session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
                 ui->scene->update();
-                ui->plot->updateSimulation();
+                session->plot->updateSimulation();
 
                 session->currentCamera->callibrate(session->atomBuffer.mid(offset));
             }
@@ -371,9 +368,6 @@ void MainWindow::setFrame(int n)
 {
     ui->scene->update();
     SplineInterpolator::setFrame(n);
-    //
-    ui->plot->setValue(n);
-    //
 }
 
 void MainWindow::selectAll()

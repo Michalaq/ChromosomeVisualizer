@@ -16,6 +16,7 @@
 #include "viewport.h"
 #include "materialbrowser.h"
 #include "mediapanel.h"
+#include "plot.h"
 
 class Session : public QObject
 {
@@ -48,6 +49,8 @@ public:
     Viewport* viewport;
 
     MediaPanel* mediaPanel;
+
+    Plot* plot;
 
     void fromJson(const QJsonDocument& json);
     QJsonDocument toJson() const;
