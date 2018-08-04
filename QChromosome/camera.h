@@ -25,10 +25,6 @@ public:
     Camera(const Camera& camera);
     ~Camera();
 
-    /* sets new origin */
-    static QVector3D getOrigin();
-    static void setOrigin(const QVector3D& o);
-
     QVector3D getPosition() const;
     QVector3D getRotation() const;
     qreal getFocalLength() const;
@@ -128,8 +124,6 @@ private:
 
     qreal horizontalAngle;
     qreal verticalAngle;
-
-    static QVector3D origin;
 
     QMatrix4x4 modelView;
     QMatrix4x4 projection;

@@ -6,6 +6,7 @@ Session::Session() :
     simulation(new Simulation(this)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
+    origin(0, 0, 0),
     treeView(new TreeView),
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),

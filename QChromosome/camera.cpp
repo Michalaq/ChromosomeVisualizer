@@ -8,8 +8,6 @@ bool Camera::lockX = false;
 bool Camera::lockY = false;
 bool Camera::lockZ = false;
 
-QVector3D Camera::origin = {0, 0, 0};
-
 Camera::Action Camera::currentAction;
 
 #include "treeitem.h"
@@ -249,16 +247,6 @@ void Camera::paintEvent(QPaintEvent *event)
     p.drawText(r, Qt::AlignCenter, "Perspective");
 }
 
-QVector3D Camera::getOrigin()
-{
-    return origin;
-}
-
-void Camera::setOrigin(const QVector3D &o)
-{
-    origin = o;
-}
-
 QVector3D Camera::getPosition() const
 {
     return eye;
@@ -308,7 +296,7 @@ void Camera::setPosition(const QVector3D &p)
 
 void Camera::move(int dx, int dy)
 {
-    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
+    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - session->origin, z)) / focalLength;
 
     move(scale * dx, -scale * dy, 0.);
 
@@ -529,7 +517,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     z = q.rotatedVector(z);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     q = QQuaternion::fromAxisAndAngle(x, p);
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
@@ -538,7 +526,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     z = q.rotatedVector(z);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     q = QQuaternion::fromAxisAndAngle(z, b);
     dq = QQuaternion::fromAxisAndAngle(z, -db);
@@ -547,7 +535,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     y = q.rotatedVector(y);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     emit modelViewChanged(updateModelView());
 }

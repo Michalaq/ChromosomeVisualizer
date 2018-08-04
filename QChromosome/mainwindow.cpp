@@ -402,7 +402,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
         return;
     }
 
-    Camera::setOrigin(model->getOrigin());
+    session->origin = model->getOrigin();
 
     QModelIndexList selectedRows = session->treeView->selectionModel()->selectedRows();
 

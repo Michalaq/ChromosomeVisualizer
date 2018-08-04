@@ -39,6 +39,7 @@ public:
     Camera* editorCamera;
     Camera* currentCamera;
     QList<Camera*> userCameras;
+    QVector3D origin;
 
     TreeView* treeView;
     ListView* listView;
