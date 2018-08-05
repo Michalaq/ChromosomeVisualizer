@@ -448,7 +448,13 @@ Label {
      <addaction name="separator"/>
      <addaction name="actionSimple"/>
      <addaction name="actionCycle"/>
+     <addaction name="actionPing_Pong"/>
     </widget>
+    <addaction name="actionRecord"/>
+    <addaction name="actionRecord_Active_Objects"/>
+    <addaction name="separator"/>
+    <addaction name="actionAutokeying"/>
+    <addaction name="separator"/>
     <addaction name="menuPlay_mode"/>
     <addaction name="actionPlay_forwards"/>
     <addaction name="actionPlay_backwards"/>
@@ -858,9 +864,6 @@ QLineEdit {
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
    <property name="text">
     <string>Preview range</string>
    </property>
@@ -1114,6 +1117,46 @@ QLineEdit {
    </property>
    <property name="statusTip">
     <string>Add Camera Object</string>
+   </property>
+  </action>
+  <action name="actionAutokeying">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/record</normaloff>:/media/record</iconset>
+   </property>
+   <property name="text">
+    <string>Autokeying</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F9</string>
+   </property>
+  </action>
+  <action name="actionRecord_Active_Objects">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/key</normaloff>:/media/key</iconset>
+   </property>
+   <property name="text">
+    <string>Record Active Objects</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionRecord">
+   <property name="text">
+    <string>Record</string>
+   </property>
+  </action>
+  <action name="actionPing_Pong">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ping-Pong</string>
    </property>
   </action>
  </widget>

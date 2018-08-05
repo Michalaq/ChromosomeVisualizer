@@ -1,10 +1,12 @@
 #include "mediapanel.h"
 #include "ui_mediapanel.h"
 #include "session.h"
+#include "ui_mainwindow.h"
 
-MediaPanel::MediaPanel(Session* s, QWidget *parent) :
+MediaPanel::MediaPanel(Session* s, Ui::MainWindow *ui__, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MediaPanel),
+    ui_(ui__),
     session(s)
 {
     ui->setupUi(this);
@@ -15,13 +17,17 @@ MediaPanel::MediaPanel(Session* s, QWidget *parent) :
     connect(ui->end, &QPushButton::clicked, this, &MediaPanel::goToEnd);
     connect(ui->next, &QPushButton::clicked, this, &MediaPanel::goToNextFrame);
     connect(ui->previous, &QPushButton::clicked, this, &MediaPanel::goToPreviousFrame);
+    connect(ui->key, &QPushButton::clicked, this, &MediaPanel::recordActiveObjects);
+    connect(ui->record, &QPushButton::clicked, this, &MediaPanel::autokeying);
 
-    connect(ui->key, &QPushButton::clicked, [this] {
-        session->currentCamera->captureFrame();
-        ui->horizontalSlider->update();
-    });
-
-    connect(ui->record, &QPushButton::toggled, session, &Session::setAutomaticKeyframing);
+    connect(ui_->actionPlay_forwards, &QAction::triggered, this, &MediaPanel::playForwards);
+    connect(ui_->actionPlay_backwards, &QAction::triggered, this, &MediaPanel::playBackwards);
+    connect(ui_->actionGo_to_start, &QAction::triggered, this, &MediaPanel::goToStart);
+    connect(ui_->actionGo_to_end, &QAction::triggered, this, &MediaPanel::goToEnd);
+    connect(ui_->actionGo_to_next_frame, &QAction::triggered, this, &MediaPanel::goToNextFrame);
+    connect(ui_->actionGo_to_previous_frame, &QAction::triggered, this, &MediaPanel::goToPreviousFrame);
+    connect(ui_->actionRecord_Active_Objects, &QAction::triggered, this, &MediaPanel::recordActiveObjects);
+    connect(ui_->actionAutokeying, &QAction::triggered, this, &MediaPanel::autokeying);
 
     timer.setInterval(1000 / session->projectSettings->getFPS());
 
@@ -42,6 +48,20 @@ MediaPanel::~MediaPanel()
     delete ui;
 }
 
+void MediaPanel::recordActiveObjects()
+{
+    session->currentCamera->captureFrame();
+    ui->horizontalSlider->update();
+}
+
+void MediaPanel::autokeying(bool checked)
+{
+    session->setAutomaticKeyframing(checked);
+
+    ui->record->setChecked(checked);
+    ui_->actionAutokeying->setChecked(checked);
+}
+
 void MediaPanel::playForwards(bool checked)
 {
     if (checked)
@@ -56,6 +76,9 @@ void MediaPanel::playForwards(bool checked)
     }
     else
         timer.stop();
+
+    ui->play->setChecked(checked);
+    ui_->actionPlay_forwards->setChecked(checked);
 }
 
 void MediaPanel::playBackwards(bool checked)
@@ -72,6 +95,9 @@ void MediaPanel::playBackwards(bool checked)
     }
     else
         timer.stop();
+
+    ui->reverse->setChecked(checked);
+    ui_->actionPlay_backwards->setChecked(checked);
 }
 
 void MediaPanel::goToStart()

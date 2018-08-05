@@ -18,12 +18,17 @@
 #include "mediapanel.h"
 #include "plot.h"
 
+namespace Ui
+{
+    class MainWindow;
+}
+
 class Session : public QObject
 {
     Q_OBJECT
 
 public:
-    Session();
+    Session(Ui::MainWindow* ui);
     ~Session();
 
     QAction *action;

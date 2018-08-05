@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
+    ag->addAction(ui->actionPing_Pong);
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -203,7 +204,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 Session* MainWindow::makeSession()
 {
-    auto s = new Session();
+    auto s = new Session(ui);
 
     // add action to menu
     ui->menuWindows->addAction(s->action);
