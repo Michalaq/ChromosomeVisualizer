@@ -135,16 +135,23 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 }
 
 #include "material.h"
+#include "session.h"
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
+void TreeModel::dumpModel(const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
 {
     // update current material
     auto list = root.sibling(root.row(), 5).data().toList();
 
-    if (!list.isEmpty())
+    for (auto mat : list)
     {
-        m = qobject_cast<Material*>(list.last().value<QObject*>());
+        m = qobject_cast<Material*>(mat.value<QObject*>());
         m->assign(root.sibling(root.row(), 5));
+
+        if (!materials.contains(m))
+        {
+            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+            materials.insert(m);
+        }
     }
 
     // update index buffer
@@ -154,8 +161,8 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
         reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
     }
 
-    for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), id, m);
+    for (int r = 0; r < rowCount(root); r++)
+        dumpModel(index(r, 0, root), id, m);
 }
 
 #include "defaults.h"
@@ -189,7 +196,6 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
 
 #include <QBitArray>
 #include <QFileInfo>
-#include "session.h"
 
 void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
 {
@@ -238,7 +244,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(this, index(0, 0), indices, Material::getDefault());
+    dumpModel(index(0, 0), indices, Material::getDefault());
 }
 
 const QVector<QPersistentModelIndex>& TreeModel::getIndices() const

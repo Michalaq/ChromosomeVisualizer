@@ -110,6 +110,7 @@ private:
     QVector<QPersistentModelIndex> indices;
     QPersistentModelIndex currentCamera;
     Session *session;
+    QSet<Material*> materials;
 
     QString next_name() const;
 
@@ -123,6 +124,8 @@ private:
     void propagateSelected(const QModelIndex &root, bool s);
 
     void propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) const;
+
+    void dumpModel(const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m);
 
 signals:
     void propertyChanged();

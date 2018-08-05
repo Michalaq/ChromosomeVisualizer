@@ -42,9 +42,6 @@ ListView* MaterialBrowser::makeListView()
     ListView* lv = new ListView;
 
     auto* mlm = new MaterialListModel;
-    for (auto material : mat)
-        mlm->prepend(material);
-
     lv->setModel(mlm);
 
     connect(lv->selectionModel(), &QItemSelectionModel::currentChanged, [this](const QModelIndex& index, const QModelIndex&) {
@@ -246,15 +243,11 @@ void MaterialListModel::prepend(Material *m)
 
 void MaterialListModel::read(const QJsonArray &json)
 {
-    materials.clear();
-    id2mat.clear();
-
     for (auto i = json.begin(); i != json.end(); i++)
     {
         auto * m = new Material;
-        m->read((*i).toObject());
-        materials.prepend(m);
-        id2mat.insert(m->getId(), m);
+        m->read(i->toObject());
+        prepend(m);
     }
 }
 
