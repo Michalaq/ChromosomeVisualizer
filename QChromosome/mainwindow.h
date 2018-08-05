@@ -38,8 +38,6 @@ public slots:
 
     void addLayer();
 
-    void setFrame(int n);
-
     /* selection */
     void selectAll();
     void handleSceneSelection(const QItemSelection &selected, QItemSelectionModel::SelectionFlags flags);

@@ -244,7 +244,7 @@ Session* MainWindow::makeSession()
     s->canvas = ui->canvas;
 
     s->blockSignals(true);
-    connect(s, &Session::documentTimeChanged, this, &MainWindow::setFrame);
+    connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
     return s;
 }
@@ -362,12 +362,6 @@ void MainWindow::saveProject()
 void MainWindow::saveProjectAs()
 {
     session->saveProjectAs();
-}
-
-void MainWindow::setFrame(int n)
-{
-    ui->scene->update();
-    SplineInterpolator::setFrame(n);
 }
 
 void MainWindow::selectAll()

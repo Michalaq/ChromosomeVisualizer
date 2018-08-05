@@ -190,6 +190,8 @@ void Session::setDocumentTime(int time)
     projectSettings->setDocumentTime(time);
     plot->setValue(time, false);
 
+    SplineInterpolator::setFrame(time);
+
     emit documentTimeChanged(time);
 }
 
