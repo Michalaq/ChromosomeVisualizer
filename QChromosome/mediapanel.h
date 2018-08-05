@@ -52,6 +52,8 @@ private:
     QTime time;
 
     int direction;
+
+    void step();
 };
 
 #endif // MEDIAPANEL_H

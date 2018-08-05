@@ -30,10 +30,7 @@ MediaPanel::MediaPanel(Session* s, Ui::MainWindow *ui__, QWidget *parent) :
     connect(ui_->actionAutokeying, &QAction::triggered, this, &MediaPanel::autokeying);
 
     timer.setInterval(1000 / session->projectSettings->getFPS());
-
-    connect(&timer, &QTimer::timeout, [this]() {
-        session->setDocumentTime(session->projectSettings->getDocumentTime() + direction * (time.restart() * session->projectSettings->getFPS() + 500) / 1000);
-    });
+    connect(&timer, &QTimer::timeout, this, &MediaPanel::step);
 
     connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setDocumentTime);
     connect(ui->horizontalSlider, &QSlider::valueChanged, session, &Session::setDocumentTime);
@@ -167,4 +164,9 @@ void MediaPanel::setLastFrame(int time)
 void MediaPanel::changeCamera(Camera* camera)
 {
     ui->horizontalSlider->setSplineInterpolator(camera);
+}
+
+void MediaPanel::step()
+{
+    session->setDocumentTime(session->projectSettings->getDocumentTime() + direction * (time.restart() * session->projectSettings->getFPS() + 500) / 1000);
 }
