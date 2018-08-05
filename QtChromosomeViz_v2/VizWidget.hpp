@@ -9,6 +9,8 @@
 #include "pickwidget.h"
 #include "treemodel.h"
 
+class Session;
+
 class VizWidget :   public Selection,
                     protected QOpenGLFunctions_4_1_Core,
                     public Pickable
@@ -25,8 +27,7 @@ public:
 
     QPersistentModelIndex pick(const QPoint& pos);
 
-    void setModel(TreeModel* model, QItemSelectionModel *selectionModel);
-    void reloadModel();
+    void setSession(Session* s);
 
 signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
@@ -37,6 +38,7 @@ protected:
     void dropEvent(QDropEvent *event);
 
     void mouseReleaseEvent(QMouseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void allocate();
@@ -48,19 +50,22 @@ private:
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
 
+    QOpenGLBuffer materials_;
+
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
     QOpenGLShaderProgram labelsProgram_;
     QOpenGLShaderProgram pickingProgram_;
 
-    GLuint buffers[3];
-    GLuint picking;
+    GLuint buffers[2];
+    GLuint picking[1];
     GLuint texture[2];
     QImage image;
 
     void pickSpheres();
 
+    Session* session;
     TreeModel *model_;
     QItemSelectionModel *selectionModel_;
 };

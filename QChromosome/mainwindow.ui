@@ -377,7 +377,6 @@ Label {
               <property name="styleSheet">
                <string notr="true">background: none;</string>
               </property>
-              <widget class="Camera" name="camera"/>
              </widget>
             </item>
            </layout>
@@ -389,330 +388,17 @@ Label {
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="SpinBox" name="spinBox">
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="accelerated">
-         <bool>true</bool>
-        </property>
-        <property name="suffix">
-         <string>F</string>
-        </property>
-        <property name="maximum">
-         <number>0</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="Slider" name="horizontalSlider">
-        <property name="maximum">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <property name="spacing">
-       <number>24</number>
+     <widget class="QStackedWidget" name="stackedWidget_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="SpinBox" name="spinBox_2">
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>F</string>
-          </property>
-          <property name="maximum">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="RangeSlider" name="horizontalSlider_2">
-          <property name="maximum">
-           <number>0</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="SpinBox" name="spinBox_3">
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-          <property name="accelerated">
-           <bool>true</bool>
-          </property>
-          <property name="suffix">
-           <string>F</string>
-          </property>
-          <property name="maximum">
-           <number>0</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="spacing">
-         <number>12</number>
-        </property>
-        <item>
-         <widget class="MediaControl" name="start">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to start of animation [Shortcut F6]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/start</normaloff>:/media/start</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="previous">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to previous frame [Shortcut F]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="reverse">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Play backwards</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #0066ff;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/reverse</normaloff>
-            <normalon>:/media/pause</normalon>:/media/reverse</iconset>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="play">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Play forwards [Shortcut F7]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #0066ff;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/play</normaloff>
-            <normalon>:/media/pause</normalon>:/media/play</iconset>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="next">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to next frame [Shortcut G]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/next</normaloff>:/media/next</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="end">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Go to end of animation [Shortcut F8]</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/end</normaloff>:/media/end</iconset>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>12</number>
-        </property>
-        <item>
-         <widget class="MediaControl" name="key">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Record Position, Rotation and PLA of Active Camera [Shortcut F9]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #d40000;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/key</normaloff>:/media/key</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="shortcut">
-           <string>F9</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="MediaControl" name="record">
-          <property name="minimumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="statusTip">
-           <string>Automatic Keyframing [Shortcut Ctrl+F9]</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">:!hover:!checked {
-	background: #d40000;
-}</string>
-          </property>
-          <property name="icon">
-           <iconset resource="icons.qrc">
-            <normaloff>:/media/record</normaloff>:/media/record</iconset>
-          </property>
-          <property name="shortcut">
-           <string>Ctrl+F9</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     </widget>
     </item>
    </layout>
+   <zorder>stackedWidget_4</zorder>
    <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -792,6 +478,7 @@ Label {
     <addaction name="menuDockable_dialogs"/>
     <addaction name="separator"/>
     <addaction name="actionMaterial_Browser"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -870,27 +557,8 @@ Label {
   </widget>
   <widget class="StatusBar" name="statusBar"/>
   <widget class="DockWidget" name="dockWidget">
-   <property name="windowTitle">
-    <string>Objects</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_6">
-     <item row="0" column="0">
-      <widget class="TreeView" name="treeView">
-       <property name="mouseTracking">
-        <bool>true</bool>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QTreeView {
+   <property name="styleSheet">
+    <string notr="true">QTreeView {
 	color: gray;
 	border: none;
 	background: #1a1a1a;
@@ -930,23 +598,14 @@ QLineEdit {
 	padding: 1px;
 }
 </string>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::ExtendedSelection</enum>
-       </property>
-       <property name="uniformRowHeights">
-        <bool>true</bool>
-       </property>
-       <attribute name="headerVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
-     </item>
-    </layout>
-   </widget>
+   </property>
+   <property name="windowTitle">
+    <string>Objects</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QStackedWidget" name="stackedWidget_3"/>
   </widget>
   <widget class="DockWidget" name="dockWidget_2">
    <property name="windowTitle">
@@ -955,34 +614,14 @@ QLineEdit {
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QStackedWidget" name="stackedWidget">
-       <widget class="ProjectSettings" name="page"/>
-       <widget class="AtomAttributes" name="page_2"/>
-       <widget class="LayerAttributes" name="page_3"/>
-       <widget class="Viewport" name="page_4"/>
-       <widget class="CameraAttributes" name="page_5"/>
-       <widget class="Keyframes" name="page_6"/>
-       <widget class="MaterialAttributes" name="page_7"/>
-       <widget class="Attributes" name="page_8"/>
-       <widget class="QWidget" name="page_9"/>
-      </widget>
-     </item>
-    </layout>
+   <widget class="QStackedWidget" name="stackedWidget">
+    <widget class="AtomAttributes" name="page_2"/>
+    <widget class="LayerAttributes" name="page_3"/>
+    <widget class="CameraAttributes" name="page_5"/>
+    <widget class="Keyframes" name="page_6"/>
+    <widget class="MaterialAttributes" name="page_7"/>
+    <widget class="Attributes" name="page_8"/>
+    <widget class="QWidget" name="page_9"/>
    </widget>
   </widget>
   <widget class="DockWidget" name="dockWidget_3">
@@ -992,7 +631,7 @@ QLineEdit {
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
+   <widget class="QStackedWidget" name="stackedWidget_5">
     <property name="styleSheet">
      <string notr="true">Legend {
 	color: #808080;
@@ -1000,24 +639,6 @@ QLineEdit {
 	padding-left: 25px;
 }</string>
     </property>
-    <layout class="QGridLayout" name="gridLayout_5">
-     <item row="0" column="0">
-      <widget class="Plot" name="plot">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximum">
-        <number>0</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </widget>
   </widget>
   <action name="actionOpen">
@@ -1499,16 +1120,6 @@ QLineEdit {
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
    <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
@@ -1520,60 +1131,15 @@ QLineEdit {
    </slots>
   </customwidget>
   <customwidget>
-   <class>Camera</class>
-   <extends>QWidget</extends>
-   <header>camera.h</header>
-   <container>1</container>
-   <slots>
-    <signal>modelViewChanged(QMatrix4x4)</signal>
-    <signal>projectionChanged(QMatrix4x4)</signal>
-    <slot>move(int,int)</slot>
-    <slot>rotate(int,int)</slot>
-    <slot>scale(int,int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>DockWidget</class>
    <extends>QDockWidget</extends>
    <header>dockwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>RangeSlider</class>
-   <extends>QSlider</extends>
-   <header>rangeslider.h</header>
-   <slots>
-    <signal>lowerBoundChanged(int)</signal>
-    <signal>upperBoundChanged(int)</signal>
-    <slot>setLowerBound(int)</slot>
-    <slot>setUpperBound(int)</slot>
-   </slots>
-  </customwidget>
-  <customwidget>
    <class>ToolBar</class>
    <extends>QToolBar</extends>
    <header>toolbar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ProjectSettings</class>
-   <extends>QWidget</extends>
-   <header>projectsettings.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Slider</class>
-   <extends>QSlider</extends>
-   <header>slider.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Plot</class>
-   <extends>QSlider</extends>
-   <header>plot.h</header>
-   <container>1</container>
-   <slots>
-    <slot>setMinimum(int)</slot>
-    <slot>setMaximum(int)</slot>
-   </slots>
   </customwidget>
   <customwidget>
    <class>AtomAttributes</class>
@@ -1588,21 +1154,10 @@ QLineEdit {
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Viewport</class>
-   <extends>QWidget</extends>
-   <header>viewport.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>Keyframes</class>
    <extends>QWidget</extends>
    <header>keyframe.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TreeView</class>
-   <extends>QTreeView</extends>
-   <header>treeview.h</header>
   </customwidget>
   <customwidget>
    <class>MaterialAttributes</class>
@@ -1633,38 +1188,6 @@ QLineEdit {
  </resources>
  <connections>
   <connection>
-   <sender>camera</sender>
-   <signal>modelViewChanged(QMatrix4x4)</signal>
-   <receiver>scene</receiver>
-   <slot>update()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>40</x>
-     <y>175</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>63</x>
-     <y>204</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>camera</sender>
-   <signal>projectionChanged(QMatrix4x4)</signal>
-   <receiver>scene</receiver>
-   <slot>update()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>170</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>205</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionOpen</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -1676,102 +1199,6 @@ QLineEdit {
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>start</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>start()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>44</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>previous</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>previous()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>106</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>next</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>next()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>292</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>end</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>end()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>354</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>play</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>play(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>230</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
      <y>149</y>
     </hint>
    </hints>
@@ -1829,166 +1256,6 @@ QLineEdit {
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>setBaseAction(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>spinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>411</x>
-     <y>244</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>plot</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setFrame(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>423</x>
-     <y>436</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>lowerBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMinimum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>upperBoundChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>setSoftMaximum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>93</x>
-     <y>335</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPlay_forwards</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>play(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPlay_backwards</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reverse(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionGo_to_start</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>start()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionGo_to_end</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>end()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionGo_to_next_frame</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>next()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionGo_to_previous_frame</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>previous()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -2093,22 +1360,6 @@ QLineEdit {
     <hint type="destinationlabel">
      <x>423</x>
      <y>248</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>reverse</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>reverse(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>168</x>
-     <y>155</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>149</y>
     </hint>
    </hints>
   </connection>

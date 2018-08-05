@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "pickwidget.h"
 #include "attributes.h"
+#include "session.h"
 
 namespace Ui
 {
@@ -28,31 +29,14 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *event);
 
-    void read(const QJsonObject& json);
-
 public slots:
     void newProject();
     void openProject();
-    void addLayer();
+
     void saveProject();
     void saveProjectAs();
 
-    void setFrame(int n);
-    void updateFrameCount(int n);
-
-    void setSoftMinimum(int min);
-    void setSoftMaximum(int max);
-
-    /* animation */
-    void start();
-    void previous();
-    void reverse(bool checked);
-    void play(bool checked);
-    void next();
-    void end();
-
-    void reverse_previous();
-    void play_next();
+    void addLayer();
 
     /* selection */
     void selectAll();
@@ -76,11 +60,6 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    std::shared_ptr<Simulation> simulation;
-
-    int currentFrame;
-    int lastFrame;
-
     QTimer timer;
     QTime time;
 
@@ -97,16 +76,17 @@ private:
     MaterialBrowser *materialBrowser;
     MovieMaker* movieMaker;
 
-    int softMinimum;
-    int softMaximum;
-
-    QString currentFile;
-
     void addCamera(Camera *camera);
+    void changeCamera(Camera* camera);
 
     PickWidget* pw;
 
     MetaAttributes* recent;
+
+    Session* makeSession();
+    void setCurrentSession(Session* s);
+
+    Session* session;
 };
 
 #endif // MAINWINDOW_H

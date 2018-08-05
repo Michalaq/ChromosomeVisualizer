@@ -8,19 +8,12 @@ bool Camera::lockX = false;
 bool Camera::lockY = false;
 bool Camera::lockZ = false;
 
-QVector3D Camera::origin = {0, 0, 0};
-
 Camera::Action Camera::currentAction;
 
-bool Camera::automaticKeyframing = false;
-
-Viewport* Camera::viewport = nullptr;
-
-camera_data_t Camera::buffer;
-
 #include "treeitem.h"
+#include "session.h"
 
-Camera::Camera(QWidget *parent)
+Camera::Camera(Session *s, QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
       eye(60, 30, 60),
       focalLength(36),
@@ -28,7 +21,8 @@ Camera::Camera(QWidget *parent)
       rotationType(RT_World),
       nearClipping(.3),
       farClipping(1000.),
-      id(CameraItem::emplace_back())
+      session(s),
+      id(s->cameraBuffer.emplace_back())
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -66,7 +60,9 @@ Camera::Camera(const Camera& camera)
       rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
-      id(CameraItem::emplace_back())
+      session(camera.session),
+      id(camera.session->cameraBuffer.emplace_back()),
+      cameraUniformBuffer(camera.cameraUniformBuffer)
 {
     resize(camera.size());
 
@@ -84,7 +80,7 @@ Camera::Camera(const Camera& camera)
         };
     });
 
-    CameraItem::buffer[id] = CameraItem::buffer[camera.id];
+    session->cameraBuffer[id] = session->cameraBuffer[camera.id];
 }
 
 Camera::~Camera()
@@ -126,16 +122,11 @@ void Camera::loadFrame(const SplineKeyframe &frame)
     updateAngles();
 }
 
-void Camera::setViewport(Viewport *vp)
-{
-    viewport = vp;
-}
-
 #include <QResizeEvent>
 
 void Camera::resizeEvent(QResizeEvent *event)
 {
-    buffer.uvScreenSize = event->size();
+    cameraUniformBuffer.uvScreenSize = event->size();
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
@@ -165,18 +156,17 @@ void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(buffer.modelView = modelView);
-    emit projectionChanged(buffer.projection = projection);
+    emit modelViewChanged(cameraUniformBuffer.modelView = modelView);
+    emit projectionChanged(cameraUniformBuffer.projection = projection);
 }
 
 #include <QPainter>
-#include "viewport.h"
 
 void Camera::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (viewport->getSFVisible())
+    if (session->viewport->getSFVisible())
     {
         int w = std::min(width(), int(qreal(height()) * aspectRatio + 0.5));
         int h = std::min(height(), int(qreal(width()) / aspectRatio + 0.5));
@@ -184,8 +174,8 @@ void Camera::paintEvent(QPaintEvent *event)
         QRect view(0, 0, w, h);
         view.moveCenter(rect().center());
 
-        auto opacity = viewport->getSFOpacity();
-        auto color = viewport->getSFColor();
+        auto opacity = session->viewport->getSFOpacity();
+        auto color = session->viewport->getSFColor();
 
         QPainter p(this);
         p.setOpacity(opacity);
@@ -197,7 +187,7 @@ void Camera::paintEvent(QPaintEvent *event)
         p.fillRect(QRect(view.bottomLeft() + QPoint(0, 1), rect().bottomRight()), color);
     }
 
-    auto position = viewport->getAxisPosition();
+    auto position = session->viewport->getAxisPosition();
 
     if (position != Off_)
     {
@@ -223,7 +213,7 @@ void Camera::paintEvent(QPaintEvent *event)
         QPainter p(this);
         p.setRenderHint(QPainter::Antialiasing);
 
-        auto scale = viewport->getAxisScale();
+        auto scale = session->viewport->getAxisScale();
 
         p.translate(position == TopLeft || position == BottomLeft ? 50 * scale : width() - 50 * scale,
                     position == TopLeft || position == TopRight ? 50 * scale : height() - 50 * scale);
@@ -234,7 +224,7 @@ void Camera::paintEvent(QPaintEvent *event)
             p.setPen(QPen(a.color, 2, Qt::SolidLine, Qt::RoundCap));
             p.drawLine({0,0}, QPointF(a.vector.x(), -a.vector.y()) * 30);
 
-            if (viewport->getAxisTextVisible())
+            if (session->viewport->getAxisTextVisible())
             {
                 r.moveCenter(QPointF(a.vector.x(), -a.vector.y()) * 40);
                 p.drawText(r, Qt::AlignCenter, a.label);
@@ -255,16 +245,6 @@ void Camera::paintEvent(QPaintEvent *event)
     p.restore();
     p.setPen(Qt::white);
     p.drawText(r, Qt::AlignCenter, "Perspective");
-}
-
-QVector3D Camera::getOrigin()
-{
-    return origin;
-}
-
-void Camera::setOrigin(const QVector3D &o)
-{
-    origin = o;
 }
 
 QVector3D Camera::getPosition() const
@@ -316,11 +296,11 @@ void Camera::setPosition(const QVector3D &p)
 
 void Camera::move(int dx, int dy)
 {
-    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - origin, z)) / focalLength;
+    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - session->origin, z)) / focalLength;
 
     move(scale * dx, -scale * dy, 0.);
 
-    if (automaticKeyframing)
+    if (session->automaticKeyframing)
     {
         captureFrame();
         emit interpolationChanged();
@@ -331,7 +311,7 @@ void Camera::rotate(int dx, int dy)
 {
     rotate(-angleFactor * dx, -angleFactor * dy, 0.);
 
-    if (automaticKeyframing)
+    if (session->automaticKeyframing)
     {
         captureFrame();
         emit interpolationChanged();
@@ -342,7 +322,7 @@ void Camera::scale(int dx, int)
 {
     move(0., 0., distanceFactor * dx);
 
-    if (automaticKeyframing)
+    if (session->automaticKeyframing)
     {
         captureFrame();
         emit interpolationChanged();
@@ -537,7 +517,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     z = q.rotatedVector(z);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     q = QQuaternion::fromAxisAndAngle(x, p);
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
@@ -546,7 +526,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     z = q.rotatedVector(z);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     q = QQuaternion::fromAxisAndAngle(z, b);
     dq = QQuaternion::fromAxisAndAngle(z, -db);
@@ -555,7 +535,7 @@ void Camera::rotate(qreal dh, qreal dp, qreal db)
     y = q.rotatedVector(y);
 
     if (rotationType == RT_World)
-        eye = origin + dq.rotatedVector(eye - origin);
+        eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     emit modelViewChanged(updateModelView());
 }
@@ -569,8 +549,7 @@ QMatrix4x4& Camera::updateModelView()
 
     update();
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].modelView = modelView = buffer.modelView = modelView.inverted();
+    return session->cameraBuffer[id].modelView = modelView = cameraUniformBuffer.modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -590,8 +569,7 @@ QMatrix4x4& Camera::updateProjection()
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
-    CameraItem::modified = true;
-    return CameraItem::buffer[id].projection = buffer.projection = projection;
+    return session->cameraBuffer[id].projection = cameraUniformBuffer.projection = projection;
 }
 
 void Camera::updateAngles()
@@ -662,11 +640,6 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
     }
 }
 
-void Camera::setAutomaticKeyframing(bool b)
-{
-    automaticKeyframing = b;
-}
-
 void Camera::setBase(const QModelIndex& index)
 {
     base = index;
@@ -734,9 +707,4 @@ void Camera::callibrate(const QVector<VizBallInstance> &atoms, qreal scale)
     }
 
     setPosition(eye + (dxr - dxl) / 2 * tha * x + (dyr - dyl) / 2 * tva * y + qMax((dxr + dxl) / 2, (dyr + dyl) / 2) * z);
-}
-
-const camera_data_t& Camera::getBuffer()
-{
-    return buffer;
 }

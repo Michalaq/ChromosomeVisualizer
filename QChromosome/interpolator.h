@@ -46,8 +46,10 @@ public:
     void setKey(int key);
     void lockTime(bool b = true);
     void lockValue(bool b = true);
+
     QMap<int, SplineKeyframe>::const_iterator selectedFrame() const;
     QMap<int, SplineKeyframe>::const_iterator constEnd() const;
+    bool hasSelection() const;
 
     /* captures current state */
     void captureFrame();
@@ -80,6 +82,9 @@ public:
     void writePOVSpline(QTextStream &stream, std::function<void(QTextStream &, const SplineKeyframe &)> f) const;
 
     int count() const;
+
+    static void setCanvas(QWidget* c);
+    static void setAutomaticKeyframing(bool b = true);
 
 signals:
     void interpolationChanged();

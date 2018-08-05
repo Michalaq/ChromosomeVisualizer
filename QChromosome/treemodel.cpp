@@ -3,9 +3,10 @@
 
 #include <QStringList>
 
-TreeModel::TreeModel(QObject *parent)
+TreeModel::TreeModel(Session *s, QObject *parent)
     : QAbstractItemModel(parent),
-      header(new TreeItem({"Name", "Type", "Id", "ViE", "ViR", "Tags", "Camera"}))
+      header(new TreeItem({"Name", "Type", "Id", "ViE", "ViR", "Tags", "Camera"})),
+      session(s)
 {
 
 }
@@ -134,16 +135,23 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 }
 
 #include "material.h"
+#include "session.h"
 
-void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
+void TreeModel::dumpModel(const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
 {
     // update current material
     auto list = root.sibling(root.row(), 5).data().toList();
 
-    if (!list.isEmpty())
+    for (auto mat : list)
     {
-        m = qobject_cast<Material*>(list.last().value<QObject*>());
+        m = qobject_cast<Material*>(mat.value<QObject*>());
         m->assign(root.sibling(root.row(), 5));
+
+        if (!materials.contains(m))
+        {
+            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+            materials.insert(m);
+        }
     }
 
     // update index buffer
@@ -153,15 +161,15 @@ void dumpModel(const QAbstractItemModel* model, const QModelIndex& root, QVector
         reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
     }
 
-    for (int r = 0; r < model->rowCount(root); r++)
-        dumpModel(model, model->index(r, 0, root), id, m);
+    for (int r = 0; r < rowCount(root); r++)
+        dumpModel(index(r, 0, root), id, m);
 }
 
 #include "defaults.h"
 
-void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init)
+void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init, Session *s)
 {
-    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, parent);
+    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, s, parent);
 
     QMap<int, TreeItem*> types;
 
@@ -177,7 +185,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
                 types[t]->setData(5, Defaults::typename2color(t));
         }
 
-        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, types[t]));
+        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, s, types[t]));
     }
 
     for (auto t : types)
@@ -199,7 +207,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
 
     auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, header);
 
-    AtomItem::resizeBuffer(atoms.size());
+    session->atomBuffer.resize(atoms.size());
 
     unsigned int i = 0;
 
@@ -207,7 +215,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     {
         range.first--;
         used.fill(true, range.first, range.second);
-        appendSubmodel(range, atoms, i++, offset, root, init);
+        appendSubmodel(range, atoms, i++, offset, root, init, session);
     }
 
     QMap<int, TreeItem*> types;
@@ -225,7 +233,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
                     types[t]->setData(5, Defaults::typename2color(t));
             }
 
-            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, types[t]));
+            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]));
         }
 
     for (auto t : types)
@@ -236,7 +244,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(this, index(0, 0), indices, Material::getDefault());
+    dumpModel(index(0, 0), indices, Material::getDefault());
 }
 
 const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
@@ -283,11 +291,13 @@ QString TreeModel::next_name() const
 
 void TreeModel::addCamera(Camera *camera)
 {
-    TreeItem* root = new CameraItem(next_name(), camera, header);
+    TreeItem* root = new CameraItem(next_name(), camera, session, header);
 
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
+
+    session->userCameras.append(camera);
 }
 
 void TreeModel::setCurrentCamera(QModelIndex index)
@@ -382,7 +392,16 @@ void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
 
     if (!list.isEmpty())
     {
-        auto n = list.last().value<Material*>();
+        auto model = qobject_cast<MaterialListModel*>(session->listView->model());
+
+        QVariantList u;
+
+        for (auto i : list)
+            u.append(QVariant::fromValue(model->getMaterialById(i.toString())));
+
+        setData(root.sibling(root.row(), 5), u);
+
+        auto n = u.last().value<Material*>();
         n->assign(root);
         m = n;
     }
@@ -553,8 +572,29 @@ void TreeModel::setName(const QModelIndexList &indices, const QString &name)
     emit attributeChanged();
 }
 
+#include <QJsonObject>
+#include <QJsonArray>
+
 void TreeModel::read(const QJsonObject &json)
 {
+    const QJsonObject children = json["Descendants"].toObject();
+
+    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
+    {
+        const QJsonObject object = child.value().toObject()["Object"].toObject();
+
+        if (object["class"] == "Layer")
+        {
+            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
+            simulationLayer->read(object["paths"].toArray());
+
+            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
+        }
+
+        if (object["class"] == "Camera")
+            qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));
+    }
+
     header->read(json);
 
     updateMaterial(QModelIndex(), Material::getDefault());

@@ -7,7 +7,7 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
-class Viewport;
+class Session;
 struct VizCameraInstance;
 
 struct camera_data_t
@@ -21,15 +21,9 @@ class Camera : public SplineInterpolator
 {
     Q_OBJECT
 public:
-    explicit Camera(QWidget *parent = 0);
+    explicit Camera(Session* s, QWidget *parent = 0);
     Camera(const Camera& camera);
     ~Camera();
-
-    static void setViewport(Viewport* vp);
-
-    /* sets new origin */
-    static QVector3D getOrigin();
-    static void setOrigin(const QVector3D& o);
 
     QVector3D getPosition() const;
     QVector3D getRotation() const;
@@ -76,8 +70,6 @@ public:
 
     void writePOVCamera(QTextStream &stream, bool interpolate) const;
 
-    static void setAutomaticKeyframing(bool b = true);
-
     void setBase(const QModelIndex& index);
     const QModelIndex& getBase() const;
 
@@ -88,8 +80,6 @@ public:
     const QModelIndex& getUp() const;
 
     void callibrate(const QVector<VizBallInstance> &atoms, qreal scale = .75);
-
-    static const camera_data_t& getBuffer();
 
 public slots:
     /* handles mouse move event */
@@ -135,8 +125,6 @@ private:
     qreal horizontalAngle;
     qreal verticalAngle;
 
-    static QVector3D origin;
-
     QMatrix4x4 modelView;
     QMatrix4x4 projection;
 
@@ -164,21 +152,19 @@ private:
 
     static Action currentAction;
 
-    static bool automaticKeyframing;
-
-    static Viewport* viewport;
-
     QPersistentModelIndex base, target, up;
 
+    Session *session;
     int id;
 
-    static camera_data_t buffer;
+    camera_data_t cameraUniformBuffer;
 
 signals:
-    void modelViewChanged(QMatrix4x4, QObject* = Q_NULLPTR);
-    void projectionChanged(QMatrix4x4, QObject* = Q_NULLPTR);
+    void modelViewChanged(QMatrix4x4);
+    void projectionChanged(QMatrix4x4);
 
 friend class CameraItem;
+friend class Session;
 };
 
 #endif // CAMERA_H

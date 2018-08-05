@@ -262,10 +262,7 @@ padding-left: 10px;
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="widget_3" native="true"/>
-      <widget class="ListView" name="listView">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
+      <widget class="QStackedWidget" name="stackedWidget">
        <property name="styleSheet">
         <string notr="true">QListView {
 	color: gray;
@@ -346,11 +343,6 @@ QLineEdit {
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ListView</class>
-   <extends>QListView</extends>
-   <header>materialbrowser.h</header>
   </customwidget>
  </customwidgets>
  <resources>

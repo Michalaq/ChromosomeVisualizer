@@ -139,25 +139,20 @@ struct VizCameraInstance
 };
 
 class Camera;
+class Session;
 
 class CameraItem : public TreeItem
 {
 public:
-    explicit CameraItem(const QString& name, Camera* cam, TreeItem *parentItem = 0);
+    explicit CameraItem(const QString& name, Camera* cam, Session* s, TreeItem *parentItem = 0);
     ~CameraItem();
-
-    static const QVector<VizCameraInstance>& getBuffer();
-    static int emplace_back();
-    static void clearBuffer();
-
-    static bool modified;
-    static bool resized;
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
 
     void setFlag(VizFlag flag, bool on = true);
 
+    void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;
@@ -165,7 +160,7 @@ public:
 private:
     int id;
     Camera* camera;
-    static QVector<VizCameraInstance> buffer;
+    Session* session;
 
 friend class Camera;
 };
@@ -183,24 +178,12 @@ struct VizBallInstance
 };
 
 #include "material.h"
-#include "labelatlas.h"
 
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom& atom, int id, TreeItem *parentItem = 0);
+    explicit AtomItem(const Atom& atom, int id, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
-
-    static const QVector<VizBallInstance>& getBuffer();
-    static void resizeBuffer(int count);
-    static void clearBuffer();
-
-    static bool modified;
-    static bool resized;
-
-    static LabelAtlas& getAtlas();
-
-    static void setFrame(std::shared_ptr<Frame> frame);
 
     void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
@@ -224,26 +207,22 @@ public:
 
 private:
     int id;
-    static QVector<VizBallInstance> buffer;
     QString label;
-    static LabelAtlas atlas;
+    Session *session;
 };
 
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> r, TreeItem *parentItem = 0);
+    explicit ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
-
-    static const QVector<std::pair<int, int>> &getBuffer();
-    static void clearBuffer();
 
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 private:
-    static QVector<std::pair<int, int>> buffer;
     std::pair<int, int> range;
+    Session *session;
 };
 
 class ResidueItem : public TreeItem

@@ -49,18 +49,6 @@ void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::
     }
 }
 
-Material* getMaterial(const QModelIndex &root)
-{
-    if (root.isValid())
-    {
-        auto list = root.sibling(root.row(), 5).data().toList();
-
-        return list.isEmpty() ? nullptr : qobject_cast<Material*>(list.last().value<QObject*>());
-    }
-    else
-        return Material::getDefault();
-}
-
 Material* TreeView::takeSelectedMaterial()
 {
     auto ans = qobject_cast<TreeModel*>(model())->removeMaterial(selectedTag, selectedTag.data(Qt::UserRole + 1).toInt());

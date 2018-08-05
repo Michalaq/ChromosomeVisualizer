@@ -173,7 +173,7 @@ void setFog(QTextStream& outFile, const QColor & color, float transmittance, con
 #include <QRegularExpression>
 #include <QPainter>
 
-void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suffix)
 {
     if (isRunning())
     {
@@ -181,14 +181,14 @@ void MovieMaker::captureScene(int fbeg, int fend, const std::shared_ptr<Simulati
         return;
     }
 
-    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = simulation; camera_ = camera; suffix_ = suffix; fr_ = fr;
+    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix; fr_ = session->projectSettings->getFPS();
     start();
 }
 
 #include <QDesktopServices>
 #include <QUrl>
 
-void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -334,7 +334,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, const std::shared_ptr<Simulat
 #endif
 }
 
-void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1(Session *session, QString suffix)
 {
     if (isRunning())
     {
@@ -342,11 +342,11 @@ void MovieMaker::captureScene1(int fn, const std::shared_ptr<Simulation> simulat
         return;
     }
 
-    snapshot = true; fn_ = fn; simulation_ = simulation; camera_ = camera; suffix_ = suffix;
+    snapshot = true; fn_ = session->projectSettings->getDocumentTime(); simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix;
     start();
 }
 
-void MovieMaker::captureScene1_(int fn, const std::shared_ptr<Simulation> simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* camera, QString suffix)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();

@@ -1,12 +1,10 @@
 #include "Simulation.h"
 
-#include <QDebug>
-
-
-Simulation::Simulation()
+Simulation::Simulation(Session *s)
     : frameCount_(0),
       nextUnreadFrame_(0),
-      model(new TreeModel(this))
+      model(new TreeModel(s, this)),
+      session(s)
 {}
 
 Simulation::~Simulation()
@@ -15,6 +13,11 @@ Simulation::~Simulation()
 frameNumber_t Simulation::getFrameCount() const
 {
     return nextUnreadFrame_ + 1;
+}
+
+frameNumber_t Simulation::getLastFrame() const
+{
+    return frameCount_ - 1;
 }
 
 std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)

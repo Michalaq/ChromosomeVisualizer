@@ -2,7 +2,7 @@ QT       += core gui opengl svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QChromosome4DStudio
+TARGET = qcstudio
 TEMPLATE = app
 
 
@@ -66,7 +66,9 @@ SOURCES += \
     importdialog.cpp \
     labelatlas.cpp \
     statusbar.cpp \
-    fontcombobox.cpp
+    fontcombobox.cpp \
+    session.cpp \
+    mediapanel.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -144,7 +146,10 @@ HEADERS += \
     importdialog.h \
     labelatlas.h \
     statusbar.h \
-    fontcombobox.h
+    fontcombobox.h \
+    session.h \
+    glbuffer.h \
+    mediapanel.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -160,7 +165,8 @@ FORMS += mainwindow.ui \
     materialbrowser.ui \
     attributes.ui \
     cameraattributes.ui \
-    importdialog.ui
+    importdialog.ui \
+    mediapanel.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle

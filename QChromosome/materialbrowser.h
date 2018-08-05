@@ -30,6 +30,7 @@ public slots:
 #include <QMainWindow>
 
 class Material;
+class Session;
 
 class MaterialBrowser : public QMainWindow
 {
@@ -38,13 +39,12 @@ class MaterialBrowser : public QMainWindow
 public:
     ~MaterialBrowser();
 
-    void read(const QJsonArray &json);
-    void write(QJsonArray &json) const;
+    Material *mat[4];
 
     static MaterialBrowser* getInstance();
-    static Material* getMaterialById(const QUuid& id);
 
-    Material *mat[4];
+    ListView* makeListView();
+    void setSession(Session* s);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -58,6 +58,8 @@ private:
     Ui::MaterialBrowser *ui;
 
     static MaterialBrowser* instance;
+
+    ListView* listView;
 };
 
 #include <QAbstractListModel>

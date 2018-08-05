@@ -19,6 +19,8 @@ public:
 
     void setType(Type t);
 
+    void setReadOnly(bool);
+
 signals:
 
 public slots:

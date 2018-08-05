@@ -23,8 +23,6 @@ protected:
     void paintEvent(QPaintEvent *event);
     void keyPressEvent(QKeyEvent *event);
 
-public slots:
-
 private:
     SplineInterpolator *interpolator;
     bool movemarker;

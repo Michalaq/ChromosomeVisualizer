@@ -1,37 +1,40 @@
 #include "labelatlas.h"
 
-const int height = 24;
-
 LabelAtlas::LabelAtlas() :
-    fbo(nullptr),
-    pos(0),
-    width(1)
+    texture(QOpenGLTexture::Target2D),
+    image(1, 1, QImage::Format_ARGB32),
+    offset(0),
+    modified(true)
 {
-    //format.setSamples(16);
-    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+
 }
 
 LabelAtlas::~LabelAtlas()
 {
-    delete fbo;
+
 }
 
-void LabelAtlas::initializeGL()
+void LabelAtlas::allocate()
 {
-    fbo = new QOpenGLFramebufferObject({1, height}, format);
+    if (modified)
+    {
+        texture.destroy();
+        texture.setData(image, QOpenGLTexture::DontGenerateMipMaps);
+
+        modified = false;
+    }
 }
 
-GLuint LabelAtlas::texture() const
+GLuint LabelAtlas::textureId() const
 {
-    return fbo->texture();
+    return texture.textureId();
 }
 
-QRect LabelAtlas::size() const
+QSize LabelAtlas::size() const
 {
-    return QRect(0, 0, width, height);
+    return image.size();
 }
 
-#include <QOpenGLPaintDevice>
 #include <QPainter>
 
 QRect LabelAtlas::addLabel(const QString &text, const QFont& font)
@@ -39,44 +42,35 @@ QRect LabelAtlas::addLabel(const QString &text, const QFont& font)
     if (text.isEmpty())
         return QRect();
 
-    int width_ = QFontMetrics(font).width(text);
-    QRect rect(pos, 0, width_, height);
+    auto fm = QFontMetrics(font);
 
-    while (pos + width_ > width)
+    int textWidth = fm.width(text);
+    int textHeight = fm.height();
+
+    QRect rect(offset, 0, textWidth, textHeight);
+    offset += textWidth;
+
+    int width = image.width();
+
+    while (offset > width)
         width *= 2;
 
-    if (fbo->width() < width)
-    {
-        auto tmp = new QOpenGLFramebufferObject({width, height}, format);
+    QSize size = image.size().expandedTo(QSize(width, textHeight));
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+    if (image.size() != size)
+        image = image.copy(QRect(QPoint(), size));
 
-        QOpenGLFramebufferObject::blitFramebuffer(tmp, {0, 0, pos, height}, fbo, {0, 0, pos, height});
+    QPainter painter(&image);
 
-        delete fbo;
-        fbo = tmp;
-    }
-
-    fbo->bind();
-
-    QOpenGLPaintDevice device(fbo->size());
-
-    QPainter painter;
-
-    painter.begin(&device);
-    painter.setRenderHint(QPainter::Antialiasing);
+    painter.translate(0, textHeight);
+    painter.scale(1, -1);
 
     painter.setFont(font);
     painter.setPen(Qt::green);
 
-    painter.fillRect(rect, Qt::transparent);
     painter.drawText(rect, Qt::AlignCenter, text);
 
-    painter.end();
+    modified = true;
 
-    fbo->release();
-
-    pos += width_;
     return rect;
 }

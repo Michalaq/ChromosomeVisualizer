@@ -1,65 +1,30 @@
 #include "plot.h"
-#include <limits>
 #include <QHBoxLayout>
-#include "../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h"
 #include "legend.h"
-#include <QPainter>
-#include <QSvgRenderer>
+#include "session.h"
 
 // MathWorks predefined colorOrder
 const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
 
-Plot::Plot(QWidget *parent) :
+Plot::Plot(Session* s, QWidget *parent) :
     SoftSlider(parent),
-    simulation_(std::make_shared<Simulation>()),
-    lastBuffered(-1)
+    simulation_(s->simulation),
+    lastBuffered(-1),
+    slider(this)//TODO replacement of unused followSlider, to be removed
 {
-    simulation_->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>());
+    setMaximum(0);
+    setMinimumHeight(padding_top + 64 + padding_bottom);
 
     new QHBoxLayout(this);
-    layout()->setMargin(0);
+    layout()->setMargin(9);
     layout()->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+
+    connect(this, &QSlider::valueChanged, s, &Session::setDocumentTime);
 }
 
 Plot::~Plot()
 {
 
-}
-
-void Plot::setSimulation(std::shared_ptr<Simulation> dp)
-{
-    simulation_ = std::move(dp);
-
-    data.clear();
-
-    setRange(0, 0);
-    lastBuffered = -1;
-
-    minimax.clear();
-
-    setMinimumHeight(padding_top + 64 + padding_bottom);
-
-    qDeleteAll(legend);
-
-    legend.clear();
-
-//    auto color = colorOrder.constBegin();
-
-//    auto funvals = simulation_->getFrame(1)->functionValues;
-//    for (auto i : funvals)
-//    {
-//        QString fname = QString::fromStdString(i.first);
-
-//        auto entry = new Legend(fname, *color, this);
-//        connect(entry, SIGNAL(changed()), this, SLOT(update()));
-//        layout()->addWidget(entry);
-//        legend[fname] = entry;
-
-//        if (++color == colorOrder.constEnd())
-//            color = colorOrder.constBegin();
-//    }
-
-    update();
 }
 
 void Plot::updateSimulation()
@@ -71,34 +36,25 @@ void Plot::updateSimulation()
 
 void Plot::setMaximum(int m)
 {
-    if (lastBuffered < m)
+    int prevI;
+    while (lastBuffered < m)
     {
-        int prevI;
-        do
+        prevI = lastBuffered;
+        lastBuffered = simulation_->getNextTime(lastBuffered);
+
+        if (prevI == lastBuffered)
+            break;
+
+        auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
+        for (auto entry : funvals)
         {
-            prevI = lastBuffered;
-            lastBuffered = simulation_->getNextTime(lastBuffered);
+            data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
 
-            if (prevI == lastBuffered)
-                break;
-
-            auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
-            for (auto entry : funvals)
-            {
-                data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
-
-                minimax.insert(entry.first, lastBuffered, entry.second);
-            }
-        } while (lastBuffered < m);
+            minimax.insert(entry.first, lastBuffered, entry.second);
+        }
     }
 
     SoftSlider::setMaximum(m);
-    update();
-}
-
-void Plot::followSlider(QAbstractSlider *s)
-{
-    slider = s;
     update();
 }
 
@@ -108,16 +64,14 @@ void Plot::followSlider(QAbstractSlider *s)
 void Plot::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 10) + x(), slider->width() - 20));
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20));
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 10) + x(), slider->width() - 20));
+        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20));
 }
-
-#include <QtMath>
 
 void Plot::addLegend(const QString &fname)
 {
@@ -132,6 +86,9 @@ void Plot::addLegend(const QString &fname)
     layout()->addWidget(entry);
     legend[fname] = entry;
 }
+
+#include <QPainter>
+#include <QtMath>
 
 void Plot::paintEvent(QPaintEvent *event)
 {
@@ -159,9 +116,9 @@ void Plot::paintEvent(QPaintEvent *event)
     double ut = maxval = qCeil(maxval / delta) * delta;//double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
 
-    s.setWidth(slider->width() - 20);
+    s.setWidth(slider->width() - 50 - 20);
 
-    painter.setViewport((slider->x() + 10) - x(), height() - padding_bottom, s.width(), -s.height());
+    painter.setViewport((slider->x() + 50 + 10) - x(), height() - padding_bottom, s.width(), -s.height());
     painter.setWindow(softMinimum, minval, softMaximum - softMinimum, maxval - minval);
 
     auto transform = painter.combinedTransform();
@@ -176,7 +133,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(softMinimum, minval, softMaximum, minval);
 
-    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, slider->width());
+    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, slider->width() - 50);
 
     painter.setViewTransformEnabled(false);
 

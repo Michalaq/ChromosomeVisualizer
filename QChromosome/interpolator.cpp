@@ -173,6 +173,11 @@ QMap<int, SplineKeyframe>::const_iterator SplineInterpolator::constEnd() const
     return keyframes.constEnd();
 }
 
+bool SplineInterpolator::hasSelection() const
+{
+    return !selection.isEmpty();
+}
+
 void SplineInterpolator::captureFrame()
 {
     if (!keyframes[currentFrame].valueLocked())

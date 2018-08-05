@@ -1,14 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_projectsettings.h"
 
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
-#include "visibilitydelegate.h"
-#include "namedelegate.h"
-#include "tagsdelegate.h"
-
-static const char * ext = ".qcs";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,16 +13,17 @@ MainWindow::MainWindow(QWidget *parent) :
     materialBrowser(MaterialBrowser::getInstance()),
     movieMaker(MovieMaker::getInstance()),
     pw(nullptr),
-    recent(nullptr)
+    recent(nullptr),
+    session(nullptr)
 {
-    setWindowTitle("QChromosome 4D Studio - [Untitled]");
-
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     ui->setupUi(this);
+
+    newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
         QMessageBox::about(0, "About QChromosome 4D", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
@@ -56,22 +51,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     modifiers.push_back(ui->actionMove);
 
-    connect(ui->spinBox_2, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->horizontalSlider_2->setMinimum(val);
-        ui->spinBox_3->setMinimum(val);
-        ui->page->ui->spinBox_6->setMinimum(val);
-        ui->page->ui->spinBox_4->setMinimum(val);
-        ui->page->ui->spinBox_3->setValue(val, false);
-    });
-
-    connect(ui->spinBox_3, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        ui->horizontalSlider_2->setMaximum(val);
-        ui->spinBox_2->setMaximum(val);
-        ui->page->ui->spinBox_3->setMaximum(val);
-        ui->page->ui->spinBox_7->setMaximum(val);
-        ui->page->ui->spinBox_6->setValue(val, false);
-    });
-
     /* connect actions */
     mappedSlot[ui->actionMove] = Camera::CA_Move;
     mappedSlot[ui->actionRotate] = Camera::CA_Rotate;
@@ -84,11 +63,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
     connect(ui->actionProject_Settings, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(0);
+        ui->stackedWidget->setCurrentWidget(session->projectSettings);
         ui->dockWidget_2->show();
     });
-
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, ui->camera, &Camera::setAspectRatio);
 
     connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
     connect(ui->actionContent_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
@@ -97,25 +74,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
 
-    connect(ui->page->ui->spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this] (int value) {
-        timer.setInterval(1000 / value);
-    });
-
-    timer.setInterval(1000 / ui->page->ui->spinBox->value());
-
-    connect(ui->page->ui->spinBox_3, SIGNAL(valueChanged(int)), ui->spinBox_2, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_4, SIGNAL(valueChanged(int)), this, SLOT(setSoftMinimum(int)));
-    connect(ui->page->ui->spinBox_5, SIGNAL(valueChanged(int)), this, SLOT(setFrame(int)));
-    connect(ui->page->ui->spinBox_6, SIGNAL(valueChanged(int)), ui->spinBox_3, SLOT(setValue(int)));
-    connect(ui->page->ui->spinBox_7, SIGNAL(valueChanged(int)), this, SLOT(setSoftMaximum(int)));
-
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
     t->setSeparator(true);
 
     ui->menuDockable_dialogs->insertActions(ui->actionError_console, {
                                                 ui->mainToolBar->toggleViewAction(),
-
                                                 t,
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
@@ -132,34 +96,12 @@ MainWindow::MainWindow(QWidget *parent) :
     addAction(ui->actionViewport);
 
     connect(ui->actionViewport, &QAction::triggered, [this] {
-        ui->stackedWidget->setCurrentIndex(3);
-        ui->dockWidget_2->show();
-    });
-
-    Camera::setViewport(ui->page_4);
-
-    connect(ui->page_4, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
-
-    connect(ui->record, &MediaControl::toggled, [this](bool checked) {
-        ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
-        Camera::setAutomaticKeyframing(checked);
-    });
-
-    connect(ui->key, &MediaControl::clicked, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->captureFrame();
-        ui->horizontalSlider->update();
-    });
-
-    ui->horizontalSlider->setSplineInterpolator(ui->camera);
-
-    connect(ui->camera, &SplineInterpolator::selectionChanged, [this] {
-        ui->page_6->setSplineInterpolator(ui->camera);
-        ui->stackedWidget->setCurrentIndex(5);
+        ui->stackedWidget->setCurrentWidget(session->viewport);
         ui->dockWidget_2->show();
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(qobject_cast<TreeModel*>(simulation->getModel())->getSelected());
+        session->currentCamera->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -172,29 +114,18 @@ MainWindow::MainWindow(QWidget *parent) :
         Selection::setSelectionType(checked ? CUSTOM_SHAPE_SELECTION : NO_SELECTION);
     });
 
-    ui->treeView->setItemDelegateForColumn(0, new NameDelegate(ui->page_2));
-    ui->treeView->setItemDelegateForColumn(3, new VisibilityDelegate(this));
-    ui->treeView->setItemDelegateForColumn(5, new TagsDelegate(this));
-
-    ui->plot->followSlider(ui->horizontalSlider);
-
     connect(materialBrowser, &MaterialBrowser::materialsSelected, [this](const QList<Material*>& selected) {
         ui->page_7->handleSelection(selected);
-        ui->stackedWidget->setCurrentIndex(6);
+        ui->stackedWidget->setCurrentWidget(ui->page_7);
     });
 
     connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), materialBrowser, SLOT(update()));
 
     connect(ui->actionCamera, &QAction::triggered, [this] {
-        addCamera(new Camera(*qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())));
-    });
+        auto camera = new Camera(*session->currentCamera);
 
-    connect(ui->treeView, &TreeView::cameraChanged, [this](Camera* camera) {
-        if (!camera) camera = ui->camera;
-        ui->stackedWidget_2->currentWidget()->blockSignals(true);
-        camera->blockSignals(false);
-        ui->stackedWidget_2->setCurrentWidget(camera);
-        ui->horizontalSlider->setSplineInterpolator(camera);
+        addCamera(camera);
+        qobject_cast<TreeModel*>(session->treeView->model())->addCamera(camera);
     });
 
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
@@ -203,25 +134,25 @@ MainWindow::MainWindow(QWidget *parent) :
         QApplication::setOverrideCursor(Qt::WhatsThisCursor);
     });
 
-    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
-        ui->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    });
-
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
 
-    newProject();
+    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
-    ui->treeView->header()->resizeSection(3, 40);
-    ui->treeView->header()->setSectionResizeMode(3, QHeaderView::Fixed);
-    ui->treeView->header()->setSectionResizeMode(5, QHeaderView::Fixed);
+    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
+
+    connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
+        session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+#include "session.h"
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -230,11 +161,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         QApplication::restoreOverrideCursor();
         ui->statusBar->clearPermanentMessage();
 
-        auto p = ui->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
+        auto p = session->treeView->mapFromGlobal(reinterpret_cast<QMouseEvent*>(event)->globalPos());
 
-        if (ui->treeView->rect().contains(p))
+        if (session->treeView->rect().contains(p))
         {
-            pw->pick(ui->treeView->pick(p));
+            pw->pick(session->treeView->pick(p));
             pw = nullptr;
             return true;
         }
@@ -263,129 +194,127 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
     if (watched == ui->scene && event->type() == QEvent::Wheel)
     {
-        QApplication::sendEvent(ui->stackedWidget_2->currentWidget(), event);
+        QApplication::sendEvent(session->currentCamera, event);
         return true;
     }
 
     return QObject::eventFilter(watched, event);
 }
 
-#include <QJsonObject>
-
-void MainWindow::read(const QJsonObject &json)
+Session* MainWindow::makeSession()
 {
-    const QJsonObject children = json["Descendants"].toObject();
+    auto s = new Session();
 
-    for (auto child = children.end() - 1; child != children.begin() - 1; child--)
-    {
-        const QJsonObject object = child.value().toObject()["Object"].toObject();
+    // add action to menu
+    ui->menuWindows->addAction(s->action);
+    connect(s->action, &QAction::triggered, [=]() {
+        setCurrentSession(s);
+    });
 
-        if (object["class"] == "Layer")
-        {
-            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-            simulationLayer->read(object["paths"].toArray());
+    // connect tree model with GUI
+    connect(s->simulation->getModel(), &TreeModel::propertyChanged, [this] {
+        session->treeView->update();
+        ui->scene->update();
+    });
 
-            simulation->addSimulationLayerConcatenation(simulationLayer, false);
-        }
+    // add tree view to objects
+    ui->stackedWidget_3->addWidget(s->treeView);
+    connect(s->treeView, &TreeView::cameraChanged, this, &MainWindow::changeCamera);
+    connect(s->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
-        if (object["class"] == "Camera")
-        {
-            auto camera = new Camera();
-            camera->read(object);
+    // add project settings to attributes
+    ui->stackedWidget->addWidget(s->projectSettings);
+    connect(s->projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
+        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(fileName));
+    });
 
-            addCamera(camera);
-        }
-    }
+    // add viewport settings to attributes
+    ui->stackedWidget->addWidget(s->viewport);
+    connect(s->viewport, SIGNAL(viewportChanged()), ui->scene, SLOT(update()));
+
+    // add editor camera to available cameras
+    addCamera(s->editorCamera);
+
+    // add media panel to available panels
+    ui->stackedWidget_4->addWidget(s->mediaPanel);
+
+    // add plot to available plots
+    ui->stackedWidget_5->addWidget(s->plot);
+
+    s->canvas = ui->canvas;
+
+    s->blockSignals(true);
+    connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
+
+    return s;
 }
 
 void MainWindow::newProject()
 {
-    currentFile.clear();
-    ui->page->ui->lineEdit_6->setText(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("Untitled"));
-    setWindowTitle("QChromosome 4D Studio - [Untitled]");
+    setCurrentSession(makeSession());
 
-    simulation = std::make_shared<Simulation>();
-
-    connect(simulation.get(), SIGNAL(frameCountChanged(int)), this, SLOT(updateFrameCount(int)));
-
-    ui->plot->setRange(0, 0);
-    ui->horizontalSlider->setRange(0, 0);
-    ui->horizontalSlider_2->setRange(0, 0);
-
-    currentFrame = 0;
-    lastFrame = 0;
-
-    softMinimum = 0;
-    softMaximum = 0;
-
-    ui->plot->setSimulation(simulation);
-
-    ui->treeView->setModel(simulation->getModel());
-    ui->treeView->hideColumn(1);
-    ui->treeView->hideColumn(2);
-    ui->treeView->hideColumn(4);
-    ui->treeView->hideColumn(6);
-    ui->treeView->setColumnWidth(3, 48);
-
-    connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
-    connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
-
-    ui->stackedWidget->setCurrentIndex(0);
-
-    connect(simulation->getModel(), &TreeModel::propertyChanged, [this] {
-        ui->treeView->update();
-        ui->scene->update();
-    });
-
-    connect(ui->page_7, SIGNAL(attributesChanged(const Material*)), ui->scene, SLOT(update()));
-
-    ui->scene->setModel(simulation->getModel(), ui->treeView->selectionModel());
-
-    CameraItem::clearBuffer();
-    ChainItem::clearBuffer();
-    AtomItem::clearBuffer();
-
-    ui->scene->update();
+    ui->stackedWidget->setCurrentWidget(session->projectSettings);
+    ui->dockWidget_2->show();
 }
 
-#include <QStandardPaths>
+void MainWindow::setCurrentSession(Session *s)
+{
+    if (session)
+        session->blockSignals(true);
+
+    session = s;
+
+    // update window title
+    setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
+
+    // reallocate OpenGL buffers
+    session->reallocateBuffers();
+
+    // update objects
+    ui->stackedWidget_3->setCurrentWidget(session->treeView);
+
+    // clear attributes
+    MetaAttributes::setSession(session);
+    ui->stackedWidget->setCurrentWidget(ui->page_9);
+
+    // update camera
+    changeCamera(session->currentCamera);
+
+    // update view
+    ui->scene->setSession(session);
+
+    // update materials
+    materialBrowser->setSession(session);
+
+    // update media panel
+    ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
+
+    // update plot
+    ui->stackedWidget_5->setCurrentWidget(session->plot);
+
+    // update automatic keyframing
+    session->setAutomaticKeyframing(session->automaticKeyframing);
+
+    session->blockSignals(false);
+    session->setDocumentTime(session->projectSettings->getDocumentTime());
+}
 
 void MainWindow::openProject()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*%1)").arg(ext));
+    auto s = makeSession();
 
-    if (!path.isEmpty())
+    if (s->openProject())
     {
-        newProject();
+        for (Camera* camera : s->userCameras)
+            addCamera(camera);
 
-        currentFile = path;
-        ui->page->ui->lineEdit_6->setText(path);
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(QFileInfo(path).fileName()));
+        setCurrentSession(s);
 
-        QFile file(path);
-        file.open(QIODevice::ReadOnly | QIODevice::Text);
-        const QJsonObject project = QJsonDocument::fromJson(file.readAll()).object();
-        file.close();
-
-        const QJsonObject viewport = project["Viewport"].toObject();
-        ui->page_4->read(viewport);
-
-        const QJsonObject camera = project["Camera"].toObject();
-        ui->camera->read(camera);
-
-        const QJsonArray materials = project["Materials"].toArray();
-        materialBrowser->read(materials);
-
-        const QJsonObject objects = project["Objects"].toObject();
-        read(objects);
-        simulation->getModel()->read(objects);
-
-        ui->scene->update();
-        ui->plot->updateSimulation();
-
-        const QJsonObject projectSettings = project["Project Settings"].toObject();
-        ui->page->read(projectSettings);
+        ui->stackedWidget->setCurrentWidget(session->projectSettings);
+        ui->dockWidget_2->show();
     }
+    else
+        delete s;
 }
 
 #include "importdialog.h"
@@ -397,7 +326,7 @@ void MainWindow::addLayer()
 
         if (!path.isEmpty())
         {
-            int offset = AtomItem::getBuffer().size();
+            int offset = session->atomBuffer.size();
 
             std::shared_ptr<SimulationLayer> simulationLayer;
 
@@ -411,13 +340,13 @@ void MainWindow::addLayer()
 
             if (impd.exec() == QDialog::Accepted)
             {
-                setFrame(0);
-                simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+                session->setDocumentTime(0);
+                session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
 
                 ui->scene->update();
-                ui->plot->updateSimulation();
+                session->plot->updateSimulation();
 
-                qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget())->callibrate(AtomItem::getBuffer().mid(offset));
+                session->currentCamera->callibrate(session->atomBuffer.mid(offset));
             }
         }
     } catch (std::exception& e) {
@@ -427,272 +356,43 @@ void MainWindow::addLayer()
 
 void MainWindow::saveProject()
 {
-    if (currentFile.isEmpty())
-        saveProjectAs();
-    else
-    {
-        QJsonObject project;
-
-        ui->page->ui->lineEdit_4->setText(QString("QChromosome 4D File (*%1)").arg(ext));
-        ui->page->ui->lineEdit_5->setText("1.01");
-
-        QJsonObject projectSettings;
-        ui->page->write(projectSettings);
-        project["Project Settings"] = projectSettings;
-
-        QJsonObject viewport;
-        ui->page_4->write(viewport);
-        project["Viewport"] = viewport;
-
-        QJsonObject camera;
-        ui->camera->write(camera);
-        project["Camera"] = camera;
-
-        QJsonArray materials;
-        materialBrowser->write(materials);
-        project["Materials"] = materials;
-
-        QJsonObject objects;
-        simulation->getModel()->write(objects);
-        project["Objects"] = objects;
-
-        QFile file(currentFile);
-        file.open(QIODevice::WriteOnly | QIODevice::Text);
-        file.write(QJsonDocument(project).toJson());
-        file.close();
-    }
+    session->saveProject();
 }
 
 void MainWindow::saveProjectAs()
 {
-    QString path = QFileDialog::getSaveFileName(0, "", currentFile.isEmpty() ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation) : currentFile, QString("QChromosome 4D Project File (*%1)").arg(ext));
-
-    if (!path.isEmpty())
-    {
-        QFileInfo info(path);
-        path = info.dir().filePath(info.completeBaseName().append(ext));
-
-        currentFile = path;
-        ui->page->ui->lineEdit_6->setText(path);
-        setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(info.fileName()));
-
-        saveProject();
-    }
-}
-
-void MainWindow::updateFrameCount(int n)
-{
-    bool expandRange = ui->spinBox_3->value() == lastFrame;
-    bool expandInterval = ui->horizontalSlider_2->getUpperBound() == lastFrame;
-
-    lastFrame = n - 1;
-
-    ui->spinBox->setMaximum(lastFrame);
-    ui->spinBox_3->setMaximum(lastFrame);
-    ui->horizontalSlider->setMaximum(lastFrame);
-    ui->plot->setMaximum(lastFrame);
-    ui->page->ui->spinBox_5->setMaximum(lastFrame);
-    ui->page->ui->spinBox_6->setMaximum(lastFrame);
-
-    if (expandRange)
-        ui->spinBox_3->setValue(lastFrame);
-
-    if (expandInterval)
-        ui->horizontalSlider_2->setUpperBound(lastFrame);
-}
-
-void MainWindow::setFrame(int n)
-{
-    currentFrame = n;
-
-    ui->horizontalSlider->setValue(n);
-    ui->spinBox->setValue(n);
-    ui->scene->update();
-    ui->plot->setValue(n);
-    SplineInterpolator::setFrame(n);
-    AtomItem::setFrame(simulation->getFrame(n));
-    ui->page->ui->spinBox_5->setValue(n, false);
-}
-
-void MainWindow::setSoftMinimum(int min)
-{
-    ui->horizontalSlider->setSoftMinimum(min);
-    ui->horizontalSlider_2->setLowerBound(min, false);
-    ui->plot->setSoftMinimum(min);
-    ui->page->ui->spinBox_7->setMinimum(min);
-    ui->page->ui->spinBox_4->setValue(min, false);
-
-    softMinimum = min;
-}
-
-void MainWindow::setSoftMaximum(int max)
-{
-    ui->horizontalSlider->setSoftMaximum(max);
-    ui->horizontalSlider_2->setUpperBound(max, false);
-    ui->plot->setSoftMaximum(max);
-    ui->page->ui->spinBox_4->setMaximum(max);
-    ui->page->ui->spinBox_7->setValue(max, false);
-
-    softMaximum = max;
-}
-
-void MainWindow::start()
-{
-    setFrame(0);
-}
-
-void MainWindow::previous()
-{
-    frameNumber_t previousFrame = simulation->getPreviousTime(currentFrame);
-
-    if (currentFrame > 0)
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
-}
-
-void MainWindow::reverse_previous()
-{
-    qint64 previousFrame = qMax(currentFrame - qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000), 0);
-
-    if (currentFrame > (ui->actionPreview_range->isChecked() ? softMinimum : 0))
-    {
-        currentFrame = previousFrame;
-        setFrame(currentFrame);
-    }
-    else
-    {
-        if (ui->actionSimple->isChecked())
-            ui->reverse->click();
-        else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMaximum : lastFrame;
-            setFrame(currentFrame);
-        }
-    }
-}
-
-void MainWindow::reverse(bool checked)
-{
-    ui->actionPlay_backwards->setChecked(checked);
-    ui->reverse->setChecked(checked);
-
-    if (checked)
-    {
-        if (ui->play->isChecked())
-            ui->play->click();
-
-        if (ui->actionPreview_range->isChecked() && (currentFrame <= softMinimum || currentFrame > softMaximum))
-            setFrame(softMaximum);
-
-        connect(&timer, SIGNAL(timeout()), this, SLOT(reverse_previous()));
-
-        time.restart();
-        timer.start();
-    }
-    else
-    {
-        timer.stop();
-        timer.disconnect();
-    }
-}
-
-void MainWindow::play(bool checked)
-{
-    ui->actionPlay_forwards->setChecked(checked);
-    ui->play->setChecked(checked);
-
-    if (checked)
-    {
-        if (ui->reverse->isChecked())
-            ui->reverse->click();
-
-        if (ui->actionPreview_range->isChecked() && (currentFrame < softMinimum || currentFrame >= softMaximum))
-            setFrame(softMinimum);
-
-        connect(&timer, SIGNAL(timeout()), this, SLOT(play_next()));
-
-        time.restart();
-        timer.start();
-    }
-    else
-    {
-        timer.stop();
-        timer.disconnect();
-    }
-}
-
-void MainWindow::next()
-{
-    frameNumber_t nextFrame = simulation->getNextTime(currentFrame);
-    simulation->getFrame(nextFrame);
-
-    if (currentFrame < lastFrame)
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
-}
-
-void MainWindow::play_next()
-{
-    qint64 nextFrame = currentFrame + qRound(1. * time.restart() * ui->page->ui->spinBox->value() / 1000);
-
-    if (currentFrame < (ui->actionPreview_range->isChecked() ? softMaximum : lastFrame))
-    {
-        currentFrame = nextFrame;
-        setFrame(currentFrame);
-    }
-    else
-    {
-        if (ui->actionSimple->isChecked())
-            ui->play->click();
-        else
-        {
-            currentFrame = ui->actionPreview_range->isChecked() ? softMinimum : 0;
-            setFrame(currentFrame);
-        }
-    }
-
-    simulation->getFrame(currentFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
-}
-
-void MainWindow::end()
-{
-    setFrame(lastFrame);
-    simulation->getFrame(lastFrame+1);//TODO paskudny hack, usunąć po dodaniu wątku
+    session->saveProjectAs();
 }
 
 void MainWindow::selectAll()
 {
-    ui->treeView->selectAll();
+    session->treeView->selectAll();
 }
 
 void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelectionModel::SelectionFlags flags)
 {
-    ui->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
+    session->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    auto model = qobject_cast<TreeModel*>(simulation->getModel());
+    auto model = qobject_cast<TreeModel*>(session->simulation->getModel());
 
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
 
     if (recent) recent->unsetSelection();
 
-    if (!ui->treeView->selectionModel()->hasSelection())
+    if (!session->treeView->selectionModel()->hasSelection())
     {
         recent = nullptr;
-        ui->stackedWidget->setCurrentIndex(8);
+        ui->stackedWidget->setCurrentWidget(ui->page_9);
         return;
     }
 
-    Camera::setOrigin(model->getOrigin());
+    session->origin = model->getOrigin();
 
-    QModelIndexList selectedRows = ui->treeView->selectionModel()->selectedRows();
+    QModelIndexList selectedRows = session->treeView->selectionModel()->selectedRows();
 
     auto index = selectedRows.first();
 
@@ -710,7 +410,7 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;
 
-    recent->setSelection(simulation->getModel(), selectedRows);
+    recent->setSelection(session->simulation->getModel(), selectedRows);
     ui->stackedWidget->setCurrentWidget(recent);
     ui->dockWidget_2->show();
 }
@@ -727,13 +427,13 @@ void MainWindow::setBaseAction(bool enabled)
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(currentFrame, simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix);
+    movieMaker->captureScene1(session, suffix);
 }
 
 void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(ui->horizontalSlider_2->getLowerBound(), ui->horizontalSlider_2->getUpperBound(), simulation, qobject_cast<Camera*>(ui->stackedWidget_2->currentWidget()), suffix, ui->page->ui->spinBox->value());
+    movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
 }
 
 void MainWindow::updateLocks()
@@ -781,7 +481,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(currentFile.isEmpty() ? "Untitled" : QFileInfo(currentFile).fileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
+    switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->projectSettings->getFileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:
         saveProject();
@@ -798,16 +498,28 @@ void MainWindow::addCamera(Camera* camera)
 {
     camera->blockSignals(true);
 
-    connect(camera, SIGNAL(modelViewChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
-    connect(camera, SIGNAL(projectionChanged(QMatrix4x4,QObject*)), ui->scene, SLOT(update()));
+    connect(camera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
+    connect(camera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
-        ui->page_6->setSplineInterpolator(camera);
-        ui->stackedWidget->setCurrentIndex(5);
-        ui->dockWidget_2->show();
+        if (camera->hasSelection())
+        {
+            ui->page_6->setSplineInterpolator(camera);
+            ui->stackedWidget->setCurrentWidget(ui->page_6);
+            ui->dockWidget_2->show();
+        }
+        else
+        {
+            ui->stackedWidget->setCurrentWidget(ui->page_9);
+            ui->dockWidget_2->show();
+        }
     });
 
     ui->stackedWidget_2->addWidget(camera);
+}
 
-    ((TreeModel*)ui->treeView->model())->addCamera(camera);
+void MainWindow::changeCamera(Camera *camera)
+{
+    session->changeCamera(camera);
+    ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
 }

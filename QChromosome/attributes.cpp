@@ -2,6 +2,8 @@
 #include "ui_attributes.h"
 #include "treemodel.h"
 
+Session* MetaAttributes::session;
+
 MetaAttributes::MetaAttributes(QWidget *parent) : QWidget(parent)
 {
 
@@ -10,6 +12,11 @@ MetaAttributes::MetaAttributes(QWidget *parent) : QWidget(parent)
 MetaAttributes::~MetaAttributes()
 {
 
+}
+
+void MetaAttributes::setSession(Session *s)
+{
+    session = s;
 }
 
 Attributes::Attributes(QWidget *parent) :

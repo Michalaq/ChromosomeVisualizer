@@ -50,3 +50,9 @@ void FileEdit::setType(Type t)
         break;
     }
 }
+
+void FileEdit::setReadOnly(bool b)
+{
+    LineEdit::setReadOnly(b);
+    widget->setEnabled(!b);
+}

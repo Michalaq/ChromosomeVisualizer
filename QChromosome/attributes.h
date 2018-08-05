@@ -10,6 +10,7 @@ class Attributes;
 
 class TreeModel;
 class TreeItem;
+class Session;
 
 class MetaAttributes : public QWidget
 {
@@ -21,6 +22,11 @@ public:
 
     virtual void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows) = 0;
     virtual void unsetSelection() = 0;
+
+    static void setSession(Session* s);
+
+protected:
+    static Session* session;
 };
 
 class Attributes : public MetaAttributes

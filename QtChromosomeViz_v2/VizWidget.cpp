@@ -3,24 +3,8 @@
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent)
-    , selectionModel_(nullptr)
 {
     setAcceptDrops(true);
-
-    connect(this, &QOpenGLWidget::resized, [this]() {
-        glDeleteTextures(2, texture);
-        glGenTextures(2, texture);
-
-        glBindTexture(GL_TEXTURE_2D, texture[0]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
-
-        glBindTexture(GL_TEXTURE_2D, texture[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, picking);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
-        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
-    });
 }
 
 VizWidget::~VizWidget()
@@ -30,6 +14,7 @@ VizWidget::~VizWidget()
 
 #include "camera.h"
 #include "viewport.h"
+#include "session.h"
 
 void VizWidget::initializeGL()
 {
@@ -207,13 +192,14 @@ void VizWidget::initializeGL()
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
     assert(pickingProgram_.link());
 
-    AtomItem::getAtlas().initializeGL();
+    assert(materials_.create());
+    materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    glGenBuffers(3, buffers);
+    glGenBuffers(2, buffers);
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &Camera::getBuffer(), GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &session->cameraUniformBuffer, GL_DYNAMIC_DRAW);
 
         const GLuint binding_point_index = 0;
         glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[0]);
@@ -254,7 +240,7 @@ void VizWidget::initializeGL()
 
     {
         const GLuint binding_point_index = 2;
-        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[2]);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, materials_.bufferId());
 
         unsigned int block_index;
 
@@ -265,7 +251,8 @@ void VizWidget::initializeGL()
         glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
     }
 
-    glGenFramebuffers(1, &picking);
+    glGenFramebuffers(1, picking);
+    glGenTextures(2, texture);
 }
 
 void VizWidget::paintGL()
@@ -299,55 +286,51 @@ void VizWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (!AtomItem::getBuffer().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoSpheres_.bind();
         cylinderProgram_.bind();
 
-        for (auto& strip : ChainItem::getBuffer())
+        for (auto& strip : session->chainBuffer)
             glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
 
         cylinderProgram_.release();
         sphereProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         sphereProgram_.release();
         vaoSpheres_.release();
     }
 
-    if (CameraItem::getBuffer().count() > 1)
+    if (session->cameraBuffer.count() > 1)
     {
         vaoCameras_.bind();
         cameraProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 1, CameraItem::getBuffer().count() - 1);
+        glDrawArrays(GL_POINTS, 1, session->cameraBuffer.count() - 1);
 
         cameraProgram_.release();
         vaoCameras_.release();
     }
 
     // If there are no spheres, my driver crashes
-    if (!AtomItem::getBuffer().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoLabels_.bind();
         labelsProgram_.bind();
 
-        auto& atlas = AtomItem::getAtlas();
-
-        labelsProgram_.setUniformValue("uvTextureSize",
-                                (float)atlas.size().width(),
-                                (float)atlas.size().height());
+        labelsProgram_.setUniformValue("uvTextureSize", QSizeF(session->labelAtlas.size()));
         labelsProgram_.setUniformValue("SampleTexture", 0);
 
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, atlas.texture());
+        glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         labelsProgram_.release();
         vaoLabels_.release();
@@ -368,51 +351,18 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
     return color != 0xFFFFFFFFU ? model_->getIndices()[color] : QPersistentModelIndex();
 }
 
-void VizWidget::setModel(TreeModel* model, QItemSelectionModel *selectionModel)
+void VizWidget::setSession(Session *s)
 {
-    model_ = model;
-    selectionModel_ = selectionModel;
+    session = s;
+    model_ = session->simulation->getModel();
+    selectionModel_ = session->treeView->selectionModel();
 }
 
 void VizWidget::allocate()
 {
-    if (AtomItem::resized)
-    {
-        atomPositions_.bind();
-        atomPositions_.allocate(AtomItem::getBuffer().constData(), AtomItem::getBuffer().count() * sizeof(VizBallInstance));
-        atomPositions_.release();
-
-        AtomItem::resized = false;
-        AtomItem::modified = false;
-    }
-
-    if (AtomItem::modified)
-    {
-        atomPositions_.bind();
-        atomPositions_.write(0, AtomItem::getBuffer().constData(), AtomItem::getBuffer().size() * sizeof(VizBallInstance));
-        atomPositions_.release();
-
-        AtomItem::modified = false;
-    }
-
-    if (CameraItem::resized)
-    {
-        cameraPositions_.bind();
-        cameraPositions_.allocate(CameraItem::getBuffer().constData(), CameraItem::getBuffer().count() * sizeof(VizCameraInstance));
-        cameraPositions_.release();
-
-        CameraItem::resized = false;
-        CameraItem::modified = false;
-    }
-
-    if (CameraItem::modified)
-    {
-        cameraPositions_.bind();
-        cameraPositions_.write(0, CameraItem::getBuffer().constData(), CameraItem::getBuffer().size() * sizeof(VizCameraInstance));
-        cameraPositions_.release();
-
-        CameraItem::modified = false;
-    }
+    session->cameraBuffer.allocate(cameraPositions_);
+    session->atomBuffer.allocate(atomPositions_);
+    session->labelAtlas.allocate();
 
     if (Viewport::modified)
     {
@@ -424,28 +374,11 @@ void VizWidget::allocate()
         Viewport::modified = false;
     }
 
-    if (Material::resized)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(material_data_t) * Material::getBuffer().size(), Material::getBuffer().data(), GL_DYNAMIC_DRAW);
-
-        Material::resized = false;
-        Material::modified = false;
-    }
-
-    if (Material::modified)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[2]);
-        GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-        memcpy(p, Material::getBuffer().data(), sizeof(material_data_t) * Material::getBuffer().size());
-        glUnmapBuffer(GL_UNIFORM_BUFFER);
-
-        Material::modified = false;
-    }
+    Material::getBuffer().allocate(materials_);
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, &Camera::getBuffer(), sizeof(camera_data_t));
+    memcpy(p, session->cameraUniformBuffer, sizeof(camera_data_t));
     glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 
@@ -453,7 +386,7 @@ void VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, picking);
+    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
 
     // Ensure taht buffers are up to date
     allocate();
@@ -470,12 +403,12 @@ void VizWidget::pickSpheres()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // If there are no spheres, my driver crashes
-    if (!AtomItem::getBuffer().empty())
+    if (!session->atomBuffer.empty())
     {
         vaoSpheres_.bind();
         pickingProgram_.bind();
 
-        glDrawArrays(GL_POINTS, 0, AtomItem::getBuffer().count());
+        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
         pickingProgram_.release();
         vaoSpheres_.release();
@@ -596,4 +529,19 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     flags.setFlag(ctrl ? QItemSelectionModel::Deselect : QItemSelectionModel::Select);
 
     emit selectionChanged(selected, flags);
+}
+
+void VizWidget::resizeEvent(QResizeEvent* event)
+{
+    QOpenGLWidget::resizeEvent(event);
+
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
+
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
 }
