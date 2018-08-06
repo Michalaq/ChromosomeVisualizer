@@ -214,6 +214,9 @@ void AtomAttributes::updateModelSelection()
 
 void AtomAttributes::updatePosition()
 {
+    if (atoms.empty())
+        return;
+
     auto fst = atoms.first();
     bool multiple;
 

@@ -35,7 +35,7 @@ signals:
     void attributeChanged();
 
 public slots:
-
+    void updatePosition();
 
 private:
     Ui::AtomAttributes *ui;
@@ -45,7 +45,6 @@ private:
     QList<AtomItem*> atoms;
 
     void updateModelSelection();
-    void updatePosition();
 };
 
 #endif // ATOMATTRIBUTES_H

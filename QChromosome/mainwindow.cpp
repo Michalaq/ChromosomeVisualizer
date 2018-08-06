@@ -242,6 +242,9 @@ Session* MainWindow::makeSession()
     // add plot to available plots
     ui->stackedWidget_5->addWidget(s->plot);
 
+    // update attributes when document time changes
+    connect(s, &Session::documentTimeChanged, ui->page_2, &AtomAttributes::updatePosition);
+
     s->canvas = ui->canvas;
 
     s->blockSignals(true);
