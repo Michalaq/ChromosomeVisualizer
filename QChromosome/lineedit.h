@@ -20,9 +20,6 @@ signals:
 
 public slots:
     void setText(const QString& text, bool spontaneous = true);
-
-private:
-    bool multiple;
 };
 
 #endif // LINEEDIT_H
