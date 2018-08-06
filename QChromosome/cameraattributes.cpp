@@ -33,6 +33,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             pos.setX(val);
             c->setPosition(pos);
         }
+        emit modelViewChanged();
     });
 
     //connect P.Y
@@ -43,6 +44,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             pos.setY(val);
             c->setPosition(pos);
         }
+        emit modelViewChanged();
     });
 
     //connect P.Z
@@ -53,6 +55,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             pos.setZ(val);
             c->setPosition(pos);
         }
+        emit modelViewChanged();
     });
 
     //connect R.H
@@ -62,6 +65,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             auto ang = c->getRotation();
             c->setRotation(val, ang.x(), ang.z());
         }
+        emit modelViewChanged();
     });
 
     //connect R.P
@@ -71,6 +75,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             auto ang = c->getRotation();
             c->setRotation(ang.y(), val, ang.z());
         }
+        emit modelViewChanged();
     });
 
     //connect R.B
@@ -80,6 +85,7 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             auto ang = c->getRotation();
             c->setRotation(ang.y(), ang.x(), val);
         }
+        emit modelViewChanged();
     });
 
     //connect focal length

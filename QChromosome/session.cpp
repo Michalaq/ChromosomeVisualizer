@@ -129,15 +129,9 @@ void Session::reallocateBuffers()
 
 void Session::changeCamera(Camera* camera)
 {
-    if (!camera)
-        camera = editorCamera;
-
-    currentCamera->blockSignals(true);
-    currentCamera = camera;
-    currentCamera->blockSignals(false);
+    currentCamera = camera ? camera : editorCamera;
 
     mediaPanel->changeCamera(currentCamera);
-
     cameraUniformBuffer = &currentCamera->cameraUniformBuffer;
 }
 

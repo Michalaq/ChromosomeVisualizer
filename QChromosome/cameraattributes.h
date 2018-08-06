@@ -24,6 +24,7 @@ public:
 
 signals:
     void selected(const QPersistentModelIndex&);
+    void modelViewChanged();
 
 public slots:
 

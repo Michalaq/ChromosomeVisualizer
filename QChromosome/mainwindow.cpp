@@ -146,6 +146,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
+
+    connect(ui->page_5, SIGNAL(modelViewChanged()), ui->scene, SLOT(update()));
 }
 
 MainWindow::~MainWindow()
@@ -500,8 +502,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::addCamera(Camera* camera)
 {
-    camera->blockSignals(true);
-
     connect(camera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(camera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
