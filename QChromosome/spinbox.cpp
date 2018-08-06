@@ -12,7 +12,7 @@ SpinBox::SpinBox(QWidget *parent) :
     setLineEdit(edit);
 
     connect(this, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [this](int val) {
-        setValue(val);
+        setValue(val, false);
     });
 }
 
@@ -28,6 +28,7 @@ void SpinBox::setValue(int val, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
+    QSpinBox::setSuffix(suffix);
     edit->setMultipleValues(multiple = false);
     QSpinBox::setValue(val);
 
@@ -57,29 +58,13 @@ void SpinBox::setMultipleValues()
 {
     setValue(0, false);
 
+    QSpinBox::setSuffix("");
     edit->setMultipleValues(multiple = true);
 }
 
-void SpinBox::setMaximum(int max)
+void SpinBox::setSuffix(const QString& suffix)
 {
-    bool m = multiple;
-
-    bool b = blockSignals(true);
-    QSpinBox::setMaximum(max);
-    blockSignals(b);
-
-    if (m) setMultipleValues();
-}
-
-void SpinBox::setMinimum(int min)
-{
-    bool m = multiple;
-
-    bool b = blockSignals(true);
-    QSpinBox::setMinimum(min);
-    blockSignals(b);
-
-    if (m) setMultipleValues();
+    QSpinBox::setSuffix(this->suffix = suffix);
 }
 
 #include <QStyle>

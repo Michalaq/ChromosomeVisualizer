@@ -15,9 +15,7 @@ public:
     QString textFromValue(int val) const;
 
     void setMultipleValues();
-
-    void setMaximum(int max);
-    void setMinimum(int min);
+    void setSuffix(const QString& suffix);
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -32,6 +30,7 @@ private:
     RegularExpressionValidator validator;
     LineEdit* edit;
     bool multiple;
+    QString suffix;
 };
 
 #endif // SPINBOX_H
