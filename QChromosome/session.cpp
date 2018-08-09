@@ -53,6 +53,8 @@ Session::Session(Ui::MainWindow *ui) :
     });
 
     action->setText(projectSettings->getFileName());
+
+    connect(simulation, &Simulation::frameCountChanged, this, &Session::setLastFrame);
 }
 
 Session::~Session()
@@ -177,9 +179,6 @@ void Session::setDocumentTime(int time)
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 
-    if (lastFrame < simulation->getLastFrame())
-        setLastFrame(simulation->getLastFrame());
-
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);
     plot->setValue(time, false);
@@ -215,12 +214,12 @@ void Session::setPreviewMaxTime(int time)
     plot->setSoftMaximum(time);
 }
 
-void Session::setLastFrame(int time)
+void Session::setLastFrame(int frameCount)
 {
     bool expandTime = projectSettings->getMaximumTime() == lastFrame;
     bool expandPreviewTime = projectSettings->getPreviewMaxTime() == lastFrame;
 
-    lastFrame = time;
+    lastFrame = frameCount - 1;
 
     mediaPanel->setLastFrame(lastFrame);
     projectSettings->setLastFrame(lastFrame);

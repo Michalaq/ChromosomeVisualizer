@@ -73,7 +73,7 @@ public:
     void setMaximumTime(int time);
     void setPreviewMinTime(int time);
     void setPreviewMaxTime(int time);
-    void setLastFrame(int time);
+    void setLastFrame(int frameCount);
 
     QWidget* canvas;
     bool automaticKeyframing;
