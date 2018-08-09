@@ -27,7 +27,6 @@ SOURCES += \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.cpp \
     treeitem.cpp \
     treemodel.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
@@ -107,7 +106,6 @@ HEADERS += \
     ../QtChromosomeViz_v2/bartekm_code/include/posix_file_handler.h \
     ../QtChromosomeViz_v2/bartekm_code/include/stream.h \
     ../QtChromosomeViz_v2/bartekm_code/include/utils.h \
-    ../QtChromosomeViz_v2/bartekm_code/NullSimulationLayer.h \
     treeitem.h \
     treemodel.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
