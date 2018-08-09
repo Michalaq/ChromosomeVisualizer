@@ -49,7 +49,6 @@ SOURCES += \
     textedit.cpp \
     preferences.cpp \
     namedelegate.cpp \
-    commondata.cpp \
     material.cpp \
     tagsdelegate.cpp \
     flowlayout.cpp \
@@ -129,7 +128,6 @@ HEADERS += \
     textedit.h \
     preferences.h \
     namedelegate.h \
-    commondata.h \
     material.h \
     tagsdelegate.h \
     flowlayout.h \

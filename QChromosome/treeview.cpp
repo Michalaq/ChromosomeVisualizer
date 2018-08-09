@@ -32,23 +32,6 @@ void TreeView::setSelection(const QList<unsigned int> &indexes)
     blockSignals(b);
 }
 
-void TreeView::dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const
-{
-    bool ok;
-    unsigned int i = root.sibling(root.row(), 2).data().toUInt(&ok);
-
-    if (ok)
-        id.append(i);
-
-    for (int r = 0; r < model()->rowCount(root); r++)
-    {
-        auto c = model()->index(r, 0, root);
-
-        if (functor(c))
-            dumpModel(c, id, functor);
-    }
-}
-
 Material* TreeView::takeSelectedMaterial()
 {
     auto ans = qobject_cast<TreeModel*>(model())->removeMaterial(selectedTag, selectedTag.data(Qt::UserRole + 1).toInt());

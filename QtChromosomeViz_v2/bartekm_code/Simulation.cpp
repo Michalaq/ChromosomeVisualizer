@@ -1,8 +1,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation(Session *s)
-    : frameCount_(0),
-      nextUnreadFrame_(0),
+    : nextUnreadFrame_(0),
       model(new TreeModel(s, this)),
       session(s)
 {}
@@ -106,24 +105,11 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
 {
     const auto offset = getFrame(0)->atoms.size();
     layerConcatenations_.emplace_back(slc);
-    
-    connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
-            [this] (int frameCount) {
-        if (frameCount_ < frameCount) {
-            frameCount_ = frameCount;
-            // emit frameCountChanged(frameCount_);
-        }
-    });
 
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
    
     model->setupModelData(slc, layerId, offset, init);
-}
-
-std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)
-{
-    return layerConcatenations_[i];
 }
 
 TreeModel* Simulation::getModel()
