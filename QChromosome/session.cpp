@@ -53,8 +53,6 @@ Session::Session(Ui::MainWindow *ui) :
     });
 
     action->setText(projectSettings->getFileName());
-
-    connect(simulation, &Simulation::frameCountChanged, this, &Session::setLastFrame);
 }
 
 Session::~Session()
@@ -168,7 +166,8 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    const auto frame = simulation->getFrame(time);
+    bool expanded;
+    const auto frame = simulation->getFrame(time, &expanded);
     const auto& atoms = frame->atoms;
 
     Q_ASSERT(atoms.size() == atomBuffer.size());
@@ -178,6 +177,9 @@ void Session::setDocumentTime(int time)
         const auto& atom = atoms[i];
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
+
+    if (expanded)
+        setLastFrame(simulation->getFrameCount() - 1);
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);
@@ -214,12 +216,12 @@ void Session::setPreviewMaxTime(int time)
     plot->setSoftMaximum(time);
 }
 
-void Session::setLastFrame(int frameCount)
+void Session::setLastFrame(int time)
 {
     bool expandTime = projectSettings->getMaximumTime() == lastFrame;
     bool expandPreviewTime = projectSettings->getPreviewMaxTime() == lastFrame;
 
-    lastFrame = frameCount - 1;
+    lastFrame = time;
 
     mediaPanel->setLastFrame(lastFrame);
     projectSettings->setLastFrame(lastFrame);
