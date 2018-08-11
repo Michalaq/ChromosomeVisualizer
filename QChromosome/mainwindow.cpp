@@ -206,7 +206,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 Session* MainWindow::makeSession()
 {
-    auto s = new Session(ui);
+    auto s = new Session(this);
 
     // add action to menu
     ui->menuWindows->addAction(s->action);
@@ -431,6 +431,54 @@ void MainWindow::setBaseAction(bool enabled)
     }
 }
 
+void MainWindow::updateLocks()
+{
+    Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
+}
+
+void MainWindow::recordActiveObjects()
+{
+    session->mediaPanel->recordActiveObjects();
+}
+
+void MainWindow::autokeying(bool checked)
+{
+    session->mediaPanel->autokeying(checked);
+    ui->actionAutokeying->setChecked(checked);
+}
+
+void MainWindow::playForwards(bool checked)
+{
+    session->mediaPanel->playForwards(checked);
+    ui->actionPlay_forwards->setChecked(checked);
+}
+
+void MainWindow::playBackwards(bool checked)
+{
+    session->mediaPanel->playBackwards(checked);
+    ui->actionPlay_backwards->setChecked(checked);
+}
+
+void MainWindow::goToStart()
+{
+    session->mediaPanel->goToStart();
+}
+
+void MainWindow::goToEnd()
+{
+    session->mediaPanel->goToEnd();
+}
+
+void MainWindow::goToNextFrame()
+{
+    session->mediaPanel->goToNextFrame();
+}
+
+void MainWindow::goToPreviousFrame()
+{
+    session->mediaPanel->goToPreviousFrame();
+}
+
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
@@ -441,11 +489,6 @@ void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
-}
-
-void MainWindow::updateLocks()
-{
-    Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

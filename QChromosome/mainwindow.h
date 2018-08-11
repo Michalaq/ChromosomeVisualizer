@@ -45,12 +45,24 @@ public slots:
 
     /* actions */
     void setBaseAction(bool enabled);
+    void updateLocks();
+
+    /* animation */
+    void recordActiveObjects();
+    void autokeying(bool checked);
+
+    void playForwards(bool checked);
+    void playBackwards(bool checked);
+
+    void goToStart();
+    void goToEnd();
+
+    void goToNextFrame();
+    void goToPreviousFrame();
 
     /* povray */
     void capture() const;
     void captureMovie() const;
-
-    void updateLocks();
 
 protected:
     void keyPressEvent(QKeyEvent *event);

@@ -7,18 +7,18 @@
 
 namespace Ui {
 class MediaPanel;
-class MainWindow;
 }
 
 class Session;
 class Camera;
+class MainWindow;
 
 class MediaPanel : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MediaPanel(Session* s, Ui::MainWindow* ui__, QWidget *parent = nullptr);
+    explicit MediaPanel(Session* s, MainWindow* w, QWidget *parent = nullptr);
     ~MediaPanel();
 
     void recordActiveObjects();
@@ -45,7 +45,6 @@ public:
 
 private:
     Ui::MediaPanel *ui;
-    Ui::MainWindow *ui_;
     Session* session;
 
     QTimer timer;

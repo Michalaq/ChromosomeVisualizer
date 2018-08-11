@@ -1,6 +1,6 @@
 #include "session.h"
 
-Session::Session(Ui::MainWindow *ui) :
+Session::Session(MainWindow* parent) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
@@ -10,7 +10,7 @@ Session::Session(Ui::MainWindow *ui) :
     treeView(new TreeView),
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
-    mediaPanel(new MediaPanel(this, ui)),
+    mediaPanel(new MediaPanel(this, parent)),
     plot(new Plot(this)),
     automaticKeyframing(false),
     nd(new NameDelegate),

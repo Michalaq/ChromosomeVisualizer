@@ -1,33 +1,23 @@
 #include "mediapanel.h"
 #include "ui_mediapanel.h"
 #include "session.h"
-#include "ui_mainwindow.h"
+#include "mainwindow.h"
 
-MediaPanel::MediaPanel(Session* s, Ui::MainWindow *ui__, QWidget *parent) :
+MediaPanel::MediaPanel(Session* s, MainWindow* w, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MediaPanel),
-    ui_(ui__),
     session(s)
 {
     ui->setupUi(this);
 
-    connect(ui->play, &QPushButton::clicked, this, &MediaPanel::playForwards);
-    connect(ui->reverse, &QPushButton::clicked, this, &MediaPanel::playBackwards);
-    connect(ui->start, &QPushButton::clicked, this, &MediaPanel::goToStart);
-    connect(ui->end, &QPushButton::clicked, this, &MediaPanel::goToEnd);
-    connect(ui->next, &QPushButton::clicked, this, &MediaPanel::goToNextFrame);
-    connect(ui->previous, &QPushButton::clicked, this, &MediaPanel::goToPreviousFrame);
-    connect(ui->key, &QPushButton::clicked, this, &MediaPanel::recordActiveObjects);
-    connect(ui->record, &QPushButton::clicked, this, &MediaPanel::autokeying);
-
-    connect(ui_->actionPlay_forwards, &QAction::triggered, this, &MediaPanel::playForwards);
-    connect(ui_->actionPlay_backwards, &QAction::triggered, this, &MediaPanel::playBackwards);
-    connect(ui_->actionGo_to_start, &QAction::triggered, this, &MediaPanel::goToStart);
-    connect(ui_->actionGo_to_end, &QAction::triggered, this, &MediaPanel::goToEnd);
-    connect(ui_->actionGo_to_next_frame, &QAction::triggered, this, &MediaPanel::goToNextFrame);
-    connect(ui_->actionGo_to_previous_frame, &QAction::triggered, this, &MediaPanel::goToPreviousFrame);
-    connect(ui_->actionRecord_Active_Objects, &QAction::triggered, this, &MediaPanel::recordActiveObjects);
-    connect(ui_->actionAutokeying, &QAction::triggered, this, &MediaPanel::autokeying);
+    connect(ui->play, &QPushButton::clicked, w, &MainWindow::playForwards);
+    connect(ui->reverse, &QPushButton::clicked, w, &MainWindow::playBackwards);
+    connect(ui->start, &QPushButton::clicked, w, &MainWindow::goToStart);
+    connect(ui->end, &QPushButton::clicked, w, &MainWindow::goToEnd);
+    connect(ui->next, &QPushButton::clicked, w, &MainWindow::goToNextFrame);
+    connect(ui->previous, &QPushButton::clicked, w, &MainWindow::goToPreviousFrame);
+    connect(ui->key, &QPushButton::clicked, w, &MainWindow::recordActiveObjects);
+    connect(ui->record, &QPushButton::clicked, w, &MainWindow::autokeying);
 
     timer.setInterval(1000 / session->projectSettings->getFPS());
     connect(&timer, &QTimer::timeout, this, &MediaPanel::step);
@@ -54,9 +44,7 @@ void MediaPanel::recordActiveObjects()
 void MediaPanel::autokeying(bool checked)
 {
     session->setAutomaticKeyframing(checked);
-
     ui->record->setChecked(checked);
-    ui_->actionAutokeying->setChecked(checked);
 }
 
 void MediaPanel::playForwards(bool checked)
@@ -75,7 +63,6 @@ void MediaPanel::playForwards(bool checked)
         timer.stop();
 
     ui->play->setChecked(checked);
-    ui_->actionPlay_forwards->setChecked(checked);
 }
 
 void MediaPanel::playBackwards(bool checked)
@@ -94,7 +81,6 @@ void MediaPanel::playBackwards(bool checked)
         timer.stop();
 
     ui->reverse->setChecked(checked);
-    ui_->actionPlay_backwards->setChecked(checked);
 }
 
 void MediaPanel::goToStart()
