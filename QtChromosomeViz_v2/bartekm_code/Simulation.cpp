@@ -101,7 +101,7 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
     return maximum;
 }
 
-void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc, bool init)
+void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
     const auto offset = getFrame(0)->atoms.size();
     layerConcatenations_.emplace_back(slc);
@@ -109,7 +109,7 @@ void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayer
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
    
-    model->setupModelData(slc, layerId, offset, init);
+    model->setupModelData(slc, layerId, offset);
 }
 
 TreeModel* Simulation::getModel()

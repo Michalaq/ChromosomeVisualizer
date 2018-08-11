@@ -12,6 +12,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     ui->setupUi(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
 
+    Material::getDefault();
     mat[0] = new Material("Mat", Qt::red);
     mat[1] = new Material("Mat.1", Qt::green);
     mat[2] = new Material("Mat.2", Qt::blue);

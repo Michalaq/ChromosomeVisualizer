@@ -474,8 +474,10 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
     }
 }
 
-ResidueItem::ResidueItem(const QString& name, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ResidueObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+#include "defaults.h"
+
+ResidueItem::ResidueItem(int type, TreeItem *parentItem) :
+    TreeItem({Defaults::typename2label(type), NodeType::ResidueObject, type, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);

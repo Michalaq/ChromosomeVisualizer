@@ -348,6 +348,7 @@ void MainWindow::addLayer()
             {
                 session->setDocumentTime(0);
                 session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+                session->simulation->getModel()->colorByResidue(session->simulation->getModel()->index(0, 0));
 
                 ui->scene->update();
                 session->plot->updateSimulation();
