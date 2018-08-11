@@ -1,6 +1,6 @@
 #include "session.h"
 
-Session::Session(MainWindow* parent) :
+Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
@@ -10,9 +10,9 @@ Session::Session(MainWindow* parent) :
     treeView(new TreeView),
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
-    mediaPanel(new MediaPanel(this, parent)),
+    mediaPanel(new MediaPanel(this, w)),
     plot(new Plot(this)),
-    automaticKeyframing(false),
+    autokeying(false),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),
@@ -231,9 +231,4 @@ void Session::setLastFrame(int time)
 
     if (expandPreviewTime)
         setPreviewMaxTime(lastFrame);
-}
-
-void Session::setAutomaticKeyframing(bool b)
-{
-    canvas->setStyleSheet((automaticKeyframing = b) ? "background: #d40000;" : "background: #4d4d4d;");
 }

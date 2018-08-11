@@ -37,13 +37,11 @@ MediaPanel::~MediaPanel()
 
 void MediaPanel::recordActiveObjects()
 {
-    session->currentCamera->captureFrame();
     ui->horizontalSlider->update();
 }
 
 void MediaPanel::autokeying(bool checked)
 {
-    session->setAutomaticKeyframing(checked);
     ui->record->setChecked(checked);
 }
 

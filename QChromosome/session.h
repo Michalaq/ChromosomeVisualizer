@@ -25,7 +25,7 @@ class Session : public QObject
     Q_OBJECT
 
 public:
-    Session(MainWindow* parent = 0);
+    Session(MainWindow* w);
     ~Session();
 
     QAction *action;
@@ -72,10 +72,7 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
-    QWidget* canvas;
-    bool automaticKeyframing;
-
-    void setAutomaticKeyframing(bool b = true);
+    bool autokeying;
 
 private:
     NameDelegate *nd;

@@ -300,7 +300,7 @@ void Camera::move(int dx, int dy)
 
     move(scale * dx, -scale * dy, 0.);
 
-    if (session->automaticKeyframing)
+    if (session->autokeying)
     {
         captureFrame();
         emit interpolationChanged();
@@ -311,7 +311,7 @@ void Camera::rotate(int dx, int dy)
 {
     rotate(-angleFactor * dx, -angleFactor * dy, 0.);
 
-    if (session->automaticKeyframing)
+    if (session->autokeying)
     {
         captureFrame();
         emit interpolationChanged();
@@ -322,7 +322,7 @@ void Camera::scale(int dx, int)
 {
     move(0., 0., distanceFactor * dx);
 
-    if (session->automaticKeyframing)
+    if (session->autokeying)
     {
         captureFrame();
         emit interpolationChanged();

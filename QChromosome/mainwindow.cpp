@@ -247,8 +247,6 @@ Session* MainWindow::makeSession()
     // update attributes when document time changes
     connect(s, &Session::documentTimeChanged, ui->page_2, &AtomAttributes::updatePosition);
 
-    s->canvas = ui->canvas;
-
     s->blockSignals(true);
     connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
@@ -295,11 +293,10 @@ void MainWindow::setCurrentSession(Session *s)
     // update media panel
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
 
+    autokeying(session->autokeying);
+
     // update plot
     ui->stackedWidget_5->setCurrentWidget(session->plot);
-
-    // update automatic keyframing
-    session->setAutomaticKeyframing(session->automaticKeyframing);
 
     session->blockSignals(false);
     session->setDocumentTime(session->projectSettings->getDocumentTime());
@@ -438,13 +435,16 @@ void MainWindow::updateLocks()
 
 void MainWindow::recordActiveObjects()
 {
+    session->currentCamera->captureFrame();
     session->mediaPanel->recordActiveObjects();
 }
 
 void MainWindow::autokeying(bool checked)
 {
+    session->autokeying = checked;
     session->mediaPanel->autokeying(checked);
     ui->actionAutokeying->setChecked(checked);
+    ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
 }
 
 void MainWindow::playForwards(bool checked)
