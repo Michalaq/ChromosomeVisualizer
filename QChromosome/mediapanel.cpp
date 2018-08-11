@@ -168,5 +168,31 @@ void MediaPanel::changeCamera(Camera* camera)
 
 void MediaPanel::step()
 {
-    session->setDocumentTime(session->projectSettings->getDocumentTime() + direction * (time.restart() * session->projectSettings->getFPS() + 500) / 1000);
+    int delta = (time.restart() * session->projectSettings->getFPS() + 500) / 1000;
+    int time = session->projectSettings->getDocumentTime();
+    int next = time + direction * delta;
+
+    if (direction == 1)
+    {
+        bool ok;
+        session->simulation->getFrame(next, &ok);
+
+        if (ok)
+            session->setDocumentTime(next);
+        else
+        {
+            session->setDocumentTime(session->simulation->getFrameCount() - 1);
+            ui->play->click();
+        }
+    }
+    else
+    {
+        if (next > 0)
+            session->setDocumentTime(next);
+        else
+        {
+            session->setDocumentTime(0);
+            ui->reverse->click();
+        }
+    }
 }

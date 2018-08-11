@@ -166,8 +166,7 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    bool expanded;
-    const auto frame = simulation->getFrame(time, &expanded);
+    const auto frame = simulation->getFrame(time);
     const auto& atoms = frame->atoms;
 
     Q_ASSERT(atoms.size() == atomBuffer.size());
@@ -178,7 +177,7 @@ void Session::setDocumentTime(int time)
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 
-    if (expanded)
+    if (lastFrame < simulation->getFrameCount() - 1)
         setLastFrame(simulation->getFrameCount() - 1);
 
     mediaPanel->setDocumentTime(time);

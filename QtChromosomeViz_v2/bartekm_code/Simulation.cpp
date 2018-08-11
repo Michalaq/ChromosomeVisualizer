@@ -14,7 +14,7 @@ frameNumber_t Simulation::getFrameCount() const
     return nextUnreadFrame_;
 }
 
-std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position, bool *expanded)
+std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position, bool *ok)
 {
     Frame f = {
         0,
@@ -50,13 +50,12 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position, bool *expand
 //    }
 
     frameNumber_t nextFrame = getNextTime((position > 0) ? (position - 1) : 0) + 1;
-    if (nextUnreadFrame_ < nextFrame && expanded) {
+    if (nextUnreadFrame_ < nextFrame) {
         nextUnreadFrame_ = nextFrame;
         emit frameCountChanged(nextUnreadFrame_);
-        *expanded = true;
     }
-    else
-        if (expanded) *expanded = false;
+
+    if (ok) *ok = position < nextFrame;
 
     return std::make_shared<Frame>(f);
 }

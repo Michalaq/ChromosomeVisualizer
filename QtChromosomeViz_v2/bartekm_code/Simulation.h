@@ -23,7 +23,7 @@ public:
     virtual ~Simulation();
     frameNumber_t getFrameCount() const;
     void addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc);
-    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time, bool* expanded = nullptr);
+    virtual std::shared_ptr<Frame> getFrame(frameNumber_t time, bool* ok = nullptr);
     frameNumber_t getNextTime(frameNumber_t time) const;
     frameNumber_t getPreviousTime(frameNumber_t time) const;
     TreeModel* getModel();
