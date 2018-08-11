@@ -247,7 +247,6 @@ Session* MainWindow::makeSession()
     // update attributes when document time changes
     connect(s, &Session::documentTimeChanged, ui->page_2, &AtomAttributes::updatePosition);
 
-    s->blockSignals(true);
     connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
     return s;
@@ -264,7 +263,19 @@ void MainWindow::newProject()
 void MainWindow::setCurrentSession(Session *s)
 {
     if (session)
-        session->blockSignals(true);
+    {
+        if (session->playForwards)
+        {
+            playForwards(false);
+            session->playForwards = true;
+        }
+
+        if (session->playBackwards)
+        {
+            playBackwards(false);
+            session->playBackwards = true;
+        }
+    }
 
     session = s;
 
@@ -294,12 +305,11 @@ void MainWindow::setCurrentSession(Session *s)
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
 
     autokeying(session->autokeying);
+    if (session->playForwards) playForwards(true);
+    if (session->playBackwards) playBackwards(true);
 
     // update plot
     ui->stackedWidget_5->setCurrentWidget(session->plot);
-
-    session->blockSignals(false);
-    session->setDocumentTime(session->projectSettings->getDocumentTime());
 }
 
 void MainWindow::openProject()
@@ -449,12 +459,14 @@ void MainWindow::autokeying(bool checked)
 
 void MainWindow::playForwards(bool checked)
 {
+    session->playForwards = checked;
     session->mediaPanel->playForwards(checked);
     ui->actionPlay_forwards->setChecked(checked);
 }
 
 void MainWindow::playBackwards(bool checked)
 {
+    session->playBackwards = checked;
     session->mediaPanel->playBackwards(checked);
     ui->actionPlay_backwards->setChecked(checked);
 }

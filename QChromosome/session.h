@@ -73,6 +73,8 @@ public:
     void setLastFrame(int time);
 
     bool autokeying;
+    bool playForwards;
+    bool playBackwards;
 
 private:
     NameDelegate *nd;

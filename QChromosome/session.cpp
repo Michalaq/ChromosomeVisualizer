@@ -13,6 +13,8 @@ Session::Session(MainWindow* w) :
     mediaPanel(new MediaPanel(this, w)),
     plot(new Plot(this)),
     autokeying(false),
+    playForwards(false),
+    playBackwards(false),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),
