@@ -108,7 +108,6 @@ void SimulationLayerConcatenation::setLayerId(int layerId)
 
 frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
 {
-    const frameNumber_t oldTime = time;
     if (time < 0)
         time = 0;
 
@@ -126,7 +125,7 @@ frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)
         framesSkipped += layer->getFrameCount();
     }
 
-    return oldTime;
+    return framesSkipped - 1;
 }
 
 frameNumber_t SimulationLayerConcatenation::getPreviousTime(frameNumber_t time)

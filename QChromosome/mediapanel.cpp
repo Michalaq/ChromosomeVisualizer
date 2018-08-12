@@ -1,33 +1,26 @@
 #include "mediapanel.h"
 #include "ui_mediapanel.h"
 #include "session.h"
+#include "mainwindow.h"
 
-MediaPanel::MediaPanel(Session* s, QWidget *parent) :
+MediaPanel::MediaPanel(Session* s, MainWindow* w, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MediaPanel),
     session(s)
 {
     ui->setupUi(this);
 
-    connect(ui->play, &QPushButton::clicked, this, &MediaPanel::playForwards);
-    connect(ui->reverse, &QPushButton::clicked, this, &MediaPanel::playBackwards);
-    connect(ui->start, &QPushButton::clicked, this, &MediaPanel::goToStart);
-    connect(ui->end, &QPushButton::clicked, this, &MediaPanel::goToEnd);
-    connect(ui->next, &QPushButton::clicked, this, &MediaPanel::goToNextFrame);
-    connect(ui->previous, &QPushButton::clicked, this, &MediaPanel::goToPreviousFrame);
-
-    connect(ui->key, &QPushButton::clicked, [this] {
-        session->currentCamera->captureFrame();
-        ui->horizontalSlider->update();
-    });
-
-    connect(ui->record, &QPushButton::toggled, session, &Session::setAutomaticKeyframing);
+    connect(ui->play, &QPushButton::clicked, w, &MainWindow::playForwards);
+    connect(ui->reverse, &QPushButton::clicked, w, &MainWindow::playBackwards);
+    connect(ui->start, &QPushButton::clicked, w, &MainWindow::goToStart);
+    connect(ui->end, &QPushButton::clicked, w, &MainWindow::goToEnd);
+    connect(ui->next, &QPushButton::clicked, w, &MainWindow::goToNextFrame);
+    connect(ui->previous, &QPushButton::clicked, w, &MainWindow::goToPreviousFrame);
+    connect(ui->key, &QPushButton::clicked, w, &MainWindow::recordActiveObjects);
+    connect(ui->record, &QPushButton::clicked, w, &MainWindow::autokeying);
 
     timer.setInterval(1000 / session->projectSettings->getFPS());
-
-    connect(&timer, &QTimer::timeout, [this]() {
-        session->setDocumentTime(session->projectSettings->getDocumentTime() + direction * (time.restart() * session->projectSettings->getFPS() + 500) / 1000);
-    });
+    connect(&timer, &QTimer::timeout, this, &MediaPanel::step);
 
     connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setDocumentTime);
     connect(ui->horizontalSlider, &QSlider::valueChanged, session, &Session::setDocumentTime);
@@ -40,6 +33,16 @@ MediaPanel::MediaPanel(Session* s, QWidget *parent) :
 MediaPanel::~MediaPanel()
 {
     delete ui;
+}
+
+void MediaPanel::recordActiveObjects()
+{
+    ui->horizontalSlider->update();
+}
+
+void MediaPanel::autokeying(bool checked)
+{
+    ui->record->setChecked(checked);
 }
 
 void MediaPanel::playForwards(bool checked)
@@ -56,6 +59,8 @@ void MediaPanel::playForwards(bool checked)
     }
     else
         timer.stop();
+
+    ui->play->setChecked(checked);
 }
 
 void MediaPanel::playBackwards(bool checked)
@@ -72,6 +77,8 @@ void MediaPanel::playBackwards(bool checked)
     }
     else
         timer.stop();
+
+    ui->reverse->setChecked(checked);
 }
 
 void MediaPanel::goToStart()
@@ -141,4 +148,93 @@ void MediaPanel::setLastFrame(int time)
 void MediaPanel::changeCamera(Camera* camera)
 {
     ui->horizontalSlider->setSplineInterpolator(camera);
+}
+
+constexpr int rem(int a, int b) {
+    return (a % b + b) % b;
+}
+
+void MediaPanel::step()
+{
+    int delta = (time.restart() * session->projectSettings->getFPS() + 500) / 1000;
+    int time = session->projectSettings->getDocumentTime();
+    int next = time + direction * delta;
+
+    if (direction == 1)
+    {
+        int maxTime = session->previewRange ? session->projectSettings->getPreviewMaxTime() : session->projectSettings->getMaximumTime();
+
+        if (next <= maxTime)
+            session->setDocumentTime(next);
+        else
+        {
+            if (maxTime == ui->spinBox->maximum())
+            {
+                bool ok;
+                session->simulation->getFrame(next, &ok);
+
+                if (ok)
+                    return session->setDocumentTime(next);
+                else
+                    maxTime = session->simulation->getFrameCount() - 1;
+            }
+
+            int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
+            int frameCount = maxTime - minTime + 1;
+
+            switch (session->playMode)
+            {
+            case Session::PM_Simple:
+                session->setDocumentTime(maxTime);
+                ui->play->click();
+                break;
+            case Session::PM_Cycle:
+                session->setDocumentTime(minTime + rem(next - minTime, frameCount));
+                break;
+            case Session::PM_PingPong:
+                next = rem(next - minTime, 2 * frameCount - 2);
+                if (next >= frameCount)
+                {
+                    session->setDocumentTime(minTime + 2 * frameCount - 2 - next);
+                    ui->reverse->click();
+                }
+                else
+                    session->setDocumentTime(minTime + next);
+                break;
+            }
+        }
+    }
+    else
+    {
+        int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
+
+        if (next >= minTime)
+            session->setDocumentTime(next);
+        else
+        {
+            int maxTime = session->previewRange ? session->projectSettings->getPreviewMaxTime() : session->projectSettings->getMaximumTime();
+            int frameCount = maxTime - minTime + 1;
+
+            switch (session->playMode)
+            {
+            case Session::PM_Simple:
+                session->setDocumentTime(minTime);
+                ui->reverse->click();
+                break;
+            case Session::PM_Cycle:
+                session->setDocumentTime(minTime + rem(next - minTime, frameCount));
+                break;
+            case Session::PM_PingPong:
+                next = rem(next - minTime, 2 * frameCount - 2);
+                if (next >= frameCount)
+                {
+                    session->setDocumentTime(minTime + 2 * frameCount - 2 - next);
+                    ui->play->click();
+                }
+                else
+                    session->setDocumentTime(minTime + next);
+                break;
+            }
+        }
+    }
 }

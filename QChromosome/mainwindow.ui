@@ -448,7 +448,13 @@ Label {
      <addaction name="separator"/>
      <addaction name="actionSimple"/>
      <addaction name="actionCycle"/>
+     <addaction name="actionPing_Pong"/>
     </widget>
+    <addaction name="actionRecord"/>
+    <addaction name="actionRecord_Active_Objects"/>
+    <addaction name="separator"/>
+    <addaction name="actionAutokeying"/>
+    <addaction name="separator"/>
     <addaction name="menuPlay_mode"/>
     <addaction name="actionPlay_forwards"/>
     <addaction name="actionPlay_backwards"/>
@@ -858,18 +864,12 @@ QLineEdit {
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
    <property name="text">
     <string>Preview range</string>
    </property>
   </action>
   <action name="actionSimple">
    <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
@@ -1114,6 +1114,46 @@ QLineEdit {
    </property>
    <property name="statusTip">
     <string>Add Camera Object</string>
+   </property>
+  </action>
+  <action name="actionAutokeying">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/record</normaloff>:/media/record</iconset>
+   </property>
+   <property name="text">
+    <string>Autokeying</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F9</string>
+   </property>
+  </action>
+  <action name="actionRecord_Active_Objects">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/media/key</normaloff>:/media/key</iconset>
+   </property>
+   <property name="text">
+    <string>Record Active Objects</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
+   </property>
+  </action>
+  <action name="actionRecord">
+   <property name="text">
+    <string>Record</string>
+   </property>
+  </action>
+  <action name="actionPing_Pong">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Ping-Pong</string>
    </property>
   </action>
  </widget>
@@ -1427,28 +1467,153 @@ QLineEdit {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionRecord_Active_Objects</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>recordActiveObjects()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAutokeying</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>autokeying(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_forwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>playForwards(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPlay_backwards</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>playBackwards(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_start</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>goToStart()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_end</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>goToEnd()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_next_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>goToNextFrame()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGo_to_previous_frame</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>goToPreviousFrame()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openProject()</slot>
-  <slot>start()</slot>
-  <slot>previous()</slot>
-  <slot>reverse(bool)</slot>
-  <slot>play(bool)</slot>
-  <slot>next()</slot>
-  <slot>end()</slot>
-  <slot>setFrame(int)</slot>
-  <slot>handleSelection(AtomSelection)</slot>
   <slot>selectAll()</slot>
   <slot>setBaseAction(bool)</slot>
   <slot>capture()</slot>
   <slot>captureMovie()</slot>
-  <slot>setSoftMinimum(int)</slot>
-  <slot>setSoftMaximum(int)</slot>
   <slot>addLayer()</slot>
-  <slot>handleModelSelection()</slot>
   <slot>newProject()</slot>
   <slot>updateLocks()</slot>
   <slot>saveProject()</slot>
   <slot>saveProjectAs()</slot>
+  <slot>recordActiveObjects()</slot>
+  <slot>autokeying(bool)</slot>
+  <slot>playForwards(bool)</slot>
+  <slot>playBackwards(bool)</slot>
+  <slot>goToStart()</slot>
+  <slot>goToEnd()</slot>
+  <slot>goToNextFrame()</slot>
+  <slot>goToPreviousFrame()</slot>
  </slots>
 </ui>

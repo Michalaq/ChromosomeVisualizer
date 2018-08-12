@@ -174,7 +174,7 @@ struct VizBallInstance
     VizFlags flags = VisibleInEditor | VisibleInRenderer;
     float size = 1.0;
     QRect label;
-    int material;
+    int material = 0;
 };
 
 #include "material.h"
@@ -228,7 +228,7 @@ private:
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(const QString& name, TreeItem *parentItem = 0);
+    explicit ResidueItem(int type, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

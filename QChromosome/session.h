@@ -18,12 +18,15 @@
 #include "mediapanel.h"
 #include "plot.h"
 
+class MainWindow;
+
 class Session : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(PlayMode)
 
 public:
-    Session();
+    Session(MainWindow* w);
     ~Session();
 
     QAction *action;
@@ -70,10 +73,19 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
-    QWidget* canvas;
-    bool automaticKeyframing;
+    bool autokeying;
+    bool playForwards;
+    bool playBackwards;
 
-    void setAutomaticKeyframing(bool b = true);
+    bool previewRange;
+
+    enum PlayMode {
+        PM_Simple,
+        PM_Cycle,
+        PM_PingPong
+    };
+
+    PlayMode playMode;
 
 private:
     NameDelegate *nd;

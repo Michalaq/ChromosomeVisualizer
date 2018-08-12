@@ -76,7 +76,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init = true);
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset);
+    void colorByResidue(const QModelIndex &root);
+
     const QVector<QPersistentModelIndex> &getIndices() const;
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
@@ -125,7 +127,8 @@ private:
 
     void propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) const;
 
-    void dumpModel(const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m);
+    void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
+    void dumpModel2(const QModelIndex& root, Material* m);
 
 signals:
     void propertyChanged();

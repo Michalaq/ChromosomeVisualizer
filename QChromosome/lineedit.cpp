@@ -1,10 +1,8 @@
 #include "lineedit.h"
 
-LineEdit::LineEdit(QWidget *parent) : QLineEdit(parent), multiple(false)
+LineEdit::LineEdit(QWidget *parent) : QLineEdit(parent)
 {
-    connect(this, &QLineEdit::textChanged, [this] {
-        multiple = false;
-    });
+
 }
 
 LineEdit::~LineEdit()
@@ -14,12 +12,13 @@ LineEdit::~LineEdit()
 
 void LineEdit::setMultipleValues(bool enabled)
 {
-    if (multiple = enabled)
+    if (enabled)
     {
-        bool b = blockSignals(true);
-        QLineEdit::setText("<< multiple values >>");
-        blockSignals(b);
+        setPlaceholderText("<< multiple values >>");
+        clear();
     }
+    else
+        setPlaceholderText("");
 }
 
 #include <QStyle>
@@ -31,13 +30,6 @@ void LineEdit::focusInEvent(QFocusEvent *event)
     style()->unpolish(this);
     style()->polish(this);
 
-    if (multiple)
-    {
-        bool b = blockSignals(true);
-        clear();
-        blockSignals(b);
-    }
-
     update();
 }
 
@@ -47,13 +39,6 @@ void LineEdit::focusOutEvent(QFocusEvent *event)
 
     style()->unpolish(this);
     style()->polish(this);
-
-    if (multiple)
-    {
-        bool b = blockSignals(true);
-        QLineEdit::setText("<< multiple values >>");
-        blockSignals(b);
-    }
 
     update();
 }
@@ -65,8 +50,8 @@ void LineEdit::setText(const QString &text, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    multiple = false;
     QLineEdit::setText(text);
+    setPlaceholderText("");
 
     if (!spontaneous)
         blockSignals(b);

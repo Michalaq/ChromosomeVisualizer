@@ -22,7 +22,7 @@ DoubleSpinBox::DoubleSpinBox(QWidget *parent) :
     setLineEdit(edit);
 
     connect(this, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [this](double val) {
-        setValue(val);
+        setValue(val, false);
     });
 }
 
@@ -38,6 +38,7 @@ void DoubleSpinBox::setValue(double val, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
+    QDoubleSpinBox::setSuffix(suffix);
     edit->setMultipleValues(multiple = false);
     QDoubleSpinBox::setValue(val);
 
@@ -76,7 +77,13 @@ void DoubleSpinBox::setMultipleValues()
 {
     setValue(0, false);
 
+    QDoubleSpinBox::setSuffix("");
     edit->setMultipleValues(multiple = true);
+}
+
+void DoubleSpinBox::setSuffix(const QString& suffix)
+{
+    QDoubleSpinBox::setSuffix(this->suffix = suffix);
 }
 
 #include <QStyle>
@@ -89,8 +96,6 @@ void DoubleSpinBox::focusInEvent(QFocusEvent *event)
     style()->polish(this);
 
     update();
-
-    edit->setMultipleValues(multiple);
 }
 
 void DoubleSpinBox::focusOutEvent(QFocusEvent *event)

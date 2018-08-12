@@ -45,8 +45,6 @@ private:
     Visibility cv;
     VisibilityMode vm;
 
-    void dumpModel(const QModelIndex& root, QList<unsigned int>& id, std::function<bool(const QModelIndex&)> functor) const;
-
     Material* takeSelectedMaterial();
 
     enum TreeViewState

@@ -11,14 +11,18 @@ class MediaPanel;
 
 class Session;
 class Camera;
+class MainWindow;
 
 class MediaPanel : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MediaPanel(Session* s, QWidget *parent = nullptr);
+    explicit MediaPanel(Session* s, MainWindow* w, QWidget *parent = nullptr);
     ~MediaPanel();
+
+    void recordActiveObjects();
+    void autokeying(bool checked);
 
     void playForwards(bool checked);
     void playBackwards(bool checked);
@@ -47,6 +51,8 @@ private:
     QTime time;
 
     int direction;
+
+    void step();
 };
 
 #endif // MEDIAPANEL_H

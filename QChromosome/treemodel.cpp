@@ -134,40 +134,17 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return (parent.isValid() ? static_cast<TreeItem*>(parent.internalPointer()) : header)->childCount();
 }
 
-#include "material.h"
-#include "session.h"
-
-void TreeModel::dumpModel(const QModelIndex& root, QVector<QPersistentModelIndex>& id, Material* m)
+void TreeModel::dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id)
 {
-    // update current material
-    auto list = root.sibling(root.row(), 5).data().toList();
-
-    for (auto mat : list)
-    {
-        m = qobject_cast<Material*>(mat.value<QObject*>());
-        m->assign(root.sibling(root.row(), 5));
-
-        if (!materials.contains(m))
-        {
-            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
-            materials.insert(m);
-        }
-    }
-
     // update index buffer
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-    {
         id[root.sibling(root.row(), 2).data().toUInt()] = root;
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
-    }
 
     for (int r = 0; r < rowCount(root); r++)
-        dumpModel(index(r, 0, root), id, m);
+        dumpModel1(index(r, 0, root), id);
 }
 
-#include "defaults.h"
-
-void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, bool init, Session *s)
+void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, Session *s)
 {
     auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, s, parent);
 
@@ -178,12 +155,7 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
         int t = atom->type;
 
         if (!types.contains(t))
-        {
-            types[t] = new ResidueItem(Defaults::typename2label(t), root);
-
-            if (init)
-                types[t]->setData(5, Defaults::typename2color(t));
-        }
+            types[t] = new ResidueItem(t, root);
 
         types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, s, types[t]));
     }
@@ -196,8 +168,9 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
 
 #include <QBitArray>
 #include <QFileInfo>
+#include "session.h"
 
-void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset, bool init)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset)
 {
     auto f = slc->getFrame(0);
     auto& atoms = f->atoms;
@@ -215,7 +188,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     {
         range.first--;
         used.fill(true, range.first, range.second);
-        appendSubmodel(range, atoms, i++, offset, root, init, session);
+        appendSubmodel(range, atoms, i++, offset, root, session);
     }
 
     QMap<int, TreeItem*> types;
@@ -226,12 +199,7 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
             int t = atoms[i].type;
 
             if (!types.contains(t))
-            {
-                types[t] = new ResidueItem(Defaults::typename2label(t), root);
-
-                if (init)
-                    types[t]->setData(5, Defaults::typename2color(t));
-            }
+                types[t] = new ResidueItem(t, root);
 
             types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]));
         }
@@ -244,7 +212,46 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
     endInsertRows();
 
     indices.resize(offset + atoms.size() + 1);
-    dumpModel(index(0, 0), indices, Material::getDefault());
+    dumpModel1(index(0, 0), indices);
+}
+
+void TreeModel::colorByResidue(const QModelIndex& root)
+{
+    dumpModel2(root, Material::getDefault());
+}
+
+#include "defaults.h"
+
+void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
+{
+    // update current tags
+    if (root.sibling(root.row(), 1).data().toInt() == ResidueObject)
+    {
+        int type = root.sibling(root.row(), 2).data().toInt();
+        auto defl = Defaults::typename2color(type).toList();
+
+        for (auto mat : defl)
+        {
+            m = qobject_cast<Material*>(mat.value<QObject*>());
+            m->assign(root.sibling(root.row(), 5));
+
+            if (!materials.contains(m))
+            {
+                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+                materials.insert(m);
+            }
+        }
+
+        auto list = root.sibling(root.row(), 5).data().toList();
+        setData(root.sibling(root.row(), 5), list + defl);
+    }
+
+    // update current material
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < rowCount(root); r++)
+        dumpModel2(index(r, 0, root), m);
 }
 
 const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
@@ -588,7 +595,7 @@ void TreeModel::read(const QJsonObject &json)
             auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
             simulationLayer->read(object["paths"].toArray());
 
-            session->simulation->addSimulationLayerConcatenation(simulationLayer, false);
+            session->simulation->addSimulationLayerConcatenation(simulationLayer);
         }
 
         if (object["class"] == "Camera")

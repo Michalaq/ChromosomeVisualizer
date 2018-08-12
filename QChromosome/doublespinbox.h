@@ -24,6 +24,7 @@ public:
     QString textFromValue(double val) const;
 
     void setMultipleValues();
+    void setSuffix(const QString& suffix);
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -38,6 +39,7 @@ private:
     RegularExpressionValidator validator;
     LineEdit* edit;
     bool multiple;
+    QString suffix;
 };
 
 #endif // DOUBLESPINBOX_H

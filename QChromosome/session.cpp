@@ -1,6 +1,6 @@
 #include "session.h"
 
-Session::Session() :
+Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
@@ -10,9 +10,13 @@ Session::Session() :
     treeView(new TreeView),
     projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
-    mediaPanel(new MediaPanel(this)),
+    mediaPanel(new MediaPanel(this, w)),
     plot(new Plot(this)),
-    automaticKeyframing(false),
+    autokeying(false),
+    playForwards(false),
+    playBackwards(false),
+    previewRange(false),
+    playMode(PM_Cycle),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),
@@ -53,6 +57,7 @@ Session::Session() :
     });
 
     action->setText(projectSettings->getFileName());
+    action->setCheckable(true);
 }
 
 Session::~Session()
@@ -129,15 +134,9 @@ void Session::reallocateBuffers()
 
 void Session::changeCamera(Camera* camera)
 {
-    if (!camera)
-        camera = editorCamera;
-
-    currentCamera->blockSignals(true);
-    currentCamera = camera;
-    currentCamera->blockSignals(false);
+    currentCamera = camera ? camera : editorCamera;
 
     mediaPanel->changeCamera(currentCamera);
-
     cameraUniformBuffer = &currentCamera->cameraUniformBuffer;
 }
 
@@ -183,8 +182,8 @@ void Session::setDocumentTime(int time)
         atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
     }
 
-    if (lastFrame < simulation->getLastFrame())
-        setLastFrame(simulation->getLastFrame());
+    if (lastFrame < simulation->getFrameCount() - 1)
+        setLastFrame(simulation->getFrameCount() - 1);
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);
@@ -237,9 +236,4 @@ void Session::setLastFrame(int time)
 
     if (expandPreviewTime)
         setPreviewMaxTime(lastFrame);
-}
-
-void Session::setAutomaticKeyframing(bool b)
-{
-    canvas->setStyleSheet((automaticKeyframing = b) ? "background: #d40000;" : "background: #4d4d4d;");
 }

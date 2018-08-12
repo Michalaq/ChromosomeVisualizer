@@ -1,8 +1,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation(Session *s)
-    : frameCount_(0),
-      nextUnreadFrame_(0),
+    : nextUnreadFrame_(0),
       model(new TreeModel(s, this)),
       session(s)
 {}
@@ -12,15 +11,10 @@ Simulation::~Simulation()
 
 frameNumber_t Simulation::getFrameCount() const
 {
-    return nextUnreadFrame_ + 1;
+    return nextUnreadFrame_;
 }
 
-frameNumber_t Simulation::getLastFrame() const
-{
-    return frameCount_ - 1;
-}
-
-std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
+std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position, bool *ok)
 {
     Frame f = {
         0,
@@ -60,6 +54,8 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position)
         nextUnreadFrame_ = nextFrame;
         emit frameCountChanged(nextUnreadFrame_);
     }
+
+    if (ok) *ok = position < nextFrame;
 
     return std::make_shared<Frame>(f);
 }
@@ -104,28 +100,15 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
     return maximum;
 }
 
-void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc, bool init)
+void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
     const auto offset = getFrame(0)->atoms.size();
     layerConcatenations_.emplace_back(slc);
-    
-    connect(layerConcatenations_.back().get(), &SimulationLayerConcatenation::frameCountChanged,
-            [this] (int frameCount) {
-        if (frameCount_ < frameCount) {
-            frameCount_ = frameCount;
-            // emit frameCountChanged(frameCount_);
-        }
-    });
 
     int layerId = layerConcatenations_.size() - 1;
     slc->setLayerId(layerId);
    
-    model->setupModelData(slc, layerId, offset, init);
-}
-
-std::shared_ptr<SimulationLayerConcatenation> Simulation::getSimulationLayerConcatenation(int i)
-{
-    return layerConcatenations_[i];
+    model->setupModelData(slc, layerId, offset);
 }
 
 TreeModel* Simulation::getModel()

@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
-#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
+#include "session.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     movieMaker(MovieMaker::getInstance()),
     pw(nullptr),
     recent(nullptr),
-    session(nullptr)
+    session(nullptr),
+    sessions(new QActionGroup(this))
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -73,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) :
     auto *ag = new QActionGroup(this);
     ag->addAction(ui->actionSimple);
     ag->addAction(ui->actionCycle);
+    ag->addAction(ui->actionPing_Pong);
 
     auto s = new QAction(this), t = new QAction(this);
     s->setSeparator(true);
@@ -145,14 +145,30 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->page_5, &CameraAttributes::selected, [this](const QPersistentModelIndex& index) {
         session->treeView->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
     });
+
+    connect(ui->page_5, SIGNAL(modelViewChanged()), ui->scene, SLOT(update()));
+
+    connect(ui->actionPreview_range, &QAction::triggered, [this](bool checked) {
+        session->previewRange = checked;
+    });
+
+    connect(ui->actionSimple, &QAction::triggered, [this] {
+        session->playMode = Session::PM_Simple;
+    });
+
+    connect(ui->actionCycle, &QAction::triggered, [this] {
+        session->playMode = Session::PM_Cycle;
+    });
+
+    connect(ui->actionPing_Pong, &QAction::triggered, [this] {
+        session->playMode = Session::PM_PingPong;
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-#include "session.h"
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -203,12 +219,29 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 
 Session* MainWindow::makeSession()
 {
-    auto s = new Session();
+    auto s = new Session(this);
 
     // add action to menu
     ui->menuWindows->addAction(s->action);
-    connect(s->action, &QAction::triggered, [=]() {
-        setCurrentSession(s);
+    sessions->addAction(s->action);
+
+    connect(s->action, &QAction::toggled, [=](bool checked) {
+        if (checked)
+            setCurrentSession(s);
+        else
+        {
+            if (s->playForwards)
+            {
+                playForwards(false);
+                s->playForwards = true;
+            }
+
+            if (s->playBackwards)
+            {
+                playBackwards(false);
+                s->playBackwards = true;
+            }
+        }
     });
 
     // connect tree model with GUI
@@ -241,9 +274,9 @@ Session* MainWindow::makeSession()
     // add plot to available plots
     ui->stackedWidget_5->addWidget(s->plot);
 
-    s->canvas = ui->canvas;
+    // update attributes when document time changes
+    connect(s, &Session::documentTimeChanged, ui->page_2, &AtomAttributes::updatePosition);
 
-    s->blockSignals(true);
     connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
     return s;
@@ -251,7 +284,7 @@ Session* MainWindow::makeSession()
 
 void MainWindow::newProject()
 {
-    setCurrentSession(makeSession());
+    makeSession()->action->trigger();
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
     ui->dockWidget_2->show();
@@ -259,9 +292,6 @@ void MainWindow::newProject()
 
 void MainWindow::setCurrentSession(Session *s)
 {
-    if (session)
-        session->blockSignals(true);
-
     session = s;
 
     // update window title
@@ -289,14 +319,17 @@ void MainWindow::setCurrentSession(Session *s)
     // update media panel
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
 
+    static const QMap<Session::PlayMode, QAction*> map({{Session::PM_Simple, ui->actionSimple}, {Session::PM_Cycle, ui->actionCycle}, {Session::PM_PingPong, ui->actionPing_Pong}});
+
+    ui->actionPreview_range->setChecked(session->previewRange);
+    map[session->playMode]->setChecked(true);
+
+    autokeying(session->autokeying);
+    if (session->playForwards) playForwards(true);
+    if (session->playBackwards) playBackwards(true);
+
     // update plot
     ui->stackedWidget_5->setCurrentWidget(session->plot);
-
-    // update automatic keyframing
-    session->setAutomaticKeyframing(session->automaticKeyframing);
-
-    session->blockSignals(false);
-    session->setDocumentTime(session->projectSettings->getDocumentTime());
 }
 
 void MainWindow::openProject()
@@ -308,7 +341,7 @@ void MainWindow::openProject()
         for (Camera* camera : s->userCameras)
             addCamera(camera);
 
-        setCurrentSession(s);
+        s->action->trigger();
 
         ui->stackedWidget->setCurrentWidget(session->projectSettings);
         ui->dockWidget_2->show();
@@ -317,6 +350,8 @@ void MainWindow::openProject()
         delete s;
 }
 
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include "importdialog.h"
 
 void MainWindow::addLayer()
@@ -342,6 +377,7 @@ void MainWindow::addLayer()
             {
                 session->setDocumentTime(0);
                 session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+                session->simulation->getModel()->colorByResidue(session->simulation->getModel()->index(0, 0));
 
                 ui->scene->update();
                 session->plot->updateSimulation();
@@ -424,6 +460,59 @@ void MainWindow::setBaseAction(bool enabled)
     }
 }
 
+void MainWindow::updateLocks()
+{
+    Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
+}
+
+void MainWindow::recordActiveObjects()
+{
+    session->currentCamera->captureFrame();
+    session->mediaPanel->recordActiveObjects();
+}
+
+void MainWindow::autokeying(bool checked)
+{
+    session->autokeying = checked;
+    session->mediaPanel->autokeying(checked);
+    ui->actionAutokeying->setChecked(checked);
+    ui->canvas->setStyleSheet(checked ? "background: #d40000;" : "background: #4d4d4d;");
+}
+
+void MainWindow::playForwards(bool checked)
+{
+    session->playForwards = checked;
+    session->mediaPanel->playForwards(checked);
+    ui->actionPlay_forwards->setChecked(checked);
+}
+
+void MainWindow::playBackwards(bool checked)
+{
+    session->playBackwards = checked;
+    session->mediaPanel->playBackwards(checked);
+    ui->actionPlay_backwards->setChecked(checked);
+}
+
+void MainWindow::goToStart()
+{
+    session->mediaPanel->goToStart();
+}
+
+void MainWindow::goToEnd()
+{
+    session->mediaPanel->goToEnd();
+}
+
+void MainWindow::goToNextFrame()
+{
+    session->mediaPanel->goToNextFrame();
+}
+
+void MainWindow::goToPreviousFrame()
+{
+    session->mediaPanel->goToPreviousFrame();
+}
+
 void MainWindow::capture() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
@@ -434,11 +523,6 @@ void MainWindow::captureMovie() const
 {
     QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
     movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
-}
-
-void MainWindow::updateLocks()
-{
-    Camera::lockCoordinates(!ui->actionXLock->isChecked(), !ui->actionYLock->isChecked(), !ui->actionZLock->isChecked());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -496,8 +580,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::addCamera(Camera* camera)
 {
-    camera->blockSignals(true);
-
     connect(camera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(camera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
