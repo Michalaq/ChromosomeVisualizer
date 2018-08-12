@@ -23,6 +23,7 @@ class MainWindow;
 class Session : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(PlayMode)
 
 public:
     Session(MainWindow* w);
@@ -75,6 +76,16 @@ public:
     bool autokeying;
     bool playForwards;
     bool playBackwards;
+
+    bool previewRange;
+
+    enum PlayMode {
+        PM_Simple,
+        PM_Cycle,
+        PM_PingPong
+    };
+
+    PlayMode playMode;
 
 private:
     NameDelegate *nd;

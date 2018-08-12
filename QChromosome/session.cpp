@@ -15,6 +15,8 @@ Session::Session(MainWindow* w) :
     autokeying(false),
     playForwards(false),
     playBackwards(false),
+    previewRange(false),
+    playMode(PM_Cycle),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),

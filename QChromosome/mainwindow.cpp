@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
-#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
+#include "session.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -148,14 +146,28 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->page_5, SIGNAL(modelViewChanged()), ui->scene, SLOT(update()));
+
+    connect(ui->actionPreview_range, &QAction::triggered, [this](bool checked) {
+        session->previewRange = checked;
+    });
+
+    connect(ui->actionSimple, &QAction::triggered, [this] {
+        session->playMode = Session::PM_Simple;
+    });
+
+    connect(ui->actionCycle, &QAction::triggered, [this] {
+        session->playMode = Session::PM_Cycle;
+    });
+
+    connect(ui->actionPing_Pong, &QAction::triggered, [this] {
+        session->playMode = Session::PM_PingPong;
+    });
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-#include "session.h"
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
@@ -304,6 +316,11 @@ void MainWindow::setCurrentSession(Session *s)
     // update media panel
     ui->stackedWidget_4->setCurrentWidget(session->mediaPanel);
 
+    static const QMap<Session::PlayMode, QAction*> map({{Session::PM_Simple, ui->actionSimple}, {Session::PM_Cycle, ui->actionCycle}, {Session::PM_PingPong, ui->actionPing_Pong}});
+
+    ui->actionPreview_range->setChecked(session->previewRange);
+    map[session->playMode]->setChecked(true);
+
     autokeying(session->autokeying);
     if (session->playForwards) playForwards(true);
     if (session->playBackwards) playBackwards(true);
@@ -330,6 +347,8 @@ void MainWindow::openProject()
         delete s;
 }
 
+#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
+#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include "importdialog.h"
 
 void MainWindow::addLayer()
