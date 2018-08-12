@@ -57,6 +57,7 @@ Session::Session(MainWindow* w) :
     });
 
     action->setText(projectSettings->getFileName());
+    action->setCheckable(true);
 }
 
 Session::~Session()

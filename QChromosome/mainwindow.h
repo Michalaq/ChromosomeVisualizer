@@ -99,6 +99,7 @@ private:
     void setCurrentSession(Session* s);
 
     Session* session;
+    QActionGroup* sessions;
 };
 
 #endif // MAINWINDOW_H

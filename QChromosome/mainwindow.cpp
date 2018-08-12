@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     movieMaker(MovieMaker::getInstance()),
     pw(nullptr),
     recent(nullptr),
-    session(nullptr)
+    session(nullptr),
+    sessions(new QActionGroup(this))
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -222,8 +223,25 @@ Session* MainWindow::makeSession()
 
     // add action to menu
     ui->menuWindows->addAction(s->action);
-    connect(s->action, &QAction::triggered, [=]() {
-        setCurrentSession(s);
+    sessions->addAction(s->action);
+
+    connect(s->action, &QAction::toggled, [=](bool checked) {
+        if (checked)
+            setCurrentSession(s);
+        else
+        {
+            if (s->playForwards)
+            {
+                playForwards(false);
+                s->playForwards = true;
+            }
+
+            if (s->playBackwards)
+            {
+                playBackwards(false);
+                s->playBackwards = true;
+            }
+        }
     });
 
     // connect tree model with GUI
@@ -266,7 +284,7 @@ Session* MainWindow::makeSession()
 
 void MainWindow::newProject()
 {
-    setCurrentSession(makeSession());
+    makeSession()->action->trigger();
 
     ui->stackedWidget->setCurrentWidget(session->projectSettings);
     ui->dockWidget_2->show();
@@ -274,21 +292,6 @@ void MainWindow::newProject()
 
 void MainWindow::setCurrentSession(Session *s)
 {
-    if (session)
-    {
-        if (session->playForwards)
-        {
-            playForwards(false);
-            session->playForwards = true;
-        }
-
-        if (session->playBackwards)
-        {
-            playBackwards(false);
-            session->playBackwards = true;
-        }
-    }
-
     session = s;
 
     // update window title
@@ -338,7 +341,7 @@ void MainWindow::openProject()
         for (Camera* camera : s->userCameras)
             addCamera(camera);
 
-        setCurrentSession(s);
+        s->action->trigger();
 
         ui->stackedWidget->setCurrentWidget(session->projectSettings);
         ui->dockWidget_2->show();
