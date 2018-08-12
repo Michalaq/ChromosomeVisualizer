@@ -150,6 +150,10 @@ void MediaPanel::changeCamera(Camera* camera)
     ui->horizontalSlider->setSplineInterpolator(camera);
 }
 
+constexpr int rem(int a, int b) {
+    return (a % b + b) % b;
+}
+
 void MediaPanel::step()
 {
     int delta = (time.restart() * session->projectSettings->getFPS() + 500) / 1000;
@@ -165,8 +169,28 @@ void MediaPanel::step()
             session->setDocumentTime(next);
         else
         {
-            session->setDocumentTime(session->simulation->getFrameCount() - 1);
-            ui->play->click();
+            int frameCount = session->simulation->getFrameCount();
+
+            switch (session->playMode)
+            {
+            case Session::PM_Simple:
+                session->setDocumentTime(frameCount - 1);
+                ui->play->click();
+                break;
+            case Session::PM_Cycle:
+                session->setDocumentTime(rem(next, frameCount));
+                break;
+            case Session::PM_PingPong:
+                next = rem(next, 2 * frameCount - 2);
+                if (next >= frameCount)
+                {
+                    session->setDocumentTime(2 * frameCount - 2 - next);
+                    ui->reverse->click();
+                }
+                else
+                    session->setDocumentTime(next);
+                break;
+            }
         }
     }
     else
@@ -175,8 +199,28 @@ void MediaPanel::step()
             session->setDocumentTime(next);
         else
         {
-            session->setDocumentTime(0);
-            ui->reverse->click();
+            int frameCount = session->simulation->getFrameCount();
+
+            switch (session->playMode)
+            {
+            case Session::PM_Simple:
+                session->setDocumentTime(0);
+                ui->reverse->click();
+                break;
+            case Session::PM_Cycle:
+                session->setDocumentTime(rem(next, frameCount));
+                break;
+            case Session::PM_PingPong:
+                next = rem(next, 2 * frameCount - 2);
+                if (next >= frameCount)
+                    session->setDocumentTime(2 * frameCount - 2 - next);
+                else
+                {
+                    session->setDocumentTime(next);
+                    ui->play->click();
+                }
+                break;
+            }
         }
     }
 }
