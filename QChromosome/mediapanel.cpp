@@ -28,6 +28,9 @@ MediaPanel::MediaPanel(Session* s, MainWindow* w, QWidget *parent) :
     connect(ui->spinBox_3, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setMaximumTime);
     connect(ui->horizontalSlider_2, &RangeSlider::lowerBoundChanged, session, &Session::setPreviewMinTime);
     connect(ui->horizontalSlider_2, &RangeSlider::upperBoundChanged, session, &Session::setPreviewMaxTime);
+
+    connect(ui->horizontalSlider, &QAbstractSlider::sliderPressed, this, &MediaPanel::pause);
+    connect(ui->horizontalSlider, &QAbstractSlider::sliderReleased, this, &MediaPanel::resume);
 }
 
 MediaPanel::~MediaPanel()
@@ -52,11 +55,10 @@ void MediaPanel::playForwards(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        time.restart();
-        timer.start();
+        resume();
     }
     else
-        timer.stop();
+        pause();
 
     ui->play->setChecked(checked);
 }
@@ -68,11 +70,10 @@ void MediaPanel::playBackwards(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        time.restart();
-        timer.start();
+        resume();
     }
     else
-        timer.stop();
+        pause();
 
     ui->reverse->setChecked(checked);
 }
@@ -144,6 +145,20 @@ void MediaPanel::setLastFrame(int time)
 void MediaPanel::changeCamera(Camera* camera)
 {
     ui->horizontalSlider->setSplineInterpolator(camera);
+}
+
+void MediaPanel::pause()
+{
+    timer.stop();
+}
+
+void MediaPanel::resume()
+{
+    if (session->playForwards || session->playBackwards)
+    {
+        time.restart();
+        timer.start();
+    }
 }
 
 constexpr int rem(int a, int b) {

@@ -43,6 +43,9 @@ public:
 
     void changeCamera(Camera* camera);
 
+    void pause();
+    void resume();
+
 private:
     Ui::MediaPanel *ui;
     Session* session;

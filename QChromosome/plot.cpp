@@ -64,13 +64,27 @@ void Plot::setMaximum(int m)
 void Plot::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20));
+    {
+        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20);
+        setValue(sv);
+        emit sliderPressed();
+    }
 }
 
 void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
-        setValue(style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20));
+    {
+        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20);
+        setValue(sv);
+        emit sliderMoved(sv);
+    }
+}
+
+void Plot::mouseReleaseEvent(QMouseEvent *event)
+{
+    SoftSlider::mouseReleaseEvent(event);
+    emit sliderReleased();
 }
 
 void Plot::addLegend(const QString &fname)

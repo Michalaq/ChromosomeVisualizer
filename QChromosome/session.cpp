@@ -58,6 +58,9 @@ Session::Session(MainWindow* w) :
 
     action->setText(projectSettings->getFileName());
     action->setCheckable(true);
+
+    connect(plot, &QAbstractSlider::sliderPressed, mediaPanel, &MediaPanel::pause);
+    connect(plot, &QAbstractSlider::sliderReleased, mediaPanel, &MediaPanel::resume);
 }
 
 Session::~Session()

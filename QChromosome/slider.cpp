@@ -51,7 +51,10 @@ void Slider::mousePressEvent(QMouseEvent *event)
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
     if (movemarker)
+    {
         setValue(sv);
+        emit sliderPressed();
+    }
     else
         if (interpolator)
         {
@@ -65,7 +68,10 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
     if (movemarker)
+    {
         setValue(sv);
+        emit sliderMoved(sv);
+    }
     else
         if (interpolator)
         {
@@ -79,7 +85,10 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
     if (movemarker)
+    {
         setValue(sv);
+        emit sliderReleased();
+    }
     else
         if (interpolator)
             interpolator->adjustKeys(sv - lastValue);
