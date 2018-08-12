@@ -162,63 +162,77 @@ void MediaPanel::step()
 
     if (direction == 1)
     {
-        bool ok;
-        session->simulation->getFrame(next, &ok);
+        int maxTime = session->projectSettings->getMaximumTime();
 
-        if (ok)
+        if (next <= maxTime)
             session->setDocumentTime(next);
         else
         {
-            int frameCount = session->simulation->getFrameCount();
+            if (maxTime == ui->spinBox->maximum())
+            {
+                bool ok;
+                session->simulation->getFrame(next, &ok);
+
+                if (ok)
+                    return session->setDocumentTime(next);
+                else
+                    maxTime = session->simulation->getFrameCount() - 1;
+            }
+
+            int minTime = session->projectSettings->getMinimumTime();
+            int frameCount = maxTime - minTime + 1;
 
             switch (session->playMode)
             {
             case Session::PM_Simple:
-                session->setDocumentTime(frameCount - 1);
+                session->setDocumentTime(maxTime);
                 ui->play->click();
                 break;
             case Session::PM_Cycle:
-                session->setDocumentTime(rem(next, frameCount));
+                session->setDocumentTime(minTime + rem(next - minTime, frameCount));
                 break;
             case Session::PM_PingPong:
-                next = rem(next, 2 * frameCount - 2);
+                next = rem(next - minTime, 2 * frameCount - 2);
                 if (next >= frameCount)
                 {
-                    session->setDocumentTime(2 * frameCount - 2 - next);
+                    session->setDocumentTime(minTime + 2 * frameCount - 2 - next);
                     ui->reverse->click();
                 }
                 else
-                    session->setDocumentTime(next);
+                    session->setDocumentTime(minTime + next);
                 break;
             }
         }
     }
     else
     {
-        if (next > 0)
+        int minTime = session->projectSettings->getMinimumTime();
+
+        if (next >= minTime)
             session->setDocumentTime(next);
         else
         {
-            int frameCount = session->simulation->getFrameCount();
+            int maxTime = session->projectSettings->getMaximumTime();
+            int frameCount = maxTime - minTime + 1;
 
             switch (session->playMode)
             {
             case Session::PM_Simple:
-                session->setDocumentTime(0);
+                session->setDocumentTime(minTime);
                 ui->reverse->click();
                 break;
             case Session::PM_Cycle:
-                session->setDocumentTime(rem(next, frameCount));
+                session->setDocumentTime(minTime + rem(next - minTime, frameCount));
                 break;
             case Session::PM_PingPong:
-                next = rem(next, 2 * frameCount - 2);
+                next = rem(next - minTime, 2 * frameCount - 2);
                 if (next >= frameCount)
-                    session->setDocumentTime(2 * frameCount - 2 - next);
-                else
                 {
-                    session->setDocumentTime(next);
+                    session->setDocumentTime(minTime + 2 * frameCount - 2 - next);
                     ui->play->click();
                 }
+                else
+                    session->setDocumentTime(minTime + next);
                 break;
             }
         }
