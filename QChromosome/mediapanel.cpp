@@ -52,9 +52,7 @@ void MediaPanel::playForwards(bool checked)
         if (ui->reverse->isChecked())
             ui->reverse->click();
 
-        direction = +1;
         time.restart();
-
         timer.start();
     }
     else
@@ -70,9 +68,7 @@ void MediaPanel::playBackwards(bool checked)
         if (ui->play->isChecked())
             ui->play->click();
 
-        direction = -1;
         time.restart();
-
         timer.start();
     }
     else
@@ -158,9 +154,9 @@ void MediaPanel::step()
 {
     int delta = (time.restart() * session->projectSettings->getFPS() + 500) / 1000;
     int time = session->projectSettings->getDocumentTime();
-    int next = time + direction * delta;
+    int next = time + (session->playForwards ? delta : -delta);
 
-    if (direction == 1)
+    if (session->playForwards)
     {
         int maxTime = session->previewRange ? session->projectSettings->getPreviewMaxTime() : session->projectSettings->getMaximumTime();
 

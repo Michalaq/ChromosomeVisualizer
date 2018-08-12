@@ -50,8 +50,6 @@ private:
     QTimer timer;
     QTime time;
 
-    int direction;
-
     void step();
 };
 
