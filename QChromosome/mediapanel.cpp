@@ -162,7 +162,7 @@ void MediaPanel::step()
 
     if (direction == 1)
     {
-        int maxTime = session->projectSettings->getMaximumTime();
+        int maxTime = session->previewRange ? session->projectSettings->getPreviewMaxTime() : session->projectSettings->getMaximumTime();
 
         if (next <= maxTime)
             session->setDocumentTime(next);
@@ -179,7 +179,7 @@ void MediaPanel::step()
                     maxTime = session->simulation->getFrameCount() - 1;
             }
 
-            int minTime = session->projectSettings->getMinimumTime();
+            int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
             int frameCount = maxTime - minTime + 1;
 
             switch (session->playMode)
@@ -206,13 +206,13 @@ void MediaPanel::step()
     }
     else
     {
-        int minTime = session->projectSettings->getMinimumTime();
+        int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
 
         if (next >= minTime)
             session->setDocumentTime(next);
         else
         {
-            int maxTime = session->projectSettings->getMaximumTime();
+            int maxTime = session->previewRange ? session->projectSettings->getPreviewMaxTime() : session->projectSettings->getMaximumTime();
             int frameCount = maxTime - minTime + 1;
 
             switch (session->playMode)
