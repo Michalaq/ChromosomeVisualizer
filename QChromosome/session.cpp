@@ -24,7 +24,6 @@ Session::Session(MainWindow* w) :
     lastFrame(0)
 {
     treeView->setMouseTracking(true);
-    treeView->setFocusPolicy(Qt::NoFocus);
     treeView->setAcceptDrops(true);
     treeView->setAlternatingRowColors(true);
     treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);

@@ -55,7 +55,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
         auto index = indexAt(event->pos());
         int n;
 
-        switch (index.column())
+        switch (focusedColumn = index.column())
         {
         case 3:
             if (event->pos().x() < visualRect(index).center().x() + 4)
@@ -88,7 +88,7 @@ void TreeView::mousePressEvent(QMouseEvent *event)
         case 5:
             state = DragTag;
 
-            n = (event->x() - visualRect(index).x()) / 20;
+            n = (event->x() - visualRect(index).x()) / 24;
 
             model()->setData(selectedTag, -1, Qt::UserRole + 1);
             selectedTag = QModelIndex();
@@ -218,8 +218,17 @@ void TreeView::keyPressEvent(QKeyEvent *event)
 
     if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace)
     {
-        for (auto i : selectionModel()->selectedRows())
-            model()->removeRow(i.row(), i.parent());
+        switch (focusedColumn)
+        {
+        case 0:
+            for (auto i : selectionModel()->selectedRows())
+                model()->removeRow(i.row(), i.parent());
+            break;
+        case 5:
+            if (selectedTag.isValid())
+                takeSelectedMaterial();
+            break;
+        }
     }
 }
 
@@ -297,14 +306,6 @@ void TreeView::dropEvent(QDropEvent *event)
     model()->setData(selectedTag = index, n, Qt::UserRole + 1);
 
     update();
-}
-
-bool TreeView::event(QEvent *event)
-{
-    if (event->type() == QEvent::ShortcutOverride && ((QKeyEvent*)event)->key() == Qt::Key_Delete && selectedTag.isValid())
-        takeSelectedMaterial();
-
-    return QTreeView::event(event);
 }
 
 QPersistentModelIndex TreeView::pick(const QPoint& pos)

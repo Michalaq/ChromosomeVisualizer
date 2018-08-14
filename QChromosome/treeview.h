@@ -37,8 +37,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    bool event(QEvent *event);
-
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
@@ -61,6 +59,8 @@ private:
     QPersistentModelIndex selectedTag;
 
     bool clicked = false;
+
+    int focusedColumn = -1;
 };
 
 class HeaderView : public QHeaderView
