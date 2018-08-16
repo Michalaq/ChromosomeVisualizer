@@ -20,6 +20,61 @@ QWidget {
 	font-family: Roboto;
 }
 
+QMenuBar {
+	background: #f2f2f2;
+	border: none;
+	color: black;
+	height: 25px;
+}
+
+QMenuBar::item
+{
+	margin: 0px;
+	padding-left: 6px;
+	padding-right: 6px;
+}
+
+QMenuBar::item:selected {
+	border: none;
+	padding-top: -1px;
+}
+
+QMenu {
+	background: #f2f2f2;
+	border: 1px solid #cccccc;
+	color: black;
+}
+
+QMenu::item {
+	width: 300px;
+	height: 25px;
+	margin: 0px;
+	padding-left: 27px;
+	padding-right: 24px;
+}
+
+QMenu::item:selected {
+	background: #3daee9;
+	color: white;
+}
+
+QMenu::icon {
+	min-width: 24px;
+	min-height: 24px;
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	left: 1px;
+}
+
+QMenu::separator {
+	height: 1px;
+	background: #cccccc;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}	
+
 QStatusBar {
 	background: #672178;
 	color: white;
@@ -407,7 +462,7 @@ Label {
      <x>0</x>
      <y>0</y>
      <width>848</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
