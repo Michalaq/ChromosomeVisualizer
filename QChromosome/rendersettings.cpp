@@ -26,7 +26,7 @@ public:
 };
 
 RenderSettings::RenderSettings(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::RenderSettings)
 {
     ui->setupUi(this);

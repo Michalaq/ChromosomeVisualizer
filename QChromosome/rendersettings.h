@@ -1,14 +1,14 @@
 #ifndef RENDERSETTINGS_H
 #define RENDERSETTINGS_H
 
-#include <QWidget>
+#include <QMainWindow>
 
 namespace Ui
 {
     class RenderSettings;
 }
 
-class RenderSettings : public QWidget
+class RenderSettings : public QMainWindow
 {
     Q_OBJECT
 public:
