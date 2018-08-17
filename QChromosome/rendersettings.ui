@@ -392,6 +392,166 @@ padding-left: 10px;
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Output</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="1" column="1">
+        <widget class="DoubleSpinBox" name="doubleSpinBox_4"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="ComboBox" name="comboBox_3">
+         <item>
+          <property name="text">
+           <string>Pixels</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>cm</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>mm</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Inches</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Points</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Picas</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="Label" name="label_36">
+         <property name="text">
+          <string>Height</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>item</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="DoubleSpinBox" name="doubleSpinBox_6"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="DoubleSpinBox" name="doubleSpinBox_5"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="Label" name="label_37">
+         <property name="text">
+          <string>Lock ratio</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>item</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="checkBox_5"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="Label" name="label_38">
+         <property name="text">
+          <string>Resolution</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>item</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="ComboBox" name="comboBox_4">
+         <item>
+          <property name="text">
+           <string>Pixels/cm</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Pixels/Inch (DPI)</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_39">
+         <property name="text">
+          <string>Image resolution:</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>item</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="Label" name="label_35">
+         <property name="text">
+          <string>Width</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>item</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QLabel" name="label_40">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="3">
+        <widget class="QLabel" name="label_34">
+         <property name="text">
+          <string>Image File Output</string>
+         </property>
+         <property name="class" stdset="0">
+          <string>section</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="6" column="0">
+        <spacer name="verticalSpacer_7">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>90</width>
+           <height>343</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tabSave">
       <attribute name="title">
        <string>General</string>
@@ -1344,6 +1504,21 @@ padding-left: 10px;
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>DoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
   </customwidget>
   <customwidget>
    <class>FileEdit</class>
