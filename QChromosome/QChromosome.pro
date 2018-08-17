@@ -66,7 +66,8 @@ SOURCES += \
     statusbar.cpp \
     fontcombobox.cpp \
     session.cpp \
-    mediapanel.cpp
+    mediapanel.cpp \
+    customstyle.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -145,7 +146,8 @@ HEADERS += \
     fontcombobox.h \
     session.h \
     glbuffer.h \
-    mediapanel.h
+    mediapanel.h \
+    customstyle.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
