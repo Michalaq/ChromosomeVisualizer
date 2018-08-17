@@ -427,6 +427,9 @@ padding-left: 10px;
          </item>
          <item row="1" column="2">
           <widget class="ComboBox" name="comboBox_3">
+           <property name="currentIndex">
+            <number>-1</number>
+           </property>
            <item>
             <property name="text">
              <string>Pixels</string>
@@ -470,7 +473,14 @@ padding-left: 10px;
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="DoubleSpinBox" name="doubleSpinBox_6"/>
+          <widget class="DoubleSpinBox" name="doubleSpinBox_6">
+           <property name="minimum">
+            <double>1.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>100000.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
           <widget class="DoubleSpinBox" name="doubleSpinBox_5"/>
@@ -501,7 +511,7 @@ padding-left: 10px;
          <item row="4" column="2">
           <widget class="ComboBox" name="comboBox_4">
            <property name="currentIndex">
-            <number>1</number>
+            <number>-1</number>
            </property>
            <item>
             <property name="text">

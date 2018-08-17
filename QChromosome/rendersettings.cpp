@@ -25,6 +25,12 @@ public:
     }
 };
 
+// conversion from different units to points
+static const QMap<QString, qreal> unit2pt({{"cm", 28.3464567}, {"mm", 2.83464567}, {"Inches", 72}, {"Points", 1}, {"Picas", 12}, {"Pixels/cm", 28.3464567}, {"Pixels/Inch (DPI)", 72}});
+
+// maximal output resolution
+static const double dim_max = 16000;
+
 RenderSettings::RenderSettings(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RenderSettings)
@@ -34,6 +40,82 @@ RenderSettings::RenderSettings(QWidget *parent) :
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 
+    // width
+    connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        if (ui->checkBox_5->isChecked())
+            ui->doubleSpinBox_5->setValue(value / aspectRatio, false);
+        else
+            emit aspectRatioChanged(aspectRatio = value / ui->doubleSpinBox_5->value());
+
+        resolution.setWidth(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+    });
+
+    // height
+    connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        if (ui->checkBox_5->isChecked())
+            ui->doubleSpinBox_4->setValue(value * aspectRatio, false);
+        else
+            emit aspectRatioChanged(aspectRatio = ui->doubleSpinBox_4->value() / value);
+
+        resolution.setHeight(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+    });
+
+    // resolution
+    connect(ui->doubleSpinBox_6, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        if (ui->comboBox_3->currentText() == "Pixels")
+            widthUnit = resolutionUnit / value;
+
+        double multiplier = value * widthUnit / resolutionUnit;
+
+        ui->doubleSpinBox_4->setMaximum(dim_max / multiplier);
+        ui->doubleSpinBox_5->setMaximum(dim_max / multiplier);
+
+        resolution = QSize(qRound(ui->doubleSpinBox_4->value() * multiplier), qRound(ui->doubleSpinBox_5->value() * multiplier));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+    });
+
+    // width units
+    connect(ui->comboBox_3, &ComboBox::currentTextChanged, [this](const QString& value) {
+        double oldWidthUnit = widthUnit;
+        widthUnit = value == "Pixels" ? resolutionUnit / ui->doubleSpinBox_6->value() : unit2pt[value];
+
+        bool bw = ui->doubleSpinBox_4->blockSignals(true);
+        bool bh = ui->doubleSpinBox_5->blockSignals(true);
+
+        double w = ui->doubleSpinBox_4->value();
+        double h = ui->doubleSpinBox_5->value();
+
+        double multiplier = ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit;
+
+        ui->doubleSpinBox_4->setMaximum(dim_max / multiplier);
+        ui->doubleSpinBox_5->setMaximum(dim_max / multiplier);
+
+        multiplier = widthUnit / oldWidthUnit;
+
+        ui->doubleSpinBox_4->setValue(w / multiplier);
+        ui->doubleSpinBox_5->setValue(h / multiplier);
+
+        ui->doubleSpinBox_4->blockSignals(bw);
+        ui->doubleSpinBox_5->blockSignals(bh);
+    });
+
+    // resolution unit
+    connect(ui->comboBox_4, &ComboBox::currentTextChanged, [this](const QString& value) {
+        double oldResolutionUnit = resolutionUnit;
+        resolutionUnit = unit2pt[value];
+
+        ui->doubleSpinBox_6->setValue(ui->doubleSpinBox_6->value() * resolutionUnit / oldResolutionUnit);
+    });
+
+    ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
+    ui->comboBox_3->setCurrentText("Pixels");
+    ui->doubleSpinBox_4->setValue(320);
+    ui->doubleSpinBox_5->setValue(240);
+    ui->doubleSpinBox_6->setValue(72);
+
+    //TODO
     units = { {"px", 72}, {"cm", 2.54}, {"mm", 25.4}, {"in", 1}, {"pt", 72}, {"pc", 6} };
 
     aspectRatio = ui->doubleSpinBox->value() / ui->doubleSpinBox_2->value();
@@ -97,6 +179,7 @@ RenderSettings::RenderSettings(QWidget *parent) :
         if (c) ui->checkBox_4->setChecked(false);
         ui->checkBox_4->setDisabled(c);
     });
+    //TODO
 }
 
 RenderSettings::~RenderSettings()
@@ -109,6 +192,7 @@ RenderSettings* RenderSettings::getInstance()
     return instance ? instance : instance = new RenderSettings();
 }
 
+//TODO
 QSize RenderSettings::outputSize() const
 {
     return outSize;
@@ -233,6 +317,7 @@ QString RenderSettings::POVfileName() const
 {
     return ui->lineEdit_3->text();
 }
+//TODO
 
 #include <QMetaMethod>
 
@@ -242,6 +327,7 @@ void RenderSettings::connectNotify(const QMetaMethod &signal)
         emit aspectRatioChanged(aspectRatio);
 }
 
+//TODO
 void RenderSettings::updateOutputSize()
 {
     const qreal multiplier = units["px"] / units[currentUnit];
@@ -250,3 +336,4 @@ void RenderSettings::updateOutputSize()
 
     ui->label_7->setText(QString("%1 x %2 px").arg(QString::number(outSize.width()), QString::number(outSize.height())));
 }
+//TODO

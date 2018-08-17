@@ -15,6 +15,7 @@ public:
     static RenderSettings* getInstance();
     ~RenderSettings();
 
+    //TODO
     /* Output */
     QSize outputSize() const; //px
 
@@ -84,6 +85,7 @@ public:
     bool render() const;
     bool exportPOV() const;
     QString POVfileName() const;
+    //TODO
 
 protected:
     void connectNotify(const QMetaMethod& signal);
@@ -95,6 +97,13 @@ private:
     Ui::RenderSettings *ui;
 
     qreal aspectRatio;
+    QSize resolution;
+
+    qreal widthUnit;
+    qreal resolutionUnit;
+
+    //TODO
+
     QString currentUnit;
     QString currentResolutionUnit;
 
@@ -104,9 +113,10 @@ private:
     QHash<QString, qreal> units;
 
     void updateOutputSize();
+    //TODO
 
 signals:
-    void aspectRatioChanged(qreal ar);
+    void aspectRatioChanged(qreal);
 
 public slots:
 
