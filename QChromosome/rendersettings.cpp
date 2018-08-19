@@ -47,8 +47,8 @@ RenderSettings::RenderSettings(QWidget *parent) :
         else
             emit aspectRatioChanged(aspectRatio = value / ui->doubleSpinBox_5->value());
 
-        resolution.setWidth(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
-        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+        imageResolution.setWidth(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(imageResolution.width()).arg(imageResolution.height()));
     });
 
     // height
@@ -58,12 +58,14 @@ RenderSettings::RenderSettings(QWidget *parent) :
         else
             emit aspectRatioChanged(aspectRatio = ui->doubleSpinBox_4->value() / value);
 
-        resolution.setHeight(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
-        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+        imageResolution.setHeight(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(imageResolution.width()).arg(imageResolution.height()));
     });
 
     // resolution
     connect(ui->doubleSpinBox_6, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        resolution = value;
+
         if (ui->comboBox_3->currentText() == "Pixels")
             widthUnit = resolutionUnit / value;
 
@@ -72,41 +74,30 @@ RenderSettings::RenderSettings(QWidget *parent) :
         ui->doubleSpinBox_4->setMaximum(dim_max / multiplier);
         ui->doubleSpinBox_5->setMaximum(dim_max / multiplier);
 
-        resolution = QSize(qRound(ui->doubleSpinBox_4->value() * multiplier), qRound(ui->doubleSpinBox_5->value() * multiplier));
-        ui->label_40->setText(QString("%1 x %2 Pixel").arg(resolution.width()).arg(resolution.height()));
+        imageResolution = QSize(qRound(ui->doubleSpinBox_4->value() * multiplier), qRound(ui->doubleSpinBox_5->value() * multiplier));
+        ui->label_40->setText(QString("%1 x %2 Pixel").arg(imageResolution.width()).arg(imageResolution.height()));
     });
 
     // width units
     connect(ui->comboBox_3, &ComboBox::currentTextChanged, [this](const QString& value) {
-        double oldWidthUnit = widthUnit;
         widthUnit = value == "Pixels" ? resolutionUnit / ui->doubleSpinBox_6->value() : unit2pt[value];
-
-        bool bw = ui->doubleSpinBox_4->blockSignals(true);
-        bool bh = ui->doubleSpinBox_5->blockSignals(true);
-
-        double w = ui->doubleSpinBox_4->value();
-        double h = ui->doubleSpinBox_5->value();
 
         double multiplier = ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit;
 
-        ui->doubleSpinBox_4->setMaximum(dim_max / multiplier);
-        ui->doubleSpinBox_5->setMaximum(dim_max / multiplier);
+        ui->doubleSpinBox_4->setMaximum(dim_max / multiplier, false);
+        ui->doubleSpinBox_5->setMaximum(dim_max / multiplier, false);
 
-        multiplier = widthUnit / oldWidthUnit;
-
-        ui->doubleSpinBox_4->setValue(w / multiplier);
-        ui->doubleSpinBox_5->setValue(h / multiplier);
-
-        ui->doubleSpinBox_4->blockSignals(bw);
-        ui->doubleSpinBox_5->blockSignals(bh);
+        ui->doubleSpinBox_4->setValue(imageResolution.width() / multiplier, false);
+        ui->doubleSpinBox_5->setValue(imageResolution.height() / multiplier, false);
     });
 
     // resolution unit
     connect(ui->comboBox_4, &ComboBox::currentTextChanged, [this](const QString& value) {
-        double oldResolutionUnit = resolutionUnit;
+        resolution /= resolutionUnit;
         resolutionUnit = unit2pt[value];
+        resolution *= resolutionUnit;
 
-        ui->doubleSpinBox_6->setValue(ui->doubleSpinBox_6->value() * resolutionUnit / oldResolutionUnit);
+        ui->doubleSpinBox_6->setValue(resolution, false);
     });
 
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");

@@ -96,14 +96,15 @@ private:
 
     Ui::RenderSettings *ui;
 
-    qreal aspectRatio;
-    QSize resolution;
+    qreal resolution;
+    QSize imageResolution;
 
     qreal widthUnit;
     qreal resolutionUnit;
 
-    //TODO
+    qreal aspectRatio;
 
+    //TODO
     QString currentUnit;
     QString currentResolutionUnit;
 

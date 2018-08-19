@@ -26,6 +26,8 @@ public:
     void setMultipleValues();
     void setSuffix(const QString& suffix);
 
+    void setMaximum(double max, bool spontaneous = true);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
