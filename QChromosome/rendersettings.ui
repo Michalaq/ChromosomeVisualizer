@@ -273,6 +273,10 @@ Label {
 
 .item {
 	min-height: 30px;
+}
+
+QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
+	color: #4d4d4d;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -422,8 +426,65 @@ padding-left: 10px;
          <property name="bottomMargin">
           <number>18</number>
          </property>
+         <item row="13" column="0">
+          <widget class="Label" name="label_46">
+           <property name="text">
+            <string>Frame step</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="DoubleSpinBox" name="doubleSpinBox_5">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="DoubleSpinBox" name="doubleSpinBox_7">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>0.001000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>1000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="15" column="0">
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>90</width>
+             <height>343</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="10" column="0">
+          <widget class="Label" name="label_43">
+           <property name="text">
+            <string>Frame range</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
-          <widget class="DoubleSpinBox" name="doubleSpinBox_4"/>
+          <widget class="DoubleSpinBox" name="doubleSpinBox_4">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="1" column="2">
           <widget class="ComboBox" name="comboBox_3">
@@ -474,6 +535,9 @@ padding-left: 10px;
          </item>
          <item row="4" column="1">
           <widget class="DoubleSpinBox" name="doubleSpinBox_6">
+           <property name="decimals">
+            <number>3</number>
+           </property>
            <property name="minimum">
             <double>1.000000000000000</double>
            </property>
@@ -482,8 +546,8 @@ padding-left: 10px;
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="DoubleSpinBox" name="doubleSpinBox_5"/>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="checkBox_5"/>
          </item>
          <item row="3" column="0">
           <widget class="Label" name="label_37">
@@ -494,9 +558,6 @@ padding-left: 10px;
             <string>item</string>
            </property>
           </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QCheckBox" name="checkBox_5"/>
          </item>
          <item row="4" column="0">
           <widget class="Label" name="label_38">
@@ -575,18 +636,140 @@ padding-left: 10px;
            </property>
           </spacer>
          </item>
-         <item row="6" column="0">
-          <spacer name="verticalSpacer_7">
+         <item row="12" column="0">
+          <widget class="Label" name="label_45">
+           <property name="text">
+            <string>To</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="Label" name="label_41">
+           <property name="text">
+            <string>Film aspect</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1" colspan="2">
+          <widget class="ComboBox" name="comboBox_5">
+           <item>
+            <property name="text">
+             <string>Manual</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Current frame</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>All frames</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Preview range</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="11" column="0">
+          <widget class="Label" name="label_44">
+           <property name="text">
+            <string>From</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0">
+          <widget class="Label" name="label_42">
+           <property name="text">
+            <string>Frame rate</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="SpinBox" name="spinBox_3">
+           <property name="suffix">
+            <string> F</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1">
+          <widget class="SpinBox" name="spinBox_4">
+           <property name="suffix">
+            <string> F</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="SpinBox" name="spinBox_2">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>500</number>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="4">
+          <widget class="Line" name="line_2">
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>90</width>
-             <height>343</height>
-            </size>
+          </widget>
+         </item>
+         <item row="13" column="1">
+          <widget class="SpinBox" name="spinBox_5">
+           <property name="minimum">
+            <number>1</number>
            </property>
-          </spacer>
+           <property name="maximum">
+            <number>1000000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="4">
+          <widget class="Line" name="line">
+           <property name="frameShadow">
+            <enum>QFrame::Plain</enum>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0">
+          <widget class="QLabel" name="label_47">
+           <property name="text">
+            <string>Frames:</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="1">
+          <widget class="QLabel" name="label_48">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1564,6 +1747,11 @@ padding-left: 10px;
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>
