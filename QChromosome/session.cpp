@@ -4,6 +4,7 @@ Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
+    renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
     origin(0, 0, 0),
@@ -70,6 +71,9 @@ Session::~Session()
     delete treeView;
     delete projectSettings;
     delete viewport;
+    delete mediaPanel;
+    delete plot;
+    delete renderSettings;
     delete nd;
     delete vd;
     delete td;

@@ -279,6 +279,9 @@ Session* MainWindow::makeSession()
 
     connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
+    // add render settings to stack
+    renderSettings->addTabWidget(s->renderSettings);
+
     return s;
 }
 
@@ -330,6 +333,9 @@ void MainWindow::setCurrentSession(Session *s)
 
     // update plot
     ui->stackedWidget_5->setCurrentWidget(session->plot);
+
+    // update render settings
+    renderSettings->setSession(session);
 }
 
 void MainWindow::openProject()
@@ -582,7 +588,6 @@ void MainWindow::addCamera(Camera* camera)
 {
     connect(camera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(camera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         if (camera->hasSelection())
         {

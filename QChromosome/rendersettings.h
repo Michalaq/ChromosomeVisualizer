@@ -8,12 +8,18 @@ namespace Ui
     class RenderSettings;
 }
 
+class Session;
+class TabWidget;
+
 class RenderSettings : public QMainWindow
 {
     Q_OBJECT
 public:
     static RenderSettings* getInstance();
     ~RenderSettings();
+
+    void addTabWidget(TabWidget* tabWidget);
+    void setSession(Session* session);
 
     //TODO
     /* Output */
@@ -95,12 +101,6 @@ private:
     static RenderSettings *instance;
 
     Ui::RenderSettings *ui;
-
-    qreal resolution;
-    QSize imageResolution;
-
-    qreal widthUnit;
-    qreal resolutionUnit;
 
     //TODO
     qreal aspectRatio;

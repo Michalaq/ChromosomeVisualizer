@@ -43,6 +43,8 @@ Camera::Camera(Session *s, QWidget *parent)
             break;
         };
     });
+
+    connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
 }
 
 Camera::Camera(const Camera& camera)
@@ -81,6 +83,8 @@ Camera::Camera(const Camera& camera)
     });
 
     session->cameraBuffer[id] = session->cameraBuffer[camera.id];
+
+    connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
 }
 
 Camera::~Camera()

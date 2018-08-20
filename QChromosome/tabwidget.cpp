@@ -29,9 +29,10 @@ static const QMap<QString, qreal> unit2pt({{"cm", 28.3464567}, {"mm", 2.83464567
 // maximal output resolution
 static const double dim_max = 16000;
 
-TabWidget::TabWidget(QWidget *parent) :
+TabWidget::TabWidget(Session* s, QWidget *parent) :
     QTabWidget(parent),
-    ui(new Ui::TabWidget)
+    ui(new Ui::TabWidget),
+    session(s)
 {
     ui->setupUi(this);
 
@@ -120,4 +121,12 @@ TabWidget::TabWidget(QWidget *parent) :
 TabWidget::~TabWidget()
 {
     delete ui;
+}
+
+#include <QMetaMethod>
+
+void TabWidget::connectNotify(const QMetaMethod &signal)
+{
+    if (signal == QMetaMethod::fromSignal(&TabWidget::filmRatioChanged))
+        emit filmRatioChanged(ui->doubleSpinBox_7->value());
 }

@@ -17,6 +17,7 @@
 #include "materialbrowser.h"
 #include "mediapanel.h"
 #include "plot.h"
+#include "tabwidget.h"
 
 class MainWindow;
 
@@ -39,6 +40,8 @@ public:
     camera_data_t* cameraUniformBuffer;
 
     LabelAtlas labelAtlas;
+
+    TabWidget* renderSettings;
 
     Camera* editorCamera;
     Camera* currentCamera;
