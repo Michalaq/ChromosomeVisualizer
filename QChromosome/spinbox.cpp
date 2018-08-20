@@ -67,6 +67,22 @@ void SpinBox::setSuffix(const QString& suffix)
     QSpinBox::setSuffix(this->suffix = suffix);
 }
 
+void SpinBox::setMaximum(int max, bool spontaneous)
+{
+    if (value() > max)
+        setValue(max, spontaneous);
+
+    QSpinBox::setMaximum(max);
+}
+
+void SpinBox::setMinimum(int min, bool spontaneous)
+{
+    if (value() < min)
+        setValue(min, spontaneous);
+
+    QSpinBox::setMinimum(min);
+}
+
 #include <QStyle>
 
 void SpinBox::focusInEvent(QFocusEvent *event)

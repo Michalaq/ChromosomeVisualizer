@@ -41,6 +41,7 @@ public:
 
     LabelAtlas labelAtlas;
 
+    ProjectSettings* projectSettings;
     TabWidget* renderSettings;
 
     Camera* editorCamera;
@@ -51,7 +52,6 @@ public:
     TreeView* treeView;
     ListView* listView;
 
-    ProjectSettings* projectSettings;
     Viewport* viewport;
 
     MediaPanel* mediaPanel;

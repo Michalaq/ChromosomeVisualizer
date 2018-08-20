@@ -29,6 +29,8 @@ static const QMap<QString, qreal> unit2pt({{"cm", 28.3464567}, {"mm", 2.83464567
 // maximal output resolution
 static const double dim_max = 16000;
 
+#include "session.h"
+
 TabWidget::TabWidget(Session* s, QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TabWidget),
@@ -110,17 +112,65 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
         emit filmRatioChanged(value);
     });
 
+    // frame range
+    connect(ui->comboBox_5, &ComboBox::currentTextChanged, [this](const QString& value) {
+        if (value == "Current frame")
+            setDocumentTime(session->projectSettings->getDocumentTime());
+
+        if (value == "All frames")
+            setFrameRange(session->projectSettings->getMinimumTime(), session->projectSettings->getMaximumTime());
+
+        if (value == "Preview range")
+            setFrameRange(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime());
+    });
+
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
     ui->doubleSpinBox_4->setValue(320);
     ui->doubleSpinBox_5->setValue(240);
     ui->doubleSpinBox_6->setValue(72);
     ui->spinBox_2->setValue(30);
+    ui->comboBox_5->setCurrentText("Current frame");
 }
 
 TabWidget::~TabWidget()
 {
     delete ui;
+}
+
+void TabWidget::setDocumentTime(int time)
+{
+    if (ui->comboBox_5->currentText() == "Current frame")
+        setFrameRange(time, time);
+}
+
+void TabWidget::setMinimumTime(int time)
+{
+    if (ui->comboBox_5->currentText() == "All frames")
+        setFrameRange(time, session->projectSettings->getMaximumTime());
+}
+
+void TabWidget::setMaximumTime(int time)
+{
+    if (ui->comboBox_5->currentText() == "All frames")
+        setFrameRange(session->projectSettings->getMinimumTime(), time);
+}
+
+void TabWidget::setPreviewMinTime(int time)
+{
+    if (ui->comboBox_5->currentText() == "Preview range")
+        setFrameRange(time, session->projectSettings->getPreviewMaxTime());
+}
+
+void TabWidget::setPreviewMaxTime(int time)
+{
+    if (ui->comboBox_5->currentText() == "Preview range")
+        setFrameRange(session->projectSettings->getPreviewMinTime(), time);
+}
+
+void TabWidget::setLastFrame(int time)
+{
+    ui->spinBox_4->setMaximum(time);
 }
 
 #include <QMetaMethod>
@@ -129,4 +179,13 @@ void TabWidget::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&TabWidget::filmRatioChanged))
         emit filmRatioChanged(ui->doubleSpinBox_7->value());
+}
+
+void TabWidget::setFrameRange(int min, int max)
+{
+    ui->spinBox_3->setMaximum(max, false);
+    ui->spinBox_3->setValue(min, false);
+
+    ui->spinBox_4->setMinimum(min, false);
+    ui->spinBox_4->setValue(max, false);
 }

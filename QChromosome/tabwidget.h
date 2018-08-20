@@ -17,6 +17,13 @@ public:
     explicit TabWidget(Session* s, QWidget *parent = nullptr);
     ~TabWidget();
 
+    void setDocumentTime(int time);
+    void setMinimumTime(int time);
+    void setMaximumTime(int time);
+    void setPreviewMinTime(int time);
+    void setPreviewMaxTime(int time);
+    void setLastFrame(int time);
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
@@ -29,6 +36,8 @@ private:
 
     qreal widthUnit;
     qreal resolutionUnit;
+
+    void setFrameRange(int min, int max);
 
 signals:
     void filmRatioChanged(double);
