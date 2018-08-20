@@ -18,7 +18,7 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     diffuse(.6),
     phong(.0),
     phongSize(40),
-    metallic(0),
+    metallic(false),
     iridescence(.0),
     iridescenceThickness(.0),
     iridescenceTurbulence(.0)
@@ -114,6 +114,94 @@ int Material::getFinish() const
 void Material::setFinish(int f)
 {
     finish = f;
+    updateIcon();
+}
+
+double Material::getAmbient() const
+{
+    return ambient;
+}
+
+void Material::setAmbient(double a)
+{
+    ambient = a;
+    updateIcon();
+}
+
+double Material::getDiffuse() const
+{
+    return diffuse;
+}
+
+void Material::setDiffuse(double d)
+{
+    diffuse = d;
+    updateIcon();
+}
+
+double Material::getPhong() const
+{
+    return phong;
+}
+
+void Material::setPhong(double p)
+{
+    phong = p;
+    updateIcon();
+}
+
+int Material::getPhongSize() const
+{
+    return phongSize;
+}
+
+void Material::setPhongSize(int p)
+{
+    phongSize = p;
+    updateIcon();
+}
+
+bool Material::getMetallic() const
+{
+    return metallic;
+}
+
+void Material::setMetallic(bool m)
+{
+    metallic = m;
+    updateIcon();
+}
+
+double Material::getIridescence() const
+{
+    return iridescence;
+}
+
+void Material::setIridescence(double i)
+{
+    iridescence = i;
+    updateIcon();
+}
+
+double Material::getIridescenceThickness() const
+{
+    return iridescenceThickness;
+}
+
+void Material::setIridescenceThickness(double i)
+{
+    iridescenceThickness = i;
+    updateIcon();
+}
+
+double Material::getIridescenceTurbulence() const
+{
+    return iridescenceTurbulence;
+}
+
+void Material::setIridescenceTurbulence(double i)
+{
+    iridescenceTurbulence = i;
     updateIcon();
 }
 
@@ -281,7 +369,7 @@ QTextStream &Material::operator<<(QTextStream &stream) const
                << "  diffuse " << diffuse << "\n"
                << "  phong " << phong << "\n"
                << "  phong_size " << phongSize << "\n"
-               << "  metallic " << metallic << "\n"
+               << (metallic ? "  metallic\n" : "")
                << "  irid { " << iridescence << "\n"
                << "   thickness " << iridescenceThickness << "\n"
                << "   turbulence " << iridescenceTurbulence << "\n"

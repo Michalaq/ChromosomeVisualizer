@@ -106,7 +106,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>359</height>
+            <height>360</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -171,7 +171,7 @@
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="Label" name="label">
                <property name="text">
                 <string>Finish</string>
                </property>
@@ -205,180 +205,208 @@
             </layout>
            </item>
            <item>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="1" column="1">
-              <widget class="DoubleSpinBox" name="diffuseDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>0.600000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>Phong Size</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="DoubleSpinBox" name="iridThicknessDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.050000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="DoubleSpinBox" name="ambientDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>0.100000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_16">
-               <property name="text">
-                <string>Ambient</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_22">
-               <property name="text">
-                <string>Iridescence Thickness</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="DoubleSpinBox" name="iridDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.050000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_20">
-               <property name="text">
-                <string>Metallic</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Phong</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="SpinBox" name="phongSizeSpinBox">
-               <property name="maximum">
-                <number>250</number>
-               </property>
-               <property name="singleStep">
-                <number>10</number>
-               </property>
-               <property name="value">
-                <number>40</number>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_23">
-               <property name="text">
-                <string>Iridescence Turbulence</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label_21">
-               <property name="text">
-                <string>Iridescence</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="text">
-                <string>Diffuse</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="DoubleSpinBox" name="phongDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>0.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="SpinBox" name="metallicSpinBox">
-               <property name="maximum">
-                <number>1</number>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="1">
-              <widget class="DoubleSpinBox" name="iridTurbulenceDoubleSpinBox">
-               <property name="locale">
-                <locale language="C" country="AnyCountry"/>
-               </property>
-               <property name="maximum">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.050000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QWidget" name="widget_4" native="true">
+             <property name="styleSheet">
+              <string notr="true">#widget_4 {
+	border: 1px solid #4d4d4d;
+}
+</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="1" column="1">
+               <widget class="DoubleSpinBox" name="diffuseDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.600000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="Label" name="label_19">
+                <property name="text">
+                 <string>Phong Size</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="DoubleSpinBox" name="iridThicknessDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="DoubleSpinBox" name="ambientDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="Label" name="label_16">
+                <property name="text">
+                 <string>Ambient</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="Label" name="label_22">
+                <property name="text">
+                 <string>Iridescence Thickness</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="1">
+               <widget class="DoubleSpinBox" name="iridDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="Label" name="label_20">
+                <property name="text">
+                 <string>Metallic</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="Label" name="label_18">
+                <property name="text">
+                 <string>Phong</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="SpinBox" name="phongSizeSpinBox">
+                <property name="maximum">
+                 <number>250</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="value">
+                 <number>40</number>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="Label" name="label_23">
+                <property name="text">
+                 <string>Iridescence Turbulence</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="Label" name="label_21">
+                <property name="text">
+                 <string>Iridescence</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="Label" name="label_17">
+                <property name="text">
+                 <string>Diffuse</string>
+                </property>
+                <property name="class" stdset="0">
+                 <string>item</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="DoubleSpinBox" name="phongDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="DoubleSpinBox" name="iridTurbulenceDoubleSpinBox">
+                <property name="locale">
+                 <locale language="C" country="AnyCountry"/>
+                </property>
+                <property name="maximum">
+                 <double>1.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QCheckBox" name="metallicCheckBox"/>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_2">
@@ -423,7 +451,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
+            <width>362</width>
             <height>97</height>
            </rect>
           </property>
@@ -540,15 +568,15 @@
    <header>doublespinbox.h</header>
   </customwidget>
   <customwidget>
-   <class>SpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>spinbox.h</header>
-  </customwidget>
-  <customwidget>
    <class>Picker</class>
    <extends>QComboBox</extends>
    <header>picker.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
