@@ -67,7 +67,8 @@ SOURCES += \
     fontcombobox.cpp \
     session.cpp \
     mediapanel.cpp \
-    customstyle.cpp
+    customstyle.cpp \
+    tabwidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -147,7 +148,8 @@ HEADERS += \
     session.h \
     glbuffer.h \
     mediapanel.h \
-    customstyle.h
+    customstyle.h \
+    tabwidget.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -164,7 +166,8 @@ FORMS += mainwindow.ui \
     attributes.ui \
     cameraattributes.ui \
     importdialog.ui \
-    mediapanel.ui
+    mediapanel.ui \
+    tabwidget.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle
