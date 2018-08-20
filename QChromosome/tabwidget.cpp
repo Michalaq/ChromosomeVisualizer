@@ -124,6 +124,18 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
             setFrameRange(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime());
     });
 
+    // from
+    connect(ui->spinBox_3, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
+        ui->comboBox_5->setCurrentText("Manual");
+        ui->spinBox_4->setMinimum(value);
+    });
+
+    // to
+    connect(ui->spinBox_4, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
+        ui->comboBox_5->setCurrentText("Manual");
+        ui->spinBox_3->setMaximum(value);
+    });
+
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
     ui->doubleSpinBox_4->setValue(320);
