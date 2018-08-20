@@ -333,6 +333,7 @@ void Camera::setAspectRatio(qreal ar)
 {
     aspectRatio = ar;
     updateAngles();
+    update();
 }
 
 void Camera::lockCoordinates(bool x, bool y, bool z)

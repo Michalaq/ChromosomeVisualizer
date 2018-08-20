@@ -102,9 +102,8 @@ private:
     qreal widthUnit;
     qreal resolutionUnit;
 
-    qreal aspectRatio;
-
     //TODO
+    qreal aspectRatio;
     QString currentUnit;
     QString currentResolutionUnit;
 
@@ -117,7 +116,7 @@ private:
     //TODO
 
 signals:
-    void aspectRatioChanged(qreal);
+    void aspectRatioChanged(double);
 
 public slots:
 

@@ -43,9 +43,12 @@ RenderSettings::RenderSettings(QWidget *parent) :
     // width
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox_5->isChecked())
-            ui->doubleSpinBox_5->setValue(value / aspectRatio, false);
+            ui->doubleSpinBox_5->setValue(value / ui->doubleSpinBox_7->value(), false);
         else
-            emit aspectRatioChanged(aspectRatio = value / ui->doubleSpinBox_5->value());
+        {
+            ui->doubleSpinBox_7->setValue(value / ui->doubleSpinBox_5->value(), false);
+            emit aspectRatioChanged(ui->doubleSpinBox_7->value());
+        }
 
         imageResolution.setWidth(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
         ui->label_40->setText(QString("%1 x %2 Pixel").arg(imageResolution.width()).arg(imageResolution.height()));
@@ -54,9 +57,12 @@ RenderSettings::RenderSettings(QWidget *parent) :
     // height
     connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox_5->isChecked())
-            ui->doubleSpinBox_4->setValue(value * aspectRatio, false);
+            ui->doubleSpinBox_4->setValue(value * ui->doubleSpinBox_7->value(), false);
         else
-            emit aspectRatioChanged(aspectRatio = ui->doubleSpinBox_4->value() / value);
+        {
+            ui->doubleSpinBox_7->setValue(ui->doubleSpinBox_4->value() / value, false);
+            emit aspectRatioChanged(ui->doubleSpinBox_7->value());
+        }
 
         imageResolution.setHeight(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
         ui->label_40->setText(QString("%1 x %2 Pixel").arg(imageResolution.width()).arg(imageResolution.height()));
@@ -100,11 +106,18 @@ RenderSettings::RenderSettings(QWidget *parent) :
         ui->doubleSpinBox_6->setValue(resolution, false);
     });
 
+    // film aspect
+    connect(ui->doubleSpinBox_7, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        ui->doubleSpinBox_5->setValue(ui->doubleSpinBox_4->value() / value);
+        emit aspectRatioChanged(value);
+    });
+
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
     ui->doubleSpinBox_4->setValue(320);
     ui->doubleSpinBox_5->setValue(240);
     ui->doubleSpinBox_6->setValue(72);
+    ui->spinBox_2->setValue(30);
 
     //TODO
     units = { {"px", 72}, {"cm", 2.54}, {"mm", 25.4}, {"in", 1}, {"pt", 72}, {"pc", 6} };
