@@ -38,6 +38,7 @@ private:
     qreal resolutionUnit;
 
     void setFrameRange(int min, int max);
+    void updateFrames();
 
 signals:
     void filmRatioChanged(double);

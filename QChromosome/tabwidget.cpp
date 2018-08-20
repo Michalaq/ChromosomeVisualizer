@@ -112,6 +112,9 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
         emit filmRatioChanged(value);
     });
 
+    // frame rate
+    connect(ui->spinBox_2, QOverload<int>::of(&SpinBox::valueChanged), this, &TabWidget::updateFrames);
+
     // frame range
     connect(ui->comboBox_5, &ComboBox::currentTextChanged, [this](const QString& value) {
         if (value == "Current frame")
@@ -128,13 +131,18 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     connect(ui->spinBox_3, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
         ui->comboBox_5->setCurrentText("Manual");
         ui->spinBox_4->setMinimum(value);
+        updateFrames();
     });
 
     // to
     connect(ui->spinBox_4, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
         ui->comboBox_5->setCurrentText("Manual");
         ui->spinBox_3->setMaximum(value);
+        updateFrames();
     });
+
+    // step
+    connect(ui->spinBox_5, QOverload<int>::of(&SpinBox::valueChanged), this, &TabWidget::updateFrames);
 
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
@@ -200,4 +208,15 @@ void TabWidget::setFrameRange(int min, int max)
 
     ui->spinBox_4->setMinimum(min, false);
     ui->spinBox_4->setValue(max, false);
+
+    updateFrames();
+}
+
+void TabWidget::updateFrames()
+{
+    int first = ui->spinBox_3->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
+    int last = ui->spinBox_4->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
+    int step = ui->spinBox_5->value();
+
+    ui->label_48->setText(QString("%1 (from %2 to %3)").arg((last - first) / step + 1).arg(first).arg(last));
 }
