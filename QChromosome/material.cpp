@@ -13,7 +13,15 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     specularColor(sc),
     specularExponent(se),
     finish(0),
-    index(buffer.emplace_back())
+    index(buffer.emplace_back()),
+    ambient(.1),
+    diffuse(.6),
+    phong(.0),
+    phongSize(40),
+    metallic(0),
+    iridescence(.0),
+    iridescenceThickness(.0),
+    iridescenceTurbulence(.0)
 {
     color.setAlphaF(1. - t);
 
@@ -259,8 +267,6 @@ void Material::updateIcon()
 
 QTextStream &Material::operator<<(QTextStream &stream) const
 {
-    auto renderSettings = RenderSettings::getInstance();
-
     switch (finish)
     {
     case 0://custom
@@ -271,14 +277,14 @@ QTextStream &Material::operator<<(QTextStream &stream) const
                << "  transmit " << 1. - color.alphaF() * color.alphaF() << "\n"
                << " }\n"
                << " finish {\n"
-               << "  ambient " << renderSettings->ambient() << "\n"
-               << "  diffuse " << renderSettings->diffuse() << "\n"
-               << "  phong " << renderSettings->phong() << "\n"
-               << "  phong_size " << renderSettings->phongSize() << "\n"
-               << "  metallic " << renderSettings->metallic() << "\n"
-               << "  irid { " << renderSettings->iridescence() << "\n"
-               << "   thickness " << renderSettings->iridescenceThickness() << "\n"
-               << "   turbulence " << renderSettings->iridescenceTurbulence() << "\n"
+               << "  ambient " << ambient << "\n"
+               << "  diffuse " << diffuse << "\n"
+               << "  phong " << phong << "\n"
+               << "  phong_size " << phongSize << "\n"
+               << "  metallic " << metallic << "\n"
+               << "  irid { " << iridescence << "\n"
+               << "   thickness " << iridescenceThickness << "\n"
+               << "   turbulence " << iridescenceTurbulence << "\n"
                << "  }\n"
                << "  specular 1.0\n"
                << "  roughness 0.02\n"

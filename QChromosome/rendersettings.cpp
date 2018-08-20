@@ -176,46 +176,6 @@ bool RenderSettings::timestamp() const
     return ui->timestampCheckBox->isChecked();
 }
 
-QString RenderSettings::ambient() const
-{
-    return ui->ambientDoubleSpinBox->text();
-}
-
-QString RenderSettings::diffuse() const
-{
-    return ui->diffuseDoubleSpinBox->text();
-}
-
-QString RenderSettings::phong() const
-{
-    return ui->phongDoubleSpinBox->text();
-}
-
-QString RenderSettings::phongSize() const
-{
-    return ui->phongSizeSpinBox->text();
-}
-
-QString RenderSettings::metallic() const
-{
-    return ui->metallicSpinBox->text();
-}
-
-QString RenderSettings::iridescence() const
-{
-    return ui->iridDoubleSpinBox->text();
-}
-
-QString RenderSettings::iridescenceThickness() const
-{
-    return ui->iridThicknessDoubleSpinBox->text();
-}
-
-QString RenderSettings::iridescenceTurbulence() const
-{
-    return ui->iridTurbulenceDoubleSpinBox->text();
-}
-
 bool RenderSettings::cam360() const
 {
     return ui->cam360CheckBox->isChecked();

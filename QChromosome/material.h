@@ -91,6 +91,15 @@ private:
     int index;
     static GLBuffer<material_data_t> buffer;
     static QVector<const Material*> library;
+
+    double ambient;
+    double diffuse;
+    double phong;
+    int phongSize;
+    int metallic;
+    double iridescence;
+    double iridescenceThickness;
+    double iridescenceTurbulence;
 };
 
 QTextStream &operator<<(QTextStream &stream, const Material &mat);

@@ -52,30 +52,6 @@ public:
     /* Timestamp */
     bool timestamp() const;
 
-    /* Ambient */
-    QString ambient() const;
-
-    /* Diffuse */
-    QString diffuse() const;
-
-    /* Phong */
-    QString phong() const;
-
-    /* Phong Size */
-    QString phongSize() const;
-
-    /* Metallic */
-    QString metallic() const;
-
-    /* Iridescence */
-    QString iridescence() const;
-
-    /* Iridescence Thickness */
-    QString iridescenceThickness() const;
-
-    /* Iridescence Turbulence */
-    QString iridescenceTurbulence() const;
-
     /* 360 Degrees Camera  */
     bool cam360() const;
 
