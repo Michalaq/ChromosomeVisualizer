@@ -7,14 +7,17 @@
 class FileEdit : public LineEdit
 {
     Q_OBJECT
+    Q_PROPERTY(Type type WRITE setType)
+    Q_ENUMS(Type)
 public:
     explicit FileEdit(QWidget *parent = 0);
     ~FileEdit();
 
     enum Type
     {
-        FE_File,
-        FE_Directory
+        FE_ExistingDirectory,
+        FE_OpenFileName,
+        FE_SaveFileName
     };
 
     void setType(Type t);

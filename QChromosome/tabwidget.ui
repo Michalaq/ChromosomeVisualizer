@@ -548,9 +548,6 @@ QToolBox::tab:selected {
         </item>
         <item row="4" column="1">
          <widget class="ComboBox" name="comboBox_2">
-          <property name="currentIndex">
-           <number>-1</number>
-          </property>
           <item>
            <property name="text">
             <string>Name0000.PNG</string>
@@ -600,7 +597,11 @@ QToolBox::tab:selected {
          </spacer>
         </item>
         <item row="1" column="1" colspan="3">
-         <widget class="FileEdit" name="lineEdit"/>
+         <widget class="FileEdit" name="lineEdit">
+          <property name="type" stdset="0">
+           <number>2</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -609,8 +610,8 @@ QToolBox::tab:selected {
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>406</width>
-         <height>455</height>
+         <width>217</width>
+         <height>113</height>
         </rect>
        </property>
        <attribute name="label">
@@ -667,7 +668,11 @@ QToolBox::tab:selected {
          </widget>
         </item>
         <item row="2" column="1" colspan="2">
-         <widget class="FileEdit" name="lineEdit_2"/>
+         <widget class="FileEdit" name="lineEdit_2">
+          <property name="type" stdset="0">
+           <number>2</number>
+          </property>
+         </widget>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_11">

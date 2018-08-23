@@ -213,7 +213,11 @@ QScrollArea &gt; QWidget &gt; QWidget {
             </widget>
            </item>
            <item>
-            <widget class="FileEdit" name="lineEdit_2"/>
+            <widget class="FileEdit" name="lineEdit_2">
+             <property name="type" stdset="0">
+              <number>0</number>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_3">
