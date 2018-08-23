@@ -269,6 +269,7 @@ Label {
 .section {
 	font: bold;
 	color: #4080d0;
+	min-height: 20px;
 }
 
 .item {
