@@ -45,7 +45,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Slider" name="horizontalSlider">
+      <widget class="Timeline" name="horizontalSlider">
        <property name="maximum">
         <number>0</number>
        </property>
@@ -378,9 +378,9 @@
    </slots>
   </customwidget>
   <customwidget>
-   <class>Slider</class>
+   <class>Timeline</class>
    <extends>QSlider</extends>
-   <header>slider.h</header>
+   <header>timeline.h</header>
   </customwidget>
  </customwidgets>
  <resources>

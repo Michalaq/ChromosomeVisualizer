@@ -1,8 +1,8 @@
-#include "slider.h"
+#include "timeline.h"
 #include <QPainter>
 #include <QSvgRenderer>
 
-Slider::Slider(QWidget *parent) :
+Timeline::Timeline(QWidget *parent) :
     SoftSlider(parent),
     interpolator(nullptr),
     pin(QImage(QSize(30, 30), QImage::Format_ARGB32_Premultiplied))
@@ -18,17 +18,17 @@ Slider::Slider(QWidget *parent) :
     pin.setAlphaChannel(image.alphaChannel());
 }
 
-Slider::~Slider()
+Timeline::~Timeline()
 {
 
 }
 
-QSize Slider::minimumSizeHint() const
+QSize Timeline::minimumSizeHint() const
 {
     return QSize(20, 30);
 }
 
-void Slider::setSplineInterpolator(SplineInterpolator *si)
+void Timeline::setSplineInterpolator(SplineInterpolator *si)
 {
     if (interpolator)
         interpolator->disconnect(this);
@@ -44,7 +44,7 @@ void Slider::setSplineInterpolator(SplineInterpolator *si)
 #include <QMouseEvent>
 #include <QStyle>
 
-void Slider::mousePressEvent(QMouseEvent *event)
+void Timeline::mousePressEvent(QMouseEvent *event)
 {
     movemarker = event->pos().y() < 20;
 
@@ -63,7 +63,7 @@ void Slider::mousePressEvent(QMouseEvent *event)
         }
 }
 
-void Slider::mouseMoveEvent(QMouseEvent *event)
+void Timeline::mouseMoveEvent(QMouseEvent *event)
 {
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
@@ -80,7 +80,7 @@ void Slider::mouseMoveEvent(QMouseEvent *event)
         }
 }
 
-void Slider::mouseReleaseEvent(QMouseEvent *event)
+void Timeline::mouseReleaseEvent(QMouseEvent *event)
 {
     auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 10, width() - 20);
 
@@ -96,9 +96,9 @@ void Slider::mouseReleaseEvent(QMouseEvent *event)
 
 #include <QtMath>
 
-void Slider::paintEvent(QPaintEvent *event)
+void Timeline::paintEvent(QPaintEvent *event)
 {
-    QAbstractSlider::paintEvent(event);
+    SoftSlider::paintEvent(event);
 
     QPainter p(this);
     p.translate(0, height() / 2);
@@ -166,9 +166,9 @@ void Slider::paintEvent(QPaintEvent *event)
     }
 }
 
-void Slider::keyPressEvent(QKeyEvent *event)
+void Timeline::keyPressEvent(QKeyEvent *event)
 {
-    QSlider::keyPressEvent(event);
+    SoftSlider::keyPressEvent(event);
 
     if (interpolator && (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace))
     {

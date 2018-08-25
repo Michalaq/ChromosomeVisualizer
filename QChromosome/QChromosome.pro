@@ -22,7 +22,7 @@ SOURCES += \
     toolbar.cpp \
     rendersettings.cpp \
     projectsettings.cpp \
-    slider.cpp \
+    timeline.cpp \
     softslider.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
@@ -88,7 +88,7 @@ HEADERS += \
     rendersettings.h \
     moviemaker.h \
     projectsettings.h \
-    slider.h \
+    timeline.h \
     softslider.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h \

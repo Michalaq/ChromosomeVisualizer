@@ -1,15 +1,15 @@
-#ifndef SLIDER_H
-#define SLIDER_H
+#ifndef TIMELINE_H
+#define TIMELINE_H
 
 #include "softslider.h"
 #include "interpolator.h"
 
-class Slider : public SoftSlider
+class Timeline : public SoftSlider
 {
     Q_OBJECT
 public:
-    explicit Slider(QWidget *parent = 0);
-    ~Slider();
+    explicit Timeline(QWidget *parent = 0);
+    ~Timeline();
 
     QSize minimumSizeHint() const;
 
@@ -30,4 +30,4 @@ private:
     QImage pin;
 };
 
-#endif // SLIDER_H
+#endif // TIMELINE_H
