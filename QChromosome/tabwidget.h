@@ -8,6 +8,7 @@ class TabWidget;
 }
 
 class Session;
+class JPEGDialog;
 
 class TabWidget : public QTabWidget
 {
@@ -39,6 +40,8 @@ private:
 
     void setFrameRange(int min, int max);
     void updateFrames();
+
+    JPEGDialog* jpegSettings;
 
 signals:
     void filmRatioChanged(double);

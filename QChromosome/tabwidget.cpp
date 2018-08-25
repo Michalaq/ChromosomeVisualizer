@@ -31,11 +31,13 @@ static const double dim_max = 16000;
 
 #include <QStandardPaths>
 #include "session.h"
+#include "jpegdialog.h"
 
 TabWidget::TabWidget(Session* s, QWidget *parent) :
     QTabWidget(parent),
     ui(new Ui::TabWidget),
-    session(s)
+    session(s),
+    jpegSettings(new JPEGDialog(this))
 {
     ui->setupUi(this);
 
@@ -149,6 +151,15 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& value) {
         ui->spinBox->setReadOnly(value != "PNG" && value != "PPM");
         ui->spinBox->setValue(8);
+
+        ui->pushButton->hide();
+
+        if (value == "JPEG")
+        {
+            disconnect(ui->pushButton);
+            connect(ui->pushButton, &QPushButton::clicked, jpegSettings, &QDialog::open);
+            ui->pushButton->show();
+        }
     });
 
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");

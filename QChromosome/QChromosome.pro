@@ -68,7 +68,8 @@ SOURCES += \
     session.cpp \
     mediapanel.cpp \
     customstyle.cpp \
-    tabwidget.cpp
+    tabwidget.cpp \
+    jpegdialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -149,7 +150,8 @@ HEADERS += \
     glbuffer.h \
     mediapanel.h \
     customstyle.h \
-    tabwidget.h
+    tabwidget.h \
+    jpegdialog.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -167,7 +169,8 @@ FORMS += mainwindow.ui \
     cameraattributes.ui \
     importdialog.ui \
     mediapanel.ui \
-    tabwidget.ui
+    tabwidget.ui \
+    jpegdialog.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle
