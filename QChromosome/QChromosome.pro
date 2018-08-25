@@ -70,7 +70,8 @@ SOURCES += \
     customstyle.cpp \
     tabwidget.cpp \
     jpegdialog.cpp \
-    slider.cpp
+    slider.cpp \
+    targadialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -153,7 +154,8 @@ HEADERS += \
     customstyle.h \
     tabwidget.h \
     jpegdialog.h \
-    slider.h
+    slider.h \
+    targadialog.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -172,7 +174,8 @@ FORMS += mainwindow.ui \
     importdialog.ui \
     mediapanel.ui \
     tabwidget.ui \
-    jpegdialog.ui
+    jpegdialog.ui \
+    targadialog.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle

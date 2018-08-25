@@ -9,6 +9,7 @@ class TabWidget;
 
 class Session;
 class JPEGDialog;
+class TARGADialog;
 
 class TabWidget : public QTabWidget
 {
@@ -42,6 +43,7 @@ private:
     void updateFrames();
 
     JPEGDialog* jpegSettings;
+    TARGADialog* targaSettings;
 
 signals:
     void filmRatioChanged(double);
