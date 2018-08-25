@@ -147,17 +147,7 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
 
     // format
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& value) {
-        if (value == "PNG" || value == "PPM")
-        {
-            ui->spinBox->setMinimum(5);
-            ui->spinBox->setMaximum(16);
-        }
-        else
-        {
-            ui->spinBox->setMaximum(8);
-            ui->spinBox->setMinimum(8);
-        }
-
+        ui->spinBox->setReadOnly(value != "PNG" && value != "PPM");
         ui->spinBox->setValue(8);
     });
 
@@ -168,13 +158,7 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     ui->doubleSpinBox_6->setValue(72);
     ui->spinBox_2->setValue(30);
     ui->comboBox_5->setCurrentText("Current frame");
-#if defined (Q_OS_WIN)
-    ui->comboBox->setCurrentText("BMP");
-#elif defined (Q_OS_UNIX)
-    ui->comboBox->setCurrentText("TARGA");
-#else
     ui->comboBox->setCurrentText("PNG");
-#endif
     ui->label_12->setText(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 }
 
