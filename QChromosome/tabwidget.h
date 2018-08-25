@@ -26,6 +26,8 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
+    void writeINIFile() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
@@ -44,6 +46,8 @@ private:
 
     JPEGDialog* jpegSettings;
     TARGADialog* targaSettings;
+
+    const QString defaultPath;
 
 signals:
     void filmRatioChanged(double);

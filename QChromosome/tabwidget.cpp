@@ -39,7 +39,8 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     ui(new Ui::TabWidget),
     session(s),
     jpegSettings(new JPEGDialog(this)),
-    targaSettings(new TARGADialog(this))
+    targaSettings(new TARGADialog(this)),
+    defaultPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
 {
     ui->setupUi(this);
 
@@ -179,7 +180,8 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     ui->spinBox_2->setValue(30);
     ui->comboBox_5->setCurrentText("Current frame");
     ui->comboBox->setCurrentText("PNG");
-    ui->label_12->setText(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    ui->label_12->setText(defaultPath);
+    ui->label_23->setText(defaultPath);
 }
 
 TabWidget::~TabWidget()
@@ -220,6 +222,13 @@ void TabWidget::setPreviewMaxTime(int time)
 void TabWidget::setLastFrame(int time)
 {
     ui->spinBox_4->setMaximum(time);
+}
+
+#include <QDir>
+
+void TabWidget::writeINIFile() const
+{
+    QFileInfo file(QDir(defaultPath), ui->lineEdit->text());
 }
 
 #include <QMetaMethod>
