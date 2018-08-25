@@ -69,7 +69,8 @@ SOURCES += \
     mediapanel.cpp \
     customstyle.cpp \
     tabwidget.cpp \
-    jpegdialog.cpp
+    jpegdialog.cpp \
+    slider.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -151,7 +152,8 @@ HEADERS += \
     mediapanel.h \
     customstyle.h \
     tabwidget.h \
-    jpegdialog.h
+    jpegdialog.h \
+    slider.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \

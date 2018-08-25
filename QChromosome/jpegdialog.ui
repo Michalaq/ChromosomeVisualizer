@@ -76,7 +76,7 @@ QSlider::sub-page {
     </widget>
    </item>
    <item row="1" column="2" colspan="2">
-    <widget class="QSlider" name="horizontalSlider">
+    <widget class="Slider" name="horizontalSlider">
      <property name="minimum">
       <number>0</number>
      </property>
@@ -125,6 +125,11 @@ QSlider::sub-page {
    <class>SpinBox</class>
    <extends>QSpinBox</extends>
    <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>slider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
