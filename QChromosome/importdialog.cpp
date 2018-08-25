@@ -9,6 +9,7 @@ ImportDialog::ImportDialog(SimulationLayer *sl, QWidget *parent) :
     simulationLayer(sl)
 {
     ui->setupUi(this);
+    setFixedSize(width(), minimumHeight());
 
     ui->spinBox->setMaximum(simulationLayer->last < simulationLayer->first ? 2147483647 : simulationLayer->last);
     ui->spinBox_2->setMinimum(simulationLayer->first - 1);

@@ -6,6 +6,7 @@ JPEGDialog::JPEGDialog(QWidget *parent) :
     ui(new Ui::JPEGDialog)
 {
     ui->setupUi(this);
+    setFixedSize(width(), minimumHeight());
 
     connect(this, &QDialog::finished, [this](int result) {
         if (result)
