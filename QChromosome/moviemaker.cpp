@@ -191,9 +191,15 @@ void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suff
 void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* session)
 {
     QTemporaryDir dir;
+
+    QFile ini(dir.filePath("povray.ini"));
+
+    ini.open(QIODevice::WriteOnly);
+    session->renderSettings->writeINIFile(&ini);
+    ini.close();
+
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + '/' + renderSettings->saveFile();
-    prepareINIFile1(filename, fbeg, fend);
     QFile out(filename + ".pov");
     out.open(QFile::WriteOnly | QFile::Truncate);
     QTextStream outFile(&out);
@@ -217,7 +223,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
     if (renderSettings->exportPOV())
     {
-        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        ini.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
@@ -228,10 +234,9 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
         p.setWorkingDirectory(dir.path());
 
         QStringList argv;
-        argv << renderSettings->saveFile() + ".ini"
-             << "-D"
+        argv << "-D"
              << "+V"
-             << renderSettings->saveFile() + ".pov";
+             << "+I" + renderSettings->saveFile() + ".pov";
 
         QRegularExpression re1("Rendering frame (\\d+) of (\\d+)");
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
@@ -350,9 +355,15 @@ void MovieMaker::captureScene1(Session *session, QString suffix)
 void MovieMaker::captureScene1_(QString suffix, Session* session)
 {
     QTemporaryDir dir;
+
+    QFile ini(dir.filePath("povray.ini"));
+
+    ini.open(QIODevice::WriteOnly);
+    session->renderSettings->writeINIFile(&ini);
+    ini.close();
+
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + "/" + renderSettings->saveFile();
-    prepareINIFile(filename);
     QFile out(filename + ".pov");
     out.open(QFile::WriteOnly | QFile::Truncate);
     QTextStream outFile(&out);
@@ -376,7 +387,7 @@ void MovieMaker::captureScene1_(QString suffix, Session* session)
 
     if (renderSettings->exportPOV())
     {
-        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        ini.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
@@ -387,11 +398,10 @@ void MovieMaker::captureScene1_(QString suffix, Session* session)
         p.setWorkingDirectory(dir.path());
 
         QStringList argv;
-        argv << renderSettings->saveFile() + ".ini"
-             << "-D"
+        argv << "-D"
              << "+V"
              << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
-             << renderSettings->saveFile() + ".pov";
+             << "+I" + renderSettings->saveFile() + ".pov";
 
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
         QByteArray buffer;

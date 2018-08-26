@@ -27,7 +27,7 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
-    QFile* createINIFile() const;
+    void writeINIFile(QFile* ini) const;
 
 protected:
     void connectNotify(const QMetaMethod& signal);
