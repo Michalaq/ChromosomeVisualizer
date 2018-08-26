@@ -225,10 +225,117 @@ void TabWidget::setLastFrame(int time)
 }
 
 #include <QDir>
+#include <QMessageBox>
+#include <QTemporaryFile>
 
-void TabWidget::writeINIFile() const
+QFile* TabWidget::createINIFile() const
 {
-    QFileInfo file(QDir(defaultPath), ui->lineEdit->text());
+    QString name = ui->lineEdit_2->text();
+    QFileInfo info(QDir(defaultPath), name);
+
+    QFile* file;
+
+    if (ui->checkBox_3->isChecked()) // *.ini file is to be saved
+    {
+        if (name.isEmpty() || info.completeBaseName().isEmpty())
+        {
+            QMessageBox::critical(nullptr, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+            return nullptr;
+        }
+
+        file = new QFile(info.absoluteDir().filePath(info.completeBaseName() + ".ini"));
+    }
+    else
+        file = new QTemporaryFile();
+
+    if (!file->open(QIODevice::WriteOnly))
+    {
+        QMessageBox::critical(nullptr, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+        return nullptr;
+    }
+
+    QTextStream stream(file);
+
+    stream << "Width=" << imageResolution.width() << "\n";
+    stream << "Height=" << imageResolution.height() << "\n";
+
+    stream << "Initial_Frame=" << session->projectSettings->getMinimumTime() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+    stream << "Final_Frame=" << session->projectSettings->getMaximumTime() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+
+    stream << "Initial_Clock=" << session->projectSettings->getMinimumTime() << "\n";
+    stream << "Final_Clock=" << session->projectSettings->getMaximumTime() << "\n";
+
+    stream << "Subset_Start_Frame=" << ui->spinBox_3->value() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+    stream << "Subset_End_Frame=" << ui->spinBox_4->value() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+    stream << "Frame_Step=" << ui->spinBox_5->value() << "\n";
+
+    switch (ui->comboBox->currentIndex())
+    {
+    case 0:
+        stream << "Output_File_Type=B\n";
+        break;
+    case 1:
+        switch (targaSettings->getCompression())
+        {
+        case 0:
+            stream << "Output_File_Type=T\n";
+            break;
+        case 1:
+            stream << "Output_File_Type=C\n";
+            break;
+        }
+        break;
+    case 2:
+        stream << "Output_File_Type=E\n";
+        break;
+    case 3:
+        stream << "Output_File_Type=H\n";
+        break;
+    case 4:
+        stream << "Output_File_Type=J\n";
+        stream << "Compression=" << qMax(2, jpegSettings->getQuality()) << "\n";
+        break;
+    case 5:
+        stream << "Output_File_Type=N\n";
+        break;
+    case 6:
+        stream << "Output_File_Type=P\n";
+        break;
+    }
+
+    stream << "Bits_Per_Color=" << ui->spinBox->value() << "\n";
+
+    stream << "Output_Alpha=" << (ui->checkBox_2->isChecked() ? "on" : "off") << "\n";
+
+    stream << "Quality=" << ui->spinBox_6->value() << "\n";
+
+    if (ui->checkBox_6->isChecked())
+    {
+        stream << "Antialias=on\n";
+        switch (ui->comboBox_6->currentIndex())
+        {
+        case 0:
+            stream << "Sampling_Method=1\n";
+            break;
+        case 1:
+            stream << "Sampling_Method=2\n";
+            break;
+        }
+        stream << "Antialias_Threshold=" << ui->doubleSpinBox->value() << "\n";
+        if (ui->checkBox_7->isChecked())
+        {
+            stream << "Jitter=on\n";
+            stream << "Jitter_Amount=" << ui->doubleSpinBox_2->value() << "\n";
+        }
+        else
+            stream << "Jitter=off\n";
+    }
+    else
+        stream << "Antialias=off\n";
+
+    stream << "Antialias_Depth=" << ui->spinBox_7->value() << "\n";
+
+    return file;
 }
 
 #include <QMetaMethod>

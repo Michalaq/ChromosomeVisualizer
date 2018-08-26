@@ -15,6 +15,8 @@ public:
     explicit TARGADialog(QWidget *parent = nullptr);
     ~TARGADialog();
 
+    int getCompression() const;
+
 private:
     Ui::TARGADialog *ui;
 

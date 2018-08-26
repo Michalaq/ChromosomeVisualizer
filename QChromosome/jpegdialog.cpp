@@ -31,3 +31,8 @@ void JPEGDialog::setQuality(int q)
     ui->spinBox->setValue(q, false);
     ui->horizontalSlider->setValue(q);
 }
+
+int JPEGDialog::getQuality() const
+{
+    return quality;
+}

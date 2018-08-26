@@ -22,3 +22,8 @@ TARGADialog::~TARGADialog()
 {
     delete ui;
 }
+
+int TARGADialog::getCompression() const
+{
+    return index;
+}

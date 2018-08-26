@@ -16,6 +16,7 @@ public:
     ~JPEGDialog();
 
     void setQuality(int q);
+    int getQuality() const;
 
 private:
     Ui::JPEGDialog *ui;
