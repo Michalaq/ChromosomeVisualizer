@@ -28,13 +28,12 @@ private:
     static MovieMaker* instance;
 
     bool snapshot;
-    int fbeg_, fend_, fr_, fn_;
-    Simulation* simulation_;
-    const Camera* camera_;
+    int fbeg_, fend_;
     QString suffix_;
+    Session* session_;
 
-    void captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr);
-    void captureScene1_(int fn, Simulation* simulation, const Camera* camera, QString suffix);
+    void captureScene_(int fbeg, int fend, QString suffix, Session* session);
+    void captureScene1_(QString suffix, Session* session);
 
 signals:
     void progressChanged(int);

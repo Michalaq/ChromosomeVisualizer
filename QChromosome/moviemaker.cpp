@@ -181,14 +181,14 @@ void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suff
         return;
     }
 
-    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix; fr_ = session->projectSettings->getFPS();
+    snapshot = false; fbeg_ = fbeg; fend_ = fend; suffix_ = suffix; session_ = session;
     start();
 }
 
 #include <QDesktopServices>
 #include <QUrl>
 
-void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* session)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -199,6 +199,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
     QTextStream outFile(&out);
     createPOVFile(outFile);
 
+    auto camera = session->currentCamera;
     if (renderSettings->cam360())
         set360Camera(outFile, camera, camera->count() > 1);
     else
@@ -210,7 +211,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
 
     Material::writePOVMaterials(outFile);
 
-    simulation->writePOVFrames(outFile, fbeg, fend);
+    session->simulation->writePOVFrames(outFile, fbeg, fend);
 
     outFile.flush();
 
@@ -314,7 +315,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
             }
         }
 
-        fr *= renderSettings->framerate();
+        auto fr = session->projectSettings->getFPS() * renderSettings->framerate();
 
         argv.clear();
         argv << "-y"
@@ -338,15 +339,15 @@ void MovieMaker::captureScene1(Session *session, QString suffix)
 {
     if (isRunning())
     {
-        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
+        QMessageBox::information(nullptr, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
         return;
     }
 
-    snapshot = true; fn_ = session->projectSettings->getDocumentTime(); simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix;
+    snapshot = true; suffix_ = suffix; session_ = session;
     start();
 }
 
-void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* camera, QString suffix)
+void MovieMaker::captureScene1_(QString suffix, Session* session)
 {
     QTemporaryDir dir;
     auto renderSettings = RenderSettings::getInstance();
@@ -357,6 +358,7 @@ void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* ca
     QTextStream outFile(&out);
     createPOVFile(outFile);
 
+    auto camera = session->currentCamera;
     if (renderSettings->cam360())
         set360Camera(outFile, camera, false);
     else
@@ -368,7 +370,7 @@ void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* ca
 
     Material::writePOVMaterials(outFile);
 
-    simulation->writePOVFrame(outFile, fn);
+    session->simulation->writePOVFrame(outFile, session->projectSettings->getDocumentTime());
 
     outFile.flush();
 
@@ -472,7 +474,7 @@ void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radi
 void MovieMaker::run()
 {
     if (snapshot)
-        captureScene1_(fn_, simulation_, camera_, suffix_);
+        captureScene1_(suffix_, session_);
     else
-        captureScene_(fbeg_, fend_, simulation_, camera_, suffix_, fr_);
+        captureScene_(fbeg_, fend_, suffix_, session_);
 }
