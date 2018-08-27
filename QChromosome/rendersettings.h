@@ -22,32 +22,8 @@ public:
     void setSession(Session* session);
 
     //TODO
-    /* Output */
-    QSize outputSize() const; //px
-
     /* Save */
     QString saveFile() const;
-
-    /* Quality */
-    QString quality() const;
-
-    /* Anti-Aliasing */
-    bool antiAliasing() const;
-
-    /* AA Sampling Method */
-    QString aaSamplingMethod() const;
-
-    /* AA Threshold */
-    QString aaThreshold() const;
-
-    /* AA Jitter */
-    bool aaJitter() const;
-
-    /* AA Jitter Amount */
-    QString aaJitterAmount() const;
-
-    /* AA Depth */
-    QString aaDepth() const;
 
     /* Timestamp */
     bool timestamp() const;
@@ -69,33 +45,11 @@ public:
     QString POVfileName() const;
     //TODO
 
-protected:
-    void connectNotify(const QMetaMethod& signal);
-
 private:
     explicit RenderSettings(QWidget *parent = 0);
     static RenderSettings *instance;
 
     Ui::RenderSettings *ui;
-
-    //TODO
-    qreal aspectRatio;
-    QString currentUnit;
-    QString currentResolutionUnit;
-
-    QSize outSize;
-
-    /* metric unit conversion table */
-    QHash<QString, qreal> units;
-
-    void updateOutputSize();
-    //TODO
-
-signals:
-    void aspectRatioChanged(double);
-
-public slots:
-
 };
 
 #endif // RENDERSETTINGS_H

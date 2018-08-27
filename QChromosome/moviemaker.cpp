@@ -27,74 +27,6 @@ MovieMaker *MovieMaker::getInstance()
     return instance ? instance : instance = new MovieMaker;
 }
 
-#include <QFile>
-
-void prepareINIFile(const QString& filename)
-{
-    QFile out(filename + ".ini");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    auto renderSettings = RenderSettings::getInstance();
-    QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality();
-    if (renderSettings->antiAliasing())
-    {
-        outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth();
-        if (renderSettings->aaJitter())
-        {
-            outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
-        }
-        else
-        {
-            outFile << "\nJitter=off";
-        }
-    }
-    else
-    {
-        outFile << "\nAntialias=off";
-    }
-}
-
-void prepareINIFile1(const QString& filename, int fbeg, int fend)
-{
-    QFile out(filename + ".ini");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    auto renderSettings = RenderSettings::getInstance();
-    QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality();
-    if (renderSettings->antiAliasing())
-    {
-        outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth();
-        if (renderSettings->aaJitter())
-        {
-            outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
-        }
-        else
-        {
-            outFile << "\nJitter=off";
-        }
-    }
-    else
-    {
-        outFile << "\nAntialias=off";
-    }
-    outFile << "\nInitial_Frame=" << 0
-            << "\nFinal_Frame=" << (fend - fbeg) * renderSettings->framerate()
-            << "\nInitial_Clock=" << fbeg
-            << "\nFinal_Clock=" << fend;
-}
-
 void createPOVFile(QTextStream& outFile)
 {
     outFile << "#version 3.7;\n"
@@ -294,9 +226,20 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
             f.setFamily("RobotoMono");
             f.setPixelSize(15);
 
+            QSize outputSize;
+            {
+                QFile file(QString("%1%2.png").arg(filename).arg(0, fw1, 10, QChar('0')));
+
+                file.open(QIODevice::ReadOnly);
+                img.load(&file, "PNG");
+                file.close();
+
+                outputSize = img.size();
+            }
+
             QTransform t;
-            t.translate(renderSettings->outputSize().width(), 0);
-            t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
+            t.translate(outputSize.width(), 0);
+            t.scale(qreal(outputSize.height()) / 240, qreal(outputSize.height()) / 240);
 
             for (int i = 0; i <= total; i++)
             {
