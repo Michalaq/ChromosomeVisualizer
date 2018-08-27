@@ -173,6 +173,7 @@ void Session::setFPS(int fps)
 {
     mediaPanel->setFPS(fps);
     projectSettings->setFPS(fps);
+    renderSettings->updateFrames();
 }
 
 void Session::setDocumentTime(int time)

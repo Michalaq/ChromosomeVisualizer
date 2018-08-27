@@ -42,8 +42,10 @@ private:
     qreal widthUnit;
     qreal resolutionUnit;
 
+    int startFrame;
+    int endFrame;
+
     void setFrameRange(int min, int max);
-    void updateFrames();
 
     JPEGDialog* jpegSettings;
     TARGADialog* targaSettings;
@@ -52,6 +54,9 @@ private:
 
 signals:
     void filmRatioChanged(double);
+
+public slots:
+    void updateFrames();
 };
 
 #endif // TABWIDGET_H

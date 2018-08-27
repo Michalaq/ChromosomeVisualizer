@@ -235,16 +235,24 @@ void TabWidget::writeINIFile(QFile *ini) const
     stream << "Width=" << imageResolution.width() << "\n";
     stream << "Height=" << imageResolution.height() * (RenderSettings::getInstance()->cam360() ? 2 : 1) << "\n";
 
-    if (ui->spinBox_3->value() != ui->spinBox_4->value())
+    if (ui->spinBox_3->value() == ui->spinBox_4->value())
+        stream << "Clock=" << ui->spinBox_3->value() << "\n";
+    else
     {
-        stream << "Initial_Frame=" << session->projectSettings->getMinimumTime() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
-        stream << "Final_Frame=" << session->projectSettings->getMaximumTime() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+        int initialFrame = 0;
+        int finalFrame = ui->spinBox_4->maximum() * ui->spinBox_2->value() / session->projectSettings->getFPS();
 
-        stream << "Initial_Clock=" << session->projectSettings->getMinimumTime() << "\n";
-        stream << "Final_Clock=" << session->projectSettings->getMaximumTime() << "\n";
+        qreal initialClock = 0;
+        qreal finalClock = qreal(finalFrame) / ui->spinBox_2->value() * session->projectSettings->getFPS();
 
-        stream << "Subset_Start_Frame=" << ui->spinBox_3->value() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
-        stream << "Subset_End_Frame=" << ui->spinBox_4->value() * ui->spinBox_2->value() / session->projectSettings->getFPS() << "\n";
+        stream << "Initial_Frame=" << initialFrame << "\n";
+        stream << "Final_Frame=" << finalFrame << "\n";
+
+        stream << "Initial_Clock=" << initialClock << "\n";
+        stream << "Final_Clock=" << finalClock << "\n";
+
+        stream << "Subset_Start_Frame=" << startFrame << "\n";
+        stream << "Subset_End_Frame=" << endFrame << "\n";
         stream << "Frame_Step=" << ui->spinBox_5->value() << "\n";
     }
 
@@ -308,11 +316,11 @@ void TabWidget::writeINIFile(QFile *ini) const
         }
         else
             stream << "Jitter=off\n";
+
+        stream << "Antialias_Depth=" << ui->spinBox_7->value() << "\n";
     }
     else
         stream << "Antialias=off\n";
-
-    stream << "Antialias_Depth=" << ui->spinBox_7->value() << "\n";
 }
 
 #include <QMetaMethod>
@@ -336,9 +344,8 @@ void TabWidget::setFrameRange(int min, int max)
 
 void TabWidget::updateFrames()
 {
-    int first = ui->spinBox_3->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
-    int last = ui->spinBox_4->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
-    int step = ui->spinBox_5->value();
+    startFrame = ui->spinBox_3->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
+    endFrame = ui->spinBox_4->value() * ui->spinBox_2->value() / session->projectSettings->getFPS();
 
-    ui->label_48->setText(QString("%1 (from %2 to %3)").arg((last - first) / step + 1).arg(first).arg(last));
+    ui->label_48->setText(QString("%1 (from %2 to %3)").arg((endFrame - startFrame) / ui->spinBox_5->value() + 1).arg(startFrame).arg(endFrame));
 }
