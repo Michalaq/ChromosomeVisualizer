@@ -266,6 +266,10 @@ Label {
     max-height: 30px;
 }
 
+Label:disabled {
+	color: #808080;
+}
+
 .section {
 	font: bold;
 	color: #4080d0;
@@ -733,14 +737,14 @@ padding-left: 10px;
  </widget>
  <customwidgets>
   <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
   </customwidget>
  </customwidgets>
  <resources>

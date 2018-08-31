@@ -172,6 +172,16 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
         }
     });
 
+    // antialias
+    connect(ui->checkBox_6, &QCheckBox::clicked, [this](bool checked) {
+        ui->widget->setEnabled(checked);
+    });
+
+    // jitter
+    connect(ui->checkBox_7, &QCheckBox::clicked, [this](bool checked) {
+        ui->widget_2->setEnabled(checked);
+    });
+
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
     ui->doubleSpinBox_4->setValue(320);
