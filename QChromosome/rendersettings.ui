@@ -426,6 +426,50 @@ padding-left: 10px;
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
+            <item row="7" column="1">
+             <widget class="QCheckBox" name="checkBox_3"/>
+            </item>
+            <item row="6" column="1">
+             <widget class="QCheckBox" name="checkBox_2">
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_33">
+              <property name="text">
+               <string>Export to a .pov file</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_31">
+              <property name="text">
+               <string>File name</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="1">
+             <widget class="FileEdit" name="lineEdit_3">
+              <property name="text">
+               <string>untitled</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_4">
               <property name="text">
@@ -458,27 +502,13 @@ padding-left: 10px;
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>360° Camera</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QCheckBox" name="cam360CheckBox">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
              <widget class="QLabel" name="label_25">
               <property name="text">
                <string>Open File</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
+            <item row="2" column="1">
              <widget class="QCheckBox" name="openFileCheckBox">
               <property name="text">
                <string/>
@@ -488,28 +518,28 @@ padding-left: 10px;
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
+            <item row="3" column="0">
              <widget class="QLabel" name="label_27">
               <property name="text">
                <string>Overlays</string>
               </property>
              </widget>
             </item>
-            <item row="4" column="1">
+            <item row="3" column="1">
              <widget class="QCheckBox" name="checkBox_4">
               <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
+            <item row="4" column="0">
              <widget class="QLabel" name="label_26">
               <property name="text">
                <string>Framerate</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="4" column="1">
              <widget class="QSpinBox" name="spinBox">
               <property name="minimum">
                <number>1</number>
@@ -519,7 +549,7 @@ padding-left: 10px;
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="2">
+            <item row="5" column="0" colspan="2">
              <widget class="QLabel" name="label_30">
               <property name="styleSheet">
                <string notr="true">	font: bold;
@@ -534,56 +564,12 @@ padding-left: 10px;
               </property>
              </widget>
             </item>
-            <item row="7" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_32">
               <property name="text">
                <string>Render</string>
               </property>
              </widget>
-            </item>
-            <item row="7" column="1">
-             <widget class="QCheckBox" name="checkBox_2">
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="0">
-             <widget class="QLabel" name="label_33">
-              <property name="text">
-               <string>Export to a .pov file</string>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="1">
-             <widget class="QCheckBox" name="checkBox_3"/>
-            </item>
-            <item row="9" column="0">
-             <widget class="QLabel" name="label_31">
-              <property name="text">
-               <string>File name</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="1">
-             <widget class="FileEdit" name="lineEdit_3">
-              <property name="text">
-               <string>untitled</string>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="0">
-             <spacer name="verticalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>

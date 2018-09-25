@@ -236,8 +236,6 @@ void TabWidget::setLastFrame(int time)
     ui->spinBox_4->setMaximum(time);
 }
 
-#include "rendersettings.h"
-
 void TabWidget::writeINIFile(QFile *ini) const
 {
     QTextStream stream(ini);
@@ -247,7 +245,7 @@ void TabWidget::writeINIFile(QFile *ini) const
     stream << "\n; General output options\n";
 
     stream << "Width=" << imageResolution.width() << "\n";
-    stream << "Height=" << imageResolution.height() * (RenderSettings::getInstance()->cam360() ? 2 : 1) << "\n";
+    stream << "Height=" << imageResolution.height() * (session->currentCamera->getMode() == Camera::CM_Symmetrical ? 2 : 1) << "\n";
 
     if (ui->spinBox_3->value() == ui->spinBox_4->value())
         stream << "Clock=" << ui->spinBox_3->value() << "\n";

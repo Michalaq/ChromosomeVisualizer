@@ -596,55 +596,118 @@ void Camera::updateAngles()
 
 void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
 {
-    if (interpolate)
+    interpolate = interpolate && count() > 1;
+
+    switch (mode)
     {
-        stream << "#declare MySplinePos = \n";
-        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
-            stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
-        });
+    case CM_Mono:
+    case CM_Left:
+    case CM_Right:
+        if (interpolate)
+        {
+            stream << "#declare MySplinePos = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+            });
 
-        stream << "#declare MySplineAng = \n";
-        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
-            stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
-        });
+            stream << "#declare MySplineAng = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+            });
 
-        stream << "#declare MySplineFov = \n";
-        writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
-            stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
-        });
+            stream << "#declare MySplineFov = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
+            });
 
-        stream << "camera { perspective\n"
-               << "right x * " << aspectRatio << "\n"
-               << "look_at -z\n"
-               << "angle MySplineFov(clock).x\n"
-               << "rotate -MySplineAng(clock)\n"
-               << "translate MySplinePos(clock)\n"
+            stream << "camera { perspective\n"
+                   << "right x * " << aspectRatio << "\n"
+                   << "look_at -z\n"
+                   << "angle MySplineFov(clock).x\n"
+                   << "rotate -MySplineAng(clock)\n"
+                   << "translate MySplinePos(clock)\n"
+                   << "}\n"
+                   << "\n";
+
+            stream << "light_source {\n"
+                   << QVector3D() << "," << QColor(Qt::white) << "\n"
+                   << "parallel\n"
+                   << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+                   << "rotate -MySplineAng(clock)\n"
+                   << "}\n";
+        }
+        else
+        {
+            stream << "camera { perspective\n"
+                   << "right x * " << aspectRatio << "\n"
+                   << "look_at -z\n"
+                   << "angle " << horizontalAngle << "\n"
+                   << "rotate " << -getRotation() << "\n"
+                   << "translate " << getPosition() << "\n"
+                   << "}\n"
+                   << "\n";
+
+            stream << "light_source {\n"
+                   << QVector3D() << "," << QColor(Qt::white) << "\n"
+                   << "parallel\n"
+                   << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+                   << "rotate " << -getRotation() << "\n"
+                   << "}\n";
+        }
+        break;
+
+    case CM_Symmetrical:
+        stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
+
+        if (interpolate)
+            stream << "#declare odsLocation = MySplinePos(clock);\n"
+                   << "#declare odsAngles = MySplineAng(clock);\n";
+        else
+            stream << "#declare odsLocation = " << getPosition() << ";\n"
+                   << "#declare odsAngles = " << getRotation() << ";\n";
+
+        stream << "#declare odsX = <1, 0, 0>;\n"
+               << "#declare odsY = <0, 1, 0>;\n"
+               << "#declare odsZ = <0, 0, 1>;\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+        stream << "#declare odsLocationX = odsLocation.x;\n"
+               << "#declare odsLocationY = odsLocation.y;\n"
+               << "#declare odsLocationZ = odsLocation.z;\n"
+               << "#declare odsXX = -odsX.x;\n"
+               << "#declare odsXY = odsX.y;\n"
+               << "#declare odsXZ = odsX.z;\n"
+               << "#declare odsYX = -odsY.x;\n"
+               << "#declare odsYY = odsY.y;\n"
+               << "#declare odsYZ = odsY.z;\n"
+               << "#declare odsZX = -odsZ.x;\n"
+               << "#declare odsZY = odsZ.y;\n"
+               << "#declare odsZZ = odsZ.z;\n";
+
+        stream << "camera {\n"
+               << "user_defined\n"
+               << "location {\n"
+               << "function { odsLocationX + cos(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsXX - sin(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsZX }\n"
+               << "function { odsLocationY + cos(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsXY - sin(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsZY }\n"
+               << "function { odsLocationZ + cos(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsXZ - sin(x * 2 * pi) * odsIPD/2 * select(y, 1, -1) * odsZZ }\n"
                << "}\n"
-               << "\n";
-
-        stream << "light_source {\n"
-               << QVector3D() << "," << QColor(Qt::white) << "\n"
-               << "parallel\n"
-               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
-               << "rotate -MySplineAng(clock)\n"
+               << "direction {\n"
+               << "function { sin(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsXX + sin(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsYX - cos(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsZX }\n"
+               << "function { sin(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsXY + sin(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsYY - cos(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsZY }\n"
+               << "function { sin(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsXZ + sin(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsYZ - cos(x * 2 * pi) * cos(pi / 2 + select(y, 2*y, 2*y-1) * pi) * odsZZ }\n"
+               << "}\n"
                << "}\n";
-    }
-    else
-    {
-        stream << "camera { perspective\n"
-               << "right x * " << aspectRatio << "\n"
-               << "look_at -z\n"
-               << "angle " << horizontalAngle << "\n"
-               << "rotate " << -QVector3D(p, h, b) << "\n"
-               << "translate " << eye << "\n"
-               << "}\n"
-               << "\n";
 
         stream << "light_source {\n"
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
                << "point_at " << -QVector3D(-1, 1, 2) << "\n"
-               << "rotate " << -QVector3D(p, h, b) << "\n"
+               << "rotate -odsAngles\n"
                << "}\n";
     }
 }

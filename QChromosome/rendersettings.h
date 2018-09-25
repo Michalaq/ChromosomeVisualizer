@@ -28,9 +28,6 @@ public:
     /* Timestamp */
     bool timestamp() const;
 
-    /* 360 Degrees Camera  */
-    bool cam360() const;
-
     /* Open File After Rendering  */
     bool openFile() const;
 

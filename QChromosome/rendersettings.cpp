@@ -33,13 +33,6 @@ RenderSettings::RenderSettings(QWidget *parent) :
     setWindowFlags(Qt::WindowStaysOnTopHint);
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
-
-    //TODO
-    connect(ui->cam360CheckBox, &QCheckBox::toggled, [this](bool c) {
-        if (c) ui->checkBox_4->setChecked(false);
-        ui->checkBox_4->setDisabled(c);
-    });
-    //TODO
 }
 
 RenderSettings::~RenderSettings()
@@ -75,11 +68,6 @@ QString RenderSettings::saveFile() const
 bool RenderSettings::timestamp() const
 {
     return ui->timestampCheckBox->isChecked();
-}
-
-bool RenderSettings::cam360() const
-{
-    return ui->cam360CheckBox->isChecked();
 }
 
 bool RenderSettings::openFile() const

@@ -33,62 +33,6 @@ void createPOVFile(QTextStream& outFile)
             << "global_settings { assumed_gamma 1.0 }\n";
 }
 
-void set360Camera(QTextStream& outFile, const Camera* camera, bool s)
-{
-    outFile << "#declare odsIPD = 0.065;\n";
-
-    if (s)
-        outFile << "#declare odsLocation = MySplinePos(clock);\n"
-                << "#declare odsAngles = MySplineAng(clock);\n";
-    else
-        outFile << "#declare odsLocation = " << camera->getPosition() << ";\n"
-                << "#declare odsAngles = " << camera->getRotation() << ";\n";
-
-    outFile << "#declare odsX = <1, 0, 0>;\n"
-            << "#declare odsY = <0, 1, 0>;\n"
-            << "#declare odsZ = <0, 0, 1>;\n"
-            << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
-            << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
-            << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
-            << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
-            << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
-            << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
-
-    outFile << "#declare odsLocationX = -odsLocation.x;\n"
-            << "#declare odsLocationY = odsLocation.y;\n"
-            << "#declare odsLocationZ = odsLocation.z;\n"
-            << "#declare odsXX = odsX.x;\n"
-            << "#declare odsXY = odsX.y;\n"
-            << "#declare odsXZ = odsX.z;\n"
-            << "#declare odsYX = odsY.x;\n"
-            << "#declare odsYY = odsY.y;\n"
-            << "#declare odsYZ = odsY.z;\n"
-            << "#declare odsZX = -odsZ.x;\n"
-            << "#declare odsZY = -odsZ.y;\n"
-            << "#declare odsZZ = -odsZ.z;\n";
-
-    outFile << "camera {\n"
-            << "user_defined\n"
-            << "location {\n"
-            << "function { -(odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXX + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZX) }\n"
-            << "function {   odsLocationY + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXY + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZY  }\n"
-            << "function {   odsLocationZ + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZZ  }\n"
-            << "}\n"
-            << "direction {\n"
-            << "function { -((sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXX + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYX + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZX) }\n"
-            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXY + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYY + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZY  }\n"
-            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXZ + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYZ + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZZ  }\n"
-            << "}\n"
-            << "}\n";
-
-    outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
-            << "parallel\n"
-            << "point_at " << -QVector3D(-1, 1, 2) << "\n"
-            << "rotate " << -camera->getRotation() << "\n"
-            << "}\n";
-}
-
 void setBackgroundColor(QTextStream& outFile, const QColor & color)
 {
     outFile << "background{color " << color << "}\n";
@@ -137,11 +81,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
     QTextStream outFile(&out);
     createPOVFile(outFile);
 
-    auto camera = session->currentCamera;
-    if (renderSettings->cam360())
-        set360Camera(outFile, camera, camera->count() > 1);
-    else
-        camera->writePOVCamera(outFile, camera->count() > 1);
+    session->currentCamera->writePOVCamera(outFile, true);
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ucBackgroundColor);
@@ -312,11 +252,7 @@ void MovieMaker::captureScene1_(QString suffix, Session* session)
     QTextStream outFile(&out);
     createPOVFile(outFile);
 
-    auto camera = session->currentCamera;
-    if (renderSettings->cam360())
-        set360Camera(outFile, camera, false);
-    else
-        camera->writePOVCamera(outFile, camera->count() > 1);
+    session->currentCamera->writePOVCamera(outFile, false);
 
     auto& buffer = Viewport::getBuffer();
     setBackgroundColor(outFile, buffer.ucBackgroundColor);
