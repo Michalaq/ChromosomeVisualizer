@@ -262,6 +262,7 @@ QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 
 Label {
 	min-width: 125px;
+	max-width: 125px;
 	min-height: 30px;
     max-height: 30px;
 }

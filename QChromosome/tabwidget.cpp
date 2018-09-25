@@ -150,6 +150,9 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     // step
     connect(ui->spinBox_5, QOverload<int>::of(&SpinBox::valueChanged), this, &TabWidget::updateFrames);
 
+    // save (image)
+    connect(ui->checkBox, &QCheckBox::clicked, ui->widget_3, &QWidget::setEnabled);
+
     // format
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& value) {
         ui->spinBox->setReadOnly(value != "PNG" && value != "PPM");
@@ -172,15 +175,14 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
         }
     });
 
+    // save (translator)
+    connect(ui->checkBox_3, &QCheckBox::clicked, ui->widget_4, &QWidget::setEnabled);
+
     // antialias
-    connect(ui->checkBox_6, &QCheckBox::clicked, [this](bool checked) {
-        ui->widget->setEnabled(checked);
-    });
+    connect(ui->checkBox_6, &QCheckBox::clicked, ui->widget, &QWidget::setEnabled);
 
     // jitter
-    connect(ui->checkBox_7, &QCheckBox::clicked, [this](bool checked) {
-        ui->widget_2->setEnabled(checked);
-    });
+    connect(ui->checkBox_7, &QCheckBox::clicked, ui->widget_2, &QWidget::setEnabled);
 
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
