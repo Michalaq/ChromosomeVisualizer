@@ -67,6 +67,9 @@ QSlider::sub-page {
    </item>
    <item row="1" column="1">
     <widget class="SpinBox" name="spinBox">
+     <property name="suffix">
+      <string>%</string>
+     </property>
      <property name="minimum">
       <number>0</number>
      </property>
