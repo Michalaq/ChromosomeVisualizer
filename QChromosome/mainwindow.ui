@@ -380,7 +380,12 @@ Label {
 	min-height: 30px;
 	max-height: 30px;
 	color: lightgray;
-}</string>
+}
+
+QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
+	color: #4d4d4d;
+}
+</string>
   </property>
   <property name="dockNestingEnabled">
    <bool>true</bool>

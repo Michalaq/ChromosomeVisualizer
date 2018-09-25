@@ -22,7 +22,9 @@ Camera::Camera(Session *s, QWidget *parent)
       nearClipping(.3),
       farClipping(1000.),
       session(s),
-      id(s->cameraBuffer.emplace_back())
+      id(s->cameraBuffer.emplace_back()),
+      mode(CM_Mono),
+      eyeSeparation(6.5)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -64,7 +66,9 @@ Camera::Camera(const Camera& camera)
       farClipping(camera.farClipping),
       session(camera.session),
       id(camera.session->cameraBuffer.emplace_back()),
-      cameraUniformBuffer(camera.cameraUniformBuffer)
+      cameraUniformBuffer(camera.cameraUniformBuffer),
+      mode(camera.mode),
+      eyeSeparation(camera.eyeSeparation)
 {
     resize(camera.size());
 
@@ -712,4 +716,24 @@ void Camera::callibrate(const QVector<VizBallInstance> &atoms, qreal scale)
     }
 
     setPosition(eye + (dxr - dxl) / 2 * tha * x + (dyr - dyl) / 2 * tva * y + qMax((dxr + dxl) / 2, (dyr + dyl) / 2) * z);
+}
+
+Camera::Mode Camera::getMode() const
+{
+    return mode;
+}
+
+void Camera::setMode(Mode cm)
+{
+    mode = cm;
+}
+
+qreal Camera::getEyeSeparation() const
+{
+    return eyeSeparation;
+}
+
+void Camera::setEyeSeparation(qreal es)
+{
+    eyeSeparation = es;
 }

@@ -2,7 +2,7 @@
 
 #include <QStyledItemDelegate>
 
-ComboBox::ComboBox(QWidget *parent) : QComboBox(parent), multiple(false)
+ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
 {
     setItemDelegate(new QStyledItemDelegate(this));
 }
@@ -14,12 +14,7 @@ ComboBox::~ComboBox()
 
 void ComboBox::setMultipleValues()
 {
-    bool b = blockSignals(true);
-
-    multiple = true;
-    QComboBox::setCurrentIndex(-1);
-
-    blockSignals(b);
+    setCurrentIndex(-1, false);
 }
 
 void ComboBox::setCurrentIndex(int index, bool spontaneous)
@@ -29,7 +24,6 @@ void ComboBox::setCurrentIndex(int index, bool spontaneous)
     if (!spontaneous)
         b = blockSignals(true);
 
-    multiple = false;
     QComboBox::setCurrentIndex(index);
 
     if (!spontaneous)
@@ -71,7 +65,7 @@ void ComboBox::paintEvent(QPaintEvent *)
     painter.drawComplexControl(QStyle::CC_ComboBox, opt);
 
     // draw the icon and text
-    if (multiple)
+    if (currentIndex() == -1)
         opt.currentText = "<< multiple values >>";
 
     painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
