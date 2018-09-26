@@ -302,7 +302,7 @@ void TabWidget::writeINIFile(QFile *ini) const
 
     stream << "Output_Alpha=" << (ui->checkBox_2->isChecked() ? "on" : "off") << "\n";
 
-    if (ui->spinBox_3->value() != ui->spinBox_4->value())
+    if (ui->checkBox_4->isChecked() && ui->spinBox_3->value() != ui->spinBox_4->value())
     {
         stream << "\n; Shell-out to operating system\n";
 

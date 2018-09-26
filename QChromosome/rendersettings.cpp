@@ -80,11 +80,6 @@ int RenderSettings::framerate() const
     return ui->spinBox->value();
 }
 
-bool RenderSettings::overlays() const
-{
-    return ui->checkBox_4->isChecked();
-}
-
 bool RenderSettings::render() const
 {
     return ui->checkBox_2->isChecked();
