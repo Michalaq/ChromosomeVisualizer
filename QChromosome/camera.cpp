@@ -601,8 +601,6 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
     switch (mode)
     {
     case CM_Mono:
-    case CM_Left:
-    case CM_Right:
         if (interpolate)
         {
             stream << "#declare MySplinePos = \n";
@@ -709,6 +707,117 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << "point_at " << -QVector3D(-1, 1, 2) << "\n"
                << "rotate -odsAngles\n"
                << "}\n";
+        break;
+
+    case CM_Left:
+        stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
+
+        if (interpolate)
+            stream << "#declare odsLocation = MySplinePos(clock);\n"
+                   << "#declare odsAngles = MySplineAng(clock);\n";
+        else
+            stream << "#declare odsLocation = " << getPosition() << ";\n"
+                   << "#declare odsAngles = " << getRotation() << ";\n";
+
+        stream << "#declare odsX = <1, 0, 0>;\n"
+               << "#declare odsY = <0, 1, 0>;\n"
+               << "#declare odsZ = <0, 0, 1>;\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+        stream << "#declare odsLocationX = odsLocation.x;\n"
+               << "#declare odsLocationY = odsLocation.y;\n"
+               << "#declare odsLocationZ = odsLocation.z;\n"
+               << "#declare odsXX = -odsX.x;\n"
+               << "#declare odsXY = odsX.y;\n"
+               << "#declare odsXZ = odsX.z;\n"
+               << "#declare odsYX = -odsY.x;\n"
+               << "#declare odsYY = odsY.y;\n"
+               << "#declare odsYZ = odsY.z;\n"
+               << "#declare odsZX = -odsZ.x;\n"
+               << "#declare odsZY = odsZ.y;\n"
+               << "#declare odsZZ = odsZ.z;\n";
+
+        stream << "camera {\n"
+               << "user_defined\n"
+               << "location {\n"
+               << "function { odsLocationX - cos(x * 2 * pi) * odsIPD/2 * odsXX + sin(x * 2 * pi) * odsIPD/2 * odsZX }\n"
+               << "function { odsLocationY - cos(x * 2 * pi) * odsIPD/2 * odsXY + sin(x * 2 * pi) * odsIPD/2 * odsZY }\n"
+               << "function { odsLocationZ - cos(x * 2 * pi) * odsIPD/2 * odsXZ + sin(x * 2 * pi) * odsIPD/2 * odsZZ }\n"
+               << "}\n"
+               << "direction {\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXX + sin(y * pi) * odsYX - cos(x * 2 * pi) * cos(y * pi) * odsZX }\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXY + sin(y * pi) * odsYY - cos(x * 2 * pi) * cos(y * pi) * odsZY }\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXZ + sin(y * pi) * odsYZ - cos(x * 2 * pi) * cos(y * pi) * odsZZ }\n"
+               << "}\n"
+               << "}\n";
+
+        stream << "light_source {\n"
+               << QVector3D() << "," << QColor(Qt::white) << "\n"
+               << "parallel\n"
+               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "rotate -odsAngles\n"
+               << "}\n";
+        break;
+
+    case CM_Right:
+        stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
+
+        if (interpolate)
+            stream << "#declare odsLocation = MySplinePos(clock);\n"
+                   << "#declare odsAngles = MySplineAng(clock);\n";
+        else
+            stream << "#declare odsLocation = " << getPosition() << ";\n"
+                   << "#declare odsAngles = " << getRotation() << ";\n";
+
+        stream << "#declare odsX = <1, 0, 0>;\n"
+               << "#declare odsY = <0, 1, 0>;\n"
+               << "#declare odsZ = <0, 0, 1>;\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+        stream << "#declare odsLocationX = odsLocation.x;\n"
+               << "#declare odsLocationY = odsLocation.y;\n"
+               << "#declare odsLocationZ = odsLocation.z;\n"
+               << "#declare odsXX = -odsX.x;\n"
+               << "#declare odsXY = odsX.y;\n"
+               << "#declare odsXZ = odsX.z;\n"
+               << "#declare odsYX = -odsY.x;\n"
+               << "#declare odsYY = odsY.y;\n"
+               << "#declare odsYZ = odsY.z;\n"
+               << "#declare odsZX = -odsZ.x;\n"
+               << "#declare odsZY = odsZ.y;\n"
+               << "#declare odsZZ = odsZ.z;\n";
+
+        stream << "camera {\n"
+               << "user_defined\n"
+               << "location {\n"
+               << "function { odsLocationX + cos(x * 2 * pi) * odsIPD/2 * odsXX - sin(x * 2 * pi) * odsIPD/2 * odsZX }\n"
+               << "function { odsLocationY + cos(x * 2 * pi) * odsIPD/2 * odsXY - sin(x * 2 * pi) * odsIPD/2 * odsZY }\n"
+               << "function { odsLocationZ + cos(x * 2 * pi) * odsIPD/2 * odsXZ - sin(x * 2 * pi) * odsIPD/2 * odsZZ }\n"
+               << "}\n"
+               << "direction {\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXX + sin(y * pi) * odsYX - cos(x * 2 * pi) * cos(y * pi) * odsZX }\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXY + sin(y * pi) * odsYY - cos(x * 2 * pi) * cos(y * pi) * odsZY }\n"
+               << "function { sin(x * 2 * pi) * cos(y * pi) * odsXZ + sin(y * pi) * odsYZ - cos(x * 2 * pi) * cos(y * pi) * odsZZ }\n"
+               << "}\n"
+               << "}\n";
+
+        stream << "light_source {\n"
+               << QVector3D() << "," << QColor(Qt::white) << "\n"
+               << "parallel\n"
+               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "rotate -odsAngles\n"
+               << "}\n";
+        break;
     }
 }
 
