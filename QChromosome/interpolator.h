@@ -9,14 +9,9 @@
 #include <functional>
 #include <QTextStream>
 
-class SplineKeyframe
+class SplineKeyframe : public QMap<QString, double>
 {
 public:
-    QMap<QString, double>::const_iterator constFind(const QString& key) const;
-    QMap<QString, double>::const_iterator constEnd() const;
-    QMap<QString, double>::iterator insert(const QString& key, double value);
-    double value(const QString& key, double defaultValue = double()) const;
-
     void lockTime(bool b = true);
     void lockValue(bool b = true);
 
@@ -27,7 +22,6 @@ public:
     void write(QJsonObject &json) const;
 
 private:
-    QMap<QString, double> values;
     bool _timeLocked = false;
     bool _valueLocked = false;
 };
