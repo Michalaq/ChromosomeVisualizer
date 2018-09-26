@@ -156,52 +156,6 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
         int total = (fend - fbeg) * renderSettings->framerate();
         int fw1 = QString::number(total).length();
-        int fw2 = QString::number(fend).length();
-
-        if (renderSettings->overlays())
-        {
-            QImage img;
-
-            QFont f;
-            f.setFamily("RobotoMono");
-            f.setPixelSize(15);
-
-            QSize outputSize;
-            {
-                QFile file(QString("%1%2.png").arg(filename).arg(0, fw1, 10, QChar('0')));
-
-                file.open(QIODevice::ReadOnly);
-                img.load(&file, "PNG");
-                file.close();
-
-                outputSize = img.size();
-            }
-
-            QTransform t;
-            t.translate(outputSize.width(), 0);
-            t.scale(qreal(outputSize.height()) / 240, qreal(outputSize.height()) / 240);
-
-            for (int i = 0; i <= total; i++)
-            {
-                QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
-
-                file.open(QIODevice::ReadOnly);
-                img.load(&file, "PNG");
-                file.close();
-
-                QPainter p(&img);
-                p.setRenderHint(QPainter::Antialiasing);
-                p.setPen(Qt::white);
-                p.setFont(f);
-                p.setTransform(t);
-
-                p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
-
-                file.open(QIODevice::WriteOnly);
-                img.save(&file, "PNG");
-                file.close();
-            }
-        }
 
         auto fr = session->projectSettings->getFPS() * renderSettings->framerate();
 

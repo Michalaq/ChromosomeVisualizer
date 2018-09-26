@@ -302,6 +302,13 @@ void TabWidget::writeINIFile(QFile *ini) const
 
     stream << "Output_Alpha=" << (ui->checkBox_2->isChecked() ? "on" : "off") << "\n";
 
+    if (ui->spinBox_3->value() != ui->spinBox_4->value())
+    {
+        stream << "\n; Shell-out to operating system\n";
+
+        stream << "Post_Frame_Command=convert -pointsize 20 -fill white -draw 'text 5,20 \"Time: %k\" text 5,45 \"Frame: %n\"' %o %o\n";
+    }
+
     stream << "\n; Tracing options\n";
 
     stream << "Quality=" << ui->spinBox_6->value() << "\n";
