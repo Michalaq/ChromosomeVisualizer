@@ -235,7 +235,8 @@ void TabWidget::setLastFrame(int time)
 {
     ui->spinBox_4->setMaximum(time);
 }
-
+#include "rendersettings.h"
+#include <QDir>
 void TabWidget::writeINIFile(QFile *ini) const
 {
     QTextStream stream(ini);
@@ -302,11 +303,19 @@ void TabWidget::writeINIFile(QFile *ini) const
 
     stream << "Output_Alpha=" << (ui->checkBox_2->isChecked() ? "on" : "off") << "\n";
 
-    if (ui->checkBox_4->isChecked() && ui->spinBox_3->value() != ui->spinBox_4->value())
+    if (ui->spinBox_3->value() != ui->spinBox_4->value())
     {
         stream << "\n; Shell-out to operating system\n";
 
-        stream << "Post_Frame_Command=convert -pointsize 20 -fill white -draw 'text 5,20 \"Time: %k\" text 5,45 \"Frame: %n\"' %o %o\n";
+        stream << "Post_Scene_Command=ffmpeg"
+               << " -y"
+               << " -framerate " << session->projectSettings->getFPS() * ui->spinBox_2->value()
+               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d.png"
+               << " " << QDir::current().filePath(RenderSettings::getInstance()->saveFile() + ".avi")
+               << "\n";
+
+        if (ui->checkBox_4->isChecked())
+            stream << "Post_Frame_Command=convert -pointsize 20 -fill white -draw 'text 5,20 \"Time: %k\" text 5,45 \"Frame: %n\"' %o %o\n";
     }
 
     stream << "\n; Tracing options\n";

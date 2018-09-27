@@ -108,7 +108,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
         QStringList argv;
         argv << "-D"
              << "+V"
-             << "+I" + renderSettings->saveFile() + ".pov";
+             << "+I" + renderSettings->saveFile();
 
         QRegularExpression re1("Rendering frame (\\d+) of (\\d+)");
         QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
@@ -154,25 +154,8 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
         emit progressChanged(101);
 
-        int total = (fend - fbeg) * renderSettings->framerate();
-        int fw1 = QString::number(total).length();
-
-        auto fr = session->projectSettings->getFPS() * renderSettings->framerate();
-
-        argv.clear();
-        argv << "-y"
-             << "-framerate" << QString::number(fr)
-             << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
-             << "-c:v" << "libx264"
-             << "-r" << QString::number(fr)
-             << "-pix_fmt" << "yuv420p"
-             << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
-
-        p.start("ffmpeg", argv);
-        p.waitForFinished(-1);
-
         if (renderSettings->openFile())
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4")));
+            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + ".avi")));
     }
 #endif
 }
