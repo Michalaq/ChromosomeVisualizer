@@ -68,11 +68,13 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 {
     QTemporaryDir dir;
 
-    QFile ini(dir.filePath("povray.ini"));
+    QFile iniFile(dir.filePath("povray.ini"));
+    iniFile.open(QIODevice::WriteOnly);
 
-    ini.open(QIODevice::WriteOnly);
-    session->renderSettings->writeINIFile(&ini);
-    ini.close();
+    QTextStream iniStream(&iniFile);
+    *session->renderSettings << iniStream;
+
+    iniFile.close();
 
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + '/' + renderSettings->saveFile();
@@ -95,7 +97,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
     if (renderSettings->exportPOV())
     {
-        ini.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 
@@ -176,11 +178,13 @@ void MovieMaker::captureScene1_(QString suffix, Session* session)
 {
     QTemporaryDir dir;
 
-    QFile ini(dir.filePath("povray.ini"));
+    QFile iniFile(dir.filePath("povray.ini"));
+    iniFile.open(QIODevice::WriteOnly);
 
-    ini.open(QIODevice::WriteOnly);
-    session->renderSettings->writeINIFile(&ini);
-    ini.close();
+    QTextStream iniStream(&iniFile);
+    *session->renderSettings << iniStream;
+
+    iniFile.close();
 
     auto renderSettings = RenderSettings::getInstance();
     QString filename = dir.path() + "/" + renderSettings->saveFile();
@@ -203,7 +207,7 @@ void MovieMaker::captureScene1_(QString suffix, Session* session)
 
     if (renderSettings->exportPOV())
     {
-        ini.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
+        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
         QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
     }
 

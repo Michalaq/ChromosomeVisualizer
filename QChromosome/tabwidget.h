@@ -2,7 +2,7 @@
 #define TABWIDGET_H
 
 #include <QTabWidget>
-#include <QFile>
+#include <QTextStream>
 
 namespace Ui {
 class TabWidget;
@@ -27,7 +27,7 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
-    void writeINIFile(QFile* ini) const;
+    QTextStream& operator<<(QTextStream &stream) const;
 
 protected:
     void connectNotify(const QMetaMethod& signal);
