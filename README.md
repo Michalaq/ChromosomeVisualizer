@@ -13,7 +13,6 @@ Chromosome Visualizer is based on few components required for it to work correct
 6.  **libprotobuf-dev protobuf-compiler** -- required for binary format support
 7.  **gcc, version >= 5.0** -- required for C++14 support
 8.  **cmake, version >= 2.8** -- required for compilation of libprotostream
-9.  **imagemagick, version >= 6.8** -- required for painting overlays
 
 
 Installation
@@ -25,4 +24,4 @@ To install Chromosome Visualizer:
       * set QTDIR to path to the Qt installation directory (e.g. /home/username/Qt/5.9.3/gcc_64)
       * set DESTDIR to the desired location of binary files
 3.  Run ./install.sh with root privileges. The executable should appear in /usr/local/bin.
-4.  To paint overlays, make sure that shell-out is allowed in povray.conf.
+4.  To enable composing animation and painting overlays, make sure that shell-out is allowed in povray.conf.

@@ -309,13 +309,15 @@ void TabWidget::writeINIFile(QFile *ini) const
 
         stream << "Post_Scene_Command=ffmpeg"
                << " -y"
+               << " -start_number " << startFrame
                << " -framerate " << session->projectSettings->getFPS() * ui->spinBox_2->value()
-               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d.png"
-               << " " << QDir::current().filePath(RenderSettings::getInstance()->saveFile() + ".avi")
-               << "\n";
+               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d.png";
 
         if (ui->checkBox_4->isChecked())
-            stream << "Post_Frame_Command=convert -pointsize 20 -fill white -draw 'text 5,20 \"Time: %k\" text 5,45 \"Frame: %n\"' %o %o\n";
+            stream << " -vf \"[in]drawtext=text='%{pts\\:hms\\:" << 1. * ui->spinBox_3->value() / session->projectSettings->getFPS() << "}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/" << endFrame - startFrame + 1 << " (%{eif\\:n+"<< startFrame <<"\\:d} F)': x=10: y=15+lh: fontcolor=white[out]\"";
+
+        stream << " " << QDir::current().filePath(RenderSettings::getInstance()->saveFile() + ".avi")
+               << "\n";
     }
 
     stream << "\n; Tracing options\n";

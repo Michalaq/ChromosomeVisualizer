@@ -31,9 +31,6 @@ public:
     /* Open File After Rendering  */
     bool openFile() const;
 
-    /* Framerate */
-    int framerate() const;
-
     bool render() const;
     bool exportPOV() const;
     QString POVfileName() const;

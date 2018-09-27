@@ -75,11 +75,6 @@ bool RenderSettings::openFile() const
     return ui->openFileCheckBox->isChecked();
 }
 
-int RenderSettings::framerate() const
-{
-    return ui->spinBox->value();
-}
-
 bool RenderSettings::render() const
 {
     return ui->checkBox_2->isChecked();
