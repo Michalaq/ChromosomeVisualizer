@@ -354,6 +354,31 @@ QTextStream& TabWidget::operator<<(QTextStream& stream) const
     return stream;
 }
 
+QPair<int, int> TabWidget::getInterval() const
+{
+    return {ui->spinBox_3->value(), ui->spinBox_4->value()};
+}
+
+QDir TabWidget::getOutputDir() const
+{
+    return QFileInfo(defaultPath, ui->lineEdit->text()).dir();
+}
+
+QDir TabWidget::getTranslatorDir() const
+{
+    return QFileInfo(defaultPath, ui->lineEdit_2->text()).dir();
+}
+
+QString TabWidget::getOutputName() const
+{
+    return QFileInfo(ui->lineEdit->text()).completeBaseName();
+}
+
+QString TabWidget::getTranslatorName() const
+{
+    return QFileInfo(ui->lineEdit_2->text()).completeBaseName();
+}
+
 #include <QMetaMethod>
 
 void TabWidget::connectNotify(const QMetaMethod &signal)

@@ -3,6 +3,7 @@
 
 #include <QTabWidget>
 #include <QTextStream>
+#include <QDir>
 
 namespace Ui {
 class TabWidget;
@@ -28,6 +29,14 @@ public:
     void setLastFrame(int time);
 
     QTextStream& operator<<(QTextStream &stream) const;
+
+    QPair<int, int> getInterval() const;
+
+    QDir getOutputDir() const;
+    QDir getTranslatorDir() const;
+
+    QString getOutputName() const;
+    QString getTranslatorName() const;
 
 protected:
     void connectNotify(const QMetaMethod& signal);
