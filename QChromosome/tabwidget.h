@@ -30,7 +30,10 @@ public:
 
     QTextStream& operator<<(QTextStream &stream) const;
 
-    QPair<int, int> getInterval() const;
+    QPair<int, int> frameRange() const;
+
+    bool saveOutput() const;
+    bool saveTraslator() const;
 
     QDir getOutputDir() const;
     QDir getTranslatorDir() const;

@@ -353,9 +353,19 @@ QTextStream& TabWidget::operator<<(QTextStream& stream) const
     return stream;
 }
 
-QPair<int, int> TabWidget::getInterval() const
+QPair<int, int> TabWidget::frameRange() const
 {
     return {ui->spinBox_3->value(), ui->spinBox_4->value()};
+}
+
+bool TabWidget::saveOutput() const
+{
+    return ui->checkBox->isChecked();
+}
+
+bool TabWidget::saveTraslator() const
+{
+    return ui->checkBox_3->isChecked();
 }
 
 QDir TabWidget::getOutputDir() const

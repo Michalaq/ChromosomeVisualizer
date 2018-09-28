@@ -63,7 +63,8 @@ void MovieMaker::captureScene(Session* session)
             return;
     }
 
-    auto interval = session->renderSettings->getInterval();
+    auto range = session->renderSettings->frameRange();
+    bool interpolate = range.first != range.second;
 
     auto dir = new QTemporaryDir();
     history.append(dir);
@@ -85,7 +86,7 @@ void MovieMaker::captureScene(Session* session)
     QTextStream povStream(&povFile);
     createPOVFile(povStream);
 
-    session->currentCamera->writePOVCamera(povStream, interval.first != interval.second);
+    session->currentCamera->writePOVCamera(povStream, interpolate);
 
     auto& buffer_ = Viewport::getBuffer();
     setBackgroundColor(povStream, buffer_.ucBackgroundColor);
@@ -93,10 +94,7 @@ void MovieMaker::captureScene(Session* session)
 
     Material::writePOVMaterials(povStream);
 
-    if (interval.first == interval.second)
-        session->simulation->writePOVFrame(povStream, interval.first);
-    else
-        session->simulation->writePOVFrames(povStream, interval.first, interval.second);
+    session->simulation->writePOVFrames(povStream, range.first, range.second);
 
     povStream.flush();
     povFile.close();
@@ -154,11 +152,11 @@ void MovieMaker::captureScene(Session* session)
                 buffer.clear();
         });
 
-        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interval,renderSettings,dir] {
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,renderSettings,dir] {
             emit progressChanged(101);
 
             if (renderSettings->openFile())
-                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(renderSettings->saveFile() + (interval.first == interval.second ? ".png" : ".avi"))));
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(renderSettings->saveFile() + (interpolate ? ".avi" : ".png"))));
 
             p.disconnect();
         });

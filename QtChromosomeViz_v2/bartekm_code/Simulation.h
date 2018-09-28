@@ -28,7 +28,6 @@ public:
     frameNumber_t getPreviousTime(frameNumber_t time) const;
     TreeModel* getModel();
 
-    void writePOVFrame(QTextStream &stream, frameNumber_t f);
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
 
 signals:
