@@ -519,16 +519,9 @@ void MainWindow::goToPreviousFrame()
     session->mediaPanel->goToPreviousFrame();
 }
 
-void MainWindow::capture() const
+void MainWindow::render() const
 {
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(session, suffix);
-}
-
-void MainWindow::captureMovie() const
-{
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
+    movieMaker->captureScene(session);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)

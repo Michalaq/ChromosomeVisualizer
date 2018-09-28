@@ -2,10 +2,8 @@
 
 MovieMaker* MovieMaker::instance = nullptr;
 
-#include "rendersettings.h"
-
-#include <QSettings>
-#include <QProcess>
+const QRegularExpression MovieMaker::re1 = QRegularExpression("Rendering frame (\\d+) of (\\d+)");
+const QRegularExpression MovieMaker::re2 = QRegularExpression("Rendered (\\d+) of (\\d+) pixels");
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
@@ -17,9 +15,14 @@ QTextStream& operator<<(QTextStream& out, const QColor & col)
     return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
 }
 
-MovieMaker::MovieMaker(QObject *parent) : QThread(parent)
+MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
 {
 
+}
+
+MovieMaker::~MovieMaker()
+{
+    qDeleteAll(history);
 }
 
 MovieMaker *MovieMaker::getInstance()
@@ -45,30 +48,28 @@ void setFog(QTextStream& outFile, const QColor & color, float transmittance, con
 
 #include <QMessageBox>
 #include <QTemporaryDir>
+#include "rendersettings.h"
 #include "viewport.h"
-#include <QRegularExpression>
-#include <QPainter>
-
-void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suffix)
-{
-    if (isRunning())
-    {
-        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
-        return;
-    }
-
-    snapshot = false; fbeg_ = fbeg; fend_ = fend; suffix_ = suffix; session_ = session;
-    start();
-}
-
 #include <QDesktopServices>
 #include <QUrl>
 
-void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* session)
+void MovieMaker::captureScene(Session* session)
 {
-    QTemporaryDir dir;
+    if (p.state() != QProcess::NotRunning)
+    {
+        if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
+            p.kill();
+        else
+            return;
+    }
 
-    QFile iniFile(dir.filePath("povray.ini"));
+    auto interval = session->renderSettings->getInterval();
+
+    auto dir = new QTemporaryDir();
+    history.append(dir);
+
+    // write INI file
+    QFile iniFile(dir->filePath("povray.ini"));
     iniFile.open(QIODevice::WriteOnly);
 
     QTextStream iniStream(&iniFile);
@@ -76,49 +77,52 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
     iniFile.close();
 
+    // write POV file
     auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir.path() + '/' + renderSettings->saveFile();
-    QFile out(filename + ".pov");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    createPOVFile(outFile);
+    QString filename = dir->path() + '/' + renderSettings->saveFile();
+    QFile povFile(filename + ".pov");
+    povFile.open(QFile::WriteOnly | QFile::Truncate);
+    QTextStream povStream(&povFile);
+    createPOVFile(povStream);
 
-    session->currentCamera->writePOVCamera(outFile, true);
+    session->currentCamera->writePOVCamera(povStream, interval.first != interval.second);
 
-    auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ucBackgroundColor);
-    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
+    auto& buffer_ = Viewport::getBuffer();
+    setBackgroundColor(povStream, buffer_.ucBackgroundColor);
+    if (buffer_.ubEnableFog) setFog(povStream, buffer_.ucFogColor, 1. - buffer_.ufFogStrength, buffer_.ufFogDistance);
 
-    Material::writePOVMaterials(outFile);
+    Material::writePOVMaterials(povStream);
 
-    session->simulation->writePOVFrames(outFile, fbeg, fend);
+    if (interval.first == interval.second)
+        session->simulation->writePOVFrame(povStream, interval.first);
+    else
+        session->simulation->writePOVFrames(povStream, interval.first, interval.second);
 
-    outFile.flush();
+    povStream.flush();
+    povFile.close();
 
+    // translator
     if (renderSettings->exportPOV())
     {
-        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
-        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + ".ini"));
+        povFile.copy(QDir::current().filePath(renderSettings->POVfileName() + ".pov"));
     }
 
 #ifdef Q_OS_UNIX
+    // tracing
     if (renderSettings->render())
     {
-        QProcess p;
-        p.setWorkingDirectory(dir.path());
+        p.setWorkingDirectory(dir->path());
 
         QStringList argv;
         argv << "-D"
              << "+V"
              << "+I" + renderSettings->saveFile();
 
-        QRegularExpression re1("Rendering frame (\\d+) of (\\d+)");
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
-        QByteArray buffer;
+        buffer.clear();
+        cf = 1; tf = 1;
 
-        int cf = 1, tf = 1;
-
-        p.connect(&p, &QProcess::readyReadStandardError, [&] {
+        p.connect(&p, &QProcess::readyReadStandardError, [this] {
             buffer += p.readAllStandardError();
 
             int offset = 0;
@@ -132,7 +136,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
                 match1 = re1.match(buffer, offset = match1.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
-            auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
+            auto match = re2.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
 
             while (match.hasMatch())
             {
@@ -141,7 +145,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
 
                 emit progressChanged(100 * ((cf - 1) * b + a) / (tf * b));
 
-                match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
+                match = re2.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
             if (match.hasPartialMatch())
@@ -150,111 +154,16 @@ void MovieMaker::captureScene_(int fbeg, int fend, QString suffix, Session* sess
                 buffer.clear();
         });
 
-        p.start("povray", argv);
-        p.waitForFinished(-1);
-        p.disconnect();
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interval,renderSettings,dir] {
+            emit progressChanged(101);
 
-        emit progressChanged(101);
+            if (renderSettings->openFile())
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(renderSettings->saveFile() + (interval.first == interval.second ? ".png" : ".avi"))));
 
-        if (renderSettings->openFile())
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + ".avi")));
-    }
-#endif
-}
-
-void MovieMaker::captureScene1(Session *session, QString suffix)
-{
-    if (isRunning())
-    {
-        QMessageBox::information(nullptr, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
-        return;
-    }
-
-    snapshot = true; suffix_ = suffix; session_ = session;
-    start();
-}
-
-void MovieMaker::captureScene1_(QString suffix, Session* session)
-{
-    QTemporaryDir dir;
-
-    QFile iniFile(dir.filePath("povray.ini"));
-    iniFile.open(QIODevice::WriteOnly);
-
-    QTextStream iniStream(&iniFile);
-    *session->renderSettings << iniStream;
-
-    iniFile.close();
-
-    auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir.path() + "/" + renderSettings->saveFile();
-    QFile out(filename + ".pov");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    createPOVFile(outFile);
-
-    session->currentCamera->writePOVCamera(outFile, false);
-
-    auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ucBackgroundColor);
-    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
-
-    Material::writePOVMaterials(outFile);
-
-    session->simulation->writePOVFrame(outFile, session->projectSettings->getDocumentTime());
-
-    outFile.flush();
-
-    if (renderSettings->exportPOV())
-    {
-        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
-        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
-    }
-
-#ifdef Q_OS_UNIX
-    if (renderSettings->render())
-    {
-        QProcess p;
-        p.setWorkingDirectory(dir.path());
-
-        QStringList argv;
-        argv << "-D"
-             << "+V"
-             << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
-             << "+I" + renderSettings->saveFile() + ".pov";
-
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
-        QByteArray buffer;
-
-        p.connect(&p, &QProcess::readyReadStandardError, [&] {
-            buffer += p.readAllStandardError();
-
-            int offset = 0;
-            auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
-
-            while (match.hasMatch())
-            {
-                int a = match.captured(1).toInt();
-                int b = match.captured(2).toInt();
-
-                emit progressChanged(100 * a / b);
-
-                match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
-            }
-
-            if (match.hasPartialMatch())
-                buffer = buffer.right(match.capturedLength());
-            else
-                buffer.clear();
+            p.disconnect();
         });
 
         p.start("povray", argv);
-        p.waitForFinished(-1);
-
-        emit progressChanged(101);
-
-        if (renderSettings->openFile())
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")));
     }
 #endif
 }
@@ -299,12 +208,4 @@ void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radi
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";
-}
-
-void MovieMaker::run()
-{
-    if (snapshot)
-        captureScene1_(suffix_, session_);
-    else
-        captureScene_(fbeg_, fend_, suffix_, session_);
 }

@@ -61,8 +61,7 @@ public slots:
     void goToPreviousFrame();
 
     /* povray */
-    void capture() const;
-    void captureMovie() const;
+    void render() const;
 
 protected:
     void keyPressEvent(QKeyEvent *event);
