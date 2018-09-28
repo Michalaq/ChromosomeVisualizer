@@ -614,8 +614,7 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    <addaction name="actionYLock"/>
    <addaction name="actionZLock"/>
    <addaction name="separator"/>
-   <addaction name="actionSnapshot"/>
-   <addaction name="actionFilm"/>
+   <addaction name="actionRender"/>
    <addaction name="actionSettings"/>
    <addaction name="separator"/>
    <addaction name="actionCamera"/>
@@ -808,25 +807,16 @@ QLineEdit {
     <string>Ctrl+A</string>
    </property>
   </action>
-  <action name="actionQuick_Render">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/render/quick</normaloff>:/render/quick</iconset>
-   </property>
-   <property name="text">
-    <string>Quick render</string>
-   </property>
-  </action>
   <action name="actionSettings">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
+     <normaloff>:/render/settings</normaloff>:/render/settings</iconset>
    </property>
    <property name="text">
-    <string>Render settings</string>
+    <string>Edit render settings...</string>
    </property>
    <property name="statusTip">
-    <string>Render settings [Shortcut Ctrl+B]</string>
+    <string>Edit render settings... [Shortcut Ctrl+B]</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
@@ -968,36 +958,6 @@ QLineEdit {
    </property>
    <property name="shortcut">
     <string>Alt+F4</string>
-   </property>
-  </action>
-  <action name="actionSnapshot">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/camera</normaloff>:/render/camera</iconset>
-   </property>
-   <property name="text">
-    <string>Capture frame</string>
-   </property>
-   <property name="statusTip">
-    <string>Capture frame [Shortcut Ctrl+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionFilm">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/camcorder</normaloff>:/render/camcorder</iconset>
-   </property>
-   <property name="text">
-    <string>Capture movie</string>
-   </property>
-   <property name="statusTip">
-    <string>Capture movie [Shortcut Shift+R]</string>
-   </property>
-   <property name="shortcut">
-    <string>Shift+R</string>
    </property>
   </action>
   <action name="actionViewport">
@@ -1215,6 +1175,21 @@ QLineEdit {
    </property>
    <property name="text">
     <string>Ping-Pong</string>
+   </property>
+  </action>
+  <action name="actionRender">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/render</normaloff>:/render/render</iconset>
+   </property>
+   <property name="text">
+    <string>Render to Picture Viewer</string>
+   </property>
+   <property name="statusTip">
+    <string>Renders the active project in the Picture Viewer [Shortcur Shift+R]</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+R</string>
    </property>
   </action>
  </widget>
@@ -1497,38 +1472,6 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>actionSnapshot</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>render()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>248</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionFilm</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>render()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>423</x>
-     <y>248</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionRecord_Active_Objects</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -1645,6 +1588,22 @@ QLineEdit {
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>goToPreviousFrame()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRender</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>render()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

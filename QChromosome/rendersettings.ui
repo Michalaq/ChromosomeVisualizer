@@ -353,7 +353,7 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/render/gear</normaloff>:/render/gear</iconset>
+           <normaloff>:/render/settings</normaloff>:/render/settings</iconset>
          </property>
          <property name="iconSize">
           <size>
