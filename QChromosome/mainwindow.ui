@@ -486,8 +486,11 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    </widget>
    <widget class="QMenu" name="menuSelection">
     <property name="title">
-     <string>Selection</string>
+     <string>Select</string>
     </property>
+    <addaction name="actionSelect"/>
+    <addaction name="actionCustom"/>
+    <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -499,7 +502,7 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    </widget>
    <widget class="QMenu" name="menuAnimation">
     <property name="title">
-     <string>Animation</string>
+     <string>Animate</string>
     </property>
     <widget class="QMenu" name="menuPlay_mode">
      <property name="title">
@@ -544,7 +547,7 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
     <addaction name="menuRecently_closed_docks"/>
     <addaction name="menuDockable_dialogs"/>
     <addaction name="separator"/>
-    <addaction name="actionMaterial_Browser"/>
+    <addaction name="actionContent_Browser"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -555,11 +558,11 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    </widget>
    <widget class="QMenu" name="menuObject">
     <property name="title">
-     <string>Objects</string>
+     <string>Create</string>
     </property>
     <widget class="QMenu" name="menuScene">
      <property name="title">
-      <string>Scene</string>
+      <string>Camera</string>
      </property>
      <addaction name="actionCamera"/>
     </widget>
@@ -577,12 +580,21 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
     <addaction name="actionYLock"/>
     <addaction name="actionZLock"/>
    </widget>
+   <widget class="QMenu" name="menuRender">
+    <property name="title">
+     <string>Render</string>
+    </property>
+    <addaction name="actionRender_to_Picture_Viewer"/>
+    <addaction name="separator"/>
+    <addaction name="actionRender_settings"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuObject"/>
-   <addaction name="menuTools"/>
    <addaction name="menuSelection"/>
+   <addaction name="menuTools"/>
    <addaction name="menuAnimation"/>
+   <addaction name="menuRender"/>
    <addaction name="menuWindows"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -604,18 +616,18 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    </attribute>
    <addaction name="actionSelect"/>
    <addaction name="actionCustom"/>
-   <addaction name="actionFocus"/>
-   <addaction name="separator"/>
    <addaction name="actionMove"/>
    <addaction name="actionRotate"/>
    <addaction name="actionScale"/>
+   <addaction name="separator"/>
+   <addaction name="actionFocus"/>
    <addaction name="separator"/>
    <addaction name="actionXLock"/>
    <addaction name="actionYLock"/>
    <addaction name="actionZLock"/>
    <addaction name="separator"/>
-   <addaction name="actionRender"/>
-   <addaction name="actionSettings"/>
+   <addaction name="actionRender_to_Picture_Viewer"/>
+   <addaction name="actionRender_settings"/>
    <addaction name="separator"/>
    <addaction name="actionCamera"/>
    <addaction name="separator"/>
@@ -736,10 +748,13 @@ QLineEdit {
      <normaloff>:/selection/rectangular</normaloff>:/selection/rectangular</iconset>
    </property>
    <property name="text">
-    <string>Select</string>
+    <string>Rectangle selection</string>
    </property>
    <property name="statusTip">
-    <string>Rectangle selection</string>
+    <string>Rectangle selection [Shortcut 0]</string>
+   </property>
+   <property name="shortcut">
+    <string>0</string>
    </property>
    <property name="cameraStatusTip" stdset="0">
     <string>Rectangle selection: Click and drag to rectangle-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
@@ -805,21 +820,6 @@ QLineEdit {
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
-   </property>
-  </action>
-  <action name="actionSettings">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/render/settings</normaloff>:/render/settings</iconset>
-   </property>
-   <property name="text">
-    <string>Edit render settings...</string>
-   </property>
-   <property name="statusTip">
-    <string>Edit render settings... [Shortcut Ctrl+B]</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
    </property>
   </action>
   <action name="actionProject_Settings">
@@ -974,7 +974,7 @@ QLineEdit {
   </action>
   <action name="actionInfo">
    <property name="text">
-    <string>Info...</string>
+    <string>About...</string>
    </property>
   </action>
   <action name="actionXLock">
@@ -1064,10 +1064,13 @@ QLineEdit {
      <normaloff>:/selection/custom</normaloff>:/selection/custom</iconset>
    </property>
    <property name="text">
-    <string>Custom</string>
+    <string>Lasso selection</string>
    </property>
    <property name="statusTip">
-    <string>Lasso selection</string>
+    <string>Lasso selection [Shortcut 8]</string>
+   </property>
+   <property name="shortcut">
+    <string>8</string>
    </property>
    <property name="cameraStatusTip" stdset="0">
     <string>Lasso Selection: Click and drag to lasso-select elements. Hold down SHIFT to add to the selection, CTRL to remove.</string>
@@ -1105,18 +1108,13 @@ QLineEdit {
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionMaterial_Browser">
-   <property name="text">
-    <string>Material Browser</string>
-   </property>
-  </action>
   <action name="actionContent_Browser">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/dialogs/world</normaloff>:/dialogs/world</iconset>
    </property>
    <property name="text">
-    <string>Open Content Browser [Shortcut Shift+F8]</string>
+    <string>Content Browser...</string>
    </property>
    <property name="statusTip">
     <string>Open Content Browser [Shortcut Shift+F8]</string>
@@ -1177,7 +1175,7 @@ QLineEdit {
     <string>Ping-Pong</string>
    </property>
   </action>
-  <action name="actionRender">
+  <action name="actionRender_to_Picture_Viewer">
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/render/render</normaloff>:/render/render</iconset>
@@ -1186,10 +1184,25 @@ QLineEdit {
     <string>Render to Picture Viewer</string>
    </property>
    <property name="statusTip">
-    <string>Renders the active project in the Picture Viewer [Shortcur Shift+R]</string>
+    <string>Renders the active project in the Picture Viewer [Shortcut Shift+R]</string>
    </property>
    <property name="shortcut">
     <string>Shift+R</string>
+   </property>
+  </action>
+  <action name="actionRender_settings">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/render/settings</normaloff>:/render/settings</iconset>
+   </property>
+   <property name="text">
+    <string>Render settings...</string>
+   </property>
+   <property name="statusTip">
+    <string>Edit render settings... [Shortcut Ctrl+B]</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
    </property>
   </action>
  </widget>
@@ -1600,7 +1613,7 @@ QLineEdit {
    </hints>
   </connection>
   <connection>
-   <sender>actionRender</sender>
+   <sender>actionRender_to_Picture_Viewer</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>render()</slot>
