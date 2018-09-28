@@ -63,6 +63,11 @@ void MovieMaker::captureScene(Session* session)
             return;
     }
 
+    auto tname = session->renderSettings->getTranslatorName();
+
+    if (session->renderSettings->saveTraslator() && tname.isEmpty() && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendering scene. Do you want to continue without saving?") == QMessageBox::No)
+        return;
+
     auto range = session->renderSettings->frameRange();
     bool interpolate = range.first != range.second;
 
@@ -100,10 +105,10 @@ void MovieMaker::captureScene(Session* session)
     povFile.close();
 
     // translator
-    if (renderSettings->exportPOV())
+    if (session->renderSettings->saveTraslator() && !tname.isEmpty())
     {
-        iniFile.copy(QDir::current().filePath(renderSettings->POVfileName() + ".ini"));
-        povFile.copy(QDir::current().filePath(renderSettings->POVfileName() + ".pov"));
+        iniFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".ini"));
+        povFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".pov"));
     }
 
 #ifdef Q_OS_UNIX
