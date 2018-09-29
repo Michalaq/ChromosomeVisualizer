@@ -44,6 +44,8 @@ public:
 
     QPair<int, int> frameRange() const;
 
+    QString getExtension() const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
@@ -66,6 +68,8 @@ private:
     TARGADialog* targaSettings;
 
     const QString defaultPath;
+
+    QString ext;
 
 signals:
     void filmRatioChanged(double);

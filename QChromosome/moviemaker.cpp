@@ -159,11 +159,11 @@ void MovieMaker::captureScene(Session* session)
             emit progressChanged(101);
 
             if (session->renderSettings->saveOutput() && !oname.isEmpty())
-                if (!QFile::copy(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png")), session->renderSettings->getOutputDir().filePath(oname + (interpolate ? ".avi" : ".png"))))
+                if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), session->renderSettings->getOutputDir().filePath(oname + "." + (interpolate ? "avi" : session->renderSettings->getExtension()))))
                     QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
 
             if (session->renderSettings->openFile())
-                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png"))));
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension()))));
         });
 
         p.start("povray", argv);

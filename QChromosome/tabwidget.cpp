@@ -149,6 +149,31 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
             connect(ui->pushButton, &QPushButton::clicked, targaSettings, &QDialog::open);
             ui->pushButton->show();
         }
+
+        switch (ui->comboBox->currentIndex())
+        {
+        case 0:
+            ext = "bmp";
+            break;
+        case 1:
+            ext = "tga";
+            break;
+        case 2:
+            ext = "exr";
+            break;
+        case 3:
+            ext = "hdr";
+            break;
+        case 4:
+            ext = "jpg";
+            break;
+        case 5:
+            ext = "png";
+            break;
+        case 6:
+            ext = "ppm";
+            break;
+        }
     });
 
     // save (translator)
@@ -284,7 +309,7 @@ QTextStream& TabWidget::operator<<(QTextStream& stream) const
                << " -y"
                << " -start_number " << startFrame
                << " -framerate " << session->projectSettings->getFPS() * ui->spinBox_2->value()
-               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d.png";
+               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d." + ext;
 
         if (ui->checkBox_4->isChecked())
             stream << " -vf \"[in]drawtext=text='%{pts\\:hms\\:" << 1. * ui->spinBox_3->value() / session->projectSettings->getFPS() << "}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/" << endFrame - startFrame + 1 << " (%{eif\\:n+"<< startFrame <<"\\:d} F)': x=10: y=15+lh: fontcolor=white[out]\"";
@@ -372,6 +397,11 @@ QString TabWidget::getTranslatorName() const
 QPair<int, int> TabWidget::frameRange() const
 {
     return {ui->spinBox_3->value(), ui->spinBox_4->value()};
+}
+
+QString TabWidget::getExtension() const
+{
+    return ext;
 }
 
 #include <QMetaMethod>
