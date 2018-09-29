@@ -32,7 +32,6 @@ MovieMaker *MovieMaker::getInstance()
 
 #include <QMessageBox>
 #include <QTemporaryDir>
-#include "rendersettings.h"
 #include "viewport.h"
 #include <QDesktopServices>
 #include <QUrl>
@@ -108,11 +107,9 @@ void MovieMaker::captureScene(Session* session)
             QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
     }
 
-    auto renderSettings = RenderSettings::getInstance();
-
 #ifdef Q_OS_UNIX
     // tracing
-    if (renderSettings->render())
+    if (session->renderSettings->render())
     {
         p.setWorkingDirectory(dir->path());
 
@@ -156,7 +153,7 @@ void MovieMaker::captureScene(Session* session)
                 buffer.clear();
         });
 
-        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,renderSettings,dir,session,oname] {
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,dir,session,oname] {
             p.disconnect();
 
             emit progressChanged(101);
@@ -165,7 +162,7 @@ void MovieMaker::captureScene(Session* session)
                 if (!QFile::copy(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png")), session->renderSettings->getOutputDir().filePath(oname + (interpolate ? ".avi" : ".png"))))
                     QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
 
-            if (renderSettings->openFile())
+            if (session->renderSettings->openFile())
                 QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png"))));
         });
 

@@ -31,8 +31,6 @@ RenderSettings::RenderSettings(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
-
-    ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 }
 
 RenderSettings::~RenderSettings()
@@ -50,6 +48,7 @@ RenderSettings* RenderSettings::getInstance()
 void RenderSettings::addTabWidget(TabWidget* tabWidget)
 {
     ui->stackedWidget->addWidget(tabWidget);
+    tabWidget->tabBar()->setStyle(new MyProxyStyle);
 }
 
 #include "session.h"
@@ -58,35 +57,3 @@ void RenderSettings::setSession(Session* session)
 {
     ui->stackedWidget->setCurrentWidget(session->renderSettings);
 }
-
-//TODO
-QString RenderSettings::saveFile() const
-{
-    return ui->lineEdit->text();
-}
-
-bool RenderSettings::timestamp() const
-{
-    return ui->timestampCheckBox->isChecked();
-}
-
-bool RenderSettings::openFile() const
-{
-    return ui->openFileCheckBox->isChecked();
-}
-
-bool RenderSettings::render() const
-{
-    return ui->checkBox_2->isChecked();
-}
-
-bool RenderSettings::exportPOV() const
-{
-    return ui->checkBox_3->isChecked();
-}
-
-QString RenderSettings::POVfileName() const
-{
-    return ui->lineEdit_3->text();
-}
-//TODO

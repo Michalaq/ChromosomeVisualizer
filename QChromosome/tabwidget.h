@@ -30,7 +30,8 @@ public:
 
     QTextStream& operator<<(QTextStream &stream) const;
 
-    QPair<int, int> frameRange() const;
+    bool openFile() const;
+    bool render() const;
 
     bool saveOutput() const;
     bool saveTraslator() const;
@@ -40,6 +41,8 @@ public:
 
     QString getOutputName() const;
     QString getTranslatorName() const;
+
+    QPair<int, int> frameRange() const;
 
 protected:
     void connectNotify(const QMetaMethod& signal);

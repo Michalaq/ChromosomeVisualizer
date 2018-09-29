@@ -1,28 +1,6 @@
 #include "tabwidget.h"
 #include "ui_tabwidget.h"
 
-#include <QProxyStyle>
-#include <QPainter>
-
-class MyProxyStyle : public QProxyStyle
-{
-public:
-    void drawItemText(QPainter *painter, const QRect &rect, int flags, const QPalette &pal, bool enabled, const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const
-    {
-        QRect _rect(QPoint(), rect.size().transposed());
-
-        painter->save();
-
-        painter->translate(rect.center());
-        painter->rotate(90);
-        painter->translate(-_rect.center());
-
-        QProxyStyle::drawItemText(painter, _rect, Qt::AlignLeft | (flags & ~Qt::AlignHorizontal_Mask), pal, enabled, text, textRole);
-
-        painter->restore();
-    }
-};
-
 // conversion from different units to points
 static const QMap<QString, qreal> unit2pt({{"cm", 28.3464567}, {"mm", 2.83464567}, {"Inches", 72}, {"Points", 1}, {"Picas", 12}, {"Pixels/cm", 28.3464567}, {"Pixels/Inch (DPI)", 72}});
 
@@ -43,8 +21,6 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     defaultPath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
 {
     ui->setupUi(this);
-
-    tabBar()->setStyle(new MyProxyStyle);
 
     // width
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
@@ -353,9 +329,14 @@ QTextStream& TabWidget::operator<<(QTextStream& stream) const
     return stream;
 }
 
-QPair<int, int> TabWidget::frameRange() const
+bool TabWidget::openFile() const
 {
-    return {ui->spinBox_3->value(), ui->spinBox_4->value()};
+    return ui->checkBox_8->isChecked();
+}
+
+bool TabWidget::render() const
+{
+    return ui->checkBox_9->isChecked();
 }
 
 bool TabWidget::saveOutput() const
@@ -386,6 +367,11 @@ QString TabWidget::getOutputName() const
 QString TabWidget::getTranslatorName() const
 {
     return QFileInfo(ui->lineEdit_2->text()).completeBaseName();
+}
+
+QPair<int, int> TabWidget::frameRange() const
+{
+    return {ui->spinBox_3->value(), ui->spinBox_4->value()};
 }
 
 #include <QMetaMethod>

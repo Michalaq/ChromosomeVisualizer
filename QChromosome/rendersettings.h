@@ -21,21 +21,6 @@ public:
     void addTabWidget(TabWidget* tabWidget);
     void setSession(Session* session);
 
-    //TODO
-    /* Save */
-    QString saveFile() const;
-
-    /* Timestamp */
-    bool timestamp() const;
-
-    /* Open File After Rendering  */
-    bool openFile() const;
-
-    bool render() const;
-    bool exportPOV() const;
-    QString POVfileName() const;
-    //TODO
-
 private:
     explicit RenderSettings(QWidget *parent = 0);
     static RenderSettings *instance;
