@@ -58,14 +58,19 @@ void MovieMaker::captureScene(Session* session)
     if (p.state() != QProcess::NotRunning)
     {
         if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
+        {
+            p.disconnect();
             p.kill();
+            p.waitForFinished(-1);
+        }
         else
             return;
     }
 
+    auto oname = session->renderSettings->getOutputName();
     auto tname = session->renderSettings->getTranslatorName();
 
-    if (session->renderSettings->saveTraslator() && tname.isEmpty() && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendering scene. Do you want to continue without saving?") == QMessageBox::No)
+    if (((oname.isEmpty() && session->renderSettings->saveOutput()) || (tname.isEmpty() && session->renderSettings->saveTraslator())) && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendered image. Do you want to continue without saving?") == QMessageBox::No)
         return;
 
     auto range = session->renderSettings->frameRange();
@@ -84,11 +89,11 @@ void MovieMaker::captureScene(Session* session)
     iniFile.close();
 
     // write POV file
-    auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir->path() + '/' + renderSettings->saveFile();
-    QFile povFile(filename + ".pov");
-    povFile.open(QFile::WriteOnly | QFile::Truncate);
+    QFile povFile(dir->filePath("scene.pov"));
+    povFile.open(QIODevice::WriteOnly);
+
     QTextStream povStream(&povFile);
+
     createPOVFile(povStream);
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
@@ -101,15 +106,16 @@ void MovieMaker::captureScene(Session* session)
 
     session->simulation->writePOVFrames(povStream, range.first, range.second);
 
-    povStream.flush();
     povFile.close();
 
     // translator
     if (session->renderSettings->saveTraslator() && !tname.isEmpty())
     {
-        iniFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".ini"));
-        povFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".pov"));
+        if (!iniFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".ini")) || !povFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".pov")))
+            QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
     }
+
+    auto renderSettings = RenderSettings::getInstance();
 
 #ifdef Q_OS_UNIX
     // tracing
@@ -120,7 +126,7 @@ void MovieMaker::captureScene(Session* session)
         QStringList argv;
         argv << "-D"
              << "+V"
-             << "+I" + renderSettings->saveFile();
+             << "+Iscene";
 
         buffer.clear();
         cf = 1; tf = 1;
@@ -157,13 +163,17 @@ void MovieMaker::captureScene(Session* session)
                 buffer.clear();
         });
 
-        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,renderSettings,dir] {
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,renderSettings,dir,session,oname] {
+            p.disconnect();
+
             emit progressChanged(101);
 
-            if (renderSettings->openFile())
-                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(renderSettings->saveFile() + (interpolate ? ".avi" : ".png"))));
+            if (session->renderSettings->saveOutput() && !oname.isEmpty())
+                if (!QFile::copy(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png")), session->renderSettings->getOutputDir().filePath(oname + (interpolate ? ".avi" : ".png"))))
+                    QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
 
-            p.disconnect();
+            if (renderSettings->openFile())
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene") + (interpolate ? ".avi" : ".png"))));
         });
 
         p.start("povray", argv);
