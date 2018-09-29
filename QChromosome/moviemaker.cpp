@@ -12,7 +12,7 @@ QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 
 QTextStream& operator<<(QTextStream& out, const QColor & col)
 {
-    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
+    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() << ">";
 }
 
 MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
@@ -28,22 +28,6 @@ MovieMaker::~MovieMaker()
 MovieMaker *MovieMaker::getInstance()
 {
     return instance ? instance : instance = new MovieMaker;
-}
-
-void createPOVFile(QTextStream& outFile)
-{
-    outFile << "#version 3.7;\n"
-            << "global_settings { assumed_gamma 1.0 }\n";
-}
-
-void setBackgroundColor(QTextStream& outFile, const QColor & color)
-{
-    outFile << "background{color " << color << "}\n";
-}
-
-void setFog(QTextStream& outFile, const QColor & color, float transmittance, const float distance)
-{
-    outFile << "fog{color rgbt<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << transmittance << "> distance " << distance << " }\n";
 }
 
 #include <QMessageBox>
@@ -94,13 +78,22 @@ void MovieMaker::captureScene(Session* session)
 
     QTextStream povStream(&povFile);
 
-    createPOVFile(povStream);
+    povStream << "#version 3.8;\n"
+              << "global_settings { assumed_gamma 1.0 }\n";
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
 
-    auto& buffer_ = Viewport::getBuffer();
-    setBackgroundColor(povStream, buffer_.ucBackgroundColor);
-    if (buffer_.ubEnableFog) setFog(povStream, buffer_.ucFogColor, 1. - buffer_.ufFogStrength, buffer_.ufFogDistance);
+    const auto& viewport = Viewport::getBuffer();
+
+    povStream << "background{color " << QColor(viewport.ucBackgroundColor) << "}\n";
+
+    if (viewport.ubEnableFog)
+    {
+        QColor color = viewport.ucFogColor;
+        color.setAlphaF(viewport.ufFogStrength);
+
+        povStream << "fog{color " << color << " distance " << viewport.ufFogDistance << " }\n";
+    }
 
     Material::writePOVMaterials(povStream);
 
