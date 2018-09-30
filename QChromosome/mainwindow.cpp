@@ -224,10 +224,16 @@ Session* MainWindow::makeSession()
     // add action to menu
     ui->menuWindows->addAction(s->action);
     sessions->addAction(s->action);
+    remaining.append(s);
 
     connect(s->action, &QAction::toggled, [=](bool checked) {
         if (checked)
+        {
+            remaining.removeOne(s);
+            remaining.append(s);
+
             setCurrentSession(s);
+        }
         else
         {
             if (s->playForwards)
@@ -568,11 +574,26 @@ void MainWindow::closeEvent(QCloseEvent *event)
     switch (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you want to save the changes to the project \"%1\" before quitting?").arg(session->projectSettings->getFileName()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes))
     {
     case QMessageBox::Yes:
+
         saveProject();
+
     case QMessageBox::No:
-        event->accept();
-        QApplication::quit();;
+
+        remaining.removeOne(session);
+        delete session;
+
+        if (remaining.isEmpty())
+            event->accept();
+        else
+        {
+            remaining.last()->action->trigger();
+            closeEvent(event);
+        }
+
+        break;
+
     case QMessageBox::Cancel:
+
         event->ignore();
         break;
     }

@@ -100,6 +100,7 @@ private:
 
     Session* session;
     QActionGroup* sessions;
+    QList<Session*> remaining;
 };
 
 #endif // MAINWINDOW_H
