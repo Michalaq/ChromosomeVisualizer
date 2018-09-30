@@ -1,33 +1,21 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include "softslider.h"
-#include "interpolator.h"
+#include <QSlider>
 
-class Slider : public SoftSlider
+class Slider : public QSlider
 {
     Q_OBJECT
 public:
-    explicit Slider(QWidget *parent = 0);
-    ~Slider();
-
-    QSize minimumSizeHint() const;
-
-    void setSplineInterpolator(SplineInterpolator *si);
+    explicit Slider(QWidget *parent = nullptr);
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent* ev) override;
+    void mouseMoveEvent(QMouseEvent* ev) override;
 
-    void paintEvent(QPaintEvent *event);
-    void keyPressEvent(QKeyEvent *event);
+signals:
 
-private:
-    SplineInterpolator *interpolator;
-    bool movemarker;
-    int lastValue;
-    QImage pin;
+public slots:
 };
 
 #endif // SLIDER_H

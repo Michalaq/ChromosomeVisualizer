@@ -17,6 +17,9 @@ public:
     void setMultipleValues();
     void setSuffix(const QString& suffix);
 
+    void setMaximum(int max, bool spontaneous = true);
+    void setMinimum(int min, bool spontaneous = true);
+
 protected:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);

@@ -23,4 +23,5 @@ To install Chromosome Visualizer:
 2.  Provide Qt installation details for install.sh:
       * set QTDIR to path to the Qt installation directory (e.g. /home/username/Qt/5.9.3/gcc_64)
       * set DESTDIR to the desired location of binary files
-3.  Run ./install.sh. The executable should appear in /usr/local/bin.
+3.  Run ./install.sh with root privileges. The executable should appear in /usr/local/bin.
+4.  To enable composing animation and painting overlays, make sure that shell-out is allowed in povray.conf.

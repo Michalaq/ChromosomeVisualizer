@@ -2,10 +2,8 @@
 
 MovieMaker* MovieMaker::instance = nullptr;
 
-#include "rendersettings.h"
-
-#include <QSettings>
-#include <QProcess>
+const QRegularExpression MovieMaker::re1 = QRegularExpression("Rendering frame (\\d+) of (\\d+)");
+const QRegularExpression MovieMaker::re2 = QRegularExpression("Rendered (\\d+) of (\\d+) pixels");
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
@@ -14,12 +12,17 @@ QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 
 QTextStream& operator<<(QTextStream& out, const QColor & col)
 {
-    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() * col.alphaF() << ">";
+    return out << "rgbt<" << col.redF() << ", " << col.greenF() << ", " << col.blueF() << ", " << 1. - col.alphaF() << ">";
 }
 
-MovieMaker::MovieMaker(QObject *parent) : QThread(parent)
+MovieMaker::MovieMaker(QObject *parent) : QObject(parent)
 {
 
+}
+
+MovieMaker::~MovieMaker()
+{
+    qDeleteAll(history);
 }
 
 MovieMaker *MovieMaker::getInstance()
@@ -27,218 +30,98 @@ MovieMaker *MovieMaker::getInstance()
     return instance ? instance : instance = new MovieMaker;
 }
 
-#include <QFile>
-
-void prepareINIFile(const QString& filename)
-{
-    QFile out(filename + ".ini");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    auto renderSettings = RenderSettings::getInstance();
-    QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality();
-    if (renderSettings->antiAliasing())
-    {
-        outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth();
-        if (renderSettings->aaJitter())
-        {
-            outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
-        }
-        else
-        {
-            outFile << "\nJitter=off";
-        }
-    }
-    else
-    {
-        outFile << "\nAntialias=off";
-    }
-}
-
-void prepareINIFile1(const QString& filename, int fbeg, int fend)
-{
-    QFile out(filename + ".ini");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    auto renderSettings = RenderSettings::getInstance();
-    QSize size = renderSettings->outputSize();
-    outFile << "Width=" << size.width() << "\nHeight=" << size.height() * (renderSettings->cam360() ? 2 : 1)
-            << "\nQuality=" << renderSettings->quality();
-    if (renderSettings->antiAliasing())
-    {
-        outFile << "\nAntialias=on"
-                << "\nSampling_Method=" << renderSettings->aaSamplingMethod()
-                << "\nAntialias_Threshold=" << renderSettings->aaThreshold()
-                << "\nAntialias_Depth=" << renderSettings->aaDepth();
-        if (renderSettings->aaJitter())
-        {
-            outFile << "\nJitter=on"
-                    << "\nJitter_Amount=" << renderSettings->aaJitterAmount();
-        }
-        else
-        {
-            outFile << "\nJitter=off";
-        }
-    }
-    else
-    {
-        outFile << "\nAntialias=off";
-    }
-    outFile << "\nInitial_Frame=" << 0
-            << "\nFinal_Frame=" << (fend - fbeg) * renderSettings->framerate()
-            << "\nInitial_Clock=" << fbeg
-            << "\nFinal_Clock=" << fend;
-}
-
-void createPOVFile(QTextStream& outFile)
-{
-    outFile << "#version 3.7;\n"
-            << "global_settings { assumed_gamma 1.0 }\n";
-}
-
-void set360Camera(QTextStream& outFile, const Camera* camera, bool s)
-{
-    outFile << "#declare odsIPD = 0.065;\n";
-
-    if (s)
-        outFile << "#declare odsLocation = MySplinePos(clock);\n"
-                << "#declare odsAngles = MySplineAng(clock);\n";
-    else
-        outFile << "#declare odsLocation = " << camera->getPosition() << ";\n"
-                << "#declare odsAngles = " << camera->getRotation() << ";\n";
-
-    outFile << "#declare odsX = <1, 0, 0>;\n"
-            << "#declare odsY = <0, 1, 0>;\n"
-            << "#declare odsZ = <0, 0, 1>;\n"
-            << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
-            << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
-            << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
-            << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
-            << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
-            << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
-
-    outFile << "#declare odsLocationX = -odsLocation.x;\n"
-            << "#declare odsLocationY = odsLocation.y;\n"
-            << "#declare odsLocationZ = odsLocation.z;\n"
-            << "#declare odsXX = odsX.x;\n"
-            << "#declare odsXY = odsX.y;\n"
-            << "#declare odsXZ = odsX.z;\n"
-            << "#declare odsYX = odsY.x;\n"
-            << "#declare odsYY = odsY.y;\n"
-            << "#declare odsYZ = odsY.z;\n"
-            << "#declare odsZX = -odsZ.x;\n"
-            << "#declare odsZY = -odsZ.y;\n"
-            << "#declare odsZZ = -odsZ.z;\n";
-
-    outFile << "camera {\n"
-            << "user_defined\n"
-            << "location {\n"
-            << "function { -(odsLocationX + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXX + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZX) }\n"
-            << "function {   odsLocationY + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXY + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZY  }\n"
-            << "function {   odsLocationZ + cos(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsXZ + sin(((x+0.5)) * 2 * pi - pi)*odsIPD/2*select(-y,-1,+1) * odsZZ  }\n"
-            << "}\n"
-            << "direction {\n"
-            << "function { -((sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXX + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYX + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZX) }\n"
-            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXY + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYY + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZY  }\n"
-            << "function {   (sin(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsXZ + (sin(pi / 2 - select(y, 1-2*(y+0.5), 1-2*y) * pi)) * odsYZ + (-cos(((x+0.5)) * 2 * pi - pi) * cos(pi / 2 -select(y, 1-2*(y+0.5), 1-2*y) * pi) * -1) * odsZZ  }\n"
-            << "}\n"
-            << "}\n";
-
-    outFile << "light_source {\n"
-            << QVector3D() << "," << QColor(Qt::white) << "\n"
-            << "parallel\n"
-            << "point_at " << -QVector3D(-1, 1, 2) << "\n"
-            << "rotate " << -camera->getRotation() << "\n"
-            << "}\n";
-}
-
-void setBackgroundColor(QTextStream& outFile, const QColor & color)
-{
-    outFile << "background{color " << color << "}\n";
-}
-
-void setFog(QTextStream& outFile, const QColor & color, float transmittance, const float distance)
-{
-    outFile << "fog{color rgbt<" << color.redF() << ", " << color.greenF() << ", " << color.blueF() << ", " << transmittance << "> distance " << distance << " }\n";
-}
-
 #include <QMessageBox>
 #include <QTemporaryDir>
 #include "viewport.h"
-#include <QRegularExpression>
-#include <QPainter>
-
-void MovieMaker::captureScene(int fbeg, int fend, Session* session, QString suffix)
-{
-    if (isRunning())
-    {
-        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
-        return;
-    }
-
-    snapshot = false; fbeg_ = fbeg; fend_ = fend; simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix; fr_ = session->projectSettings->getFPS();
-    start();
-}
-
 #include <QDesktopServices>
 #include <QUrl>
 
-void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr)
+void MovieMaker::captureScene(Session* session)
 {
-    QTemporaryDir dir;
-    auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir.path() + '/' + renderSettings->saveFile();
-    prepareINIFile1(filename, fbeg, fend);
-    QFile out(filename + ".pov");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    createPOVFile(outFile);
-
-    if (renderSettings->cam360())
-        set360Camera(outFile, camera, camera->count() > 1);
-    else
-        camera->writePOVCamera(outFile, camera->count() > 1);
-
-    auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ucBackgroundColor);
-    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
-
-    Material::writePOVMaterials(outFile);
-
-    simulation->writePOVFrames(outFile, fbeg, fend);
-
-    outFile.flush();
-
-    if (renderSettings->exportPOV())
+    if (p.state() != QProcess::NotRunning)
     {
-        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
-        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
+        if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
+        {
+            p.disconnect();
+            p.kill();
+            p.waitForFinished(-1);
+        }
+        else
+            return;
+    }
+
+    auto oname = session->renderSettings->getOutputName();
+    auto tname = session->renderSettings->getTranslatorName();
+
+    if (((oname.isEmpty() && session->renderSettings->saveOutput()) || (tname.isEmpty() && session->renderSettings->saveTraslator())) && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendered image. Do you want to continue without saving?") == QMessageBox::No)
+        return;
+
+    auto range = session->renderSettings->frameRange();
+    bool interpolate = range.first != range.second;
+
+    auto dir = new QTemporaryDir();
+    history.append(dir);
+
+    // write INI file
+    QFile iniFile(dir->filePath("povray.ini"));
+    iniFile.open(QIODevice::WriteOnly);
+
+    QTextStream iniStream(&iniFile);
+    *session->renderSettings << iniStream;
+
+    iniFile.close();
+
+    // write POV file
+    QFile povFile(dir->filePath("scene.pov"));
+    povFile.open(QIODevice::WriteOnly);
+
+    QTextStream povStream(&povFile);
+
+    povStream << "#version 3.8;\n"
+              << "global_settings { assumed_gamma 1.0 }\n";
+
+    session->currentCamera->writePOVCamera(povStream, interpolate);
+
+    const auto& viewport = Viewport::getBuffer();
+
+    povStream << "background{color " << QColor(viewport.ucBackgroundColor) << "}\n";
+
+    if (viewport.ubEnableFog)
+    {
+        QColor color = viewport.ucFogColor;
+        color.setAlphaF(viewport.ufFogStrength);
+
+        povStream << "fog{color " << color << " distance " << viewport.ufFogDistance << " }\n";
+    }
+
+    Material::writePOVMaterials(povStream);
+
+    session->simulation->writePOVFrames(povStream, range.first, range.second);
+
+    povFile.close();
+
+    // translator
+    if (session->renderSettings->saveTraslator() && !tname.isEmpty())
+    {
+        if (!iniFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".ini")) || !povFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".pov")))
+            QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
     }
 
 #ifdef Q_OS_UNIX
-    if (renderSettings->render())
+    // tracing
+    if (session->renderSettings->render())
     {
-        QProcess p;
-        p.setWorkingDirectory(dir.path());
+        p.setWorkingDirectory(dir->path());
 
         QStringList argv;
-        argv << renderSettings->saveFile() + ".ini"
-             << "-D"
+        argv << "-D"
              << "+V"
-             << renderSettings->saveFile() + ".pov";
+             << "+Iscene";
 
-        QRegularExpression re1("Rendering frame (\\d+) of (\\d+)");
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
-        QByteArray buffer;
+        buffer.clear();
+        cf = 1; tf = 1;
 
-        int cf = 1, tf = 1;
-
-        p.connect(&p, &QProcess::readyReadStandardError, [&] {
+        p.connect(&p, &QProcess::readyReadStandardError, [this] {
             buffer += p.readAllStandardError();
 
             int offset = 0;
@@ -252,7 +135,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
                 match1 = re1.match(buffer, offset = match1.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
-            auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
+            auto match = re2.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
 
             while (match.hasMatch())
             {
@@ -261,7 +144,7 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
 
                 emit progressChanged(100 * ((cf - 1) * b + a) / (tf * b));
 
-                match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
+                match = re2.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
             if (match.hasPartialMatch())
@@ -270,159 +153,20 @@ void MovieMaker::captureScene_(int fbeg, int fend, Simulation* simulation, const
                 buffer.clear();
         });
 
-        p.start("povray", argv);
-        p.waitForFinished(-1);
-        p.disconnect();
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,dir,session,oname] {
+            p.disconnect();
 
-        emit progressChanged(101);
+            emit progressChanged(101);
 
-        int total = (fend - fbeg) * renderSettings->framerate();
-        int fw1 = QString::number(total).length();
-        int fw2 = QString::number(fend).length();
+            if (session->renderSettings->saveOutput() && !oname.isEmpty())
+                if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), session->renderSettings->getOutputDir().filePath(oname + "." + (interpolate ? "avi" : session->renderSettings->getExtension()))))
+                    QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
 
-        if (renderSettings->overlays())
-        {
-            QImage img;
-
-            QFont f;
-            f.setFamily("RobotoMono");
-            f.setPixelSize(15);
-
-            QTransform t;
-            t.translate(renderSettings->outputSize().width(), 0);
-            t.scale(qreal(renderSettings->outputSize().height()) / 240, qreal(renderSettings->outputSize().height()) / 240);
-
-            for (int i = 0; i <= total; i++)
-            {
-                QFile file(QString("%1%2.png").arg(filename).arg(i, fw1, 10, QChar('0')));
-
-                file.open(QIODevice::ReadOnly);
-                img.load(&file, "PNG");
-                file.close();
-
-                QPainter p(&img);
-                p.setRenderHint(QPainter::Antialiasing);
-                p.setPen(Qt::white);
-                p.setFont(f);
-                p.setTransform(t);
-
-                p.drawText(QRect(-320, 0, 320, 240), QString("Frame %1/%2\nTime %3").arg(i, fw1, 10, QChar('0')).arg(total).arg(fbeg + i / renderSettings->framerate(), fw2, 10, QChar('0')), Qt::AlignRight | Qt::AlignTop);
-
-                file.open(QIODevice::WriteOnly);
-                img.save(&file, "PNG");
-                file.close();
-            }
-        }
-
-        fr *= renderSettings->framerate();
-
-        argv.clear();
-        argv << "-y"
-             << "-framerate" << QString::number(fr)
-             << "-i" << renderSettings->saveFile() + "%0" + QString::number(fw1) + "d.png"
-             << "-c:v" << "libx264"
-             << "-r" << QString::number(fr)
-             << "-pix_fmt" << "yuv420p"
-             << "file:" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4");
-
-        p.start("ffmpeg", argv);
-        p.waitForFinished(-1);
-
-        if (renderSettings->openFile())
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".mp4")));
-    }
-#endif
-}
-
-void MovieMaker::captureScene1(Session *session, QString suffix)
-{
-    if (isRunning())
-    {
-        QMessageBox::information(0, "QChromosome 4D Studio", "The external renderer is calculating an image."/*" Do you want to stop it?"*/);
-        return;
-    }
-
-    snapshot = true; fn_ = session->projectSettings->getDocumentTime(); simulation_ = session->simulation; camera_ = session->currentCamera; suffix_ = suffix;
-    start();
-}
-
-void MovieMaker::captureScene1_(int fn, Simulation *simulation, const Camera* camera, QString suffix)
-{
-    QTemporaryDir dir;
-    auto renderSettings = RenderSettings::getInstance();
-    QString filename = dir.path() + "/" + renderSettings->saveFile();
-    prepareINIFile(filename);
-    QFile out(filename + ".pov");
-    out.open(QFile::WriteOnly | QFile::Truncate);
-    QTextStream outFile(&out);
-    createPOVFile(outFile);
-
-    if (renderSettings->cam360())
-        set360Camera(outFile, camera, false);
-    else
-        camera->writePOVCamera(outFile, camera->count() > 1);
-
-    auto& buffer = Viewport::getBuffer();
-    setBackgroundColor(outFile, buffer.ucBackgroundColor);
-    if (buffer.ubEnableFog) setFog(outFile, buffer.ucFogColor, 1. - buffer.ufFogStrength, buffer.ufFogDistance);
-
-    Material::writePOVMaterials(outFile);
-
-    simulation->writePOVFrame(outFile, fn);
-
-    outFile.flush();
-
-    if (renderSettings->exportPOV())
-    {
-        QFile::copy(filename + ".ini", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".ini"));
-        QFile::copy(filename + ".pov", QDir::current().filePath(renderSettings->POVfileName() + suffix + ".pov"));
-    }
-
-#ifdef Q_OS_UNIX
-    if (renderSettings->render())
-    {
-        QProcess p;
-        p.setWorkingDirectory(dir.path());
-
-        QStringList argv;
-        argv << renderSettings->saveFile() + ".ini"
-             << "-D"
-             << "+V"
-             << "+O" + QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")
-             << renderSettings->saveFile() + ".pov";
-
-        QRegularExpression re("Rendered (\\d+) of (\\d+) pixels");
-        QByteArray buffer;
-
-        p.connect(&p, &QProcess::readyReadStandardError, [&] {
-            buffer += p.readAllStandardError();
-
-            int offset = 0;
-            auto match = re.match(buffer, offset, QRegularExpression::PartialPreferFirstMatch);
-
-            while (match.hasMatch())
-            {
-                int a = match.captured(1).toInt();
-                int b = match.captured(2).toInt();
-
-                emit progressChanged(100 * a / b);
-
-                match = re.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
-            }
-
-            if (match.hasPartialMatch())
-                buffer = buffer.right(match.capturedLength());
-            else
-                buffer.clear();
+            if (session->renderSettings->openFile())
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension()))));
         });
 
         p.start("povray", argv);
-        p.waitForFinished(-1);
-
-        emit progressChanged(101);
-
-        if (renderSettings->openFile())
-            QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().filePath(renderSettings->saveFile() + suffix + ".png")));
     }
 #endif
 }
@@ -467,12 +211,4 @@ void MovieMaker::addCylinder1(QTextStream& outFile, int idA, int idB, float radi
             << " scale vlength(Atom" << idB << "Pos(clock)-Atom" << idA << "Pos(clock))"
             << " translate Atom" << idA << "Pos(clock)"
             << "}}\n";
-}
-
-void MovieMaker::run()
-{
-    if (snapshot)
-        captureScene1_(fn_, simulation_, camera_, suffix_);
-    else
-        captureScene_(fbeg_, fend_, simulation_, camera_, suffix_, fr_);
 }

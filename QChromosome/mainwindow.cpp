@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
-        QMessageBox::about(0, "About QChromosome 4D", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
+        QMessageBox::about(0, "About QChromosome 4D Studio", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
     });
 
     actionGroup->addAction(ui->actionSelect);
@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionMove->toggle();
 
-    connect(ui->actionSettings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
+    connect(ui->actionRender_settings, SIGNAL(triggered(bool)), renderSettings, SLOT(show()));
 
     connect(ui->actionPreferences, SIGNAL(triggered(bool)), preferences, SLOT(show()));
 
@@ -66,7 +66,6 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
-    connect(ui->actionMaterial_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
     connect(ui->actionContent_Browser, SIGNAL(triggered(bool)), materialBrowser, SLOT(show()));
 
     auto *ag = new QActionGroup(this);
@@ -285,6 +284,9 @@ Session* MainWindow::makeSession()
 
     connect(s, SIGNAL(documentTimeChanged(int)), ui->scene, SLOT(update()));
 
+    // add render settings to stack
+    renderSettings->addTabWidget(s->renderSettings);
+
     return s;
 }
 
@@ -336,6 +338,9 @@ void MainWindow::setCurrentSession(Session *s)
 
     // update plot
     ui->stackedWidget_5->setCurrentWidget(session->plot);
+
+    // update render settings
+    renderSettings->setSession(session);
 }
 
 void MainWindow::openProject()
@@ -519,16 +524,9 @@ void MainWindow::goToPreviousFrame()
     session->mediaPanel->goToPreviousFrame();
 }
 
-void MainWindow::capture() const
+void MainWindow::render() const
 {
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene1(session, suffix);
-}
-
-void MainWindow::captureMovie() const
-{
-    QString suffix = renderSettings->timestamp() ? QDateTime::currentDateTime().toString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss") : "";
-    movieMaker->captureScene(session->projectSettings->getPreviewMinTime(), session->projectSettings->getPreviewMaxTime(), session, suffix);
+    movieMaker->captureScene(session);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
@@ -603,7 +601,6 @@ void MainWindow::addCamera(Camera* camera)
 {
     connect(camera, SIGNAL(modelViewChanged(QMatrix4x4)), ui->scene, SLOT(update()));
     connect(camera, SIGNAL(projectionChanged(QMatrix4x4)), ui->scene, SLOT(update()));
-    connect(renderSettings, &RenderSettings::aspectRatioChanged, camera, &Camera::setAspectRatio);
     connect(camera, &SplineInterpolator::selectionChanged, [=] {
         if (camera->hasSelection())
         {

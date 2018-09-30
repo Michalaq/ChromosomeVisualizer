@@ -1,17 +1,18 @@
 #ifndef MOVIEMAKER_H
 #define MOVIEMAKER_H
 
-#include <QThread>
 #include "session.h"
+#include <QTemporaryDir>
 
-class MovieMaker : public QThread
+class MovieMaker : public QObject
 {
     Q_OBJECT
 public:
+    ~MovieMaker() override;
+
     static MovieMaker* getInstance();
 
-    void captureScene(int fbeg, int fend, Session* session, QString suffix);
-    void captureScene1(Session* session, QString suffix);
+    void captureScene(Session* session);
 
     static void addSphere(QTextStream& outFile, const QVector3D & position, float radius, int color);
     static void addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, int colorA, int colorB);
@@ -19,22 +20,21 @@ public:
     static void addSphere1(QTextStream& outFile, int id, float radius, int color);
     static void addCylinder1(QTextStream& outFile, int idA, int idB, float radiusA, float radiusB, int colorA, int colorB);
 
-protected:
-    void run() override;
-
 private:
     explicit MovieMaker(QObject* parent = 0);
 
     static MovieMaker* instance;
 
-    bool snapshot;
-    int fbeg_, fend_, fr_, fn_;
-    Simulation* simulation_;
-    const Camera* camera_;
-    QString suffix_;
+    QVector<QTemporaryDir*> history;
 
-    void captureScene_(int fbeg, int fend, Simulation* simulation, const Camera* camera, QString suffix, int fr);
-    void captureScene1_(int fn, Simulation* simulation, const Camera* camera, QString suffix);
+    QProcess p;
+
+    static const QRegularExpression re1;
+    static const QRegularExpression re2;
+
+    QByteArray buffer;
+
+    int cf, tf;
 
 signals:
     void progressChanged(int);

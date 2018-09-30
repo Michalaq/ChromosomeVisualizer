@@ -86,6 +86,14 @@ void DoubleSpinBox::setSuffix(const QString& suffix)
     QDoubleSpinBox::setSuffix(this->suffix = suffix);
 }
 
+void DoubleSpinBox::setMaximum(double max, bool spontaneous)
+{
+    if (value() > max)
+        setValue(max, spontaneous);
+
+    QDoubleSpinBox::setMaximum(max);
+}
+
 #include <QStyle>
 
 void DoubleSpinBox::focusInEvent(QFocusEvent *event)

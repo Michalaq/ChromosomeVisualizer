@@ -15,8 +15,6 @@ FileEdit::FileEdit(QWidget *parent) : LineEdit(parent)
     widgetAction->setDefaultWidget(widget);
 
     addAction(widgetAction, QLineEdit::TrailingPosition);
-
-    setType(FE_File);
 }
 
 FileEdit::~FileEdit()
@@ -32,7 +30,15 @@ void FileEdit::setType(Type t)
 
     switch (type)
     {
-    case FE_File:
+    case FE_SaveFileName:
+        connect(widget, &MediaControl::clicked, [this]() {
+            QString path = QFileDialog::getSaveFileName(0, tr("Save File"), text());
+
+            if (!path.isEmpty())
+                setText(path);
+        });
+        break;
+    case FE_OpenFileName:
         connect(widget, &MediaControl::clicked, [this]() {
             QString path = QFileDialog::getOpenFileName(0, tr("Open File"), text());
 
@@ -40,7 +46,7 @@ void FileEdit::setType(Type t)
                 setText(path);
         });
         break;
-    case FE_Directory:
+    case FE_ExistingDirectory:
         connect(widget, &MediaControl::clicked, [this]() {
             QString path = QFileDialog::getExistingDirectory(0, tr("Open Directory"), text(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 

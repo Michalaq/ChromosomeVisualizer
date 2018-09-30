@@ -1,25 +1,5 @@
 #include "interpolator.h"
 
-QMap<QString, double>::const_iterator SplineKeyframe::constFind(const QString& key) const
-{
-    return values.constFind(key);
-}
-
-QMap<QString, double>::const_iterator SplineKeyframe::constEnd() const
-{
-    return values.constEnd();
-}
-
-QMap<QString, double>::iterator SplineKeyframe::insert(const QString& key, double value)
-{
-    return values.insert(key, value);
-}
-
-double SplineKeyframe::value(const QString& key, double defaultValue) const
-{
-    return values.value(key, defaultValue);
-}
-
 void SplineKeyframe::lockTime(bool b)
 {
     _timeLocked = b;
@@ -47,7 +27,7 @@ void SplineKeyframe::read(const QJsonObject &json)
     const QJsonObject keyValues = json["Key values"].toObject();
 
     for (auto i = keyValues.begin(); i != keyValues.end(); i++)
-        values[i.key()] = i.value().toDouble();
+        insert(i.key(), i.value().toDouble());
 
     _timeLocked = json["Lock time"].toBool();
     _valueLocked = json["Lock value"].toBool();
@@ -57,8 +37,8 @@ void SplineKeyframe::write(QJsonObject &json) const
 {
     QJsonObject keyValues;
 
-    for (auto i = values.begin(); i != values.end(); i++)
-        keyValues[i.key()] = i.value();
+    for (auto i = begin(); i != end(); i++)
+        keyValues.insert(i.key(), i.value());
 
     json["Key values"] = keyValues;
     json["Lock time"] = _timeLocked;

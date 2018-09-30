@@ -128,6 +128,18 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
             c->setFarClipping(val);
     });
 
+    //connect mode
+    connect(ui->comboBox_4, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        for (auto c : cameras)
+            c->setMode(static_cast<Camera::Mode>(index));
+    });
+
+    //connect eye separation
+    connect(ui->doubleSpinBox_13, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setEyeSeparation(val);
+    });
+
     //connect base
     connect(ui->lineEdit_2, &PickWidget::picked, [this](const QPersistentModelIndex& index) {
         for (auto c : cameras)
@@ -206,6 +218,38 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
 
     auto fst = cameras.first();
     bool multiple;
+
+    //set mode
+    Camera::Mode m = fst->getMode();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (m != c->getMode())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->comboBox_4->setMultipleValues();
+    else
+        ui->comboBox_4->setCurrentIndex(m, false);
+
+    //set eye separation
+    qreal e = fst->getEyeSeparation();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (e != c->getEyeSeparation())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_13->setMultipleValues();
+    else
+        ui->doubleSpinBox_13->setValue(e, false);
 
     // set base
     QModelIndex b = fst->getBase();

@@ -43,6 +43,30 @@ public:
     int getFinish() const;
     void setFinish(int f);
 
+    double getAmbient() const;
+    void setAmbient(double a);
+
+    double getDiffuse() const;
+    void setDiffuse(double d);
+
+    double getPhong() const;
+    void setPhong(double p);
+
+    int getPhongSize() const;
+    void setPhongSize(int p);
+
+    bool getMetallic() const;
+    void setMetallic(bool m);
+
+    double getIridescence() const;
+    void setIridescence(double i);
+
+    double getIridescenceThickness() const;
+    void setIridescenceThickness(double i);
+
+    double getIridescenceTurbulence() const;
+    void setIridescenceTurbulence(double i);
+
     static Material* getDefault();
 
     void paint(QPainter *painter, QRect bounds);
@@ -91,6 +115,15 @@ private:
     int index;
     static GLBuffer<material_data_t> buffer;
     static QVector<const Material*> library;
+
+    double ambient;
+    double diffuse;
+    double phong;
+    int phongSize;
+    bool metallic;
+    double iridescence;
+    double iridescenceThickness;
+    double iridescenceTurbulence;
 };
 
 QTextStream &operator<<(QTextStream &stream, const Material &mat);

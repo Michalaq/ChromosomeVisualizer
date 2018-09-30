@@ -315,7 +315,6 @@ QLineEdit {
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_Material">
    <property name="text">
     <string>New Material</string>

@@ -1,115 +1,31 @@
 #ifndef RENDERSETTINGS_H
 #define RENDERSETTINGS_H
 
-#include <QWidget>
+#include <QMainWindow>
 
 namespace Ui
 {
     class RenderSettings;
 }
 
-class RenderSettings : public QWidget
+class Session;
+class TabWidget;
+
+class RenderSettings : public QMainWindow
 {
     Q_OBJECT
 public:
     static RenderSettings* getInstance();
     ~RenderSettings();
 
-    /* Output */
-    QSize outputSize() const; //px
-
-    /* Save */
-    QString saveFile() const;
-
-    /* Quality */
-    QString quality() const;
-
-    /* Anti-Aliasing */
-    bool antiAliasing() const;
-
-    /* AA Sampling Method */
-    QString aaSamplingMethod() const;
-
-    /* AA Threshold */
-    QString aaThreshold() const;
-
-    /* AA Jitter */
-    bool aaJitter() const;
-
-    /* AA Jitter Amount */
-    QString aaJitterAmount() const;
-
-    /* AA Depth */
-    QString aaDepth() const;
-
-    /* Timestamp */
-    bool timestamp() const;
-
-    /* Ambient */
-    QString ambient() const;
-
-    /* Diffuse */
-    QString diffuse() const;
-
-    /* Phong */
-    QString phong() const;
-
-    /* Phong Size */
-    QString phongSize() const;
-
-    /* Metallic */
-    QString metallic() const;
-
-    /* Iridescence */
-    QString iridescence() const;
-
-    /* Iridescence Thickness */
-    QString iridescenceThickness() const;
-
-    /* Iridescence Turbulence */
-    QString iridescenceTurbulence() const;
-
-    /* 360 Degrees Camera  */
-    bool cam360() const;
-
-    /* Open File After Rendering  */
-    bool openFile() const;
-
-    /* Framerate */
-    int framerate() const;
-
-    /* Paint overlays */
-    bool overlays() const;
-
-    bool render() const;
-    bool exportPOV() const;
-    QString POVfileName() const;
-
-protected:
-    void connectNotify(const QMetaMethod& signal);
+    void addTabWidget(TabWidget* tabWidget);
+    void setSession(Session* session);
 
 private:
     explicit RenderSettings(QWidget *parent = 0);
     static RenderSettings *instance;
 
     Ui::RenderSettings *ui;
-
-    qreal aspectRatio;
-    QString currentUnit;
-    QString currentResolutionUnit;
-
-    QSize outSize;
-
-    /* metric unit conversion table */
-    QHash<QString, qreal> units;
-
-    void updateOutputSize();
-
-signals:
-    void aspectRatioChanged(qreal ar);
-
-public slots:
-
 };
 
 #endif // RENDERSETTINGS_H

@@ -21,9 +21,6 @@ signals:
 
 public slots:
     void setCurrentIndex(int index, bool spontaneous = true);
-
-private:
-    bool multiple;
 };
 
 #endif // COMBOBOX_H

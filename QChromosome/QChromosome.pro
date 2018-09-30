@@ -22,7 +22,7 @@ SOURCES += \
     toolbar.cpp \
     rendersettings.cpp \
     projectsettings.cpp \
-    slider.cpp \
+    timeline.cpp \
     softslider.cpp \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
@@ -66,7 +66,12 @@ SOURCES += \
     statusbar.cpp \
     fontcombobox.cpp \
     session.cpp \
-    mediapanel.cpp
+    mediapanel.cpp \
+    customstyle.cpp \
+    tabwidget.cpp \
+    jpegdialog.cpp \
+    slider.cpp \
+    targadialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -85,7 +90,7 @@ HEADERS += \
     rendersettings.h \
     moviemaker.h \
     projectsettings.h \
-    slider.h \
+    timeline.h \
     softslider.h \
     ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h \
     ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h \
@@ -145,7 +150,12 @@ HEADERS += \
     fontcombobox.h \
     session.h \
     glbuffer.h \
-    mediapanel.h
+    mediapanel.h \
+    customstyle.h \
+    tabwidget.h \
+    jpegdialog.h \
+    slider.h \
+    targadialog.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -162,7 +172,10 @@ FORMS += mainwindow.ui \
     attributes.ui \
     cameraattributes.ui \
     importdialog.ui \
-    mediapanel.ui
+    mediapanel.ui \
+    tabwidget.ui \
+    jpegdialog.ui \
+    targadialog.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle

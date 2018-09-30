@@ -81,6 +81,19 @@ public:
 
     void callibrate(const QVector<VizBallInstance> &atoms, qreal scale = .75);
 
+    enum Mode {
+        CM_Mono,
+        CM_Symmetrical,
+        CM_Left,
+        CM_Right
+    };
+
+    Mode getMode() const;
+    void setMode(Mode cm);
+
+    qreal getEyeSeparation() const;
+    void setEyeSeparation(qreal es);
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -158,6 +171,9 @@ private:
     int id;
 
     camera_data_t cameraUniformBuffer;
+
+    Mode mode;
+    qreal eyeSeparation;
 
 signals:
     void modelViewChanged(QMatrix4x4);

@@ -4,11 +4,12 @@ Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
+    projectSettings(new ProjectSettings(this)),
+    renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
     origin(0, 0, 0),
     treeView(new TreeView),
-    projectSettings(new ProjectSettings(this)),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this, w)),
     plot(new Plot(this)),
@@ -70,6 +71,9 @@ Session::~Session()
     delete treeView;
     delete projectSettings;
     delete viewport;
+    delete mediaPanel;
+    delete plot;
+    delete renderSettings;
     delete nd;
     delete vd;
     delete td;
@@ -169,6 +173,7 @@ void Session::setFPS(int fps)
 {
     mediaPanel->setFPS(fps);
     projectSettings->setFPS(fps);
+    renderSettings->updateFrames();
 }
 
 void Session::setDocumentTime(int time)
@@ -190,6 +195,7 @@ void Session::setDocumentTime(int time)
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);
     plot->setValue(time, false);
+    renderSettings->setDocumentTime(time);
 
     SplineInterpolator::setFrame(time);
 
@@ -200,12 +206,14 @@ void Session::setMinimumTime(int time)
 {
     mediaPanel->setMinimumTime(time);
     projectSettings->setMinimumTime(time);
+    renderSettings->setMinimumTime(time);
 }
 
 void Session::setMaximumTime(int time)
 {
     mediaPanel->setMaximumTime(time);
     projectSettings->setMaximumTime(time);
+    renderSettings->setMaximumTime(time);
 }
 
 void Session::setPreviewMinTime(int time)
@@ -213,6 +221,7 @@ void Session::setPreviewMinTime(int time)
     mediaPanel->setPreviewMinTime(time);
     projectSettings->setPreviewMinTime(time);
     plot->setSoftMinimum(time);
+    renderSettings->setPreviewMinTime(time);
 }
 
 void Session::setPreviewMaxTime(int time)
@@ -220,6 +229,7 @@ void Session::setPreviewMaxTime(int time)
     mediaPanel->setPreviewMaxTime(time);
     projectSettings->setPreviewMaxTime(time);
     plot->setSoftMaximum(time);
+    renderSettings->setPreviewMaxTime(time);
 }
 
 void Session::setLastFrame(int time)
@@ -232,6 +242,7 @@ void Session::setLastFrame(int time)
     mediaPanel->setLastFrame(lastFrame);
     projectSettings->setLastFrame(lastFrame);
     plot->setMaximum(lastFrame);
+    renderSettings->setLastFrame(lastFrame);
 
     if (expandTime)
         setMaximumTime(lastFrame);

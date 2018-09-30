@@ -17,6 +17,7 @@
 #include "materialbrowser.h"
 #include "mediapanel.h"
 #include "plot.h"
+#include "tabwidget.h"
 
 class MainWindow;
 
@@ -40,6 +41,9 @@ public:
 
     LabelAtlas labelAtlas;
 
+    ProjectSettings* projectSettings;
+    TabWidget* renderSettings;
+
     Camera* editorCamera;
     Camera* currentCamera;
     QList<Camera*> userCameras;
@@ -48,7 +52,6 @@ public:
     TreeView* treeView;
     ListView* listView;
 
-    ProjectSettings* projectSettings;
     Viewport* viewport;
 
     MediaPanel* mediaPanel;

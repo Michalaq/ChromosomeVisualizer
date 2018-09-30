@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>JPEGDialog</class>
+ <widget class="QDialog" name="JPEGDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>111</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>JPEG Settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+	background: #1a1a1a;
+	color: lightgrey;
+}
+
+QDialogButtonBox {
+	dialogbuttonbox-buttons-have-icons: 0;
+}
+
+QSlider {
+	height: 20px;
+}
+
+QSlider::groove {
+	background: #262626;
+}
+
+QSlider::handle {
+	width: 2px;
+	background: #fbbc05;
+}
+
+QSlider::sub-page {
+	background: #0044aa;
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Low</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>High</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>JPEG Quality</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="SpinBox" name="spinBox">
+     <property name="suffix">
+      <string>%</string>
+     </property>
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" colspan="2">
+    <widget class="Slider" name="horizontalSlider">
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Small file</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Large file</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>spinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>slider.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>JPEGDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>JPEGDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
