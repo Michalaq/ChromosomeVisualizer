@@ -301,23 +301,6 @@ QTextStream& TabWidget::operator<<(QTextStream& stream) const
 
     stream << "Output_Alpha=" << (ui->checkBox_2->isChecked() ? "on" : "off") << "\n";
 
-    if (ui->spinBox_3->value() != ui->spinBox_4->value())
-    {
-        stream << "\n; Shell-out to operating system\n";
-
-        stream << "Post_Scene_Command=ffmpeg"
-               << " -y"
-               << " -start_number " << startFrame
-               << " -framerate " << session->projectSettings->getFPS() * ui->spinBox_2->value()
-               << " -i %s%0" << QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() << "d." + ext;
-
-        if (ui->checkBox_4->isChecked())
-            stream << " -vf \"[in]drawtext=text='%{pts\\:hms\\:" << 1. * ui->spinBox_3->value() / session->projectSettings->getFPS() << "}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/" << endFrame - startFrame + 1 << " (%{eif\\:n+"<< startFrame <<"\\:d} F)': x=10: y=15+lh: fontcolor=white[out]\"";
-
-        stream << " %s.avi"
-               << "\n";
-    }
-
     stream << "\n; Tracing options\n";
 
     stream << "Quality=" << ui->spinBox_6->value() << "\n";
@@ -402,6 +385,31 @@ QPair<int, int> TabWidget::frameRange() const
 QString TabWidget::getExtension() const
 {
     return ext;
+}
+
+QStringList& operator<<(QStringList& list, int n)
+{
+    return list << QString::number(n);
+}
+
+QString operator+(const QString& string, int n)
+{
+    return string + QString::number(n);
+}
+
+void TabWidget::getFFmpegArgs(QStringList& argv) const
+{
+    const QString& name = "scene";
+
+    argv << "-y"
+         << "-start_number" << startFrame
+         << "-framerate" << session->projectSettings->getFPS() * ui->spinBox_2->value()
+         << "-i" << name + "%0" + QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() + "d." + ext;
+
+    if (ui->checkBox_4->isChecked())
+        argv << "-vf" << QString("[in]drawtext=text='%{pts\\:hms\\:%1}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/%2 (%{eif\\:n+%3\\:d} F)': x=10: y=15+lh: fontcolor=white[out]").arg(1. * ui->spinBox_3->value() / session->projectSettings->getFPS()).arg(endFrame - startFrame + 1).arg(startFrame);
+
+    argv << name + ".avi";
 }
 
 #include <QMetaMethod>

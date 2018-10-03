@@ -156,6 +156,12 @@ void MovieMaker::captureScene(Session* session)
         p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,dir,session,oname] {
             p.disconnect();
 
+            QStringList argv;
+            session->renderSettings->getFFmpegArgs(argv);
+
+            p.start("ffmpeg", argv);
+            p.waitForFinished(-1);
+
             emit progressChanged(101);
 
             if (session->renderSettings->saveOutput() && !oname.isEmpty())

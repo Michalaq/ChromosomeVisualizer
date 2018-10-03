@@ -46,6 +46,8 @@ public:
 
     QString getExtension() const;
 
+    void getFFmpegArgs(QStringList& argv) const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 
