@@ -34,7 +34,7 @@ private:
 
     QByteArray buffer;
 
-    int cf, tf;
+    uint64_t cf, tf;
 
 signals:
     void progressChanged(int);

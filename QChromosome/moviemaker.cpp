@@ -50,14 +50,14 @@ void MovieMaker::captureScene(Session* session)
             return;
     }
 
+    auto range = session->renderSettings->frameRange();
+    bool interpolate = range.first != range.second;
+
     auto oname = session->renderSettings->getOutputName();
     auto tname = session->renderSettings->getTranslatorName();
 
-    if (((oname.isEmpty() && session->renderSettings->saveOutput()) || (tname.isEmpty() && session->renderSettings->saveTraslator())) && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendered image. Do you want to continue without saving?") == QMessageBox::No)
+    if (((oname.isEmpty() && session->renderSettings->saveOutput() && interpolate) || (tname.isEmpty() && session->renderSettings->saveTraslator())) && QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "There is no file name specified for the rendered image. Do you want to continue without saving?") == QMessageBox::No)
         return;
-
-    auto range = session->renderSettings->frameRange();
-    bool interpolate = range.first != range.second;
 
     auto dir = new QTemporaryDir();
     history.append(dir);
@@ -77,7 +77,7 @@ void MovieMaker::captureScene(Session* session)
 
     QTextStream povStream(&povFile);
 
-    povStream << "#version 3.8;\n"
+    povStream << "#version 3.7;\n"
               << "global_settings { assumed_gamma 1.0 }\n";
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
@@ -129,8 +129,8 @@ void MovieMaker::captureScene(Session* session)
 
             while (match1.hasMatch())
             {
-                cf = match1.captured(1).toInt();
-                tf = match1.captured(2).toInt();
+                cf = match1.captured(1).toUInt();
+                tf = match1.captured(2).toUInt();
 
                 match1 = re1.match(buffer, offset = match1.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
@@ -139,8 +139,8 @@ void MovieMaker::captureScene(Session* session)
 
             while (match.hasMatch())
             {
-                int a = match.captured(1).toInt();
-                int b = match.captured(2).toInt();
+                unsigned a = match.captured(1).toUInt();
+                unsigned b = match.captured(2).toUInt();
 
                 emit progressChanged(100 * ((cf - 1) * b + a) / (tf * b));
 
