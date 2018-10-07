@@ -68,8 +68,6 @@ std::shared_ptr<Frame> PDBSimulationLayer::readFrameContents(framePositionInfo_t
     while (line.find("END") == std::string::npos) {
         if (line.substr(0, 4) == "ATOM") {
             auto a = getAtomFromString(line);
-            a.layerNo = layerId_;
-            a.inLayerId = a.id;
             atoms.push_back(a);
         } else
             if (line.substr(0, 6) == "CONECT") {
@@ -250,6 +248,8 @@ std::shared_ptr<Frame> PDBSimulationLayer::getFrame(frameNumber_t time)
             ret = cachedFrame_;
         } else {
             file_.seekg(cachedFramePositions_[cachedPosition]);
+
+            cachedTime = readFrameHeader();
             ret = readFrameContents({ cachedPosition, cachedTime });
 
             positionCachedFor_ = cachedPosition;

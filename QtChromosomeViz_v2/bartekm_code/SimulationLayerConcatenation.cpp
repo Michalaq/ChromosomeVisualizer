@@ -51,7 +51,6 @@ void SimulationLayerConcatenation::appendSimulationLayer(std::shared_ptr<Simulat
 {
     // TODO: Check compatibility with other frames
     const int layerID = layers_.size();
-    sl->setLayerId(layerId_);
     layers_.emplace_back(std::move(sl));
     connect(layers_.back().get(), &SimulationLayer::frameCountChanged,
             [this, layerID] (int frameCount) {
@@ -99,11 +98,6 @@ std::shared_ptr<Frame> SimulationLayerConcatenation::getFrame(frameNumber_t posi
     }
 
     return layers_.back()->getFrame(layers_.back()->getFrameCount());
-}
-
-void SimulationLayerConcatenation::setLayerId(int layerId)
-{
-    layerId_ = layerId;
 }
 
 frameNumber_t SimulationLayerConcatenation::getNextTime(frameNumber_t time)

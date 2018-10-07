@@ -2,8 +2,7 @@
 
 Simulation::Simulation(Session *s)
     : nextUnreadFrame_(0),
-      model(new TreeModel(s, this)),
-      session(s)
+      model(new TreeModel(s, this))
 {}
 
 Simulation::~Simulation()
@@ -102,13 +101,13 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
 
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
-    const auto offset = getFrame(0)->atoms.size();
-    layerConcatenations_.emplace_back(slc);
+    layerConcatenations_.append(slc);
+    model->setupModelData(slc);
+}
 
-    int layerId = layerConcatenations_.size() - 1;
-    slc->setLayerId(layerId);
-   
-    model->setupModelData(slc, layerId, offset);
+void Simulation::removeSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
+{
+    layerConcatenations_.removeOne(slc);
 }
 
 TreeModel* Simulation::getModel()

@@ -26,11 +26,6 @@ const int UntransformedSimulationLayer::getConnectionCount() const
     return connectionCount_;
 }
 
-void UntransformedSimulationLayer::setLayerId(int layerId)
-{
-    layerId_ = layerId;
-}
-
 SimulationLayer::SimulationLayer(std::shared_ptr<UntransformedSimulationLayer> l)
     : layer(l)
     , first(0), last(-1), stride(1)
@@ -64,11 +59,6 @@ const std::string & SimulationLayer::getSimulationLayerName() const
 const int SimulationLayer::getConnectionCount() const
 {
     return layer->getConnectionCount();
-}
-
-void SimulationLayer::setLayerId(int layerId)
-{
-    layer->setLayerId(layerId);
 }
 
 std::shared_ptr<Frame> SimulationLayer::getFrame(frameNumber_t time)

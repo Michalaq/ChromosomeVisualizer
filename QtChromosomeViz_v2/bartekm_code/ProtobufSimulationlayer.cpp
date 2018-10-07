@@ -179,8 +179,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         a.x = point.x();
         a.y = point.y();
         a.z = point.z();
-        a.layerNo = layerId_;
-        a.inLayerId = a.id;
         atoms.insert(a);
     }
 
@@ -195,8 +193,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
             a.x = point.x();
             a.y = point.y();
             a.z = point.z();
-            a.layerNo = layerId_;
-            a.inLayerId = a.id;
             atoms.insert(a);
         }
     }
@@ -231,8 +227,6 @@ std::shared_ptr<Frame> ProtobufSimulationLayer::getFrameById(frameNumber_t posit
         a.x = p.x();
         a.y = p.y();
         a.z = p.z();
-        a.layerNo = layerId_;
-        a.inLayerId = a.id;
         auto it = atoms.find(a);
         if (it != atoms.end()) {
             atoms.erase(it);

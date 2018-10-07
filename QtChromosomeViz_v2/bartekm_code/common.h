@@ -24,7 +24,6 @@ struct Atom {
     int id;
     int type;
     float x, y, z;
-    int layerNo, inLayerId;
 };
 
 inline bool operator ==(const Atom& lhs, const Atom &rhs) {

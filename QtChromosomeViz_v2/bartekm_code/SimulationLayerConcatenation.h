@@ -15,7 +15,6 @@ private:
     std::vector<frameNumber_t> aggregatedFrameCounts_;
     frameNumber_t frameCount_;
     frameNumber_t getLayerBaseFrameNumber(int layer);
-    int layerId_;
 public:
     SimulationLayerConcatenation();
     SimulationLayerConcatenation(std::shared_ptr<SimulationLayer> sl);
@@ -24,8 +23,6 @@ public:
     const std::string & getSimulationLayerConcatenationName() const;
     void appendSimulationLayer(std::shared_ptr<SimulationLayer> sl);
     int getConnectionCount() const;
-
-    void setLayerId(int layerId);
 
     // Returns a frame in absolute time.
     std::shared_ptr<Frame> getFrame(frameNumber_t position);
