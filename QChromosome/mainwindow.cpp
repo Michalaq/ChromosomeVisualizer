@@ -254,10 +254,10 @@ Session* MainWindow::makeSession()
         session->treeView->update();
         ui->scene->update();
     });
+    connect(s->simulation->getModel(), &TreeModel::cameraChanged, this, &MainWindow::changeCamera);
 
     // add tree view to objects
     ui->stackedWidget_3->addWidget(s->treeView);
-    connect(s->treeView, &TreeView::cameraChanged, this, &MainWindow::changeCamera);
     connect(s->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
 
     // add project settings to attributes

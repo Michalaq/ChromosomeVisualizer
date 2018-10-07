@@ -76,16 +76,13 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset);
+    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc);
     void colorByResidue(const QModelIndex &root);
-
-    const QVector<QPersistentModelIndex> &getIndices() const;
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
     void addCamera(Camera* camera);
     void setCurrentCamera(QModelIndex index);
-    Camera* getCurrentCamera() const;
 
     void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
     Material* removeMaterial(const QModelIndex& root, int position);
@@ -109,7 +106,6 @@ public:
 
 private:
     TreeItem *header;
-    QVector<QPersistentModelIndex> indices;
     QPersistentModelIndex currentCamera;
     Session *session;
     QSet<Material*> materials;
@@ -133,6 +129,7 @@ private:
 signals:
     void propertyChanged();
     void attributeChanged();
+    void cameraChanged(Camera*);
 };
 
 #endif // TREEMODEL_H

@@ -40,10 +40,22 @@
 
 #include "treeitem.h"
 
-TreeItem::TreeItem(const QVariantList &data, TreeItem *parent)
+TreeItem::TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parent) :
+    a_offset(0),
+    m_atomCount(acount),
+    c_offset(0),
+    m_chainCount(ccount),
+    m_itemData(data),
+    m_parentItem(parent)
 {
-    m_parentItem = parent;
-    m_itemData = data;
+    if (parent)
+        parent->appendChild(this);
+}
+
+TreeItem::TreeItem(const QVariantList &data, TreeItem *parent) :
+    TreeItem(data, 0, 0, parent)
+{
+
 }
 
 TreeItem::~TreeItem()
@@ -53,12 +65,38 @@ TreeItem::~TreeItem()
 
 void TreeItem::appendChild(TreeItem *item)
 {
+    item->a_offset = m_atomCount;
+    item->c_offset = m_chainCount;
+
+    item->m_parentItem = this;
     m_childItems.append(item);
+
+    auto root = this;
+
+    while (root)
+    {
+        root->m_atomCount += item->m_atomCount;
+        root->m_chainCount += item->m_chainCount;
+        root = root->m_parentItem;
+    }
 }
 
 void TreeItem::prependChild(TreeItem *item)
 {
+    item->a_offset = m_atomCount;
+    item->c_offset = m_chainCount;
+
+    item->m_parentItem = this;
     m_childItems.prepend(item);
+
+    auto root = this;
+
+    while (root)
+    {
+        root->m_atomCount += item->m_atomCount;
+        root->m_chainCount += item->m_chainCount;
+        root = root->m_parentItem;
+    }
 }
 
 TreeItem *TreeItem::child(int row)
@@ -107,8 +145,28 @@ int TreeItem::row() const
 
 void TreeItem::removeRows(int row, int count)
 {
-    for (int i = row; i < row + count; i++)
-        delete m_childItems.takeAt(i);
+    int da = 0, dc = 0;
+
+    for (int i = 0; i < count; i++)
+    {
+        auto item = m_childItems.takeAt(row);
+        da -= item->m_atomCount;
+        dc -= item->m_chainCount;
+        item->remove();
+        delete item;
+    }
+
+    auto root = this;
+
+    while (root)
+    {
+        root->m_atomCount += da;
+        root->m_chainCount += dc;
+        root = root->m_parentItem;
+    }
+
+    for (int i = 0; i < row; i++)
+        m_childItems[i]->shift(da, dc);
 }
 
 QVector3D TreeItem::getPosition() const
@@ -207,9 +265,27 @@ void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
         c->writePOVFrames(stream, fbeg, fend);
 }
 
-LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem) :
+void TreeItem::remove()
+{
+    for (auto c : m_childItems)
+        c->remove();
+}
+
+void TreeItem::shift(int da, int dc)
+{
+    a_offset += da;
+    c_offset += dc;
+
+    for (auto c : m_childItems)
+        c->shift(da, dc);
+}
+
+#include "session.h"
+
+LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    layer(slc)
+    layer(slc),
+    session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
@@ -240,13 +316,25 @@ void LayerItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
+void LayerItem::remove()
+{
+    session->atomBuffer.remove(a_offset, m_atomCount);
+    session->indices.remove(a_offset, m_atomCount);
+
+    session->chainBuffer[0].remove(c_offset, m_chainCount);
+    session->chainBuffer[1].remove(c_offset, m_chainCount);
+
+    session->simulation->removeSimulationLayerConcatenation(layer);
+    session->plot->updateSimulation();
+
+    TreeItem::remove();
+}
+
 #include "camera.h"
-#include "session.h"
 
 CameraItem::CameraItem(const QString &name, Camera *cam, Session *s, TreeItem *parentItem) :
     TreeItem({name, NodeType::CameraObject, QVariant(), Visibility::Default, Visibility::Default, QVariant(), false}, parentItem),
     camera(cam),
-    id(cam->id),
     session(s)
 {
     QIcon icon;
@@ -272,7 +360,7 @@ void CameraItem::setPosition(const QVector3D& p)
 
 void CameraItem::setFlag(VizFlag flag, bool on)
 {
-    session->cameraBuffer[id].flags.setFlag(flag, on);
+    session->cameraBuffer[camera->id].flags.setFlag(flag, on);
 }
 
 void CameraItem::read(const QJsonObject &json)
@@ -303,8 +391,25 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
+void CameraItem::remove()
+{
+    session->userCameras.last()->id = camera->id;
+    session->userCameras[camera->id - 1] = session->userCameras.last();
+    session->userCameras.pop_back();
+
+    session->cameraBuffer[camera->id] = session->cameraBuffer.last();
+    session->cameraBuffer.pop_back();
+
+    if (data(6).toBool())
+        session->simulation->getModel()->setCurrentCamera(QModelIndex());
+
+    camera->deleteLater();
+
+    TreeItem::remove();
+}
+
 AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
-    TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
     id(id),
     session(s)
 {
@@ -428,9 +533,15 @@ void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
     TreeItem::writePOVFrames(stream, fbeg, fend);
 }
 
+void AtomItem::shift(int da, int dc)
+{
+    id += da;
+    TreeItem::shift(da, dc);
+}
+
 ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    range(r),
+    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
+    id(s->chainBuffer[0].count()),
     session(s)
 {
     QIcon icon;
@@ -438,7 +549,8 @@ ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, Tre
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
 
-    session->chainBuffer.append({r.first, r.second - r.first});
+    session->chainBuffer[0].append(r.first);
+    session->chainBuffer[1].append(r.second - r.first);
 }
 
 ChainItem::~ChainItem()
@@ -450,7 +562,7 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 {
     TreeItem::writePOVFrame(stream, frame);
 
-    for (int i = range.first; i < range.second - 1; i++)
+    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id]; i++)
     {
         const auto& first = session->atomBuffer[i];
         const auto& second = session->atomBuffer[i + 1];
@@ -464,7 +576,7 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
 {
     TreeItem::writePOVFrames(stream, fbeg, fend);
 
-    for (int i = range.first; i < range.second - 1; i++)
+    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id]; i++)
     {
         const auto& first = session->atomBuffer[i];
         const auto& second = session->atomBuffer[i + 1];
@@ -472,6 +584,13 @@ void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNum
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
     }
+}
+
+void ChainItem::shift(int da, int dc)
+{
+    id += dc;
+    session->chainBuffer[0][id] += da;
+    TreeItem::shift(da, dc);
 }
 
 #include "defaults.h"

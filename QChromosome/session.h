@@ -33,9 +33,11 @@ public:
     QAction *action;
     Simulation *simulation;
 
+    QVector<QPersistentModelIndex> indices;
+
     GLBuffer<VizCameraInstance> cameraBuffer;
     GLBuffer<VizBallInstance> atomBuffer;
-    QVector<std::pair<int, int>> chainBuffer;
+    QVector<int> chainBuffer[2];
 
     camera_data_t* cameraUniformBuffer;
 

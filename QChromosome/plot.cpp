@@ -31,6 +31,10 @@ void Plot::updateSimulation()
 {
     auto oldBuffered = lastBuffered;
     lastBuffered = -1;
+    data.clear();
+    minimax.clear();
+    qDeleteAll(legend);
+    legend.clear();
     setMaximum(oldBuffered);
 }
 

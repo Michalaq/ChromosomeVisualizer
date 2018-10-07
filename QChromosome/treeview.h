@@ -19,12 +19,7 @@ public:
     explicit TreeView(QWidget *parent = 0);
     ~TreeView();
 
-    void setSelection(const QList<unsigned int>& indexes);
-
     QPersistentModelIndex pick(const QPoint &pos);
-
-signals:
-    void cameraChanged(Camera*);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

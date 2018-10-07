@@ -291,8 +291,7 @@ void VizWidget::paintGL()
         vaoSpheres_.bind();
         cylinderProgram_.bind();
 
-        for (auto& strip : session->chainBuffer)
-            glDrawArrays(GL_LINE_STRIP, strip.first, strip.second);
+        glMultiDrawArrays(GL_LINE_STRIP, session->chainBuffer[0].data(), session->chainBuffer[1].data(), session->chainBuffer[0].count());
 
         cylinderProgram_.release();
         sphereProgram_.bind();
@@ -348,14 +347,12 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 
     auto color = image.pixel(pos);
 
-    return color != 0xFFFFFFFFU ? model_->getIndices()[color] : QPersistentModelIndex();
+    return color != 0xFFFFFFFFU ? session->indices[color] : QPersistentModelIndex();
 }
 
 void VizWidget::setSession(Session *s)
 {
     session = s;
-    model_ = session->simulation->getModel();
-    selectionModel_ = session->treeView->selectionModel();
 }
 
 void VizWidget::allocate()
@@ -448,10 +445,10 @@ void VizWidget::dropEvent(QDropEvent *event)
 {
     event->acceptProposedAction();
 
-    auto indices = model_->getIndices();
-
-    auto index = indices[image.pixel(event->pos())];
+    auto index = session->indices[image.pixel(event->pos())];
     auto material = qobject_cast<Material*>(event->source());
+    auto model_ = session->simulation->getModel();
+    auto selectionModel_ = session->treeView->selectionModel();
 
     if (selectionModel_ && selectionModel_->isSelected(index))
         for (auto i : selectionModel_->selectedRows())
@@ -483,11 +480,9 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
 
     QMap<QPersistentModelIndex, QVector<int>> tmp;
 
-    auto& buffer = model_->getIndices();
-
     for (int* i = first; i != last; i++)
     {
-        auto& item = buffer[*i];
+        auto& item = session->indices[*i];
         tmp[item.parent()].append(item.row());
     }
 

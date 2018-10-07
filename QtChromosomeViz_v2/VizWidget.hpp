@@ -66,8 +66,6 @@ private:
     void pickSpheres();
 
     Session* session;
-    TreeModel *model_;
-    QItemSelectionModel *selectionModel_;
 };
 
 #endif /* VIZWINDOW_HPP */

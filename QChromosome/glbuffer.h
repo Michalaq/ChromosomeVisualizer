@@ -37,6 +37,12 @@ public:
         return QVector<T>::count() - 1;
     }
 
+    void remove(int i, int count)
+    {
+        resized = true;
+        QVector<T>::remove(i, count);
+    }
+
     void resize(int size)
     {
         resized = true;
@@ -52,6 +58,12 @@ public:
     void forceReallocate()
     {
         resized = true;
+    }
+
+    void pop_back()
+    {
+        resized = true;
+        QVector<T>::pop_back();
     }
 
 private:

@@ -157,28 +157,24 @@ void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, u
         if (!types.contains(t))
             types[t] = new ResidueItem(t, root);
 
-        types[t]->appendChild(new AtomItem(*atom, atom->id - 1 + offset, s, types[t]));
+        new AtomItem(*atom, atom->id - 1 + offset, s, types[t]);
     }
-
-    for (auto t : types)
-        root->appendChild(t);
-
-    parent->appendChild(root);
 }
 
 #include <QBitArray>
 #include <QFileInfo>
 #include "session.h"
 
-void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc, unsigned int layer, unsigned int offset)
+void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
+    unsigned int offset = session->atomBuffer.size();
     auto f = slc->getFrame(0);
     auto& atoms = f->atoms;
     auto& connectedRanges = f->connectedRanges;
 
     QBitArray used(atoms.size(), false);
 
-    auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, header);
+    auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, session);
 
     session->atomBuffer.resize(atoms.size());
 
@@ -201,18 +197,15 @@ void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc
             if (!types.contains(t))
                 types[t] = new ResidueItem(t, root);
 
-            types[t]->appendChild(new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]));
+            new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]);
         }
-
-    for (auto t : types)
-        root->appendChild(t);
 
     beginInsertRows(QModelIndex(), 0, 0);
     header->prependChild(root);
     endInsertRows();
 
-    indices.resize(offset + atoms.size() + 1);
-    dumpModel1(index(0, 0), indices);
+    session->indices.resize(offset + atoms.size());
+    dumpModel1(index(0, 0), session->indices);
 }
 
 void TreeModel::colorByResidue(const QModelIndex& root)
@@ -254,22 +247,24 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
         dumpModel2(index(r, 0, root), m);
 }
 
-const QVector<QPersistentModelIndex>& TreeModel::getIndices() const
-{
-    return indices;
-}
-
 bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    for (int i = row; i < row + count; i++)
+    for (int i = 0; i < count; i++)
     {
-        if (data(index(i, 1, parent)).toInt() == NodeType::CameraObject)
+        switch (index(row, 1, parent).data().toInt())
         {
-            beginRemoveRows(parent, i, i);
-            (parent.isValid() ? static_cast<LayerItem*>(parent.internalPointer()) : header)->removeRows(i, 1);
+        case CameraObject:
+        case LayerObject:
+            beginRemoveRows(parent, row, row);
+            (parent.isValid() ? reinterpret_cast<TreeItem*>(parent.internalPointer()) : header)->removeRows(row, 1);
             endRemoveRows();
+            break;
+        default:
+            row++;
         }
     }
+
+    return true;
 }
 
 #include <QRegularExpression>
@@ -309,20 +304,18 @@ void TreeModel::addCamera(Camera *camera)
 
 void TreeModel::setCurrentCamera(QModelIndex index)
 {
-    auto tmp = currentCamera;
+    if (currentCamera.isValid())
+        setData(currentCamera, false);
 
     currentCamera = index;
 
-    if (tmp.isValid())
-        setData(tmp, false);
-
     if (currentCamera.isValid())
+    {
         setData(currentCamera, true);
-}
-
-Camera *TreeModel::getCurrentCamera() const
-{
-    return currentCamera.isValid() ? static_cast<CameraItem*>(currentCamera.internalPointer())->getCamera() : nullptr;
+        emit cameraChanged(reinterpret_cast<CameraItem*>(currentCamera.internalPointer())->getCamera());
+    }
+    else
+        emit cameraChanged(nullptr);
 }
 
 void TreeModel::propagateMaterial(const QModelIndex &root, const Material* m)

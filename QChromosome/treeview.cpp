@@ -18,20 +18,6 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget *parent) : QHeaderVi
 
 }
 
-void TreeView::setSelection(const QList<unsigned int> &indexes)
-{
-    auto indices = static_cast<TreeModel*>(model())->getIndices();
-
-    QItemSelection m;
-
-    for (unsigned int i : indexes)
-        m.select(indices[i], indices[i]);
-
-    bool b = blockSignals(true);
-    selectionModel()->select(m, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-    blockSignals(b);
-}
-
 Material* TreeView::takeSelectedMaterial()
 {
     auto ans = qobject_cast<TreeModel*>(model())->removeMaterial(selectedTag, selectedTag.data(Qt::UserRole + 1).toInt());
@@ -78,8 +64,6 @@ void TreeView::mousePressEvent(QMouseEvent *event)
                         m->setCurrentCamera(QModelIndex());
                     else
                         m->setCurrentCamera(index.sibling(index.row(), 6));
-
-                    emit cameraChanged(m->getCurrentCamera());
                 }
             }
 

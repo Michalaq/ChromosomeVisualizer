@@ -92,6 +92,15 @@ public:
     virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
+protected:
+    explicit TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parentItem);
+
+    int a_offset, m_atomCount;
+    int c_offset, m_chainCount;
+
+    virtual void remove();
+    virtual void shift(int da, int dc);
+
 private:
     QList<TreeItem*> m_childItems;
     QList<QVariant> m_itemData;
@@ -117,16 +126,22 @@ enum Visibility
 
 #include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
 
+class Session;
+
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem = 0);
     ~LayerItem();
 
     void write(QJsonObject& json) const;
 
+protected:
+    void remove();
+
 private:
     std::shared_ptr<SimulationLayerConcatenation> layer;
+    Session* session;
 };
 
 #include <QMatrix4x4>
@@ -139,7 +154,6 @@ struct VizCameraInstance
 };
 
 class Camera;
-class Session;
 
 class CameraItem : public TreeItem
 {
@@ -157,8 +171,10 @@ public:
 
     Camera* getCamera() const;
 
+protected:
+    void remove();
+
 private:
-    int id;
     Camera* camera;
     Session* session;
 
@@ -205,6 +221,9 @@ public:
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
+protected:
+    void shift(int da, int dc);
+
 private:
     int id;
     QString label;
@@ -220,8 +239,11 @@ public:
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
+protected:
+    void shift(int da, int dc);
+
 private:
-    std::pair<int, int> range;
+    int id;
     Session *session;
 };
 
