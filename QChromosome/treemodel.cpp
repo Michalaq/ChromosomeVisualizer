@@ -531,13 +531,13 @@ void TreeModel::setSelected(const QModelIndexList &indices, bool s)
     emit propertyChanged();
 }
 
-void TreeModel::propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) const
+void TreeModel::propagateOrigin(const QModelIndex &root, QVector3D &s, int& c, bool selected) const
 {
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
     {
         auto atom = reinterpret_cast<AtomItem*>(root.internalPointer());
 
-        if (atom->isSelected())
+        if (atom->isSelected() || !selected)
         {
             s += atom->getPosition();
             c += 1;
@@ -545,15 +545,15 @@ void TreeModel::propagateOrigin(const QModelIndex &root, QVector3D &s, int& c) c
     }
 
     for (int r = 0; r < rowCount(root); r++)
-        propagateOrigin(index(r, 0, root), s, c);
+        propagateOrigin(index(r, 0, root), s, c, selected);
 }
 
-QVector3D TreeModel::getOrigin() const
+QVector3D TreeModel::getOrigin(bool selected) const
 {
     QVector3D s;
     int c = 0;
 
-    propagateOrigin(QModelIndex(), s, c);
+    propagateOrigin(QModelIndex(), s, c, selected);
 
     return s / c;
 }

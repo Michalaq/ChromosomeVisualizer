@@ -394,6 +394,7 @@ void MainWindow::addLayer()
                 session->plot->updateSimulation();
 
                 session->currentCamera->callibrate(session->atomBuffer.mid(offset));
+                session->origin = session->simulation->getModel()->getOrigin(false);
             }
         }
     } catch (std::exception& e) {
