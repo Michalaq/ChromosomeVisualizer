@@ -153,7 +153,6 @@ void TreeItem::removeRows(int row, int count)
         da -= item->m_atomCount;
         dc -= item->m_chainCount;
         item->remove();
-        delete item;
     }
 
     auto root = this;
@@ -267,8 +266,7 @@ void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
 
 void TreeItem::remove()
 {
-    for (auto c : m_childItems)
-        c->remove();
+    delete this;
 }
 
 void TreeItem::shift(int da, int dc)
