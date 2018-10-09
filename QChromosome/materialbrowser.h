@@ -39,7 +39,7 @@ class MaterialBrowser : public QMainWindow
 public:
     ~MaterialBrowser();
 
-    Material *mat[4];
+    Material *mat[13];
 
     static MaterialBrowser* getInstance();
 

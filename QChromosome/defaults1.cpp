@@ -11,11 +11,10 @@ Defaults1::Defaults1(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults1)
 {
     ui->setupUi(this);
 
-    Material** mat = MaterialBrowser::getInstance()->mat;
-    auto mat0 = QVariantList({QVariant::fromValue(mat[0])});
-    auto mat1 = QVariantList({QVariant::fromValue(mat[1])});
-    auto mat2 = QVariantList({QVariant::fromValue(mat[2])});
-    auto mat3 = QVariantList({QVariant::fromValue(mat[3])});
+    QVariantList mat[13];
+
+    for (int i = 0; i < 13; i++)
+        mat[i] = {QVariant::fromValue(MaterialBrowser::getInstance()->mat[i])};
 
     // fourth table
     ui->tableView_4->setItemDelegateForColumn(0, new TableIntDelegate(this));
@@ -49,11 +48,13 @@ Defaults1::Defaults1(QWidget *parent) : QWidget(parent), ui(new Ui::Defaults1)
         }
     });
 
-    m4->insertRows(0, 4, m4->index(0, 0));
-    m4->setData(m4->index(0, 0), 0); m4->setData(m4->index(0, 1), mat2);
-    m4->setData(m4->index(1, 0), 1); m4->setData(m4->index(1, 1), mat3);
-    m4->setData(m4->index(2, 0), 2); m4->setData(m4->index(2, 1), mat0);
-    m4->setData(m4->index(3, 0), 3); m4->setData(m4->index(3, 1), mat1);
+    m4->insertRows(0, 12, m4->index(0, 0));
+
+    for (int i = 0; i < 12; i++)
+    {
+        m4->setData(m4->index(i, 0), i);
+        m4->setData(m4->index(i, 1), mat[i + 1]);
+    }
 }
 
 Defaults1::~Defaults1()

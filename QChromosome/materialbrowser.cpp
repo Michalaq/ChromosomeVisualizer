@@ -13,10 +13,19 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
     setWindowFlags(Qt::WindowStaysOnTopHint);
 
     Material::getDefault();
-    mat[0] = new Material("Mat", Qt::red);
-    mat[1] = new Material("Mat.1", Qt::green);
-    mat[2] = new Material("Mat.2", Qt::blue);
-    mat[3] = new Material("Mat.3", Qt::white, .5);
+    mat[0] = new Material("White", "#ffffff", .5);
+    mat[1] = new Material("Maroon", "#800000");
+    mat[2] = new Material("Red", "#ff0000");
+    mat[3] = new Material("Olive", "#808000");
+    mat[4] = new Material("Yellow", "#ffff00");
+    mat[5] = new Material("Green", "#008000");
+    mat[6] = new Material("Lime", "#00ff00");
+    mat[7] = new Material("Teal", "#008080");
+    mat[8] = new Material("Aqua", "#00ffff");
+    mat[9] = new Material("Navy", "#000080");
+    mat[10] = new Material("Blue", "#0000ff");
+    mat[11] = new Material("Purple", "#800080");
+    mat[12] = new Material("Fuchsia", "#ff00ff");
 
     connect(ui->actionNew_Material, &QAction::triggered, [this]() {
         auto m = qobject_cast<MaterialListModel*>(listView->model());
@@ -30,7 +39,7 @@ MaterialBrowser::MaterialBrowser(QWidget *parent) :
 MaterialBrowser::~MaterialBrowser()
 {
     delete ui;
-    qDeleteAll(mat, mat + 4);
+    qDeleteAll(mat, mat + 13);
 }
 
 MaterialBrowser* MaterialBrowser::getInstance()
