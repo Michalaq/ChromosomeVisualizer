@@ -538,7 +538,7 @@ void AtomItem::shift(int da, int dc)
 }
 
 ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ChainObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
+    TreeItem({name, NodeType::ChainObject, s->chainBuffer[0].count(), Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
     id(s->chainBuffer[0].count()),
     session(s)
 {

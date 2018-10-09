@@ -8,12 +8,18 @@ namespace Ui
     class Preferences;
 }
 
+class TreeModel;
+
+typedef void(TreeModel::*PointerToMemberFunction)(const QModelIndex&);
+
 class Preferences : public QWidget
 {
     Q_OBJECT
 public:
     explicit Preferences(QWidget *parent = 0);
     ~Preferences();
+
+    PointerToMemberFunction coloringMethod() const;
 
 public slots:
 

@@ -187,6 +187,9 @@ QScrollArea &gt; QWidget &gt; QWidget {
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QLabel" name="label_5">
+             <property name="styleSheet">
+              <string notr="true">color: blue;</string>
+             </property>
              <property name="text">
               <string>Project settings</string>
              </property>
@@ -194,16 +197,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
               <string>section</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <widget class="Label" name="label_2">
-             <property name="text">
-              <string>POV-Ray installation path (TODO obecnie nieużywana)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="FileEdit" name="lineEdit"/>
            </item>
            <item>
             <widget class="QLabel" name="label_4">
@@ -220,17 +213,34 @@ QScrollArea &gt; QWidget &gt; QWidget {
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>TODO: Ten widget zyska sens, gdy będzie można zaisywać sesję do pliku. Nie będzie tak wyglądał.</string>
+            <widget class="QLabel" name="label_2">
+             <property name="styleSheet">
+              <string notr="true">color: blue;</string>
              </property>
-             <property name="wordWrap">
-              <bool>true</bool>
+             <property name="text">
+              <string>Default tags</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="Defaults" name="widget_2" native="true"/>
+            <widget class="QComboBox" name="comboBox">
+             <item>
+              <property name="text">
+               <string>Color by residue</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Color by chain</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QStackedWidget" name="stackedWidget">
+             <widget class="Defaults" name="widget_2"/>
+             <widget class="Defaults1" name="widget_3"/>
+            </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_2">
@@ -265,11 +275,6 @@ QScrollArea &gt; QWidget &gt; QWidget {
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>Label</class>
-   <extends>QLabel</extends>
-   <header>label.h</header>
   </customwidget>
   <customwidget>
    <class>Defaults</class>

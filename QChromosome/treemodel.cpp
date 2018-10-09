@@ -247,6 +247,45 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
         dumpModel2(index(r, 0, root), m);
 }
 
+void TreeModel::colorByChain(const QModelIndex& root)
+{
+    dumpModel3(root, Material::getDefault());
+}
+
+#include "defaults1.h"
+
+void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
+{
+    // update current tags
+    if (root.sibling(root.row(), 1).data().toInt() == ChainObject)
+    {
+        int num = root.sibling(root.row(), 2).data().toInt();
+        auto defl = Defaults1::chainnumber2color(num).toList();
+
+        for (auto mat : defl)
+        {
+            m = qobject_cast<Material*>(mat.value<QObject*>());
+            m->assign(root.sibling(root.row(), 5));
+
+            if (!materials.contains(m))
+            {
+                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+                materials.insert(m);
+            }
+        }
+
+        auto list = root.sibling(root.row(), 5).data().toList();
+        setData(root.sibling(root.row(), 5), list + defl);
+    }
+
+    // update current material
+    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+
+    for (int r = 0; r < rowCount(root); r++)
+        dumpModel3(index(r, 0, root), m);
+}
+
 bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     for (int i = 0; i < count; i++)

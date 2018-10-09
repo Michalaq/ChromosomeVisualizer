@@ -35,22 +35,32 @@ Preferences::Preferences(QWidget *parent) :
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 
-    /*TODO do usunięcia, kiedy znajdę lepsze miejsce*/
-
-    connect(ui->lineEdit, &QLineEdit::editingFinished, [this]() {
-        QSettings().setValue("povraypath", ui->lineEdit->text());
-    });
-
     connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this]() {
         QSettings().setValue("locallib", ui->lineEdit_2->text());
     });
 
+    connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
+        ui->stackedWidget->setCurrentIndex(index);
+    });
+
     QSettings settings;
-    ui->lineEdit->setText(settings.value("povraypath", "/usr/local/share/povray-3.7").toString());
     ui->lineEdit_2->setText(settings.value("locallib", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString());
 }
 
 Preferences::~Preferences()
 {
     delete ui;
+}
+
+#include "treemodel.h"
+
+PointerToMemberFunction Preferences::coloringMethod() const
+{
+    switch (ui->comboBox->currentIndex())
+    {
+    case 0:
+        return &TreeModel::colorByResidue;
+    case 1:
+        return &TreeModel::colorByChain;
+    }
 }

@@ -78,6 +78,7 @@ public:
 
     void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc);
     void colorByResidue(const QModelIndex &root);
+    void colorByChain(const QModelIndex &root);
 
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
@@ -125,6 +126,7 @@ private:
 
     void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
     void dumpModel2(const QModelIndex& root, Material* m);
+    void dumpModel3(const QModelIndex& root, Material* m);
 
 signals:
     void propertyChanged();

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Defaults</class>
- <widget class="QWidget" name="Defaults">
+ <class>Defaults1</class>
+ <widget class="QWidget" name="Defaults1">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,90 +57,12 @@ QLineEdit {
       <string notr="true">color: lightblue;</string>
      </property>
      <property name="text">
-      <string>Binary format</string>
+      <string>Chains</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="TableView" name="tableView">
-     <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="acceptDrops">
-      <bool>true</bool>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="showGrid">
-      <bool>false</bool>
-     </property>
-     <attribute name="horizontalHeaderHighlightSections">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="verticalHeaderDefaultSectionSize">
-      <number>20</number>
-     </attribute>
-    </widget>
-   </item>
-   <item>
-    <widget class="TableView" name="tableView_2">
-     <property name="focusPolicy">
-      <enum>Qt::ClickFocus</enum>
-     </property>
-     <property name="acceptDrops">
-      <bool>true</bool>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="horizontalScrollMode">
-      <enum>QAbstractItemView::ScrollPerPixel</enum>
-     </property>
-     <property name="showGrid">
-      <bool>false</bool>
-     </property>
-     <attribute name="horizontalHeaderHighlightSections">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="verticalHeaderDefaultSectionSize">
-      <number>20</number>
-     </attribute>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_2">
-     <property name="styleSheet">
-      <string notr="true">color: lightblue;</string>
-     </property>
-     <property name="text">
-      <string>PDB format</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="TableView" name="tableView_3">
+    <widget class="TableView" name="tableView_4">
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
      </property>
