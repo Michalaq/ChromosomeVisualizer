@@ -72,7 +72,8 @@ SOURCES += \
     jpegdialog.cpp \
     slider.cpp \
     targadialog.cpp \
-    defaults1.cpp
+    defaults1.cpp \
+    spline.cpp
 
 HEADERS += \
     mainwindow.h \
