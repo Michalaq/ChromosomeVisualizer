@@ -63,4 +63,6 @@ PointerToMemberFunction Preferences::coloringMethod() const
     case 1:
         return &TreeModel::colorByChain;
     }
+
+    Q_ASSERT(false);
 }

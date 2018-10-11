@@ -10,12 +10,12 @@ using namespace protostream;
 
 
 ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const std::string &fileName)
-    : fileName_(fileName)
+    : UntransformedSimulationLayer(name)
+    , fileName_(fileName)
     , reachedEndOfFile_(false)
     , rd_(fileName.c_str())
     , deltasPerKeyframe_(0)
     , positionCachedFor_(-1)
-    , UntransformedSimulationLayer(name)
 {
     bio::motions::format::proto::Header header;
     header.ParseFromString(rd_.get_proto_header());

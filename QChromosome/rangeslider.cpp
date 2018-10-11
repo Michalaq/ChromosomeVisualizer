@@ -68,6 +68,9 @@ void RangeSlider::mouseMoveEvent(QMouseEvent *event)
 
     switch (state)
     {
+    case Normal:
+        break;
+
     case LeftHandleMoving:
         setLowerBound(value);
         break;

@@ -21,7 +21,7 @@ const std::string & UntransformedSimulationLayer::getSimulationLayerName() const
     return name_;
 }
 
-const int UntransformedSimulationLayer::getConnectionCount() const
+int UntransformedSimulationLayer::getConnectionCount() const
 {
     return connectionCount_;
 }
@@ -56,7 +56,7 @@ const std::string & SimulationLayer::getSimulationLayerName() const
     return layer->getSimulationLayerName();
 }
 
-const int SimulationLayer::getConnectionCount() const
+int SimulationLayer::getConnectionCount() const
 {
     return layer->getConnectionCount();
 }

@@ -18,8 +18,9 @@ std::shared_ptr<Frame> Simulation::getFrame(frameNumber_t position, bool *ok)
     Frame f = {
         0,
         0,
-        std::vector<Atom>(),
-        std::map<std::string, float>()
+        {},
+        {},
+        {}
     };
     int count = 0;
     int i = 0;

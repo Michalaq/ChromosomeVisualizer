@@ -173,7 +173,7 @@ QVector3D TreeItem::getPosition() const
     return QVector3D(0, 0, 0);
 }
 
-void TreeItem::setFlag(VizFlag flag, bool on)
+void TreeItem::setFlag(VizFlag, bool)
 {
     ;
 }

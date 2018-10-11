@@ -459,8 +459,6 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
      </widget>
     </item>
    </layout>
-   <zorder>stackedWidget_4</zorder>
-   <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

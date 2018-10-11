@@ -535,7 +535,7 @@
             <height>192</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_41">
            <item>
             <widget class="QLabel" name="label_10">
              <property name="text">

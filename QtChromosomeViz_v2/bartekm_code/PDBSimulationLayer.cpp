@@ -5,11 +5,11 @@
 #include "PDBSimulationLayer.h"
 
 PDBSimulationLayer::PDBSimulationLayer(const std::string &name, const std::string &fileName)
-    : fileName_(fileName)
+    : UntransformedSimulationLayer(name)
+    , fileName_(fileName)
     , file_(fileName)
     , positionCachedFor_(-1)
     , reachedEndOfFile_(false)
-    , UntransformedSimulationLayer(name)
 {
     cachedFramePositions_[0] = 0;
     numbersAndPositions_.push_back(frameCount_ = readFrameHeader());
@@ -25,7 +25,7 @@ frameNumber_t PDBSimulationLayer::readFrameHeader()
     frameNumber_t step = -1;
 
     getline(file_, line);
-    sscanf(line.c_str(), "HEADER %*d %*d step %*lld");
+    sscanf(line.c_str(), "HEADER %*d %*d step %*d");
 
     if (file_.fail()) {
         file_.clear(); // Clear the eofbit so seekg may work

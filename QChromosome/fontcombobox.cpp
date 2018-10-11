@@ -1,4 +1,4 @@
-#include "fontcombobox.h".h"
+#include "fontcombobox.h"
 
 FontComboBox::FontComboBox(QWidget *parent) : ComboBox(parent)
 {

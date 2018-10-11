@@ -147,7 +147,7 @@ MaterialListModel::~MaterialListModel()
         delete i;
 }
 
-int MaterialListModel::rowCount(const QModelIndex &parent) const
+int MaterialListModel::rowCount(const QModelIndex &) const
 {
     return materials.count();
 }
@@ -206,13 +206,13 @@ bool MaterialListModel::setData(const QModelIndex &index,
             materials.replace(index.row(), value.value<Material*>());
             emit dataChanged(index, index);
             return true;
-        default:
-            return false;
         }
     }
+
+    return false;
 }
 
-bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &parent)
+bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &)
 {
     beginInsertRows(QModelIndex(), position, position+rows-1);
 
@@ -223,7 +223,7 @@ bool MaterialListModel::insertRows(int position, int rows, const QModelIndex &pa
     return true;
 }
 
-bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &parent)
+bool MaterialListModel::removeRows(int position, int rows, const QModelIndex &)
 {
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 

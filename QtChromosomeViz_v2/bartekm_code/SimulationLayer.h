@@ -18,7 +18,7 @@ public:
     frameNumber_t getFrameCount() const;
     void setSimulationLayerName(const std::string & name);
     const std::string & getSimulationLayerName() const;
-    const int getConnectionCount() const;
+    int getConnectionCount() const;
     virtual std::shared_ptr<Frame> getFrameById(frameNumber_t position) = 0;
     virtual std::shared_ptr<Frame> getFrame(frameNumber_t time) = 0;
     virtual frameNumber_t getNextTime(frameNumber_t time) = 0;
@@ -39,7 +39,7 @@ public:
     frameNumber_t getFrameCount() const;
     void setSimulationLayerName(const std::string & name);
     const std::string & getSimulationLayerName() const;
-    const int getConnectionCount() const;
+    int getConnectionCount() const;
     void setLayerId(int layerId);
     std::shared_ptr<Frame> getFrame(frameNumber_t time);
     frameNumber_t getNextTime(frameNumber_t time);

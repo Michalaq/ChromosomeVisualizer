@@ -15,7 +15,7 @@ StatusBar::StatusBar(QWidget *parent) : QStatusBar(parent), elapsed(-1)
 
 #include <QStylePainter>
 
-void StatusBar::paintEvent(QPaintEvent *event)
+void StatusBar::paintEvent(QPaintEvent *)
 {
     QStylePainter p(this);
     QStyleOption opt;

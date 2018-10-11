@@ -51,8 +51,8 @@ QSet<SplineInterpolator*> SplineInterpolator::interpolators;
 
 SplineInterpolator::SplineInterpolator(const QStringList &p, QWidget *parent) :
     Draggable(parent),
-    header(p),
-    needsUpdate(false)
+    needsUpdate(false),
+    header(p)
 {
     interpolators.insert(this);
 }

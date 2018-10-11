@@ -14,7 +14,7 @@ TextEdit::~TextEdit()
 
 void TextEdit::setMultipleValues(bool enabled)
 {
-    if (multiple = enabled)
+    if ((multiple = enabled))
     {
         bool b = blockSignals(true);
         QTextEdit::setText("<< multiple values >>");

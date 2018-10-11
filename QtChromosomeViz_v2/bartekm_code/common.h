@@ -15,7 +15,7 @@
     inline void print_dbg(const std::string & str) { std::cout << str << std::endl; };
 #else
     const bool dbg = false;
-    inline void print_dbg(const std::string & str) {};
+    inline void print_dbg(const std::string &) {};
 #endif
 
 using frameNumber_t = int64_t;

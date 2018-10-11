@@ -1,6 +1,8 @@
 #include "tablemodel.h"
 
-TableModel::TableModel(const QStringList &h, QObject *parent) : header(h), QAbstractTableModel(parent)
+TableModel::TableModel(const QStringList &h, QObject *parent) :
+    QAbstractTableModel(parent),
+    header(h)
 {
     placeholder = QVector<QVariant>(header.size(), QVariant());
     placeholder.push_back(-1);
@@ -11,12 +13,12 @@ TableModel::~TableModel()
 
 }
 
-int TableModel::rowCount(const QModelIndex &parent) const
+int TableModel::rowCount(const QModelIndex &) const
 {
     return database.size();
 }
 
-int TableModel::columnCount(const QModelIndex &parent) const
+int TableModel::columnCount(const QModelIndex &) const
 {
     return header.size();
 }
@@ -35,7 +37,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant TableModel::headerData(int section, Qt::Orientation, int role) const
 {
     return role == Qt::DisplayRole ? header[section] : QVariant();
 }

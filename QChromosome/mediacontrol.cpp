@@ -13,7 +13,7 @@ MediaControl::~MediaControl()
 #include <QStylePainter>
 #include <QStyleOptionButton>
 
-void MediaControl::paintEvent(QPaintEvent *event)
+void MediaControl::paintEvent(QPaintEvent *)
 {
     QImage foreground(iconSize(), QImage::Format_ARGB32_Premultiplied);
 

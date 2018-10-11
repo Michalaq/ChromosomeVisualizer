@@ -275,7 +275,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="Label" name="label_16">
+               <widget class="Label" name="label_161">
                 <property name="text">
                  <string>Ambient</string>
                 </property>
@@ -457,7 +457,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QLabel" name="label_17">
+            <widget class="QLabel" name="label_171">
              <property name="text">
               <string>Specular</string>
              </property>
@@ -481,7 +481,7 @@
               <number>6</number>
              </property>
              <item row="0" column="0">
-              <widget class="Label" name="label_18">
+              <widget class="Label" name="label_181">
                <property name="text">
                 <string>Shininess exponent</string>
                </property>
@@ -491,7 +491,7 @@
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="Label" name="label_19">
+              <widget class="Label" name="label_191">
                <property name="text">
                 <string>Specular color</string>
                </property>

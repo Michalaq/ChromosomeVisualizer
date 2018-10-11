@@ -595,6 +595,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
         event->ignore();
         break;
+
+    default:
+
+        Q_ASSERT(false);
     }
 }
 

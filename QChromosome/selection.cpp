@@ -39,6 +39,8 @@ void Selection::paintEvent(QPaintEvent *event)
 
         switch (st)
         {
+        case NO_SELECTION:
+            break;
         case RECTANGULAR_SELECTION:
             p.drawRect(sr);
             break;
@@ -59,6 +61,8 @@ void Selection::mousePressEvent(QMouseEvent *event)
 
     switch (st)
     {
+    case NO_SELECTION:
+        break;
     case RECTANGULAR_SELECTION:
         tl = br = event->pos();
         sr = QRect(tl, br);
@@ -90,6 +94,8 @@ void Selection::mouseMoveEvent(QMouseEvent *event)
 
     switch (st)
     {
+    case NO_SELECTION:
+        break;
     case RECTANGULAR_SELECTION:
         br = inbounds(event->pos(), rect());
         sr = QRect(tl, br).adjusted(0, 0, -1, -1);

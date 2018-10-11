@@ -16,7 +16,7 @@ TreeModel::~TreeModel()
     delete header;
 }
 
-int TreeModel::columnCount(const QModelIndex &parent) const
+int TreeModel::columnCount(const QModelIndex &) const
 {
     return 7;
 }

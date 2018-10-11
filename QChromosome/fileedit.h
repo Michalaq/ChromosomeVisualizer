@@ -7,7 +7,7 @@
 class FileEdit : public LineEdit
 {
     Q_OBJECT
-    Q_PROPERTY(Type type WRITE setType)
+    Q_PROPERTY(Type type MEMBER type WRITE setType)
     Q_ENUMS(Type)
 public:
     explicit FileEdit(QWidget *parent = 0);

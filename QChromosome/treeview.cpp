@@ -153,6 +153,10 @@ void TreeView::mouseMoveEvent(QMouseEvent *event)
             drag->setMimeData(new QMimeData);
             drag->exec(Qt::MoveAction);
         }
+        break;
+
+    case SetCamera:
+        break;
     }
 }
 
@@ -174,6 +178,9 @@ void TreeView::mouseReleaseEvent(QMouseEvent *event)
 
     case DragTag:
         clicked = false;
+        break;
+
+    case SetCamera:
         break;
     }
 
