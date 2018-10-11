@@ -25,11 +25,14 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     // width
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox_5->isChecked())
-            ui->doubleSpinBox_5->setValue(value / ui->doubleSpinBox_7->value(), false);
+        {
+            ui->doubleSpinBox_5->setValue(value / aspectRatio, false);
+            imageResolution.setHeight(qRound(ui->doubleSpinBox_5->value() * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        }
         else
         {
-            ui->doubleSpinBox_7->setValue(value / ui->doubleSpinBox_5->value(), false);
-            emit filmRatioChanged(ui->doubleSpinBox_7->value());
+            ui->doubleSpinBox_7->setValue(aspectRatio = value / ui->doubleSpinBox_5->value(), false);
+            emit filmRatioChanged(aspectRatio);
         }
 
         imageResolution.setWidth(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
@@ -39,11 +42,14 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     // height
     connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
         if (ui->checkBox_5->isChecked())
-            ui->doubleSpinBox_4->setValue(value * ui->doubleSpinBox_7->value(), false);
+        {
+            ui->doubleSpinBox_4->setValue(value * aspectRatio, false);
+            imageResolution.setWidth(qRound(ui->doubleSpinBox_4->value() * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
+        }
         else
         {
-            ui->doubleSpinBox_7->setValue(ui->doubleSpinBox_4->value() / value, false);
-            emit filmRatioChanged(ui->doubleSpinBox_7->value());
+            ui->doubleSpinBox_7->setValue(aspectRatio = ui->doubleSpinBox_4->value() / value, false);
+            emit filmRatioChanged(aspectRatio);
         }
 
         imageResolution.setHeight(qRound(value * ui->doubleSpinBox_6->value() * widthUnit / resolutionUnit));
@@ -90,8 +96,9 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
 
     // film aspect
     connect(ui->doubleSpinBox_7, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double value) {
+        aspectRatio = value;
         ui->doubleSpinBox_5->setValue(ui->doubleSpinBox_4->value() / value);
-        emit filmRatioChanged(value);
+        emit filmRatioChanged(aspectRatio);
     });
 
     // frame rate
@@ -417,7 +424,7 @@ void TabWidget::getFFmpegArgs(QStringList& argv) const
 void TabWidget::connectNotify(const QMetaMethod &signal)
 {
     if (signal == QMetaMethod::fromSignal(&TabWidget::filmRatioChanged))
-        emit filmRatioChanged(ui->doubleSpinBox_7->value());
+        emit filmRatioChanged(aspectRatio);
 }
 
 void TabWidget::setFrameRange(int min, int max)

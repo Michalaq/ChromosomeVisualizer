@@ -57,6 +57,7 @@ private:
 
     qreal resolution;
     QSize imageResolution;
+    qreal aspectRatio;
 
     qreal widthUnit;
     qreal resolutionUnit;
