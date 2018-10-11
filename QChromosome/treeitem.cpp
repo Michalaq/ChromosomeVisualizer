@@ -560,7 +560,7 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
 {
     TreeItem::writePOVFrame(stream, frame);
 
-    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id]; i++)
+    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id] - 1; i++)
     {
         const auto& first = session->atomBuffer[i];
         const auto& second = session->atomBuffer[i + 1];
