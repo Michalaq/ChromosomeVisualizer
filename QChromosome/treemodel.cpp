@@ -213,7 +213,7 @@ void TreeModel::colorByResidue(const QModelIndex& root)
     dumpModel2(root, Material::getDefault());
 }
 
-#include "defaults.h"
+#include "preferences.h"
 
 void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
 {
@@ -221,7 +221,7 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
     if (root.sibling(root.row(), 1).data().toInt() == ResidueObject)
     {
         int type = root.sibling(root.row(), 2).data().toInt();
-        auto defl = Defaults::typename2color(type).toList();
+        auto defl = Preferences::typename2color(type).toList();
 
         for (auto mat : defl)
         {
@@ -252,15 +252,13 @@ void TreeModel::colorByChain(const QModelIndex& root)
     dumpModel3(root, Material::getDefault());
 }
 
-#include "defaults1.h"
-
 void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
 {
     // update current tags
     if (root.sibling(root.row(), 1).data().toInt() == ChainObject)
     {
         int num = root.sibling(root.row(), 2).data().toInt();
-        auto defl = Defaults1::chainnumber2color(num).toList();
+        auto defl = Preferences::chainnumber2color(num).toList();
 
         for (auto mat : defl)
         {

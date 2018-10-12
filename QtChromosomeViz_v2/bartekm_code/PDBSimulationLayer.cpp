@@ -298,7 +298,7 @@ bool PDBSimulationLayer::reachedEndOfFile() const
     return reachedEndOfFile_;
 }
 
-#include "defaults.h"
+#include "preferences.h"
 
 Atom PDBSimulationLayer::getAtomFromString(const std::string & str)
 {
@@ -313,7 +313,7 @@ Atom PDBSimulationLayer::getAtomFromString(const std::string & str)
         sscanf(str.c_str(), "ATOM %d %*c %s %*d %d.%*s %d.%*s %d.%*s",
             &a.id, type, &x, &y, &z);
     }
-    a.type = Defaults::rs2typename(type);
+    a.type = Preferences::rs2typename(type);
     a.x = x;
     a.y = y;
     a.z = z;

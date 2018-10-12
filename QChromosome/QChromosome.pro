@@ -42,7 +42,6 @@ SOURCES += \
     label.cpp \
     keyframe.cpp \
     interpolator.cpp \
-    defaults.cpp \
     selection.cpp \
     visibilitydelegate.cpp \
     treeview.cpp \
@@ -72,7 +71,6 @@ SOURCES += \
     jpegdialog.cpp \
     slider.cpp \
     targadialog.cpp \
-    defaults1.cpp \
     spline.cpp
 
 HEADERS += \
@@ -128,7 +126,6 @@ HEADERS += \
     spline.h \
     keyframe.h \
     interpolator.h \
-    defaults.h \
     selection.h \
     visibilitydelegate.h \
     treeview.h \
@@ -157,8 +154,7 @@ HEADERS += \
     tabwidget.h \
     jpegdialog.h \
     slider.h \
-    targadialog.h \
-    defaults1.h
+    targadialog.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -168,7 +164,6 @@ FORMS += mainwindow.ui \
     layerattributes.ui \
     viewport.ui \
     keyframe.ui \
-    defaults.ui \
     preferences.ui \
     materialattributes.ui \
     materialbrowser.ui \
@@ -178,8 +173,7 @@ FORMS += mainwindow.ui \
     mediapanel.ui \
     tabwidget.ui \
     jpegdialog.ui \
-    targadialog.ui \
-    defaults1.ui
+    targadialog.ui
 
 CONFIG += c++14
 CONFIG -= app_bundle

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <exception>
 #include <string>
-#include "defaults.h"
+#include "preferences.h"
 
 using namespace protostream;
 
@@ -32,7 +32,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
 //    std::cout << keyframes_.size() << std::endl;
 
     for (const auto& binder : keyframes_[0].binders()) {
-        binderTypes.push_back(Defaults::bt2typename(binder.binder_type()));
+        binderTypes.push_back(Preferences::bt2typename(binder.binder_type()));
     }
     for (const auto& chain : header.chains()) {
         std::vector<int> types;
@@ -41,7 +41,7 @@ ProtobufSimulationLayer::ProtobufSimulationLayer(const std::string &name, const 
             for (const auto& binding : beadDesc.energy_vector()) {
                 w[binding.binder_type()] = binding.force();
             }
-            types.push_back(Defaults::ev2typename(w));
+            types.push_back(Preferences::ev2typename(w));
         }
         chainAtomTypes.push_back(types);
     }
