@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
     renderSettings(RenderSettings::getInstance()),
-    preferences(new Preferences),
+    preferences(Preferences::getInstance()),
     materialBrowser(MaterialBrowser::getInstance()),
     movieMaker(MovieMaker::getInstance()),
     pw(nullptr),

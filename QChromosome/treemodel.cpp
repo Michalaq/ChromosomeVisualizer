@@ -221,7 +221,7 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
     if (root.sibling(root.row(), 1).data().toInt() == ResidueObject)
     {
         int type = root.sibling(root.row(), 2).data().toInt();
-        auto defl = Preferences::typename2color(type).toList();
+        auto defl = Preferences::getInstance()->typename2color(type).toList();
 
         for (auto mat : defl)
         {
@@ -258,7 +258,7 @@ void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
     if (root.sibling(root.row(), 1).data().toInt() == ChainObject)
     {
         int num = root.sibling(root.row(), 2).data().toInt();
-        auto defl = Preferences::chainnumber2color(num).toList();
+        auto defl = Preferences::getInstance()->chainnumber2color(num).toList();
 
         for (auto mat : defl)
         {

@@ -594,7 +594,7 @@ void ChainItem::shift(int da, int dc)
 #include "preferences.h"
 
 ResidueItem::ResidueItem(int type, TreeItem *parentItem) :
-    TreeItem({Preferences::typename2label(type), NodeType::ResidueObject, type, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+    TreeItem({Preferences::getInstance()->typename2label(type), NodeType::ResidueObject, type, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);

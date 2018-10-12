@@ -1,19 +1,7 @@
 #include "preferences.h"
 #include "ui_preferences.h"
 
-QMap<int, int> Preferences::bt2tn;
-QMap<std::vector<int>, int> Preferences::ev2tn;
-QMap<std::string, int> Preferences::rs2tn;
-
-QMap<int, QPair<QString, QVariant>> Preferences::tn2defaults = {
-    {0, {"(unresolved binder type)", QVariant()}},
-    {1, {"(unresolved bead type)", QVariant()}},
-    {2, {"(unresolved atom type)", QVariant()}},
-};
-
-QMap<int, QVariant> Preferences::cn2defaults;
-
-int Preferences::typenames = 3;
+Preferences* Preferences::instance = nullptr;
 
 #include <QProxyStyle>
 #include <QPainter>
@@ -47,7 +35,11 @@ public:
 
 Preferences::Preferences(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Preferences)
+    ui(new Ui::Preferences),
+    tn2defaults({{0, {"(unresolved binder type)", QVariant()}},
+                 {1, {"(unresolved bead type)", QVariant()}},
+                 {2, {"(unresolved atom type)", QVariant()}}}),
+    typenames(tn2defaults.size())
 {
     ui->setupUi(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
@@ -232,6 +224,11 @@ Preferences::Preferences(QWidget *parent) :
 Preferences::~Preferences()
 {
     delete ui;
+}
+
+Preferences* Preferences::getInstance()
+{
+    return instance ? instance : instance = new Preferences();
 }
 
 #include "treemodel.h"

@@ -37,11 +37,5 @@ int main(int argc, char *argv[])
 
     s.finish(&w);
 
-    int ans = a.exec();
-
-    delete MaterialBrowser::getInstance();
-    delete RenderSettings::getInstance();
-    delete MovieMaker::getInstance();
-
-    return ans;
+    return a.exec();
 }
