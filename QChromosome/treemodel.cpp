@@ -218,15 +218,15 @@ void TreeModel::colorByResidue(const QModelIndex& root)
 void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
 {
     // update current tags
-    if (root.sibling(root.row(), 1).data().toInt() == ResidueObject)
+    if (sibling(root.row(), 1, root).data().toInt() == ResidueObject)
     {
-        int type = root.sibling(root.row(), 2).data().toInt();
+        uint type = sibling(root.row(), 2, root).data().toUInt();
         auto defl = Preferences::getInstance()->typename2color(type).toList();
 
         for (auto mat : defl)
         {
             m = qobject_cast<Material*>(mat.value<QObject*>());
-            m->assign(root.sibling(root.row(), 5));
+            m->assign(sibling(root.row(), 5, root));
 
             if (!materials.contains(m))
             {
@@ -235,12 +235,13 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
             }
         }
 
-        auto list = root.sibling(root.row(), 5).data().toList();
-        setData(root.sibling(root.row(), 5), list + defl);
+        setData(sibling(root.row(), 5, root), defl);
     }
+    else
+        setData(sibling(root.row(), 5, root), QVariant());
 
     // update current material
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+    if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
         reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
 
     for (int r = 0; r < rowCount(root); r++)
@@ -255,15 +256,15 @@ void TreeModel::colorByChain(const QModelIndex& root)
 void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
 {
     // update current tags
-    if (root.sibling(root.row(), 1).data().toInt() == ChainObject)
+    if (sibling(root.row(), 1, root).data().toInt() == ChainObject)
     {
-        int num = root.sibling(root.row(), 2).data().toInt();
+        int num = sibling(root.row(), 2, root).data().toInt();
         auto defl = Preferences::getInstance()->chainnumber2color(num).toList();
 
         for (auto mat : defl)
         {
             m = qobject_cast<Material*>(mat.value<QObject*>());
-            m->assign(root.sibling(root.row(), 5));
+            m->assign(sibling(root.row(), 5, root));
 
             if (!materials.contains(m))
             {
@@ -272,12 +273,13 @@ void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
             }
         }
 
-        auto list = root.sibling(root.row(), 5).data().toList();
-        setData(root.sibling(root.row(), 5), list + defl);
+        setData(sibling(root.row(), 5, root), defl);
     }
+    else
+        setData(sibling(root.row(), 5, root), QVariant());
 
     // update current material
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
+    if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
         reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
 
     for (int r = 0; r < rowCount(root); r++)

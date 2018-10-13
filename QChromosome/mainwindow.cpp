@@ -162,6 +162,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionPing_Pong, &QAction::triggered, [this] {
         session->playMode = Session::PM_PingPong;
     });
+
+    connect(preferences, &Preferences::coloringMethodChanged, [this](PointerToMemberFunction cm) {
+        (session->simulation->getModel()->*cm)(QModelIndex());
+        ui->scene->update();
+    });
 }
 
 MainWindow::~MainWindow()

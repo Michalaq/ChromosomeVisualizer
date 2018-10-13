@@ -31,6 +31,9 @@ public:
     const QVariant &typename2color(uint tn);
     const QVariant &chainnumber2color(int cn);
 
+signals:
+    void coloringMethodChanged(PointerToMemberFunction);
+
 public slots:
 
 private:

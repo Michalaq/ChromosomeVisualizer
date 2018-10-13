@@ -68,6 +68,7 @@ Preferences::Preferences(QWidget *parent) :
 
     connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         ui->stackedWidget->setCurrentIndex(index);
+        emit coloringMethodChanged(coloringMethod());
     });
 
     QSettings settings;
