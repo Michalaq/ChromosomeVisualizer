@@ -184,6 +184,43 @@ QScrollArea &gt; QWidget &gt; QWidget {
             <height>534</height>
            </rect>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QHeaderView {
+	background: transparent;
+}
+
+QHeaderView::section {
+	background: #2d2d2d;
+	border: none;
+	color: white;
+	margin-right: 1px;
+	height: 20px;
+}
+
+QTableView {
+	font-family: RobotoMono;
+	color: gray;
+	border: none;
+	background: #1a1a1a;
+	alternate-background-color: #1f1f1f;
+	selection-background-color: #1a1a1a;
+	selection-color: white;
+	outline: 0;
+}
+
+QTableView::item {
+	border: none;
+	margin-right: 1px;
+}
+
+QExpandingLineEdit {
+	font-family: RobotoMono;
+	color: white;
+	border: none;
+	padding: 1px;
+}
+</string>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QLabel" name="label_5">
@@ -213,6 +250,84 @@ QScrollArea &gt; QWidget &gt; QWidget {
             </widget>
            </item>
            <item>
+            <widget class="QLabel" name="label1">
+             <property name="styleSheet">
+              <string notr="true">color: lightblue;</string>
+             </property>
+             <property name="text">
+              <string>Binary format</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="TableView" name="tableView">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="horizontalScrollMode">
+              <enum>QAbstractItemView::ScrollPerPixel</enum>
+             </property>
+             <property name="showGrid">
+              <bool>false</bool>
+             </property>
+             <attribute name="horizontalHeaderHighlightSections">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>20</number>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="TableView" name="tableView_2">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="acceptDrops">
+              <bool>true</bool>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="horizontalScrollMode">
+              <enum>QAbstractItemView::ScrollPerPixel</enum>
+             </property>
+             <property name="showGrid">
+              <bool>false</bool>
+             </property>
+             <attribute name="horizontalHeaderHighlightSections">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderDefaultSectionSize">
+              <number>20</number>
+             </attribute>
+            </widget>
+           </item>
+           <item>
             <widget class="QLabel" name="label_2">
              <property name="styleSheet">
               <string notr="true">color: blue;</string>
@@ -238,242 +353,69 @@ QScrollArea &gt; QWidget &gt; QWidget {
            </item>
            <item>
             <widget class="QStackedWidget" name="stackedWidget">
-             <property name="styleSheet">
-              <string notr="true">QHeaderView {
-	background: transparent;
-}
-
-QHeaderView::section {
-	background: #2d2d2d;
-	border: none;
-	color: white;
-	margin-right: 1px;
-	height: 20px;
-}
-
-QTableView {
-	font-family: RobotoMono;
-	color: gray;
-	border: none;
-	background: #1a1a1a;
-	alternate-background-color: #1f1f1f;
-	selection-background-color: #1a1a1a;
-	selection-color: white;
-	outline: 0;
-}
-
-QTableView::item {
-	border: none;
-	margin-right: 1px;
-}
-
-QLineEdit {
-	font-family: RobotoMono;
-	color: white;
-	border: none;
-	padding: 1px;
-}
-</string>
-             </property>
-             <widget class="QWidget" name="page">
-              <layout class="QVBoxLayout" name="verticalLayout1">
-               <item>
-                <widget class="QLabel" name="label1">
-                 <property name="styleSheet">
-                  <string notr="true">color: lightblue;</string>
-                 </property>
-                 <property name="text">
-                  <string>Binary format</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="TableView" name="tableView">
-                 <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
-                 </property>
-                 <property name="acceptDrops">
-                  <bool>true</bool>
-                 </property>
-                 <property name="alternatingRowColors">
-                  <bool>true</bool>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="horizontalScrollMode">
-                  <enum>QAbstractItemView::ScrollPerPixel</enum>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderHighlightSections">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="horizontalHeaderStretchLastSection">
-                  <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>20</number>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <widget class="TableView" name="tableView_2">
-                 <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
-                 </property>
-                 <property name="acceptDrops">
-                  <bool>true</bool>
-                 </property>
-                 <property name="alternatingRowColors">
-                  <bool>true</bool>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="horizontalScrollMode">
-                  <enum>QAbstractItemView::ScrollPerPixel</enum>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderHighlightSections">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="horizontalHeaderStretchLastSection">
-                  <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>20</number>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_21">
-                 <property name="styleSheet">
-                  <string notr="true">color: lightblue;</string>
-                 </property>
-                 <property name="text">
-                  <string>PDB format</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="TableView" name="tableView_3">
-                 <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
-                 </property>
-                 <property name="acceptDrops">
-                  <bool>true</bool>
-                 </property>
-                 <property name="alternatingRowColors">
-                  <bool>true</bool>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="horizontalScrollMode">
-                  <enum>QAbstractItemView::ScrollPerPixel</enum>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderHighlightSections">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="horizontalHeaderStretchLastSection">
-                  <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>20</number>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
+             <widget class="TableView" name="tableView_3">
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="acceptDrops">
+               <bool>true</bool>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="horizontalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
+              </property>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>20</number>
+              </attribute>
              </widget>
-             <widget class="QWidget" name="page_2">
-              <layout class="QVBoxLayout" name="verticalLayout2">
-               <item>
-                <widget class="QLabel" name="label2">
-                 <property name="styleSheet">
-                  <string notr="true">color: lightblue;</string>
-                 </property>
-                 <property name="text">
-                  <string>Chains</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="TableView" name="tableView_4">
-                 <property name="focusPolicy">
-                  <enum>Qt::ClickFocus</enum>
-                 </property>
-                 <property name="acceptDrops">
-                  <bool>true</bool>
-                 </property>
-                 <property name="alternatingRowColors">
-                  <bool>true</bool>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="horizontalScrollMode">
-                  <enum>QAbstractItemView::ScrollPerPixel</enum>
-                 </property>
-                 <property name="showGrid">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderHighlightSections">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="horizontalHeaderStretchLastSection">
-                  <bool>true</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="verticalHeaderDefaultSectionSize">
-                  <number>20</number>
-                 </attribute>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer1">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
+             <widget class="TableView" name="tableView_4">
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="acceptDrops">
+               <bool>true</bool>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="horizontalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="showGrid">
+               <bool>false</bool>
+              </property>
+              <attribute name="horizontalHeaderHighlightSections">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <attribute name="verticalHeaderDefaultSectionSize">
+               <number>20</number>
+              </attribute>
              </widget>
             </widget>
            </item>

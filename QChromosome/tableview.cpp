@@ -32,7 +32,7 @@ void TableView::mousePressEvent(QMouseEvent *event)
 {
     auto index = indexAt(event->pos());
 
-    if (index.column() == model()->columnCount() - 1)
+    if (strcmp(itemDelegate(index)->metaObject()->className(), "TagsDelegate") == 0)
     {
         state = DragTag;
 

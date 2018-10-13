@@ -22,7 +22,7 @@ using frameNumber_t = int64_t;
 
 struct Atom {
     int id;
-    int type;
+    uint type;
     float x, y, z;
 };
 

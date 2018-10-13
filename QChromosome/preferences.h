@@ -23,12 +23,12 @@ public:
 
     PointerToMemberFunction coloringMethod() const;
 
-    int bt2typename(int bt);
-    int ev2typename(std::vector<int> ev);
-    int rs2typename(std::string rs);
+    uint bt2typename(int bt);
+    uint ev2typename(std::vector<int> ev);
+    uint rs2typename(const QString& rs);
 
-    const QString &typename2label(int tn);
-    const QVariant &typename2color(int tn);
+    const QString &typename2label(uint tn);
+    const QVariant &typename2color(uint tn);
     const QVariant &chainnumber2color(int cn);
 
 public slots:
@@ -40,13 +40,11 @@ private:
 
     static Preferences* instance;
 
-    QMap<int, int> bt2tn; // maps binder type to its typename
-    QMap<std::vector<int>, int> ev2tn; // maps energy vector to bead typename
-    QMap<std::string, int> rs2tn; // maps residue name to typename
-    QMap<int, QPair<QString, QVariant>> tn2defaults; // maps typenames to their defaults
-    QMap<int, QVariant> cn2defaults; // maps chain numbers to their defaults
-
-    int typenames;
+    QMap<int, uint> bt2tn; // maps binder type to its typename
+    QMap<std::vector<int>, uint> ev2tn; // maps energy vector to bead typename
+    QMap<uint, QString> tn2label; // maps typenames to their labels
+    QMap<uint, QVariant> tn2defaults; // maps typenames to their colors
+    QMap<uint, QVariant> cn2defaults; // maps chain numbers to their defaults
 };
 
 #endif // PREFERENCES_H
