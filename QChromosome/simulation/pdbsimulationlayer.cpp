@@ -50,12 +50,16 @@ void PDBSimulationLayerV2::cacheOffsets()
 
     QTextStream stream(&file);
 
-    while (!file.atEnd())
+    int i = 0;
+    while (!file.atEnd() && i < 1000)
     {
         stream.readLineInto(&line);
 
         if (line.startsWith("HEADER"))
+        {
             cache.push_back(pos);
+            i++;
+        }
 
         pos = file.pos();
     }

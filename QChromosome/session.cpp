@@ -4,6 +4,7 @@ Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
+    foo(nullptr),
     projectSettings(new ProjectSettings(this)),
     renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),
@@ -178,19 +179,13 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    const auto frame = simulation->getFrame(time);
-    const auto& atoms = frame->atoms;
-
-    Q_ASSERT(atoms.size() == atomBuffer.size());
-
-    for (int i = 0; i < atoms.size(); i++)
+    if (foo)
     {
-        const auto& atom = atoms[i];
-        atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
+        foo->loadFrame(time, this);
 
-    if (lastFrame < simulation->getFrameCount() - 1)
-        setLastFrame(simulation->getFrameCount() - 1);
+        if (lastFrame < time)
+            setLastFrame(time);
+    }
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);

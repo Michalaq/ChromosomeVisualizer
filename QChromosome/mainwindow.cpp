@@ -400,6 +400,8 @@ void MainWindow::addLayer()
 
                 session->currentCamera->callibrate(session->atomBuffer.mid(offset));
                 session->origin = session->simulation->getModel()->getOrigin(false);
+
+                session->foo = new PDBSimulationLayerV2(path, impd.first(), impd.last(), impd.stride());
             }
         }
     } catch (std::exception& e) {
