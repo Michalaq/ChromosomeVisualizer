@@ -386,7 +386,7 @@ void MainWindow::addLayer()
             else
                 simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
 
-            ImportDialog impd(simulationLayer.get(), this);
+            ImportDialog impd(this);
             impd.setWindowTitle(QString("Import - [%1]").arg(QFileInfo(path).fileName()));
 
             if (impd.exec() == QDialog::Accepted)
