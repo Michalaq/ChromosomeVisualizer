@@ -71,7 +71,9 @@ SOURCES += \
     jpegdialog.cpp \
     slider.cpp \
     targadialog.cpp \
-    spline.cpp
+    spline.cpp \
+    simulation/simulationlayer.cpp \
+    simulation/pdbsimulationlayer.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -154,7 +156,9 @@ HEADERS += \
     tabwidget.h \
     jpegdialog.h \
     slider.h \
-    targadialog.h
+    targadialog.h \
+    simulation/simulationlayer.h \
+    simulation/pdbsimulationlayer.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
