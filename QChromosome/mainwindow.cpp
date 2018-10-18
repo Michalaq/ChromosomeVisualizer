@@ -366,6 +366,7 @@ void MainWindow::openProject()
         delete s;
 }
 
+#include "simulation/pdbsimulationlayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
 #include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include "importdialog.h"
@@ -377,20 +378,22 @@ void MainWindow::addLayer()
 
         if (!path.isEmpty())
         {
-            int offset = session->atomBuffer.size();
-
-            std::shared_ptr<SimulationLayer> simulationLayer;
-
-            if (path.endsWith(".pdb"))
-                simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
-            else
-                simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
+            QFileInfo info(path);
 
             ImportDialog impd(this);
-            impd.setWindowTitle(QString("Import - [%1]").arg(QFileInfo(path).fileName()));
+            impd.setWindowTitle(QString("Import - [%1]").arg(info.fileName()));
 
             if (impd.exec() == QDialog::Accepted)
             {
+                int offset = session->atomBuffer.size();
+
+                std::shared_ptr<SimulationLayer> simulationLayer;
+
+                if (path.endsWith(".pdb"))
+                    simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
+                else
+                    simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
+
                 session->setDocumentTime(0);
                 session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
                 (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
@@ -401,7 +404,8 @@ void MainWindow::addLayer()
                 session->currentCamera->callibrate(session->atomBuffer.mid(offset));
                 session->origin = session->simulation->getModel()->getOrigin(false);
 
-                session->foo = new PDBSimulationLayerV2(path, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+                if (info.suffix() == "pdb")
+                    session->simulationV2->prepend(new PDBSimulationLayerV2(path, impd.first(), impd.last(), impd.stride(), impd.loadInBackground()));
             }
         }
     } catch (std::exception& e) {

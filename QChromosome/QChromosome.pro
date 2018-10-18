@@ -73,7 +73,8 @@ SOURCES += \
     targadialog.cpp \
     spline.cpp \
     simulation/simulationlayer.cpp \
-    simulation/pdbsimulationlayer.cpp
+    simulation/pdbsimulationlayer.cpp \
+    simulation/simulation.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -158,7 +159,8 @@ HEADERS += \
     slider.h \
     targadialog.h \
     simulation/simulationlayer.h \
-    simulation/pdbsimulationlayer.h
+    simulation/pdbsimulationlayer.h \
+    simulation/simulation.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \

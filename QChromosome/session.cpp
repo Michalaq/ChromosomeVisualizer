@@ -4,7 +4,7 @@ Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
     simulation(new Simulation(this)),
-    foo(nullptr),
+    simulationV2(new SimulationV2(this)),
     projectSettings(new ProjectSettings(this)),
     renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),
@@ -68,6 +68,7 @@ Session::~Session()
 {
     delete action;
     delete simulation;
+    delete simulationV2;
     delete editorCamera;
     delete treeView;
     delete projectSettings;
@@ -179,7 +180,7 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    if (foo) foo->loadEntry(time, this);
+    simulationV2->loadEntry(time);
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);

@@ -18,7 +18,7 @@
 #include "mediapanel.h"
 #include "plot.h"
 #include "tabwidget.h"
-#include "simulation/pdbsimulationlayser.h"
+#include "simulation/simulation.h"
 
 class MainWindow;
 
@@ -33,7 +33,7 @@ public:
 
     QAction *action;
     Simulation *simulation;
-    PDBSimulationLayerV2 *foo;
+    SimulationV2 *simulationV2;
 
     QVector<QPersistentModelIndex> indices;
 
