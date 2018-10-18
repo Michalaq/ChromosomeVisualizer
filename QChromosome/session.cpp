@@ -179,13 +179,7 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    if (foo)
-    {
-        foo->loadEntry(time, this);
-
-        if (lastFrame < foo->lastEntry())
-            setLastFrame(foo->lastEntry());
-    }
+    if (foo) foo->loadEntry(time, this);
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);

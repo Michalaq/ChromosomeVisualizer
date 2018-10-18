@@ -181,14 +181,14 @@ void MediaPanel::step()
         {
             if (maxTime == ui->spinBox->maximum())
             {
-                bool ok;
-                session->simulation->getFrame(next, &ok);
+                int tmp = session->foo->cacheHeaders(next);
 
-                if (ok)
-                    return session->setDocumentTime(next);
-                else
-                    maxTime = session->simulation->getFrameCount() - 1;
+                if (maxTime < tmp)
+                    session->setLastFrame(maxTime = tmp);
             }
+
+            if (next <= maxTime)
+                return session->setDocumentTime(next);
 
             int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
             int frameCount = maxTime - minTime + 1;

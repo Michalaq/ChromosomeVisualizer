@@ -18,7 +18,7 @@ public:
 
     void loadEntry(int time, Session* session);
 
-    int lastEntry() const;
+    int cacheHeaders(int limit);
 
 private:
     int first, last, stride;
@@ -35,7 +35,6 @@ private:
     bool atEnd = false;
 
     qint64 skipHeader();
-    void cacheHeaders(int limit);
 };
 
 

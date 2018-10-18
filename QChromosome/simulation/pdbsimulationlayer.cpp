@@ -22,9 +22,7 @@ PDBSimulationLayerV2::~PDBSimulationLayerV2()
 
 void PDBSimulationLayerV2::loadEntry(int time, Session* session)
 {
-    cacheHeaders(time);
-
-    auto entry = time < cache.size() ? cache[time] : cache.last();
+    auto entry = time <= cacheHeaders(time) ? cache[time] : cache.last();
 
     file.seek(entry.first);
 
@@ -41,11 +39,6 @@ void PDBSimulationLayerV2::loadEntry(int time, Session* session)
             session->atomBuffer[serial].position.setZ(buffer.mid(46, 8).trimmed().toFloat());
         }
     }
-}
-
-int PDBSimulationLayerV2::lastEntry() const
-{
-    return cache.size() - 1;
 }
 
 qint64 PDBSimulationLayerV2::skipHeader()
@@ -68,10 +61,10 @@ qint64 PDBSimulationLayerV2::skipHeader()
     }
 }
 
-void PDBSimulationLayerV2::cacheHeaders(int limit)
+int PDBSimulationLayerV2::cacheHeaders(int limit)
 {
     if (atEnd)
-        return;
+        return j - 1;
 
     file.seek(pos);
 
@@ -81,7 +74,7 @@ void PDBSimulationLayerV2::cacheHeaders(int limit)
         i++;
 
         if (atEnd)
-            return;
+            return j - 1;
     }
 
     while (j <= limit)
@@ -103,9 +96,11 @@ void PDBSimulationLayerV2::cacheHeaders(int limit)
                 atEnd = true;
 
             if (atEnd)
-                return;
+                return j - 1;
         }
     }
 
     pos = file.pos();
+
+    return j - 1;
 }
