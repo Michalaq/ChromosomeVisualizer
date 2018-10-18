@@ -13,18 +13,29 @@ class Session;
 class PDBSimulationLayerV2 : public SimulationLayerV2
 {
 public:
-    PDBSimulationLayerV2(const QString& name, int f = 0, int l = -1, int s = 1);
+    PDBSimulationLayerV2(const QString& name, int f = 0, int l = INT_MAX, int s = 1, bool b = true);
     ~PDBSimulationLayerV2();
 
-    void loadFrame(int time, Session* session);
+    void loadEntry(int time, Session* session);
+
+    int lastEntry() const;
 
 private:
     int first, last, stride;
 
     QFile file;
+    QByteArray buffer;
 
-    QVector<qint64> cache;
-    void cacheOffsets();
+    QVector<QPair<qint64, qint64>> cache;
+
+    qint64 pos = 0;
+    int i = 0, j = 0;
+    QPair<qint64, qint64> range;
+
+    bool atEnd = false;
+
+    qint64 skipHeader();
+    void cacheHeaders(int limit);
 };
 
 

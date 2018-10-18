@@ -1,66 +1,111 @@
 #include "pdbsimulationlayer.h"
 
-PDBSimulationLayerV2::PDBSimulationLayerV2(const QString& name, int f, int l, int s) :
+PDBSimulationLayerV2::PDBSimulationLayerV2(const QString& name, int f, int l, int s, bool b) :
     first(f),
     last(l),
     stride(s)
 {
+    buffer.resize(80 + 1);
+
     file.setFileName(name);
     file.open(QIODevice::ReadOnly);
 
-    cacheOffsets();
+    cacheHeaders(b ? 0 : INT_MAX);
 }
 
 PDBSimulationLayerV2::~PDBSimulationLayerV2()
 {
-    file.close();
+
 }
 
 #include "session.h"
-#include <QTextStream>
 
-void PDBSimulationLayerV2::loadFrame(int time, Session* session)
+void PDBSimulationLayerV2::loadEntry(int time, Session* session)
 {
-    file.seek(cache[time]);
+    cacheHeaders(time);
 
-    QString line;
+    auto entry = time < cache.size() ? cache[time] : cache.last();
 
-    QTextStream stream(&file);
+    file.seek(entry.first);
 
-    while (file.pos() < cache[time + 1])
+    while (file.pos() < entry.second)
     {
-        stream.readLineInto(&line);
+        file.readLine(buffer.data(), buffer.size());
 
-        if (line.startsWith("ATOM  "))
+        if (buffer.startsWith("ATOM  "))
         {
-            int serial = line.midRef(6, 5).toInt() - 1;
+            int serial = buffer.mid(6, 5).trimmed().toInt() - 1;
 
-            session->atomBuffer[serial].position.setX(line.midRef(30, 8).toFloat());
-            session->atomBuffer[serial].position.setY(line.midRef(38, 8).toFloat());
-            session->atomBuffer[serial].position.setZ(line.midRef(46, 8).toFloat());
+            session->atomBuffer[serial].position.setX(buffer.mid(30, 8).trimmed().toFloat());
+            session->atomBuffer[serial].position.setY(buffer.mid(38, 8).trimmed().toFloat());
+            session->atomBuffer[serial].position.setZ(buffer.mid(46, 8).trimmed().toFloat());
         }
     }
 }
 
-void PDBSimulationLayerV2::cacheOffsets()
+int PDBSimulationLayerV2::lastEntry() const
 {
-    qint64 pos = file.pos();
+    return cache.size() - 1;
+}
 
-    QString line;
-
-    QTextStream stream(&file);
-
-    int i = 0;
-    while (!file.atEnd() && i < 1000)
+qint64 PDBSimulationLayerV2::skipHeader()
+{
+    while (true)
     {
-        stream.readLineInto(&line);
+        qint64 pos = file.pos();
 
-        if (line.startsWith("HEADER"))
+        if (file.readLine(buffer.data(), buffer.size()) == -1)
         {
-            cache.push_back(pos);
-            i++;
+            atEnd = true;
+            return pos;
         }
 
-        pos = file.pos();
+        if (buffer.startsWith("HEADER"))
+        {
+            atEnd = false;
+            return pos;
+        }
     }
+}
+
+void PDBSimulationLayerV2::cacheHeaders(int limit)
+{
+    if (atEnd)
+        return;
+
+    file.seek(pos);
+
+    while (i <= first)
+    {
+        range.first = skipHeader();
+        i++;
+
+        if (atEnd)
+            return;
+    }
+
+    while (j <= limit)
+    {
+        range.second = skipHeader();
+        i++;
+
+        cache.append(range);
+        j++;
+
+        range.first = range.second;
+
+        for (int k = 1; k < stride; k++)
+        {
+            range.first = skipHeader();
+            i++;
+
+            if (i > last)
+                atEnd = true;
+
+            if (atEnd)
+                return;
+        }
+    }
+
+    pos = file.pos();
 }

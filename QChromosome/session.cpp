@@ -181,10 +181,10 @@ void Session::setDocumentTime(int time)
 {
     if (foo)
     {
-        foo->loadFrame(time, this);
+        foo->loadEntry(time, this);
 
-        if (lastFrame < time)
-            setLastFrame(time);
+        if (lastFrame < foo->lastEntry())
+            setLastFrame(foo->lastEntry());
     }
 
     mediaPanel->setDocumentTime(time);
