@@ -40,7 +40,7 @@ void Plot::updateSimulation()
 
 void Plot::setMaximum(int m)
 {
-    int prevI;
+    /*int prevI;
     while (lastBuffered < m)
     {
         prevI = lastBuffered;
@@ -56,7 +56,7 @@ void Plot::setMaximum(int m)
 
             minimax.insert(entry.first, lastBuffered, entry.second);
         }
-    }
+    }*/
 
     SoftSlider::setMaximum(m);
     update();
