@@ -278,6 +278,11 @@ void TreeItem::shift(int da, int dc)
         c->shift(da, dc);
 }
 
+int TreeItem::atomCount() const
+{
+    return m_atomCount;
+}
+
 #include "session.h"
 
 LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem) :
@@ -406,17 +411,15 @@ void CameraItem::remove()
     TreeItem::remove();
 }
 
-AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
-    TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
-    id(id),
+AtomItem::AtomItem(int id, int offset, Session *s, TreeItem *parentItem) :
+    TreeItem({QString("Atom.%1").arg(id + 1), NodeType::AtomObject, offset + id, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
+    id(offset + id),
     session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
-
-    session->atomBuffer[id].position = QVector3D(atom.x, atom.y, atom.z);
 }
 
 AtomItem::~AtomItem()
@@ -537,18 +540,15 @@ void AtomItem::shift(int da, int dc)
     TreeItem::shift(da, dc);
 }
 
-ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ChainObject, s->chainBuffer[0].count(), Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
-    id(s->chainBuffer[0].count()),
+ChainItem::ChainItem(int id, int offset, Session *s, TreeItem *parentItem) :
+    TreeItem({"Chain" + (id > 0 ? QString(".%1").arg(id) : QString()), NodeType::ChainObject, offset + id, Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
+    id(offset + id),
     session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
-
-    session->chainBuffer[0].append(r.first);
-    session->chainBuffer[1].append(r.second - r.first);
 }
 
 ChainItem::~ChainItem()
@@ -593,7 +593,7 @@ void ChainItem::shift(int da, int dc)
 
 #include "preferences.h"
 
-ResidueItem::ResidueItem(int type, TreeItem *parentItem) :
+ResidueItem::ResidueItem(uint type, TreeItem *parentItem) :
     TreeItem({Preferences::getInstance()->typename2label(type), NodeType::ResidueObject, type, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;

@@ -46,7 +46,7 @@ public:
     void resize(int size)
     {
         resized = true;
-        QVector<T>::resize(QVector<T>::size() + size);
+        QVector<T>::resize(size);
     }
 
     inline T& operator[](int i)

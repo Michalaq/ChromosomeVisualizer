@@ -2,17 +2,18 @@
 #define SIMULATIONLAYER_H
 
 
-class Session;
+class TreeItem;
 
 class SimulationLayerV2
 {
 public:
-    SimulationLayerV2();
     virtual ~SimulationLayerV2();
 
-    virtual void loadEntry(int time, Session* session) = 0;
+    virtual void loadEntry(int time) = 0;
 
-    virtual int cacheHeaders(int limit) = 0;
+    virtual int cacheHeaders(int time) = 0;
+
+    virtual TreeItem* getModel() const = 0;
 };
 
 #endif // SIMULATIONLAYER_H

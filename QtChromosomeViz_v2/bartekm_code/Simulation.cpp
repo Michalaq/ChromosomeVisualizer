@@ -103,7 +103,7 @@ frameNumber_t Simulation::getPreviousTime(frameNumber_t time) const
 void Simulation::addSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)
 {
     layerConcatenations_.append(slc);
-    model->setupModelData(slc);
+    //model->setupModelData(slc);
 }
 
 void Simulation::removeSimulationLayerConcatenation(std::shared_ptr<SimulationLayerConcatenation> slc)

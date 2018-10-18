@@ -9,18 +9,22 @@
 #include <QVector>
 
 class Session;
+class LayerItem;
 
 class PDBSimulationLayerV2 : public SimulationLayerV2
 {
 public:
-    PDBSimulationLayerV2(const QString& name, int f = 0, int l = INT_MAX, int s = 1, bool b = true);
+    PDBSimulationLayerV2(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1, bool b = true);
     ~PDBSimulationLayerV2() override;
 
-    void loadEntry(int time, Session* session) override;
+    void loadEntry(int time) override;
 
-    int cacheHeaders(int limit) override;
+    int cacheHeaders(int time) override;
+
+    TreeItem* getModel() const override;
 
 private:
+    Session* session;
     int first, last, stride;
 
     QFile file;
@@ -35,6 +39,12 @@ private:
     bool atEnd = false;
 
     qint64 skipHeader();
+
+    LayerItem* model;
+
+    void makeModel();
+
+    int a_offset;
 };
 
 

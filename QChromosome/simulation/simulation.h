@@ -6,6 +6,7 @@
 #include <QVector>
 
 class Session;
+class TreeModel;
 
 class SimulationV2 : public QVector<SimulationLayerV2*>
 {
@@ -15,10 +16,14 @@ public:
 
     void loadEntry(int time);
 
-    int cacheHeaders(int limit);
+    int cacheHeaders(int time);
+
+    TreeModel* getModel() const;
+
+    void prepend(SimulationLayerV2* value);
 
 private:
-    Session* session;
+    TreeModel* model;
 };
 
 #endif // SIMULATION_H

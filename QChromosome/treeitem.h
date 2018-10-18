@@ -92,6 +92,8 @@ public:
     virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
+    int atomCount() const;
+
 protected:
     explicit TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parentItem);
 
@@ -198,7 +200,7 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom& atom, int id, Session *s, TreeItem *parentItem = 0);
+    explicit AtomItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
     void setLabel(const QString& l, const QRect& r);
@@ -233,7 +235,7 @@ private:
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem = 0);
+    explicit ChainItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
 
     void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
@@ -250,7 +252,7 @@ private:
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(int type, TreeItem *parentItem = 0);
+    explicit ResidueItem(uint type, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

@@ -373,44 +373,49 @@ void MainWindow::openProject()
 
 void MainWindow::addLayer()
 {
-    try {
-        QString path = QFileDialog::getOpenFileName(0, "Import...", QSettings().value("locallib").toString(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
+    QString path = QFileDialog::getOpenFileName(0, "Import...", QSettings().value("locallib").toString(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
 
-        if (!path.isEmpty())
-        {
-            QFileInfo info(path);
+    if (path.isEmpty())
+        return;
 
-            ImportDialog impd(this);
-            impd.setWindowTitle(QString("Import - [%1]").arg(info.fileName()));
+    QFileInfo info(path);
 
-            if (impd.exec() == QDialog::Accepted)
-            {
-                int offset = session->atomBuffer.size();
+    ImportDialog impd(this);
+    impd.setWindowTitle(QString("Import - [%1]").arg(info.fileName()));
 
-                std::shared_ptr<SimulationLayer> simulationLayer;
+    if (impd.exec() != QDialog::Accepted)
+        return;
 
-                if (path.endsWith(".pdb"))
-                    simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
-                else
-                    simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
+    SimulationLayerV2* layer = Q_NULLPTR;
 
-                session->setDocumentTime(0);
-                session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
-                (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+    if (info.suffix() == "pdb")
+        layer = new PDBSimulationLayerV2(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
-                ui->scene->update();
-                session->plot->updateSimulation();
+    Q_ASSERT(layer);
 
-                session->currentCamera->callibrate(session->atomBuffer.mid(offset));
-                session->origin = session->simulation->getModel()->getOrigin(false);
+    session->simulationV2->prepend(layer);
+    (session->simulationV2->getModel()->*preferences->coloringMethod())(session->simulationV2->getModel()->index(0, 0));
 
-                if (info.suffix() == "pdb")
-                    session->simulationV2->prepend(new PDBSimulationLayerV2(path, impd.first(), impd.last(), impd.stride(), impd.loadInBackground()));
-            }
-        }
-    } catch (std::exception& e) {
-        QMessageBox::critical(0, "Error occured.", e.what());
-    }
+    /*int offset = session->atomBuffer.size();
+
+    std::shared_ptr<SimulationLayer> simulationLayer;
+
+    if (path.endsWith(".pdb"))
+        simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
+    else
+        simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
+
+    session->setDocumentTime(0);
+    session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
+    (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+
+    ui->scene->update();
+    session->plot->updateSimulation();
+
+    session->currentCamera->callibrate(session->atomBuffer.mid(offset));
+    session->origin = session->simulation->getModel()->getOrigin(false);*/
+
+    session->setDocumentTime(0);
 }
 
 void MainWindow::saveProject()
