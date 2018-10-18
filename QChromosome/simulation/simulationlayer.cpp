@@ -4,3 +4,8 @@ SimulationLayerV2::SimulationLayerV2()
 {
 
 }
+
+SimulationLayerV2::~SimulationLayerV2()
+{
+
+}

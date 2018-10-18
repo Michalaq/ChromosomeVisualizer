@@ -14,11 +14,11 @@ class PDBSimulationLayerV2 : public SimulationLayerV2
 {
 public:
     PDBSimulationLayerV2(const QString& name, int f = 0, int l = INT_MAX, int s = 1, bool b = true);
-    ~PDBSimulationLayerV2();
+    ~PDBSimulationLayerV2() override;
 
-    void loadEntry(int time, Session* session);
+    void loadEntry(int time, Session* session) override;
 
-    int cacheHeaders(int limit);
+    int cacheHeaders(int limit) override;
 
 private:
     int first, last, stride;
