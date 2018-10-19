@@ -181,7 +181,7 @@ void MediaPanel::step()
         {
             if (maxTime == ui->spinBox->maximum())
             {
-                int tmp = session->simulationV2->cacheHeaders(next);
+                int tmp = session->simulation->cacheHeaders(next);
 
                 if (maxTime < tmp)
                     session->setLastFrame(maxTime = tmp);

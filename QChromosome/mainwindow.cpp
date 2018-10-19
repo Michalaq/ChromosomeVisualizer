@@ -393,8 +393,8 @@ void MainWindow::addLayer()
 
     Q_ASSERT(layer);
 
-    session->simulationV2->prepend(layer);
-    (session->simulationV2->getModel()->*preferences->coloringMethod())(session->simulationV2->getModel()->index(0, 0));
+    session->simulation->prepend(layer);
+    (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
 
     /*int offset = session->atomBuffer.size();
 

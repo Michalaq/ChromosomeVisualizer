@@ -3,7 +3,7 @@
 
 #include "softslider.h"
 
-#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
+#include "simulation/simulation.h"
 #include "legend.h"
 #include "multimap.h"
 
@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    Simulation* simulation_;
+    SimulationV2* simulation_;
 
     QHash<QString, QVector<QPointF> > data;
     Tree minimax;

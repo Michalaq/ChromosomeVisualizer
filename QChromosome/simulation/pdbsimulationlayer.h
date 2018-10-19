@@ -23,6 +23,8 @@ public:
 
     TreeItem* getModel() const override;
 
+    void write(QJsonObject& json) const override;
+
 private:
     Session* session;
     int first, last, stride;

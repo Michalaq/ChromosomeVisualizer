@@ -126,14 +126,14 @@ enum Visibility
     Off
 };
 
-#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
+#include "simulation/simulationlayer.h"
 
 class Session;
 
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, SimulationLayerV2* l, Session* s, TreeItem *parentItem = 0);
     ~LayerItem();
 
     void write(QJsonObject& json) const;
@@ -142,7 +142,7 @@ protected:
     void remove();
 
 private:
-    std::shared_ptr<SimulationLayerConcatenation> layer;
+    SimulationLayerV2* layer;
     Session* session;
 };
 

@@ -285,9 +285,9 @@ int TreeItem::atomCount() const
 
 #include "session.h"
 
-LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem) :
+LayerItem::LayerItem(const QString &name, SimulationLayerV2* l, Session* s, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    layer(slc),
+    layer(l),
     session(s)
 {
     QIcon icon;
@@ -310,11 +310,9 @@ void LayerItem::write(QJsonObject &json) const
     if (json.contains("Object"))
         object = json["Object"].toObject();
 
-    QJsonArray simulationLayer;
-    layer->write(simulationLayer);
-
     object["class"] = "Layer";
-    object["paths"] = simulationLayer;
+
+    layer->write(object);
 
     json["Object"] = object;
 }
@@ -327,7 +325,7 @@ void LayerItem::remove()
     session->chainBuffer[0].remove(c_offset, m_chainCount);
     session->chainBuffer[1].remove(c_offset, m_chainCount);
 
-    session->simulation->removeSimulationLayerConcatenation(layer);
+    session->simulation->removeOne(layer);
     session->plot->updateSimulation();
 
     TreeItem::remove();

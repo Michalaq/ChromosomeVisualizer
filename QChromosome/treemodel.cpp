@@ -560,12 +560,7 @@ void TreeModel::read(const QJsonObject &json)
         const QJsonObject object = child.value().toObject()["Object"].toObject();
 
         if (object["class"] == "Layer")
-        {
-            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-            simulationLayer->read(object["paths"].toArray());
-
-            session->simulation->addSimulationLayerConcatenation(simulationLayer);
-        }
+            session->simulation->prepend(SimulationLayerV2::read(object, session));
 
         if (object["class"] == "Camera")
             qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));

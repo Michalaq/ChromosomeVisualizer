@@ -164,7 +164,7 @@ void PDBSimulationLayerV2::makeModel()
     session->chainBuffer[0].resize(c_offset + chains.size());
     session->chainBuffer[1].resize(c_offset + chains.size());
 
-    model = new LayerItem(QFileInfo(file).fileName(), 0, session);
+    model = new LayerItem(QFileInfo(file).fileName(), this, session);
 
     for (int i = 0; i < chains.size(); i++)
     {
@@ -205,4 +205,12 @@ void PDBSimulationLayerV2::makeModel()
         session->chainBuffer[0][c_offset + j] = chains[j].first;
         session->chainBuffer[1][c_offset + j] = chains[j].second - chains[j].first;
     }
+}
+
+void PDBSimulationLayerV2::write(QJsonObject& json) const
+{
+    json["File name"] = file.fileName();
+    json["First"] = first;
+    json["Last"] = last;
+    json["Stride"] = stride;
 }

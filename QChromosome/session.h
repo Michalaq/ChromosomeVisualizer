@@ -32,8 +32,7 @@ public:
     ~Session();
 
     QAction *action;
-    Simulation *simulation;
-    SimulationV2 *simulationV2;
+    SimulationV2 *simulation;
 
     QVector<QPersistentModelIndex> indices;
 
