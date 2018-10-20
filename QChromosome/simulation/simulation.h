@@ -4,6 +4,7 @@
 
 #include "simulationlayer.h"
 #include <QVector>
+#include <QTextStream>
 
 class Session;
 class TreeModel;
@@ -21,6 +22,8 @@ public:
     TreeModel* getModel() const;
 
     void prepend(SimulationLayerV2* value);
+
+    void writePOVFrames(QTextStream& stream, int fbeg, int fend);
 
 private:
     TreeModel* model;

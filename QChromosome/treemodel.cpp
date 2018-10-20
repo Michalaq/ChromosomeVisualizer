@@ -589,9 +589,9 @@ void TreeModel::write(QJsonObject &json) const
     header->write(json);
 }
 
-void TreeModel::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
+void TreeModel::writePOVFrame(QTextStream &stream, QVector3D* data)
 {
-    header->writePOVFrame(stream, frame);
+    header->writePOVFrame(stream, data);
 }
 
 void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
@@ -607,4 +607,9 @@ void TreeModel::prepend(TreeItem* item)
 
     session->indices.resize(session->indices.size() + item->atomCount());
     dumpModel1(index(0, 0), session->indices);
+}
+
+int TreeModel::atomCount() const
+{
+    return header->atomCount();
 }

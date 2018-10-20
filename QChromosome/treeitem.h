@@ -89,7 +89,7 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    virtual void writePOVFrame(QTextStream &stream, QVector3D* data) const;
     virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
     int atomCount() const;
@@ -220,7 +220,7 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 protected:
@@ -238,7 +238,7 @@ public:
     explicit ChainItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
+    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
     void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
 protected:

@@ -125,8 +125,8 @@ static QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 
 void Simulation::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
 {
-    if (fbeg == fend)
-        return model->writePOVFrame(stream, getFrame(fbeg));
+    /*if (fbeg == fend)
+        return model->writePOVFrame(stream, getFrame(fbeg));*/
 
     int n = getFrame(0)->atoms.size();
 

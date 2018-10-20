@@ -252,10 +252,10 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void TreeItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
     for (const auto c : m_childItems)
-        c->writePOVFrame(stream, frame);
+        c->writePOVFrame(stream, data);
 }
 
 void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
@@ -507,19 +507,14 @@ void AtomItem::write(QJsonObject &json) const
 
 #include "moviemaker.h"
 
-constexpr QVector3D vec3(const Atom& a)
-{
-    return {a.x, a.y, a.z};
-}
-
-void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void AtomItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
     const auto& atom = session->atomBuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+        MovieMaker::addSphere(stream, data[id], atom.size, atom.material);
 
-    TreeItem::writePOVFrame(stream, frame);
+    TreeItem::writePOVFrame(stream, data);
 }
 
 void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
@@ -554,9 +549,9 @@ ChainItem::~ChainItem()
 
 }
 
-void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void ChainItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
-    TreeItem::writePOVFrame(stream, frame);
+    TreeItem::writePOVFrame(stream, data);
 
     for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id] - 1; i++)
     {
@@ -564,7 +559,7 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
         const auto& second = session->atomBuffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+            MovieMaker::addCylinder(stream, data[i], data[i + 1], first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
