@@ -550,6 +550,7 @@ void TreeModel::setName(const QModelIndexList &indices, const QString &name)
 
 #include <QJsonObject>
 #include <QJsonArray>
+#include "simulation/pdbsimulationlayer.h"
 
 void TreeModel::read(const QJsonObject &json)
 {
@@ -560,7 +561,18 @@ void TreeModel::read(const QJsonObject &json)
         const QJsonObject object = child.value().toObject()["Object"].toObject();
 
         if (object["class"] == "Layer")
-            session->simulation->prepend(SimulationLayerV2::read(object, session));
+        {
+            QString name = object["File name"].toString();
+
+            if (QFileInfo(name).suffix() == "pdb")
+            {
+                int first = object["First"].toInt();
+                int last = object["Last"].toInt();
+                int stride = object["Stride"].toInt();
+
+                session->simulation->prepend(new PDBSimulationLayerV2(name, session, first, last, stride));
+            }
+        }
 
         if (object["class"] == "Camera")
             qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));
