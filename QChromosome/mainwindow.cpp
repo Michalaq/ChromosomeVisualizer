@@ -384,6 +384,8 @@ void MainWindow::addLayer()
     if (impd.exec() != QDialog::Accepted)
         return;
 
+    int offset = session->atomBuffer.size();
+
     SimulationLayerV2* layer = Q_NULLPTR;
 
     if (info.suffix() == "pdb")
@@ -394,26 +396,12 @@ void MainWindow::addLayer()
     session->simulation->prepend(layer);
     (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
 
-    /*int offset = session->atomBuffer.size();
-
-    std::shared_ptr<SimulationLayer> simulationLayer;
-
-    if (path.endsWith(".pdb"))
-        simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<PDBSimulationLayer>(path.toStdString()));
-    else
-        simulationLayer = std::make_shared<SimulationLayer>(std::make_shared<ProtobufSimulationLayer>(path.toStdString()));
-
     session->setDocumentTime(0);
-    session->simulation->addSimulationLayerConcatenation(std::make_shared<SimulationLayerConcatenation>(simulationLayer));
-    (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
-
-    ui->scene->update();
-    session->plot->updateSimulation();
 
     session->currentCamera->callibrate(session->atomBuffer.mid(offset));
-    session->origin = session->simulation->getModel()->getOrigin(false);*/
+    session->origin = session->simulation->getModel()->getOrigin(false);
 
-    session->setDocumentTime(0);
+    //session->plot->updateSimulation();
 }
 
 void MainWindow::saveProject()
