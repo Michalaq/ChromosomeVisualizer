@@ -44,9 +44,6 @@
 #include <QVariant>
 #include <QTextStream>
 
-#include <memory>
-#include "../QtChromosomeViz_v2/bartekm_code/common.h"
-
 enum VizFlag
 {
     NoFlags = 0x0,
@@ -90,7 +87,7 @@ public:
     virtual void write(QJsonObject& json) const;
 
     virtual void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    virtual void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
     int atomCount() const;
 
@@ -221,7 +218,7 @@ public:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
 protected:
     void shift(int da, int dc);
@@ -239,7 +236,7 @@ public:
     ~ChainItem();
 
     void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
 protected:
     void shift(int da, int dc);

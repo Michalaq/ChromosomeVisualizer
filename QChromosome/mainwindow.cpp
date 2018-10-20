@@ -367,8 +367,6 @@ void MainWindow::openProject()
 }
 
 #include "simulation/pdbsimulationlayer.h"
-#include "../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h"
-#include "../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h"
 #include "importdialog.h"
 
 void MainWindow::addLayer()

@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 
-#include "../QtChromosomeViz_v2/VizWidget.hpp"
+#include "opengl/vizwidget.h"
 #include "rendersettings.h"
 #include "preferences.h"
 #include "materialbrowser.h"

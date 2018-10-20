@@ -258,7 +258,7 @@ void TreeItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
         c->writePOVFrame(stream, data);
 }
 
-void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void TreeItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     for (const auto c : m_childItems)
         c->writePOVFrames(stream, fbeg, fend);
@@ -517,7 +517,7 @@ void AtomItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
     TreeItem::writePOVFrame(stream, data);
 }
 
-void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void AtomItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     const auto& atom = session->atomBuffer[id];
 
@@ -563,7 +563,7 @@ void ChainItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
     }
 }
 
-void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void ChainItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     TreeItem::writePOVFrames(stream, fbeg, fend);
 

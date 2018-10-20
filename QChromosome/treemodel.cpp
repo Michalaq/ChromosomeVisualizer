@@ -594,7 +594,7 @@ void TreeModel::writePOVFrame(QTextStream &stream, QVector3D* data)
     header->writePOVFrame(stream, data);
 }
 
-void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
+void TreeModel::writePOVFrames(QTextStream &stream, int fbeg, int fend)
 {
     header->writePOVFrames(stream, fbeg, fend);
 }

@@ -5,7 +5,6 @@
 #include "glbuffer.h"
 #include <QAction>
 #include "treeitem.h"
-#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "camera.h"
 #include "labelatlas.h"
 #include "treeview.h"

@@ -102,7 +102,7 @@ public:
     void write(QJsonObject& json) const;
 
     void writePOVFrame(QTextStream &stream, QVector3D* data);
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend);
 
     void prepend(TreeItem* item);
 

@@ -1209,7 +1209,7 @@ QLineEdit {
   <customwidget>
    <class>VizWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header>../QtChromosomeViz_v2/VizWidget.hpp</header>
+   <header>opengl/vizwidget.h</header>
    <slots>
     <signal>selectionChangedObject(AtomSelection)</signal>
     <slot>setModelView(QMatrix4x4)</slot>
