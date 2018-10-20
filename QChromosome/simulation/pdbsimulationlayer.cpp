@@ -22,7 +22,7 @@ PDBSimulationLayerV2::~PDBSimulationLayerV2()
 
 #include "session.h"
 
-void PDBSimulationLayerV2::loadEntry(int time)
+void PDBSimulationLayerV2::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
     auto entry = time <= cacheHeaders(time) ? cache[time] : cache.last();
 
@@ -36,9 +36,11 @@ void PDBSimulationLayerV2::loadEntry(int time)
         {
             int serial = buffer.mid(6, 5).trimmed().toUInt() - 1;
 
-            session->atomBuffer[a_offset + serial].position.setX(buffer.mid(30, 8).trimmed().toFloat());
-            session->atomBuffer[a_offset + serial].position.setY(buffer.mid(38, 8).trimmed().toFloat());
-            session->atomBuffer[a_offset + serial].position.setZ(buffer.mid(46, 8).trimmed().toFloat());
+            float* position = reinterpret_cast<float*>(data + stride * (a_offset + serial) + pointer);
+
+            position[0] = buffer.mid(30, 8).trimmed().toFloat();
+            position[1] = buffer.mid(38, 8).trimmed().toFloat();
+            position[2] = buffer.mid(46, 8).trimmed().toFloat();
         }
     }
 }

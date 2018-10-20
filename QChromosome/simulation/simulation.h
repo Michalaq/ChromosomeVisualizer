@@ -14,7 +14,7 @@ public:
     SimulationV2(Session* s);
     ~SimulationV2();
 
-    void loadEntry(int time);
+    void readEntry(int time, char* data, std::size_t stride, std::size_t pointer);
 
     int cacheHeaders(int time);
 

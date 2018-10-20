@@ -17,7 +17,7 @@ public:
     PDBSimulationLayerV2(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1, bool b = true);
     ~PDBSimulationLayerV2() override;
 
-    void loadEntry(int time) override;
+    void readEntry(int time, char* data, std::size_t stride, std::size_t pointer) override;
 
     int cacheHeaders(int time) override;
 

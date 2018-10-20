@@ -15,10 +15,10 @@ SimulationV2::~SimulationV2()
     delete model;
 }
 
-void SimulationV2::loadEntry(int time)
+void SimulationV2::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
     for (auto i : *this)
-        i->loadEntry(time);
+        i->readEntry(time, data, stride, pointer);
 }
 
 int SimulationV2::cacheHeaders(int time)

@@ -178,7 +178,7 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    simulation->loadEntry(time);
+    simulation->readEntry(time, reinterpret_cast<char*>(atomBuffer.data()), sizeof(VizBallInstance), offsetof(VizBallInstance, position));
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);

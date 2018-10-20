@@ -22,11 +22,13 @@ Camera::Camera(Session *s, QWidget *parent)
       nearClipping(.3),
       farClipping(1000.),
       session(s),
-      id(s->cameraBuffer.emplace_back()),
       mode(CM_Mono),
       eyeSeparation(6.5)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    id = session->cameraBuffer.count();
+    session->cameraBuffer.append({});
 
     setLookAt(QVector3D(0, 0, 0));
 
@@ -65,7 +67,6 @@ Camera::Camera(const Camera& camera)
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
       session(camera.session),
-      id(camera.session->cameraBuffer.emplace_back()),
       cameraUniformBuffer(camera.cameraUniformBuffer),
       mode(camera.mode),
       eyeSeparation(camera.eyeSeparation)
@@ -86,7 +87,8 @@ Camera::Camera(const Camera& camera)
         };
     });
 
-    session->cameraBuffer[id] = session->cameraBuffer[camera.id];
+    id = session->cameraBuffer.count();
+    session->cameraBuffer.append(session->cameraBuffer[camera.id]);
 
     connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
 }

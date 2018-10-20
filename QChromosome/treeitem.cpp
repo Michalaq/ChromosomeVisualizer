@@ -396,10 +396,10 @@ void CameraItem::remove()
 {
     session->userCameras.last()->id = camera->id;
     session->userCameras[camera->id - 1] = session->userCameras.last();
-    session->userCameras.pop_back();
+    session->userCameras.removeLast();
 
     session->cameraBuffer[camera->id] = session->cameraBuffer.last();
-    session->cameraBuffer.pop_back();
+    session->cameraBuffer.removeLast();
 
     if (data(6).toBool())
         session->simulation->getModel()->setCurrentCamera(QModelIndex());
