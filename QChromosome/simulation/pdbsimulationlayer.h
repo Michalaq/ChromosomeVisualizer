@@ -4,6 +4,7 @@
 
 #include "simulationlayer.h"
 #include <QVector>
+#include <QLineSeries>
 
 class Session;
 class LayerItem;
@@ -32,6 +33,10 @@ private:
     qint64 skipHeader();
 
     void makeModel();
+
+    QMap<QString, QtCharts::QLineSeries*> functions;
+
+    void readTitle();
 };
 
 

@@ -1,10 +1,9 @@
 #include "pdbsimulationlayer.h"
 
 PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, int l, int t, bool b) :
-    SimulationLayer(name, s, f, l, t)
+    SimulationLayer(name, s, f, l, t),
+    buffer(81, 0)
 {
-    buffer.resize(80 + 1);
-
     if (cacheHeaders(b ? 0 : INT_MAX) == 0)
         makeModel();
 }
@@ -77,6 +76,8 @@ int PDBSimulationLayer::cacheHeaders(int time)
 
     while (j <= time)
     {
+        readTitle();
+
         range.second = skipHeader();
         i++;
 
@@ -192,5 +193,36 @@ void PDBSimulationLayer::makeModel()
     {
         session->chainBuffer[0][c_offset + j] = chains[j].first;
         session->chainBuffer[1][c_offset + j] = chains[j].second - chains[j].first;
+    }
+}
+
+void PDBSimulationLayer::readTitle()
+{
+    static const QRegularExpression re(";([^=]*)=([^;]*)");
+
+    file.readLine(buffer.data(), buffer.size());
+
+    if (buffer.startsWith("TITLE "))
+    {
+        auto i = re.globalMatch(buffer);
+
+        while (i.hasNext())
+        {
+            auto match = i.next();
+
+            auto name = match.capturedRef(1).trimmed().toString();
+            auto value = match.capturedRef(2).trimmed().toDouble();
+
+            if (!functions.contains(name))
+            {
+                auto series = new QtCharts::QLineSeries;
+                series->setName(name);
+
+                session->chart->addSeries(series);
+                functions.insert(name, series);
+            }
+
+            functions[name]->append(j, value);
+        }
     }
 }

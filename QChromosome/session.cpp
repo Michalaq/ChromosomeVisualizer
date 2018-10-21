@@ -12,6 +12,7 @@ Session::Session(MainWindow* w) :
     treeView(new TreeView),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this, w)),
+    chart(new QtCharts::QChart),
     plot(new Plot(this)),
     autokeying(false),
     playForwards(false),
@@ -72,6 +73,7 @@ Session::~Session()
     delete projectSettings;
     delete viewport;
     delete mediaPanel;
+    delete chart;
     delete plot;
     delete renderSettings;
     delete nd;

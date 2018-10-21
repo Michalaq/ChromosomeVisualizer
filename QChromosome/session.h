@@ -18,6 +18,7 @@
 #include "plot.h"
 #include "tabwidget.h"
 #include "simulation/simulation.h"
+#include <QChart>
 
 class MainWindow;
 
@@ -58,6 +59,7 @@ public:
 
     MediaPanel* mediaPanel;
 
+    QtCharts::QChart* chart;
     Plot* plot;
 
     void fromJson(const QJsonDocument& json);
