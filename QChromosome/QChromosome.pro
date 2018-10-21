@@ -69,7 +69,8 @@ SOURCES += \
     simulation/simulationlayer.cpp \
     simulation/pdbsimulationlayer.cpp \
     simulation/simulation.cpp \
-    opengl/vizwidget.cpp
+    opengl/vizwidget.cpp \
+    simulation/binsimulationlayer.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -134,7 +135,8 @@ HEADERS += \
     simulation/simulationlayer.h \
     simulation/pdbsimulationlayer.h \
     simulation/simulation.h \
-    opengl/vizwidget.h
+    opengl/vizwidget.h \
+    simulation/binsimulationlayer.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \

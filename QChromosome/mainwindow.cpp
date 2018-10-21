@@ -366,6 +366,7 @@ void MainWindow::openProject()
         delete s;
 }
 
+#include "simulation/binsimulationlayer.h"
 #include "simulation/pdbsimulationlayer.h"
 #include "importdialog.h"
 
@@ -386,12 +387,13 @@ void MainWindow::addLayer()
 
     int offset = session->atomBuffer.size();
 
-    SimulationLayerV2* layer = Q_NULLPTR;
+    SimulationLayer* layer;
+
+    if (info.suffix() == "bin")
+        layer = new BINSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
     if (info.suffix() == "pdb")
-        layer = new PDBSimulationLayerV2(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
-
-    Q_ASSERT(layer);
+        layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
     session->simulation->prepend(layer);
     (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));

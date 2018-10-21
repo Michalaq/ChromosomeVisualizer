@@ -9,11 +9,11 @@
 class Session;
 class TreeModel;
 
-class SimulationV2 : public QVector<SimulationLayerV2*>
+class Simulation : public QVector<SimulationLayer*>
 {
 public:
-    SimulationV2(Session* s);
-    ~SimulationV2();
+    Simulation(Session* s);
+    ~Simulation();
 
     void readEntry(int time, char* data, std::size_t stride, std::size_t pointer);
 
@@ -21,7 +21,7 @@ public:
 
     TreeModel* getModel() const;
 
-    void prepend(SimulationLayerV2* value);
+    void prepend(SimulationLayer* value);
 
     void writePOVFrames(QTextStream& stream, int fbeg, int fend);
 

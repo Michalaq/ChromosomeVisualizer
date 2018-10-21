@@ -3,7 +3,7 @@
 Session::Session(MainWindow* w) :
     QObject(),
     action(new QAction),
-    simulation(new SimulationV2(this)),
+    simulation(new Simulation(this)),
     projectSettings(new ProjectSettings(this)),
     renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),

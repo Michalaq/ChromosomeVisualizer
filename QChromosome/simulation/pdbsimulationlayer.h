@@ -3,33 +3,22 @@
 
 
 #include "simulationlayer.h"
-
-#include <QString>
-#include <QFile>
 #include <QVector>
 
 class Session;
 class LayerItem;
 
-class PDBSimulationLayerV2 : public SimulationLayerV2
+class PDBSimulationLayer : public SimulationLayer
 {
 public:
-    PDBSimulationLayerV2(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1, bool b = true);
-    ~PDBSimulationLayerV2() override;
+    PDBSimulationLayer(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1, bool b = true);
+    ~PDBSimulationLayer() override;
 
     void readEntry(int time, char* data, std::size_t stride, std::size_t pointer) override;
 
     int cacheHeaders(int time) override;
 
-    TreeItem* getModel() const override;
-
-    void write(QJsonObject& json) const override;
-
 private:
-    Session* session;
-    int first, last, stride;
-
-    QFile file;
     QByteArray buffer;
 
     QVector<QPair<qint64, qint64>> cache;
@@ -41,8 +30,6 @@ private:
     bool atEnd = false;
 
     qint64 skipHeader();
-
-    LayerItem* model;
 
     void makeModel();
 

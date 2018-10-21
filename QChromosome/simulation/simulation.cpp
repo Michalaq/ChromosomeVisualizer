@@ -2,26 +2,26 @@
 #include "session.h"
 #include "treemodel.h"
 
-SimulationV2::SimulationV2(Session* s) :
-    QVector<SimulationLayerV2*>(),
+Simulation::Simulation(Session* s) :
+    QVector<SimulationLayer*>(),
     model(new TreeModel(s))
 {
 
 }
 
-SimulationV2::~SimulationV2()
+Simulation::~Simulation()
 {
     qDeleteAll(*this);
     delete model;
 }
 
-void SimulationV2::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
+void Simulation::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
     for (auto i : *this)
         i->readEntry(time, data, stride, pointer);
 }
 
-int SimulationV2::cacheHeaders(int time)
+int Simulation::cacheHeaders(int time)
 {
     int ans = -1;
 
@@ -31,14 +31,14 @@ int SimulationV2::cacheHeaders(int time)
     return ans;
 }
 
-TreeModel* SimulationV2::getModel() const
+TreeModel* Simulation::getModel() const
 {
     return model;
 }
 
-void SimulationV2::prepend(SimulationLayerV2* value)
+void Simulation::prepend(SimulationLayer* value)
 {
-    QVector<SimulationLayerV2*>::prepend(value);
+    QVector<SimulationLayer*>::prepend(value);
 
     model->prepend(value->getModel());
 }
@@ -48,7 +48,7 @@ static QTextStream& operator<<(QTextStream& out, const QVector3D& vec)
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
 }
 
-void SimulationV2::writePOVFrames(QTextStream& stream, int fbeg, int fend)
+void Simulation::writePOVFrames(QTextStream& stream, int fbeg, int fend)
 {
     int a_count = model->atomCount();
 

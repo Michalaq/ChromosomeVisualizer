@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent *event);
 
 private:
-    SimulationV2* simulation_;
+    Simulation* simulation_;
 
     QHash<QString, QVector<QPointF> > data;
     Tree minimax;

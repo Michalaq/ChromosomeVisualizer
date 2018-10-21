@@ -285,7 +285,7 @@ int TreeItem::atomCount() const
 
 #include "session.h"
 
-LayerItem::LayerItem(const QString &name, SimulationLayerV2* l, Session* s, TreeItem *parentItem) :
+LayerItem::LayerItem(const QString &name, SimulationLayer* l, Session* s, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     layer(l),
     session(s)

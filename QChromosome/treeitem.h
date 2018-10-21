@@ -130,7 +130,7 @@ class Session;
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, SimulationLayerV2* l, Session* s, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, SimulationLayer* l, Session* s, TreeItem *parentItem = 0);
     ~LayerItem();
 
     void write(QJsonObject& json) const;
@@ -139,7 +139,7 @@ protected:
     void remove();
 
 private:
-    SimulationLayerV2* layer;
+    SimulationLayer* layer;
     Session* session;
 };
 

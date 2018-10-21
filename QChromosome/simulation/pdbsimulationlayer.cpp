@@ -1,28 +1,22 @@
 #include "pdbsimulationlayer.h"
 
-PDBSimulationLayerV2::PDBSimulationLayerV2(const QString& name, Session* s, int f, int l, int t, bool b) :
-    session(s),
-    first(f),
-    last(l),
-    stride(t)
+PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, int l, int t, bool b) :
+    SimulationLayer(name, s, f, l, t)
 {
     buffer.resize(80 + 1);
-
-    file.setFileName(name);
-    file.open(QIODevice::ReadOnly);
 
     if (cacheHeaders(b ? 0 : INT_MAX) == 0)
         makeModel();
 }
 
-PDBSimulationLayerV2::~PDBSimulationLayerV2()
+PDBSimulationLayer::~PDBSimulationLayer()
 {
 
 }
 
 #include "session.h"
 
-void PDBSimulationLayerV2::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
+void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
     auto entry = time <= cacheHeaders(time) ? cache[time] : cache.last();
 
@@ -45,7 +39,7 @@ void PDBSimulationLayerV2::readEntry(int time, char* data, std::size_t stride, s
     }
 }
 
-qint64 PDBSimulationLayerV2::skipHeader()
+qint64 PDBSimulationLayer::skipHeader()
 {
     while (true)
     {
@@ -65,7 +59,7 @@ qint64 PDBSimulationLayerV2::skipHeader()
     }
 }
 
-int PDBSimulationLayerV2::cacheHeaders(int time)
+int PDBSimulationLayer::cacheHeaders(int time)
 {
     if (atEnd)
         return j - 1;
@@ -109,17 +103,11 @@ int PDBSimulationLayerV2::cacheHeaders(int time)
     return j - 1;
 }
 
-TreeItem* PDBSimulationLayerV2::getModel() const
-{
-    return model;
-}
-
 #include "preferences.h"
 #include "treeitem.h"
-#include <QFileInfo>
 #include <QBitArray>
 
-void PDBSimulationLayerV2::makeModel()
+void PDBSimulationLayer::makeModel()
 {
     QVector<uint> atoms;
     QVector<QPair<int, int>> chains;
@@ -166,8 +154,6 @@ void PDBSimulationLayerV2::makeModel()
     session->chainBuffer[0].resize(c_offset + chains.size());
     session->chainBuffer[1].resize(c_offset + chains.size());
 
-    model = new LayerItem(QFileInfo(file).fileName(), this, session);
-
     for (int i = 0; i < chains.size(); i++)
     {
         used.fill(true, chains[i].first, ++chains[i].second);
@@ -207,12 +193,4 @@ void PDBSimulationLayerV2::makeModel()
         session->chainBuffer[0][c_offset + j] = chains[j].first;
         session->chainBuffer[1][c_offset + j] = chains[j].second - chains[j].first;
     }
-}
-
-void PDBSimulationLayerV2::write(QJsonObject& json) const
-{
-    json["File name"] = file.fileName();
-    json["First"] = first;
-    json["Last"] = last;
-    json["Stride"] = stride;
 }
