@@ -32,8 +32,6 @@ private:
     qint64 skipHeader();
 
     void makeModel();
-
-    int a_offset;
 };
 
 

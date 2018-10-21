@@ -38,6 +38,8 @@ SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session
 
     if (QFileInfo(name).suffix() == "pdb")
         return new PDBSimulationLayer(name, session, first, last, stride);
+
+    Q_ASSERT(false);
 }
 
 void SimulationLayer::write(QJsonObject& json) const

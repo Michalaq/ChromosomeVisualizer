@@ -30,7 +30,7 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
         {
             int serial = buffer.mid(6, 5).trimmed().toUInt() - 1;
 
-            float* position = reinterpret_cast<float*>(data + stride * (a_offset + serial) + pointer);
+            float* position = reinterpret_cast<float*>(data + stride * (model->atomOffset() + serial) + pointer);
 
             position[0] = buffer.mid(30, 8).trimmed().toFloat();
             position[1] = buffer.mid(38, 8).trimmed().toFloat();
@@ -147,7 +147,7 @@ void PDBSimulationLayer::makeModel()
 
     QBitArray used(atoms.size(), false);
 
-    a_offset = session->atomBuffer.size();
+    int a_offset = session->atomBuffer.size();
     int c_offset = session->chainBuffer[0].size();
 
     session->atomBuffer.resize(a_offset + atoms.size());

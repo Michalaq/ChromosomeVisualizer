@@ -89,7 +89,15 @@ public:
     virtual void writePOVFrame(QTextStream &stream, QVector3D* data) const;
     virtual void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
-    int atomCount() const;
+    inline int atomOffset() const
+    {
+        return a_offset;
+    }
+
+    inline int atomCount() const
+    {
+        return m_atomCount;
+    }
 
 protected:
     explicit TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parentItem);

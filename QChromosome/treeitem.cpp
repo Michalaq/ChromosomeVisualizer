@@ -278,11 +278,6 @@ void TreeItem::shift(int da, int dc)
         c->shift(da, dc);
 }
 
-int TreeItem::atomCount() const
-{
-    return m_atomCount;
-}
-
 #include "session.h"
 
 LayerItem::LayerItem(const QString &name, SimulationLayer* l, Session* s, TreeItem *parentItem) :
@@ -326,7 +321,7 @@ void LayerItem::remove()
     session->chainBuffer[1].remove(c_offset, m_chainCount);
 
     session->simulation->removeOne(layer);
-    session->plot->updateSimulation();
+    //session->plot->updateSimulation();
 
     TreeItem::remove();
 }

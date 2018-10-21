@@ -387,13 +387,15 @@ void MainWindow::addLayer()
 
     int offset = session->atomBuffer.size();
 
-    SimulationLayer* layer;
+    SimulationLayer* layer = Q_NULLPTR;
 
     if (info.suffix() == "bin")
         layer = new BINSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
     if (info.suffix() == "pdb")
         layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+
+    Q_ASSERT(layer);
 
     session->simulation->prepend(layer);
     (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
