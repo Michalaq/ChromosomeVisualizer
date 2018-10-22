@@ -28,7 +28,6 @@ SOURCES += \
     picker.cpp \
     layerattributes.cpp \
     viewport.cpp \
-    multimap.cpp \
     doublespinbox.cpp \
     combobox.cpp \
     lineedit.cpp \
@@ -94,7 +93,6 @@ HEADERS += \
     picker.h \
     layerattributes.h \
     viewport.h \
-    multimap.h \
     doublespinbox.h \
     combobox.h \
     lineedit.h \
