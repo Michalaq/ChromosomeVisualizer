@@ -191,7 +191,7 @@ void PDBSimulationLayer::makeModel()
 
     for (int j = 0; j < chains.size(); j++)
     {
-        session->chainBuffer[0][c_offset + j] = chains[j].first;
+        session->chainBuffer[0][c_offset + j] = a_offset + chains[j].first;
         session->chainBuffer[1][c_offset + j] = chains[j].second - chains[j].first;
     }
 }
