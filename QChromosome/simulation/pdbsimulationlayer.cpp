@@ -10,7 +10,7 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
 
 PDBSimulationLayer::~PDBSimulationLayer()
 {
-
+    qDeleteAll(functions);
 }
 
 #include "session.h"

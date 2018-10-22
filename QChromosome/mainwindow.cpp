@@ -405,7 +405,7 @@ void MainWindow::addLayer()
     session->currentCamera->callibrate(session->atomBuffer.mid(offset));
     session->origin = session->simulation->getModel()->getOrigin(false);
 
-    //session->plot->updateSimulation();
+    session->plot->updateSimulation();
 }
 
 void MainWindow::saveProject()

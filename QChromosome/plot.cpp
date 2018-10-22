@@ -24,6 +24,22 @@ Plot::~Plot()
 
 }
 
+void Plot::updateSimulation()
+{
+    const auto k = legend.keys();
+    const auto v = session->chart->series();
+
+    for (auto i : k)
+        if (!v.contains(i))
+            delete legend.take(i);
+
+    for (auto i : v)
+        if (!k.contains(i))
+            addLegend(i);
+
+    update();
+}
+
 #include <QMouseEvent>
 #include <QStyle>
 
@@ -142,10 +158,6 @@ void Plot::paintEvent(QPaintEvent *event)
     // plot data
     for (auto i : session->chart->series())
     {
-        // Ensure we have a legend for this callback type
-        if (!legend.contains(i))
-            addLegend(i);
-
         auto interval = reinterpret_cast<QtCharts::QLineSeries*>(i)->pointsVector().mid(softMinimum, softMaximum - softMinimum + 1);
         interval.prepend({interval.first().x(), 0});
         interval.append({interval.last().x(), 0});

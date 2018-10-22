@@ -14,6 +14,8 @@ public:
     explicit Plot(Session* s, QWidget *parent = 0);
     ~Plot();
 
+    void updateSimulation();
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

@@ -321,7 +321,9 @@ void LayerItem::remove()
     session->chainBuffer[1].remove(c_offset, m_chainCount);
 
     session->simulation->removeOne(layer);
-    //session->plot->updateSimulation();
+    delete layer;
+
+    session->plot->updateSimulation();
 
     TreeItem::remove();
 }
