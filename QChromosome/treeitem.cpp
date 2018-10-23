@@ -314,15 +314,17 @@ void LayerItem::write(QJsonObject &json) const
 
 void LayerItem::remove()
 {
+    delete layer;
+
+    session->simulation->removeOne(layer);
+
     session->atomBuffer.remove(a_offset, m_atomCount);
     session->indices.remove(a_offset, m_atomCount);
 
     session->chainBuffer[0].remove(c_offset, m_chainCount);
     session->chainBuffer[1].remove(c_offset, m_chainCount);
 
-    session->simulation->removeOne(layer);
-    delete layer;
-
+    session->setLastFrame(session->simulation->lastEntry());
     session->plot->updateSimulation();
 
     TreeItem::remove();

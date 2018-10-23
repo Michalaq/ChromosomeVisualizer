@@ -13,6 +13,8 @@ public:
     void readEntry(int time, char* data, std::size_t stride, std::size_t pointer) override;
 
     int cacheHeaders(int time) override;
+
+    int lastEntry() const override;
 };
 
 #endif // BINSIMULATIONLAYER_H

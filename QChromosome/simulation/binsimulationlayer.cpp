@@ -20,3 +20,8 @@ int BINSimulationLayer::cacheHeaders(int time)
 {
     return -1;
 }
+
+int BINSimulationLayer::lastEntry() const
+{
+    return -1;
+}

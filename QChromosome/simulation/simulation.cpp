@@ -74,3 +74,13 @@ void Simulation::writePOVFrames(QTextStream& stream, int fbeg, int fend)
 
     delete[] data;
 }
+
+int Simulation::lastEntry() const
+{
+    int ans = 0;
+
+    for (auto i : *this)
+        ans = qMax(ans, i->lastEntry());
+
+    return ans;
+}

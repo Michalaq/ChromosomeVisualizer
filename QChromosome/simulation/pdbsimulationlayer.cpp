@@ -104,6 +104,11 @@ int PDBSimulationLayer::cacheHeaders(int time)
     return j - 1;
 }
 
+int PDBSimulationLayer::lastEntry() const
+{
+    return j - 1;
+}
+
 #include "preferences.h"
 #include "treeitem.h"
 #include <QBitArray>

@@ -23,6 +23,8 @@ public:
     static SimulationLayer* read(const QJsonObject& json, Session* session);
     virtual void write(QJsonObject& json) const;
 
+    virtual int lastEntry() const = 0;
+
 protected:
     Session* session;
     int first, last, stride;

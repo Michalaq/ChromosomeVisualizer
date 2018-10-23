@@ -19,6 +19,8 @@ public:
 
     int cacheHeaders(int time) override;
 
+    int lastEntry() const override;
+
 private:
     QByteArray buffer;
 

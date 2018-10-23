@@ -25,6 +25,8 @@ public:
 
     void writePOVFrames(QTextStream& stream, int fbeg, int fend);
 
+    int lastEntry() const;
+
 private:
     TreeModel* model;
 };
