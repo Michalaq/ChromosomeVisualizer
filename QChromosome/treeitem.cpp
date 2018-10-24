@@ -198,6 +198,16 @@ void TreeItem::read(const QJsonObject &json)
     if (vir != object.end())
         m_itemData[4] = vir.value().toBool() ? On : Off;
 
+    auto cr = object.find("Cylinder radius");
+
+    if (cr != object.end())
+        setCylinderRadius(cr.value().toDouble());
+
+    auto sr = object.find("Cylinder radius");
+
+    if (sr != object.end())
+        setSphereRadius(sr.value().toDouble());
+
     auto t = object.find("Tags");
 
     if (t != object.end())
@@ -222,6 +232,15 @@ void TreeItem::write(QJsonObject &json) const
 
     if (vir != Default)
         object["Visible in renderer"] = vir == On;
+
+    if (m_parentItem)
+    {
+        if (m_parentItem->cylinderRadius != cylinderRadius)
+            object["Cylinder radius"] = cylinderRadius;
+
+        if (m_parentItem->sphereRadius != sphereRadius)
+            object["Cylinder radius"] = sphereRadius;
+    }
 
     auto t = m_itemData.value(5).toList();
 
@@ -525,9 +544,6 @@ void AtomItem::write(QJsonObject &json) const
         object = json["Object"].toObject();
 
     object["class"] = "Atom";
-
-    if (session->atomBuffer[id].size != 1)
-        object["Radius"] = session->atomBuffer[id].size;
 
     if (!label.isEmpty())
         object["Label"] = label;
