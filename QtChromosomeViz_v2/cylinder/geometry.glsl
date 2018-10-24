@@ -17,7 +17,7 @@ flat in int giFlags[2];
 flat in vec4 gcColor[2];
 flat in vec3 gcSpecularColor[2];
 flat in float gfSpecularExponent[2];
-flat in float gfInstanceSize[2];
+flat in float gfInstanceRadius[2];
 
 out vec4 vPosition;
 out vec4 vViewPosition;
@@ -58,7 +58,7 @@ void main() {
             float a = 2*PI*i/9;
             
             vNormal = rotatedVector(vInstanceRotation, vec3(cos(a), sin(a), 0));
-            vViewPosition = mv * vec4(gvInstancePosition[0] + 0.5 * gfInstanceSize[0] * vNormal, 1.0);
+            vViewPosition = mv * vec4(gvInstancePosition[0] + gfInstanceRadius[0] * vNormal, 1.0);
             vNormal = mvNormal * vNormal;
             gl_Position = vPosition = pro * vViewPosition;
             cColor = gcColor[0];
@@ -68,7 +68,7 @@ void main() {
             EmitVertex();
             
             vNormal = rotatedVector(vInstanceRotation, vec3(cos(a), sin(a), 0));
-            vViewPosition = mv * vec4(gvInstancePosition[1] + 0.5 * gfInstanceSize[1] * vNormal, 1.0);
+            vViewPosition = mv * vec4(gvInstancePosition[1] + gfInstanceRadius[1] * vNormal, 1.0);
             vNormal = mvNormal * vNormal;
             gl_Position = vPosition = pro * vViewPosition;
             cColor = gcColor[1];

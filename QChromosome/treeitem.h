@@ -189,6 +189,7 @@ struct VizBallInstance
     QVector3D position;
     VizFlags flags = VisibleInEditor | VisibleInRenderer;
     float size = 1.0;
+    float radius = 0.5;
     QRect label;
     int material = 0;
 };

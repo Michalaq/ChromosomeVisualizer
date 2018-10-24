@@ -2,8 +2,8 @@
 
 layout(location = 0) in vec3 vInstancePosition;
 layout(location = 1) in int iInstanceFlags;
-layout(location = 2) in float fInstanceSize;
-layout(location = 3) in int iMaterialID;
+layout(location = 3) in float fInstanceRadius;
+layout(location = 4) in int iMaterialID;
 
 struct Material
 {
@@ -22,7 +22,7 @@ flat out int giFlags;
 flat out vec4 gcColor;
 flat out vec3 gcSpecularColor;
 flat out float gfSpecularExponent;
-flat out float gfInstanceSize;
+flat out float gfInstanceRadius;
 
 void main() {
     gvInstancePosition = vInstancePosition;
@@ -30,5 +30,5 @@ void main() {
     gcColor = unpackUnorm4x8(materials[iMaterialID].x).bgra;
     gcSpecularColor = unpackUnorm4x8(materials[iMaterialID].y).bgr;
     gfSpecularExponent = uintBitsToFloat(materials[iMaterialID].z);
-    gfInstanceSize = fInstanceSize;
+    gfInstanceRadius = fInstanceRadius;
 }

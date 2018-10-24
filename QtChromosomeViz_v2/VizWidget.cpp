@@ -58,8 +58,18 @@ void VizWidget::initializeGL()
     );
 
     glEnableVertexAttribArray(3);
-    glVertexAttribIPointer(
+    glVertexAttribPointer(
         3,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(VizBallInstance),
+        (void*)offsetof(VizBallInstance, radius)
+    );
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribIPointer(
+        4,
         1,
         GL_INT,
         sizeof(VizBallInstance),
