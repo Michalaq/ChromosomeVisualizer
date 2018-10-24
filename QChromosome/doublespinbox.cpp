@@ -94,6 +94,14 @@ void DoubleSpinBox::setMaximum(double max, bool spontaneous)
     QDoubleSpinBox::setMaximum(max);
 }
 
+void DoubleSpinBox::setMinimum(double min, bool spontaneous)
+{
+    if (value() < min)
+        setValue(min, spontaneous);
+
+    QDoubleSpinBox::setMinimum(min);
+}
+
 #include <QStyle>
 
 void DoubleSpinBox::focusInEvent(QFocusEvent *event)

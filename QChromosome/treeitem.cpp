@@ -440,12 +440,22 @@ const QString& AtomItem::getLabel() const
     return label;
 }
 
-void AtomItem::setRadius(float r)
+void AtomItem::setCylinderRadius(float r)
+{
+    session->atomBuffer[id].radius = r;
+}
+
+float AtomItem::getCylinderRadius() const
+{
+    return session->atomBuffer[id].radius;
+}
+
+void AtomItem::setSphereRadius(float r)
 {
     session->atomBuffer[id].size = r;
 }
 
-float AtomItem::getRadius() const
+float AtomItem::getSphereRadius() const
 {
     return session->atomBuffer[id].size;
 }

@@ -58,8 +58,6 @@ enum VizFlag
 Q_DECLARE_FLAGS(VizFlags, VizFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(VizFlags)
 
-class Material;
-
 class TreeItem
 {
 public:
@@ -205,8 +203,11 @@ public:
     void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
 
-    void setRadius(float r);
-    float getRadius() const;
+    void setCylinderRadius(float r);
+    float getCylinderRadius() const;
+
+    void setSphereRadius(float r);
+    float getSphereRadius() const;
 
     void setMaterial(const Material* material);
     void setFlag(VizFlag flag, bool on = true);

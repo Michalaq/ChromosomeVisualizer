@@ -46,10 +46,19 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
         model->setVisibility(rows, (Visibility)index, Renderer);
     });
 
-    // connect radius
+    // connect cylinder radius
+    connect(ui->doubleSpinBox_5, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
+        for (auto a : atoms)
+            a->setCylinderRadius(val);
+        ui->doubleSpinBox_4->setMinimum(val);
+        emit attributeChanged();
+    });
+
+    // connect sphere radius
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
         for (auto a : atoms)
-            a->setRadius(val);
+            a->setSphereRadius(val);
+        ui->doubleSpinBox_5->setMaximum(val);
         emit attributeChanged();
     });
 
@@ -106,12 +115,31 @@ void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLis
     auto fst = atoms.first();
     bool multiple;
 
-    // set radius
-    double r = fst->getRadius();
+    // set cylinder radius
+    double cr = fst->getCylinderRadius();
     multiple = false;
 
     for (const auto& a : atoms)
-        if (r != a->getRadius())
+        if (cr != a->getCylinderRadius())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_5->setMultipleValues();
+    else
+    {
+        ui->doubleSpinBox_5->setValue(cr, false);
+        ui->doubleSpinBox_4->setMinimum(cr, false);
+    }
+
+    // set sphere radius
+    double sr = fst->getSphereRadius();
+    multiple = false;
+
+    for (const auto& a : atoms)
+        if (sr != a->getSphereRadius())
         {
             multiple = true;
             break;
@@ -120,7 +148,10 @@ void AtomAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLis
     if (multiple)
         ui->doubleSpinBox_4->setMultipleValues();
     else
-        ui->doubleSpinBox_4->setValue(r, false);
+    {
+        ui->doubleSpinBox_4->setValue(sr, false);
+        ui->doubleSpinBox_5->setMaximum(sr, false);
+    }
 
     // set label
     QString l = fst->getLabel();
