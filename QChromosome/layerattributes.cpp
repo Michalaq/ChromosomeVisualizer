@@ -23,6 +23,22 @@ LayerAttributes::LayerAttributes(QWidget *parent) :
     connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         model->setVisibility(rows, (Visibility)index, Renderer);
     });
+
+    // connect cylinder radius
+    connect(ui->doubleSpinBox_5, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
+        for (auto l : layers)
+            l->setCylinderRadius(val);
+        ui->doubleSpinBox_4->setMinimum(val);
+        emit attributeChanged();
+    });
+
+    // connect sphere radius
+    connect(ui->doubleSpinBox_4, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
+        for (auto l : layers)
+            l->setSphereRadius(val);
+        ui->doubleSpinBox_5->setMaximum(val);
+        emit attributeChanged();
+    });
 }
 
 LayerAttributes::~LayerAttributes()
@@ -58,6 +74,47 @@ void LayerAttributes::setSelection(TreeModel* selectedModel, const QModelIndexLi
     updateModelSelection();
 
     updatePosition();
+
+    auto fst = layers.first();
+    bool multiple;
+
+    // set cylinder radius
+    double cr = fst->getCylinderRadius();
+    multiple = false;
+
+    for (const auto& l : layers)
+        if (cr != l->getCylinderRadius())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_5->setMultipleValues();
+    else
+    {
+        ui->doubleSpinBox_5->setValue(cr, false);
+        ui->doubleSpinBox_4->setMinimum(cr, false);
+    }
+
+    // set sphere radius
+    double sr = fst->getSphereRadius();
+    multiple = false;
+
+    for (const auto& l : layers)
+        if (sr != l->getSphereRadius())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_4->setMultipleValues();
+    else
+    {
+        ui->doubleSpinBox_4->setValue(sr, false);
+        ui->doubleSpinBox_5->setMaximum(sr, false);
+    }
 }
 
 void LayerAttributes::unsetSelection()

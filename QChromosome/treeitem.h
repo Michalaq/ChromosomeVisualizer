@@ -90,8 +90,17 @@ public:
     virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
     virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
 
+    virtual void setCylinderRadius(float r);
+    float getCylinderRadius() const;
+
+    virtual void setSphereRadius(float r);
+    float getSphereRadius() const;
+
 protected:
     explicit TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parentItem);
+
+    float cylinderRadius;
+    float sphereRadius;
 
     int a_offset, m_atomCount;
     int c_offset, m_chainCount;
@@ -204,10 +213,7 @@ public:
     const QString& getLabel() const;
 
     void setCylinderRadius(float r);
-    float getCylinderRadius() const;
-
     void setSphereRadius(float r);
-    float getSphereRadius() const;
 
     void setMaterial(const Material* material);
     void setFlag(VizFlag flag, bool on = true);

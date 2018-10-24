@@ -25,6 +25,9 @@ public:
 
     static void setSession(Session* s);
 
+signals:
+    void attributeChanged();
+
 protected:
     static Session* session;
 };
@@ -39,9 +42,6 @@ public:
 
     void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
-
-public slots:
-
 
 private:
     Ui::Attributes *ui;

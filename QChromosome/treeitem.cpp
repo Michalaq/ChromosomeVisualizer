@@ -41,6 +41,8 @@
 #include "treeitem.h"
 
 TreeItem::TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parent) :
+    cylinderRadius(0.5),
+    sphereRadius(1.0),
     a_offset(0),
     m_atomCount(acount),
     c_offset(0),
@@ -264,6 +266,32 @@ void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumb
         c->writePOVFrames(stream, fbeg, fend);
 }
 
+void TreeItem::setCylinderRadius(float r)
+{
+    cylinderRadius = r;
+
+    for (auto c : m_childItems)
+        c->setCylinderRadius(r);
+}
+
+float TreeItem::getCylinderRadius() const
+{
+    return cylinderRadius;
+}
+
+void TreeItem::setSphereRadius(float r)
+{
+    sphereRadius = r;
+
+    for (auto c : m_childItems)
+        c->setSphereRadius(r);
+}
+
+float TreeItem::getSphereRadius() const
+{
+    return sphereRadius;
+}
+
 void TreeItem::remove()
 {
     delete this;
@@ -443,21 +471,15 @@ const QString& AtomItem::getLabel() const
 void AtomItem::setCylinderRadius(float r)
 {
     session->atomBuffer[id].radius = r;
-}
 
-float AtomItem::getCylinderRadius() const
-{
-    return session->atomBuffer[id].radius;
+    TreeItem::setCylinderRadius(r);
 }
 
 void AtomItem::setSphereRadius(float r)
 {
     session->atomBuffer[id].size = r;
-}
 
-float AtomItem::getSphereRadius() const
-{
-    return session->atomBuffer[id].size;
+    TreeItem::setSphereRadius(r);
 }
 
 void AtomItem::setMaterial(const Material *material)

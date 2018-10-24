@@ -31,9 +31,6 @@ public:
     void setSelection(TreeModel* selectedModel, const QModelIndexList& selectedRows);
     void unsetSelection();
 
-signals:
-    void attributeChanged();
-
 public slots:
     void updatePosition();
 

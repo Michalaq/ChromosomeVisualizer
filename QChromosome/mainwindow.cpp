@@ -134,6 +134,8 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->page_2, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
+    connect(ui->page_3, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
+    connect(ui->page_8, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
 
