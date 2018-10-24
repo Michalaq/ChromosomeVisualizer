@@ -1,4 +1,4 @@
-QTDIR=/home/laurenthil/Qt/5.9.3/gcc_64
+QTDIR=/home/laurenthil/Qt/5.9.6/gcc_64
 #QTDIR=/Users/irina/Praca/5.9.3/clang_64
 DESTDIR=$(pwd)/build-QChromosome-Release
 
@@ -14,12 +14,6 @@ case $(uname) in
         exit 1
         ;;
 esac
-
-mkdir -p .tmp
-cd .tmp
-cmake ..
-cd ..
-rm -rf .tmp
 
 CWD=$(pwd)
 

@@ -1,6 +1,5 @@
 #include "plot.h"
 #include <QHBoxLayout>
-#include "legend.h"
 #include "session.h"
 
 // MathWorks predefined colorOrder
@@ -8,9 +7,7 @@ const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8
 
 Plot::Plot(Session* s, QWidget *parent) :
     SoftSlider(parent),
-    simulation_(s->simulation),
-    lastBuffered(-1),
-    slider(this)//TODO replacement of unused followSlider, to be removed
+    session(s)
 {
     setMaximum(0);
     setMinimumHeight(padding_top + 64 + padding_bottom);
@@ -29,36 +26,17 @@ Plot::~Plot()
 
 void Plot::updateSimulation()
 {
-    auto oldBuffered = lastBuffered;
-    lastBuffered = -1;
-    data.clear();
-    minimax.clear();
-    qDeleteAll(legend);
-    legend.clear();
-    setMaximum(oldBuffered);
-}
+    const auto k = legend.keys();
+    const auto v = session->chart->series();
 
-void Plot::setMaximum(int m)
-{
-    int prevI;
-    while (lastBuffered < m)
-    {
-        prevI = lastBuffered;
-        lastBuffered = simulation_->getNextTime(lastBuffered);
+    for (auto i : k)
+        if (!v.contains(i))
+            delete legend.take(i);
 
-        if (prevI == lastBuffered)
-            break;
+    for (auto i : v)
+        if (!k.contains(i))
+            addLegend(i);
 
-        auto funvals = simulation_->getFrame(lastBuffered)->functionValues;
-        for (auto entry : funvals)
-        {
-            data[QString::fromStdString(entry.first)] << QPointF(lastBuffered, entry.second);
-
-            minimax.insert(entry.first, lastBuffered, entry.second);
-        }
-    }
-
-    SoftSlider::setMaximum(m);
     update();
 }
 
@@ -69,7 +47,7 @@ void Plot::mousePressEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
     {
-        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20);
+        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 50 - 10, width() - 50 - 20);
         setValue(sv);
         emit sliderPressed();
     }
@@ -79,7 +57,7 @@ void Plot::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->pos().y() > padding_top && event->pos().y() < height() - padding_bottom)
     {
-        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - (slider->x() + 50 + 10) + x(), slider->width() - 50 - 20);
+        auto sv = style()->sliderValueFromPosition(softMinimum, softMaximum, event->pos().x() - 50 - 10, width() - 50 - 20);
         setValue(sv);
         emit sliderMoved(sv);
     }
@@ -91,28 +69,26 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
     emit sliderReleased();
 }
 
-void Plot::addLegend(const QString &fname)
+void Plot::addLegend(QtCharts::QAbstractSeries *series)
 {
     const auto color = colorOrder[legend.size() % colorOrder.size()];
 
-    auto entry = new Legend(fname, color, this);
+    auto entry = new Legend(series->name(), color, this);
 
-    connect(entry, &Legend::changed, [=] {
-        minimax.setVisible(fname.toStdString(), entry->pen() != Qt::transparent);
-        update();
-    });
+    connect(entry, SIGNAL(changed()), this, SLOT(update()));
     layout()->addWidget(entry);
-    legend[fname] = entry;
+    legend[series] = entry;
 }
 
 #include <QPainter>
 #include <QtMath>
+#include <QLineSeries>
 
 void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (minimax.empty() || softMinimum == softMaximum)
+    if (session->chart->series().isEmpty() || softMinimum == softMaximum)
         return;
 
     QPainter painter(this);
@@ -123,7 +99,10 @@ void Plot::paintEvent(QPaintEvent *event)
 
     // TODO bug - wykres nie działa, jeśli wartości brzegowe nie są całkowite - problem z setWindow
     double minval = 0;//double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
-    double maxval = qCeil(minimax.maximum(softMinimum, softMaximum));
+    double maxval = 0;//qCeil(minimax.maximum(softMinimum, softMaximum));
+    for (auto i : session->chart->series())
+        for (int j = softMinimum; j <= softMaximum && j < reinterpret_cast<QtCharts::QLineSeries*>(i)->count(); j++)
+            maxval = qMax(maxval, reinterpret_cast<QtCharts::QLineSeries*>(i)->at(j).y());
 
     if (minval == maxval)
         minval--;
@@ -134,9 +113,9 @@ void Plot::paintEvent(QPaintEvent *event)
     double ut = maxval = qCeil(maxval / delta) * delta;//double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
 
-    s.setWidth(slider->width() - 50 - 20);
+    s.setWidth(width() - 50 - 20);
 
-    painter.setViewport((slider->x() + 50 + 10) - x(), height() - padding_bottom, s.width(), -s.height());
+    painter.setViewport(50 + 10, height() - padding_bottom, s.width(), -s.height());
     painter.setWindow(softMinimum, minval, softMaximum - softMinimum, maxval - minval);
 
     auto transform = painter.combinedTransform();
@@ -151,7 +130,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.drawLine(softMinimum, minval, softMaximum, minval);
 
-    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, slider->width() - 50);
+    int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, width() - 50);
 
     painter.setViewTransformEnabled(false);
 
@@ -177,34 +156,22 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawLine(softMinimum, i, softMaximum, i);
 
     // plot data
-    for (auto i = data.cbegin(); i != data.cend(); i++)
+    for (auto i : session->chart->series())
     {
-        // Ensure we have a legend for this callback type
-        if (!legend.contains(i.key()))
-            addLegend(i.key());
-
-        const auto & allValues = i.value();
-        int lRange, rRange;
-        QPointF lPoint = sampleAtX(softMinimum, allValues, nullptr, &lRange);
-        QPointF rPoint = sampleAtX(softMaximum, allValues, &rRange, nullptr);
-
-        auto interval = lRange <= rRange ? i.value().mid(lRange, rRange - lRange + 1) : QVector<QPointF>();
-
-        interval.prepend(lPoint);
-        interval.prepend(QPointF(lPoint.x(), 0));
-        interval.append(rPoint);
-        interval.append(QPointF(rPoint.x(), 0));
+        auto interval = reinterpret_cast<QtCharts::QLineSeries*>(i)->pointsVector().mid(softMinimum, softMaximum - softMinimum + 1);
+        interval.prepend({interval.first().x(), 0});
+        interval.append({interval.last().x(), 0});
 
         QLinearGradient gradient(0, minval, 0, maxval);
         gradient.setColorAt(0, Qt::transparent);
-        gradient.setColorAt(1, legend[i.key()]->brush());
+        gradient.setColorAt(1, legend[i]->brush());
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(gradient);
 
         painter.drawPolygon(interval);
 
-        QPen pen2(legend[i.key()]->pen(), 2.);
+        QPen pen2(legend[i]->pen(), 2.);
         pen2.setCosmetic(true);
 
         painter.setPen(pen2);
@@ -226,45 +193,4 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawLine(crs, padding_top - 5, crs, height() - padding_bottom);
         painter.drawConvexPolygon(QPolygon({{crs, padding_top - 2}, {crs - 3, padding_top - 5}, {crs + 3, padding_top - 5}}));
     }
-}
-
-
-QPointF Plot::sampleAtX(qreal x, const QVector<QPointF> &plot, int *lowerIndex, int *upperIndex)
-{
-    QPointF ret;
-    int lower, upper;
-
-    auto compare = [](const QPointF & pt, qreal x) {
-        return pt.x() < x;
-    };
-
-    auto it = std::lower_bound(plot.begin(), plot.end(), x, compare);
-
-    if (it == plot.end())
-    {
-        lower = upper = plot.size() - 1;
-        ret = QPointF(x, plot.last().y());
-    }
-    else if (it == plot.begin())
-    {
-        lower = -1;
-        upper = 0;
-        ret = QPointF(x, plot.first().y());
-    }
-    else
-    {
-        upper = std::distance(plot.begin(), it);
-        lower = upper - 1;
-
-        QPointF p1 = plot[lower], p2 = plot[upper];
-        qreal t = (x - p1.x()) / (p2.x() - p1.x());
-        ret = QPointF(x, p1.y() + t * (p2.y() - p1.y()));
-    }
-
-    if (lowerIndex)
-        *lowerIndex = lower;
-    if (upperIndex)
-        *upperIndex = upper;
-
-    return ret;
 }

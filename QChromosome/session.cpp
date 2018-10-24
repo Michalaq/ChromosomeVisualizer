@@ -12,6 +12,7 @@ Session::Session(MainWindow* w) :
     treeView(new TreeView),
     viewport(new Viewport),
     mediaPanel(new MediaPanel(this, w)),
+    chart(new QtCharts::QChart),
     plot(new Plot(this)),
     autokeying(false),
     playForwards(false),
@@ -72,6 +73,7 @@ Session::~Session()
     delete projectSettings;
     delete viewport;
     delete mediaPanel;
+    delete chart;
     delete plot;
     delete renderSettings;
     delete nd;
@@ -178,19 +180,7 @@ void Session::setFPS(int fps)
 
 void Session::setDocumentTime(int time)
 {
-    const auto frame = simulation->getFrame(time);
-    const auto& atoms = frame->atoms;
-
-    Q_ASSERT(atoms.size() == atomBuffer.size());
-
-    for (int i = 0; i < atoms.size(); i++)
-    {
-        const auto& atom = atoms[i];
-        atomBuffer[i].position = QVector3D(atom.x, atom.y, atom.z);
-    }
-
-    if (lastFrame < simulation->getFrameCount() - 1)
-        setLastFrame(simulation->getFrameCount() - 1);
+    simulation->readEntry(time, reinterpret_cast<char*>(atomBuffer.data()), sizeof(VizBallInstance), offsetof(VizBallInstance, position));
 
     mediaPanel->setDocumentTime(time);
     projectSettings->setDocumentTime(time);

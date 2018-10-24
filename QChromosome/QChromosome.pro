@@ -1,4 +1,4 @@
-QT       += core gui opengl svg
+QT       += core gui opengl svg charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,8 +9,6 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    ../QtChromosomeViz_v2/VizWidget.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/Simulation.cpp \
     draggable.cpp \
     camera.cpp \
     plot.cpp \
@@ -24,17 +22,12 @@ SOURCES += \
     projectsettings.cpp \
     timeline.cpp \
     softslider.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.cpp \
     treeitem.cpp \
     treemodel.cpp \
-    ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.cpp \
     atomattributes.cpp \
     picker.cpp \
     layerattributes.cpp \
     viewport.cpp \
-    multimap.cpp \
     doublespinbox.cpp \
     combobox.cpp \
     lineedit.cpp \
@@ -71,13 +64,15 @@ SOURCES += \
     jpegdialog.cpp \
     slider.cpp \
     targadialog.cpp \
-    spline.cpp
+    spline.cpp \
+    simulation/simulationlayer.cpp \
+    simulation/pdbsimulationlayer.cpp \
+    simulation/simulation.cpp \
+    opengl/vizwidget.cpp \
+    simulation/binsimulationlayer.cpp
 
 HEADERS += \
     mainwindow.h \
-    ../QtChromosomeViz_v2/VizWidget.hpp \
-    ../QtChromosomeViz_v2/bartekm_code/Simulation.h \
-    ../QtChromosomeViz_v2/bartekm_code/common.h \
     draggable.h \
     camera.h \
     plot.h \
@@ -92,32 +87,12 @@ HEADERS += \
     projectsettings.h \
     timeline.h \
     softslider.h \
-    ../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h \
-    ../QtChromosomeViz_v2/bartekm_code/PDBSimulationLayer.h \
-    ../QtChromosomeViz_v2/bartekm_code/ProtobufSimulationlayer.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/header/generic_header.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/header/magic_value.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/header/placeholder.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/header/with_offset.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/cache.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/common.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/config.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/file_backend.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/header.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/mmap_backend.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/mmap_guard.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/posix_file_backend.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/posix_file_handler.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/stream.h \
-    ../QtChromosomeViz_v2/bartekm_code/include/utils.h \
     treeitem.h \
     treemodel.h \
-    ../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h \
     atomattributes.h \
     picker.h \
     layerattributes.h \
     viewport.h \
-    multimap.h \
     doublespinbox.h \
     combobox.h \
     lineedit.h \
@@ -154,7 +129,12 @@ HEADERS += \
     tabwidget.h \
     jpegdialog.h \
     slider.h \
-    targadialog.h
+    targadialog.h \
+    simulation/simulationlayer.h \
+    simulation/pdbsimulationlayer.h \
+    simulation/simulation.h \
+    opengl/vizwidget.h \
+    simulation/binsimulationlayer.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -180,36 +160,36 @@ CONFIG -= app_bundle
 
 RESOURCES += \
     icons.qrc \
-    ../QtChromosomeViz_v2/shaders.qrc \
+    opengl/shaders.qrc \
     misc.qrc
 
-exists( /usr/lib/x86_64-linux-gnu/libprotobuf.a ) {
-    LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
-}
+#exists( /usr/lib/x86_64-linux-gnu/libprotobuf.a ) {
+#    LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
+#}
 
-exists( /usr/local/lib/libprotobuf.a ) {
-    LIBS += /usr/local/lib/libprotobuf.a
-}
+#exists( /usr/local/lib/libprotobuf.a ) {
+#    LIBS += /usr/local/lib/libprotobuf.a
+#}
 
-INCLUDEPATH += /usr/local/include
+#INCLUDEPATH += /usr/local/include
 
-PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
-include(protobuf.pri)
+#PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
+#include(protobuf.pri)
 
 DISTFILES += \
-    ../QtChromosomeViz_v2/camera/fragment.glsl \
-    ../QtChromosomeViz_v2/camera/geometry.glsl \
-    ../QtChromosomeViz_v2/camera/vertex.glsl \
-    ../QtChromosomeViz_v2/cylinder/fragment.glsl \
-    ../QtChromosomeViz_v2/cylinder/geometry.glsl \
-    ../QtChromosomeViz_v2/cylinder/vertex.glsl \
-    ../QtChromosomeViz_v2/labels/fragment.glsl \
-    ../QtChromosomeViz_v2/labels/geometry.glsl \
-    ../QtChromosomeViz_v2/labels/vertex.glsl \
-    ../QtChromosomeViz_v2/picking/fragment.glsl \
-    ../QtChromosomeViz_v2/sphere/fragment.glsl \
-    ../QtChromosomeViz_v2/sphere/geometry.glsl \
-    ../QtChromosomeViz_v2/sphere/vertex.glsl
+    opengl/camera/fragment.glsl \
+    opengl/camera/geometry.glsl \
+    opengl/camera/vertex.glsl \
+    opengl/cylinder/fragment.glsl \
+    opengl/cylinder/geometry.glsl \
+    opengl/cylinder/vertex.glsl \
+    opengl/labels/fragment.glsl \
+    opengl/labels/geometry.glsl \
+    opengl/labels/vertex.glsl \
+    opengl/picking/fragment.glsl \
+    opengl/sphere/fragment.glsl \
+    opengl/sphere/geometry.glsl \
+    opengl/sphere/vertex.glsl
 
 target.path = /usr/local/bin/
 INSTALLS += target

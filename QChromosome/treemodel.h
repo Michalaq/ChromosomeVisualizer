@@ -76,7 +76,6 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    void setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc);
     void colorByResidue(const QModelIndex &root);
     void colorByChain(const QModelIndex &root);
 
@@ -102,8 +101,12 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame);
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend);
+    void writePOVFrame(QTextStream &stream, QVector3D* data);
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend);
+
+    void prepend(TreeItem* item);
+
+    int atomCount() const;
 
 private:
     TreeItem *header;

@@ -30,11 +30,16 @@ public:
         }
     }
 
-    int emplace_back()
+    void append(const T& value)
     {
         resized = true;
-        QVector<T>::push_back(T());
-        return QVector<T>::count() - 1;
+        QVector<T>::append(value);
+    }
+
+    T* data()
+    {
+        modified = true;
+        return QVector<T>::data();
     }
 
     void remove(int i, int count)
@@ -43,10 +48,16 @@ public:
         QVector<T>::remove(i, count);
     }
 
+    void removeLast()
+    {
+        resized = true;
+        QVector<T>::removeLast();
+    }
+
     void resize(int size)
     {
         resized = true;
-        QVector<T>::resize(QVector<T>::size() + size);
+        QVector<T>::resize(size);
     }
 
     inline T& operator[](int i)
@@ -58,12 +69,6 @@ public:
     void forceReallocate()
     {
         resized = true;
-    }
-
-    void pop_back()
-    {
-        resized = true;
-        QVector<T>::pop_back();
     }
 
 private:

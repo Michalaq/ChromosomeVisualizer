@@ -254,13 +254,13 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void TreeItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
     for (const auto c : m_childItems)
-        c->writePOVFrame(stream, frame);
+        c->writePOVFrame(stream, data);
 }
 
-void TreeItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void TreeItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     for (const auto c : m_childItems)
         c->writePOVFrames(stream, fbeg, fend);
@@ -308,9 +308,9 @@ void TreeItem::shift(int da, int dc)
 
 #include "session.h"
 
-LayerItem::LayerItem(const QString &name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem) :
+LayerItem::LayerItem(const QString &name, SimulationLayer* l, Session* s, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    layer(slc),
+    layer(l),
     session(s)
 {
     QIcon icon;
@@ -333,24 +333,26 @@ void LayerItem::write(QJsonObject &json) const
     if (json.contains("Object"))
         object = json["Object"].toObject();
 
-    QJsonArray simulationLayer;
-    layer->write(simulationLayer);
-
     object["class"] = "Layer";
-    object["paths"] = simulationLayer;
+
+    layer->write(object);
 
     json["Object"] = object;
 }
 
 void LayerItem::remove()
 {
+    delete layer;
+
+    session->simulation->removeOne(layer);
+
     session->atomBuffer.remove(a_offset, m_atomCount);
     session->indices.remove(a_offset, m_atomCount);
 
     session->chainBuffer[0].remove(c_offset, m_chainCount);
     session->chainBuffer[1].remove(c_offset, m_chainCount);
 
-    session->simulation->removeSimulationLayerConcatenation(layer);
+    session->setLastFrame(session->simulation->lastEntry());
     session->plot->updateSimulation();
 
     TreeItem::remove();
@@ -421,10 +423,10 @@ void CameraItem::remove()
 {
     session->userCameras.last()->id = camera->id;
     session->userCameras[camera->id - 1] = session->userCameras.last();
-    session->userCameras.pop_back();
+    session->userCameras.removeLast();
 
     session->cameraBuffer[camera->id] = session->cameraBuffer.last();
-    session->cameraBuffer.pop_back();
+    session->cameraBuffer.removeLast();
 
     if (data(6).toBool())
         session->simulation->getModel()->setCurrentCamera(QModelIndex());
@@ -434,17 +436,15 @@ void CameraItem::remove()
     TreeItem::remove();
 }
 
-AtomItem::AtomItem(const Atom &atom, int id, Session *s, TreeItem *parentItem) :
-    TreeItem({QString("Atom.%1").arg(atom.id), NodeType::AtomObject, id, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
-    id(id),
+AtomItem::AtomItem(int id, int offset, Session *s, TreeItem *parentItem) :
+    TreeItem({QString("Atom.%1").arg(id + 1), NodeType::AtomObject, offset + id, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
+    id(offset + id),
     session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
-
-    session->atomBuffer[id].position = QVector3D(atom.x, atom.y, atom.z);
 }
 
 AtomItem::~AtomItem()
@@ -538,22 +538,17 @@ void AtomItem::write(QJsonObject &json) const
 
 #include "moviemaker.h"
 
-constexpr QVector3D vec3(const Atom& a)
-{
-    return {a.x, a.y, a.z};
-}
-
-void AtomItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void AtomItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
     const auto& atom = session->atomBuffer[id];
 
     if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::addSphere(stream, vec3(frame->atoms[id]), atom.size, atom.material);
+        MovieMaker::addSphere(stream, data[id], atom.size, atom.material);
 
-    TreeItem::writePOVFrame(stream, frame);
+    TreeItem::writePOVFrame(stream, data);
 }
 
-void AtomItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void AtomItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     const auto& atom = session->atomBuffer[id];
 
@@ -569,18 +564,15 @@ void AtomItem::shift(int da, int dc)
     TreeItem::shift(da, dc);
 }
 
-ChainItem::ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem) :
-    TreeItem({name, NodeType::ChainObject, s->chainBuffer[0].count(), Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
-    id(s->chainBuffer[0].count()),
+ChainItem::ChainItem(int id, int offset, Session *s, TreeItem *parentItem) :
+    TreeItem({"Chain" + (id > 0 ? QString(".%1").arg(id) : QString()), NodeType::ChainObject, offset + id, Visibility::Default, Visibility::Default, QVariant()}, 0, 1, parentItem),
+    id(offset + id),
     session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
     decoration = icon;
-
-    session->chainBuffer[0].append(r.first);
-    session->chainBuffer[1].append(r.second - r.first);
 }
 
 ChainItem::~ChainItem()
@@ -588,9 +580,9 @@ ChainItem::~ChainItem()
 
 }
 
-void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const
+void ChainItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
-    TreeItem::writePOVFrame(stream, frame);
+    TreeItem::writePOVFrame(stream, data);
 
     for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id] - 1; i++)
     {
@@ -598,11 +590,11 @@ void ChainItem::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
         const auto& second = session->atomBuffer[i + 1];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
-            MovieMaker::addCylinder(stream, vec3(frame->atoms[i]), vec3(frame->atoms[i + 1]), first.size / 2, second.size / 2, first.material, second.material);
+            MovieMaker::addCylinder(stream, data[i], data[i + 1], first.size / 2, second.size / 2, first.material, second.material);
     }
 }
 
-void ChainItem::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const
+void ChainItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     TreeItem::writePOVFrames(stream, fbeg, fend);
 
@@ -625,7 +617,7 @@ void ChainItem::shift(int da, int dc)
 
 #include "preferences.h"
 
-ResidueItem::ResidueItem(int type, TreeItem *parentItem) :
+ResidueItem::ResidueItem(uint type, TreeItem *parentItem) :
     TreeItem({Preferences::getInstance()->typename2label(type), NodeType::ResidueObject, type, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;

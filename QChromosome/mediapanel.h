@@ -2,8 +2,8 @@
 #define MEDIAPANEL_H
 
 #include <QWidget>
+#include <QMutex>
 #include <QTimer>
-#include <QTime>
 
 namespace Ui {
 class MediaPanel;
@@ -46,14 +46,15 @@ public:
     void pause();
     void resume();
 
+protected:
+    void timerEvent(QTimerEvent* event);
+
 private:
     Ui::MediaPanel *ui;
     Session* session;
 
+    QMutex mutex;
     QTimer timer;
-    QTime time;
-
-    void step();
 };
 
 #endif // MEDIAPANEL_H

@@ -12,7 +12,6 @@ Chromosome Visualizer is based on few components required for it to work correct
 5.  **ffmpeg** -- required for movie rendering
 6.  **libprotobuf-dev protobuf-compiler** -- required for binary format support
 7.  **gcc, version >= 5.0** -- required for C++14 support
-8.  **cmake, version >= 2.8** -- required for compilation of libprotostream
 
 
 Installation

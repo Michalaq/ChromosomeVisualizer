@@ -44,9 +44,6 @@
 #include <QVariant>
 #include <QTextStream>
 
-#include <memory>
-#include "../QtChromosomeViz_v2/bartekm_code/common.h"
-
 enum VizFlag
 {
     NoFlags = 0x0,
@@ -87,8 +84,18 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
-    virtual void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    virtual void writePOVFrame(QTextStream &stream, QVector3D* data) const;
+    virtual void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
+
+    inline int atomOffset() const
+    {
+        return a_offset;
+    }
+
+    inline int atomCount() const
+    {
+        return m_atomCount;
+    }
 
     virtual void setCylinderRadius(float r);
     float getCylinderRadius() const;
@@ -131,14 +138,14 @@ enum Visibility
     Off
 };
 
-#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayerConcatenation.h"
+#include "simulation/simulationlayer.h"
 
 class Session;
 
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, std::shared_ptr<SimulationLayerConcatenation> slc, Session* s, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, SimulationLayer* l, Session* s, TreeItem *parentItem = 0);
     ~LayerItem();
 
     void write(QJsonObject& json) const;
@@ -147,7 +154,7 @@ protected:
     void remove();
 
 private:
-    std::shared_ptr<SimulationLayerConcatenation> layer;
+    SimulationLayer* layer;
     Session* session;
 };
 
@@ -206,7 +213,7 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(const Atom& atom, int id, Session *s, TreeItem *parentItem = 0);
+    explicit AtomItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
     void setLabel(const QString& l, const QRect& r);
@@ -226,8 +233,8 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
 protected:
     void shift(int da, int dc);
@@ -241,11 +248,11 @@ private:
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QString& name, std::pair<int, int> r, Session *s, TreeItem *parentItem = 0);
+    explicit ChainItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
     ~ChainItem();
 
-    void writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame) const;
-    void writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend) const;
+    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
+    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
 protected:
     void shift(int da, int dc);
@@ -258,7 +265,7 @@ private:
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(int type, TreeItem *parentItem = 0);
+    explicit ResidueItem(uint type, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

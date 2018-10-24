@@ -13,7 +13,6 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     specularColor(sc),
     specularExponent(se),
     finish(0),
-    index(buffer.emplace_back()),
     ambient(.1),
     diffuse(.6),
     phong(.0),
@@ -28,7 +27,9 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     setFixedSize(45, 45);
     updateIcon();
 
-    buffer[index] = {color.rgba(), specularColor.rgba(), specularExponent};
+    index = buffer.count();
+    buffer.append({color.rgba(), specularColor.rgba(), specularExponent});
+
     library.push_back(this);
 }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>208</height>
+    <height>231</height>
    </rect>
   </property>
   <property name="styleSheet">
@@ -84,6 +84,9 @@ QDialogButtonBox {
        <property name="minimum">
         <number>0</number>
        </property>
+       <property name="maximum">
+        <number>2147483647</number>
+       </property>
       </widget>
      </item>
      <item row="1" column="1">
@@ -94,8 +97,14 @@ QDialogButtonBox {
        <property name="suffix">
         <string>F</string>
        </property>
+       <property name="minimum">
+        <number>-1</number>
+       </property>
        <property name="maximum">
         <number>2147483647</number>
+       </property>
+       <property name="value">
+        <number>-1</number>
        </property>
       </widget>
      </item>

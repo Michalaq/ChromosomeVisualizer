@@ -144,75 +144,12 @@ void TreeModel::dumpModel1(const QModelIndex& root, QVector<QPersistentModelInde
         dumpModel1(index(r, 0, root), id);
 }
 
-void appendSubmodel(std::pair<int, int> range, const std::vector<Atom>& atoms, unsigned int n, unsigned int offset, TreeItem *parent, Session *s)
-{
-    auto root = new ChainItem(QString("Chain") + (n ? QString(".") + QString::number(n) : ""), {range.first + offset, range.second + offset}, s, parent);
-
-    QMap<int, TreeItem*> types;
-
-    for (auto atom = atoms.begin() + range.first; atom != atoms.begin() + range.second; atom++)
-    {
-        int t = atom->type;
-
-        if (!types.contains(t))
-            types[t] = new ResidueItem(t, root);
-
-        new AtomItem(*atom, atom->id - 1 + offset, s, types[t]);
-    }
-}
-
-#include <QBitArray>
-#include <QFileInfo>
-#include "session.h"
-
-void TreeModel::setupModelData(std::shared_ptr<SimulationLayerConcatenation> slc)
-{
-    unsigned int offset = session->atomBuffer.size();
-    auto f = slc->getFrame(0);
-    auto& atoms = f->atoms;
-    auto& connectedRanges = f->connectedRanges;
-
-    QBitArray used(atoms.size(), false);
-
-    auto root = new LayerItem(QFileInfo(QString::fromStdString(slc->getSimulationLayerConcatenationName())).fileName(), slc, session);
-
-    session->atomBuffer.resize(atoms.size());
-
-    unsigned int i = 0;
-
-    for (auto range : connectedRanges)
-    {
-        range.first--;
-        used.fill(true, range.first, range.second);
-        appendSubmodel(range, atoms, i++, offset, root, session);
-    }
-
-    QMap<int, TreeItem*> types;
-
-    for (auto i = 0; i < atoms.size(); i++)
-        if (!used.testBit(i))
-        {
-            int t = atoms[i].type;
-
-            if (!types.contains(t))
-                types[t] = new ResidueItem(t, root);
-
-            new AtomItem(atoms[i], atoms[i].id - 1 + offset, session, types[t]);
-        }
-
-    beginInsertRows(QModelIndex(), 0, 0);
-    header->prependChild(root);
-    endInsertRows();
-
-    session->indices.resize(offset + atoms.size());
-    dumpModel1(index(0, 0), session->indices);
-}
-
 void TreeModel::colorByResidue(const QModelIndex& root)
 {
     dumpModel2(root, Material::getDefault());
 }
 
+#include "session.h"
 #include "preferences.h"
 
 void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
@@ -612,7 +549,7 @@ void TreeModel::setName(const QModelIndexList &indices, const QString &name)
 }
 
 #include <QJsonObject>
-#include <QJsonArray>
+#include "simulation/simulationlayer.h"
 
 void TreeModel::read(const QJsonObject &json)
 {
@@ -623,12 +560,7 @@ void TreeModel::read(const QJsonObject &json)
         const QJsonObject object = child.value().toObject()["Object"].toObject();
 
         if (object["class"] == "Layer")
-        {
-            auto simulationLayer = std::make_shared<SimulationLayerConcatenation>();
-            simulationLayer->read(object["paths"].toArray());
-
-            session->simulation->addSimulationLayerConcatenation(simulationLayer);
-        }
+            session->simulation->prepend(SimulationLayer::read(object, session));
 
         if (object["class"] == "Camera")
             qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));
@@ -645,12 +577,27 @@ void TreeModel::write(QJsonObject &json) const
     header->write(json);
 }
 
-void TreeModel::writePOVFrame(QTextStream &stream, std::shared_ptr<Frame> frame)
+void TreeModel::writePOVFrame(QTextStream &stream, QVector3D* data)
 {
-    header->writePOVFrame(stream, frame);
+    header->writePOVFrame(stream, data);
 }
 
-void TreeModel::writePOVFrames(QTextStream &stream, frameNumber_t fbeg, frameNumber_t fend)
+void TreeModel::writePOVFrames(QTextStream &stream, int fbeg, int fend)
 {
     header->writePOVFrames(stream, fbeg, fend);
+}
+
+void TreeModel::prepend(TreeItem* item)
+{
+    beginInsertRows(QModelIndex(), 0, 0);
+    header->prependChild(item);
+    endInsertRows();
+
+    session->indices.resize(session->indices.size() + item->atomCount());
+    dumpModel1(index(0, 0), session->indices);
+}
+
+int TreeModel::atomCount() const
+{
+    return header->atomCount();
 }

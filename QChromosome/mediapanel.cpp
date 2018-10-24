@@ -19,8 +19,8 @@ MediaPanel::MediaPanel(Session* s, MainWindow* w, QWidget *parent) :
     connect(ui->key, &QPushButton::clicked, w, &MainWindow::recordActiveObjects);
     connect(ui->record, &QPushButton::clicked, w, &MainWindow::autokeying);
 
-    timer.setInterval(1000 / session->projectSettings->getFPS());
-    connect(&timer, &QTimer::timeout, this, &MediaPanel::step);
+    setFPS(session->projectSettings->getFPS());
+    connect(&timer, &QTimer::timeout, [this] {timerEvent(Q_NULLPTR);});
 
     connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setDocumentTime);
     connect(ui->horizontalSlider, &QSlider::valueChanged, session, &Session::setDocumentTime);
@@ -155,21 +155,19 @@ void MediaPanel::pause()
 void MediaPanel::resume()
 {
     if (session->playForwards || session->playBackwards)
-    {
-        time.restart();
         timer.start();
-    }
 }
 
 constexpr int rem(int a, int b) {
     return (a % b + b) % b;
 }
 
-void MediaPanel::step()
+void MediaPanel::timerEvent(QTimerEvent*)
 {
-    int delta = (time.restart() * session->projectSettings->getFPS() + 500) / 1000;
-    int time = session->projectSettings->getDocumentTime();
-    int next = time + (session->playForwards ? delta : -delta);
+    if (!mutex.tryLock())
+        return;
+
+    int next = session->projectSettings->getDocumentTime() + (session->playForwards ? 1 : -1);
 
     if (session->playForwards)
     {
@@ -181,13 +179,16 @@ void MediaPanel::step()
         {
             if (maxTime == ui->spinBox->maximum())
             {
-                bool ok;
-                session->simulation->getFrame(next, &ok);
+                int tmp = session->simulation->cacheHeaders(next);
 
-                if (ok)
-                    return session->setDocumentTime(next);
-                else
-                    maxTime = session->simulation->getFrameCount() - 1;
+                if (maxTime < tmp)
+                    session->setLastFrame(maxTime = tmp);
+            }
+
+            if (next <= maxTime)
+            {
+                session->setDocumentTime(next);
+                goto unlock;
             }
 
             int minTime = session->previewRange ? session->projectSettings->getPreviewMinTime() : session->projectSettings->getMinimumTime();
@@ -248,4 +249,7 @@ void MediaPanel::step()
             }
         }
     }
+
+    unlock:
+    mutex.unlock();
 }

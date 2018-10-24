@@ -5,7 +5,6 @@
 #include "glbuffer.h"
 #include <QAction>
 #include "treeitem.h"
-#include "../QtChromosomeViz_v2/bartekm_code/Simulation.h"
 #include "camera.h"
 #include "labelatlas.h"
 #include "treeview.h"
@@ -18,6 +17,8 @@
 #include "mediapanel.h"
 #include "plot.h"
 #include "tabwidget.h"
+#include "simulation/simulation.h"
+#include <QChart>
 
 class MainWindow;
 
@@ -58,6 +59,7 @@ public:
 
     MediaPanel* mediaPanel;
 
+    QtCharts::QChart* chart;
     Plot* plot;
 
     void fromJson(const QJsonDocument& json);

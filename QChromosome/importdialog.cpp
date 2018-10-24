@@ -1,39 +1,49 @@
 #include "importdialog.h"
 #include "ui_importdialog.h"
 
-#include "../QtChromosomeViz_v2/bartekm_code/SimulationLayer.h"
+#include <QFileInfo>
 
-ImportDialog::ImportDialog(SimulationLayer *sl, QWidget *parent) :
+ImportDialog::ImportDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ImportDialog),
-    simulationLayer(sl)
+    unlimited(true)
 {
     ui->setupUi(this);
+
     setFixedSize(width(), minimumHeight());
 
-    ui->spinBox->setMaximum(simulationLayer->last < simulationLayer->first ? 2147483647 : simulationLayer->last);
-    ui->spinBox_2->setMinimum(simulationLayer->first - 1);
-
-    ui->spinBox->setValue(simulationLayer->first, false);
-    ui->spinBox_2->setValue(simulationLayer->last, false);
-    ui->spinBox_3->setValue(simulationLayer->stride, false);
-
     connect(ui->spinBox, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
-        simulationLayer->first = value;
-        ui->spinBox_2->setMinimum(value - 1);
+        ui->spinBox_2->setMinimum(value - 1, false);
+        if (unlimited) ui->spinBox_2->setValue(value - 1, false);
     });
 
     connect(ui->spinBox_2, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
-        simulationLayer->last = value;
-        ui->spinBox->setMaximum(value < simulationLayer->first ? 2147483647 : simulationLayer->last);
-    });
-
-    connect(ui->spinBox_3, QOverload<int>::of(&SpinBox::valueChanged), [this](int value) {
-        simulationLayer->stride = value;
+        unlimited = value == ui->spinBox_2->minimum();
+        ui->spinBox->setMaximum(unlimited ? INT_MAX : value, false);
     });
 }
 
 ImportDialog::~ImportDialog()
 {
     delete ui;
+}
+
+int ImportDialog::first() const
+{
+    return ui->spinBox->value();
+}
+
+int ImportDialog::last() const
+{
+    return unlimited ? INT_MAX : ui->spinBox_2->value();
+}
+
+int ImportDialog::stride() const
+{
+    return ui->spinBox_3->value();
+}
+
+bool ImportDialog::loadInBackground() const
+{
+    return ui->radioButton->isChecked();
 }
