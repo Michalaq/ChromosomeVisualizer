@@ -81,27 +81,27 @@ void ProjectSettings::setDocumentTime(int time)
 void ProjectSettings::setMinimumTime(int time)
 {
     ui->spinBox_3->setValue(time, false);
-    ui->spinBox_6->setMinimum(time + 1);
+    ui->spinBox_6->setMinimum(time);
     ui->spinBox_4->setMinimum(time);
 }
 
 void ProjectSettings::setMaximumTime(int time)
 {
     ui->spinBox_6->setValue(time, false);
-    ui->spinBox_3->setMaximum(time > 0 ? time - 1 : 0);
+    ui->spinBox_3->setMaximum(time);
     ui->spinBox_7->setMaximum(time);
 }
 
 void ProjectSettings::setPreviewMinTime(int time)
 {
     ui->spinBox_4->setValue(time, false);
-    ui->spinBox_7->setMinimum(time + 1);
+    ui->spinBox_7->setMinimum(time);
 }
 
 void ProjectSettings::setPreviewMaxTime(int time)
 {
     ui->spinBox_7->setValue(time, false);
-    ui->spinBox_4->setMaximum(time > 0 ? time - 1 : 0);
+    ui->spinBox_4->setMaximum(time);
 }
 
 void ProjectSettings::setLastFrame(int time)

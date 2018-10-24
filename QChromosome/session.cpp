@@ -104,6 +104,8 @@ void Session::fromJson(const QJsonDocument &json)
 
     const QJsonObject camera_ = project["Editor Camera"].toObject();
     editorCamera->read(camera_);
+
+    plot->updateSimulation();
 }
 
 QJsonDocument Session::toJson() const

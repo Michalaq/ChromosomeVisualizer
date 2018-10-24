@@ -112,14 +112,14 @@ void MediaPanel::setDocumentTime(int time)
 void MediaPanel::setMinimumTime(int time)
 {
     ui->spinBox_2->setValue(time, false);
-    ui->spinBox_3->setMinimum(time + 1);
+    ui->spinBox_3->setMinimum(time);
     ui->horizontalSlider_2->setMinimum(time);
 }
 
 void MediaPanel::setMaximumTime(int time)
 {
     ui->spinBox_3->setValue(time, false);
-    ui->spinBox_2->setMaximum(time > 0 ? time - 1 : 0);
+    ui->spinBox_2->setMaximum(time);
     ui->horizontalSlider_2->setMaximum(time);
 }
 
