@@ -1,13 +1,11 @@
 #ifndef VIZWIDGET_H
 #define VIZWIDGET_H
 
-#include <QtGui>
 #include <QtOpenGL>
 #include <QOpenGLFunctions_4_1_Core>
 
 #include "selection.h"
 #include "pickwidget.h"
-#include "treemodel.h"
 
 class Session;
 

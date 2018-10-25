@@ -19,9 +19,9 @@ void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    Q_ASSERT(vaoSpheres_.create());
+    vaoSpheres_.create();
 
-    Q_ASSERT(atomPositions_.create());
+    atomPositions_.create();
     atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     vaoSpheres_.bind();
@@ -78,9 +78,9 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoSpheres_.release();
 
-    Q_ASSERT(vaoCameras_.create());
+    vaoCameras_.create();
 
-    Q_ASSERT(cameraPositions_.create());
+    cameraPositions_.create();
     cameraPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     vaoCameras_.bind();
@@ -124,7 +124,7 @@ void VizWidget::initializeGL()
     cameraPositions_.release();
     vaoCameras_.release();
 
-    Q_ASSERT(vaoLabels_.create());
+    vaoLabels_.create();
 
     vaoLabels_.bind();
     atomPositions_.bind();
@@ -171,37 +171,37 @@ void VizWidget::initializeGL()
     vaoLabels_.release();
 
     // Shaders
-    Q_ASSERT(sphereProgram_.create());
+    sphereProgram_.create();
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/sphere/fragment.glsl");
-    Q_ASSERT(sphereProgram_.link());
+    sphereProgram_.link();
 
-    Q_ASSERT(cylinderProgram_.create());
+    cylinderProgram_.create();
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/cylinder/vertex.glsl");
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/cylinder/geometry.glsl");
     cylinderProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/cylinder/fragment.glsl");
-    Q_ASSERT(cylinderProgram_.link());
+    cylinderProgram_.link();
 
-    Q_ASSERT(cameraProgram_.create());
+    cameraProgram_.create();
     cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/camera/vertex.glsl");
     cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/camera/geometry.glsl");
     cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/camera/fragment.glsl");
-    Q_ASSERT(cameraProgram_.link());
+    cameraProgram_.link();
 
-    Q_ASSERT(labelsProgram_.create());
+    labelsProgram_.create();
     labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/labels/vertex.glsl");
     labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/labels/geometry.glsl");
     labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/labels/fragment.glsl");
-    Q_ASSERT(labelsProgram_.link());
+    labelsProgram_.link();
 
-    Q_ASSERT(pickingProgram_.create());
+    pickingProgram_.create();
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
     pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
-    Q_ASSERT(pickingProgram_.link());
+    pickingProgram_.link();
 
-    Q_ASSERT(materials_.create());
+    materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     glGenBuffers(2, buffers);
