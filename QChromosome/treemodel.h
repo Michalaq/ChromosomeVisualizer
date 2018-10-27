@@ -135,6 +135,7 @@ signals:
     void propertyChanged();
     void attributeChanged();
     void cameraChanged(Camera*);
+    void tagSelected(const QList<Material*>&);
 };
 
 #endif // TREEMODEL_H

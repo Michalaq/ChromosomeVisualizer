@@ -266,6 +266,10 @@ Session* MainWindow::makeSession()
         ui->scene->update();
     });
     connect(s->simulation->getModel(), &TreeModel::cameraChanged, this, &MainWindow::changeCamera);
+    connect(s->simulation->getModel(), &TreeModel::tagSelected, [this](const QList<Material*>& selected) {
+        ui->page_7->handleSelection(selected);
+        ui->stackedWidget->setCurrentWidget(ui->page_7);
+    });
 
     // add tree view to objects
     ui->stackedWidget_3->addWidget(s->treeView);

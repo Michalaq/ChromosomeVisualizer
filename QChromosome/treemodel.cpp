@@ -64,6 +64,10 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
         break;
     case Qt::UserRole + 1:
         item->selected_tag_index = value.toInt();
+        if (item->selected_tag_index == -1)
+            emit tagSelected({});
+        else
+            emit tagSelected({index.sibling(index.row(), 5).data().toList().at(item->selected_tag_index).value<Material*>()});
         ans = true;
         break;
     default:
