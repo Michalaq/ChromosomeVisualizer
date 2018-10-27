@@ -103,6 +103,10 @@ MainWindow::MainWindow(QWidget *parent) :
         session->currentCamera->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
     });
 
+    connect(ui->actionPivot, &QAction::triggered, [this] {
+        session->origin = session->simulation->getModel()->getOrigin();
+    });
+
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
         ui->stackedWidget_2->setAttribute(Qt::WA_TransparentForMouseEvents, checked);
         Selection::setSelectionType(checked ? RECTANGULAR_SELECTION : NO_SELECTION);
@@ -445,8 +449,6 @@ void MainWindow::handleModelSelection(const QItemSelection& selected, const QIte
         ui->stackedWidget->setCurrentWidget(ui->page_9);
         return;
     }
-
-    session->origin = model->getOrigin();
 
     QModelIndexList selectedRows = session->treeView->selectionModel()->selectedRows();
 

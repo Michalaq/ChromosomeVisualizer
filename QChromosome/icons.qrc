@@ -19,6 +19,7 @@
         <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
         <file alias="custom">icons/selection_custom_shape_icon.svg</file>
         <file alias="focus">icons/target_icon.svg</file>
+        <file alias="pivot">icons/pivot_point_icon.svg</file>
     </qresource>
     <qresource prefix="/dock">
         <file alias="float">icons/float_icon.svg</file>

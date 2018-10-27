@@ -619,6 +619,7 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
    <addaction name="actionScale"/>
    <addaction name="separator"/>
    <addaction name="actionFocus"/>
+   <addaction name="actionPivot"/>
    <addaction name="separator"/>
    <addaction name="actionXLock"/>
    <addaction name="actionYLock"/>
@@ -1050,7 +1051,7 @@ QLineEdit {
     <string>Focus</string>
    </property>
    <property name="statusTip">
-    <string>Target Object</string>
+    <string>Target object</string>
    </property>
   </action>
   <action name="actionCustom">
@@ -1201,6 +1202,18 @@ QLineEdit {
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionPivot">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/selection/pivot</normaloff>:/selection/pivot</iconset>
+   </property>
+   <property name="text">
+    <string>Pivot</string>
+   </property>
+   <property name="statusTip">
+    <string>Pivot point</string>
    </property>
   </action>
  </widget>
