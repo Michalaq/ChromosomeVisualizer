@@ -531,7 +531,7 @@ QVector3D TreeModel::getOrigin(bool selected) const
 
     propagateOrigin(QModelIndex(), s, c, selected);
 
-    return s / c;
+    return c ? s / c : s;
 }
 
 void TreeModel::setName(const QModelIndex &index, const QString &name)

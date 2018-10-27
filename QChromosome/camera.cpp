@@ -306,7 +306,7 @@ void Camera::setPosition(const QVector3D &p)
 
 void Camera::move(int dx, int dy)
 {
-    const qreal scale = distanceFactor * qAbs(QVector3D::dotProduct(eye - session->origin, z)) / focalLength;
+    const qreal scale = distanceFactor * qMax(qAbs(QVector3D::dotProduct(eye - session->origin, z)), 1.f) / focalLength;
 
     move(scale * dx, -scale * dy, 0.);
 
