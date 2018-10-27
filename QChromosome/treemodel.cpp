@@ -563,7 +563,7 @@ void TreeModel::read(const QJsonObject &json)
             session->simulation->prepend(SimulationLayer::read(object, session));
 
         if (object["class"] == "Camera")
-            qobject_cast<TreeModel*>(session->treeView->model())->addCamera(new Camera(session));
+            addCamera(new Camera(session));
     }
 
     header->read(json);

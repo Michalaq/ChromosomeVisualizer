@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        session->currentCamera->callibrate(qobject_cast<TreeModel*>(session->simulation->getModel())->getSelected());
+        session->currentCamera->callibrate(session->simulation->getModel()->getSelected());
     });
 
     connect(ui->actionPivot, &QAction::triggered, [this] {
@@ -128,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
         auto camera = new Camera(*session->currentCamera);
 
         addCamera(camera);
-        qobject_cast<TreeModel*>(session->treeView->model())->addCamera(camera);
+        session->simulation->getModel()->addCamera(camera);
     });
 
     connect(&PickWidget::getSignalMapper(), static_cast<void(QSignalMapper::*)(QWidget *)>(&QSignalMapper::mapped), [this](QObject *object) {
@@ -436,7 +436,7 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
 
 void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    auto model = qobject_cast<TreeModel*>(session->simulation->getModel());
+    auto model = session->simulation->getModel();
 
     model->setSelected(deselected.indexes(), false);
     model->setSelected(selected.indexes(), true);
