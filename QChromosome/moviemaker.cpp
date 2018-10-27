@@ -103,8 +103,17 @@ void MovieMaker::captureScene(Session* session)
     // translator
     if (session->renderSettings->saveTraslator() && !tname.isEmpty())
     {
-        if (!iniFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".ini")) || !povFile.copy(session->renderSettings->getTranslatorDir().filePath(tname + ".pov")))
-            QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+        QFileInfo ini(session->renderSettings->getTranslatorDir().filePath(tname + ".ini"));
+
+        if (!ini.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(ini.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(ini.filePath())))
+            if (!iniFile.copy(ini.filePath()))
+                QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+
+        QFileInfo pov(session->renderSettings->getTranslatorDir().filePath(tname + ".pov"));
+
+        if (!pov.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(pov.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(pov.filePath())))
+            if (!povFile.copy(pov.filePath()))
+                QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
     }
 
 #ifdef Q_OS_UNIX
@@ -165,8 +174,13 @@ void MovieMaker::captureScene(Session* session)
             emit progressChanged(101);
 
             if (session->renderSettings->saveOutput() && !oname.isEmpty())
-                if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), session->renderSettings->getOutputDir().filePath(oname + "." + (interpolate ? "avi" : session->renderSettings->getExtension()))))
-                    QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+            {
+                QFileInfo out(session->renderSettings->getOutputDir().filePath(oname + "." + (interpolate ? "avi" : session->renderSettings->getExtension())));
+
+                if (!out.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(out.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(out.filePath())))
+                    if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), out.filePath()))
+                        QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+            }
 
             if (session->renderSettings->openFile())
                 QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension()))));
