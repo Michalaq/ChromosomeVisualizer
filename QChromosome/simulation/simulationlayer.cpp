@@ -23,7 +23,6 @@ TreeItem* SimulationLayer::getModel() const
     return model;
 }
 
-#include "binsimulationlayer.h"
 #include "pdbsimulationlayer.h"
 
 SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session)
@@ -32,9 +31,6 @@ SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session
     int first = json["First"].toInt();
     int last = json["Last"].toInt();
     int stride = json["Stride"].toInt();
-
-    if (QFileInfo(name).suffix() == "bin")
-        return new BINSimulationLayer(name, session, first, last, stride);
 
     if (QFileInfo(name).suffix() == "pdb")
         return new PDBSimulationLayer(name, session, first, last, stride);

@@ -49,7 +49,6 @@
         <file alias="focus">icons/focus_icon.svg</file>
         <file alias="primitives">icons/primitives_icon.svg</file>
         <file alias="world">icons/world_icon.svg</file>
-        <file alias="bin">icons/file_format_bin.svg</file>
         <file alias="pdb">icons/file_format_pdb.svg</file>
         <file alias="ttf">icons/file_format_ttf.svg</file>
         <file alias="film camera">icons/camera_icon.svg</file>

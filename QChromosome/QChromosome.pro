@@ -68,8 +68,7 @@ SOURCES += \
     simulation/simulationlayer.cpp \
     simulation/pdbsimulationlayer.cpp \
     simulation/simulation.cpp \
-    opengl/vizwidget.cpp \
-    simulation/binsimulationlayer.cpp
+    opengl/vizwidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -133,8 +132,7 @@ HEADERS += \
     simulation/simulationlayer.h \
     simulation/pdbsimulationlayer.h \
     simulation/simulation.h \
-    opengl/vizwidget.h \
-    simulation/binsimulationlayer.h
+    opengl/vizwidget.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -162,19 +160,6 @@ RESOURCES += \
     icons.qrc \
     opengl/shaders.qrc \
     misc.qrc
-
-#exists( /usr/lib/x86_64-linux-gnu/libprotobuf.a ) {
-#    LIBS += /usr/lib/x86_64-linux-gnu/libprotobuf.a
-#}
-
-#exists( /usr/local/lib/libprotobuf.a ) {
-#    LIBS += /usr/local/lib/libprotobuf.a
-#}
-
-#INCLUDEPATH += /usr/local/include
-
-#PROTOS = ../QtChromosomeViz_v2/bartekm_code/message_format/message.proto
-#include(protobuf.pri)
 
 DISTFILES += \
     opengl/camera/fragment.glsl \

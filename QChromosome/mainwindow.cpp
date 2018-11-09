@@ -376,13 +376,12 @@ void MainWindow::openProject()
         delete s;
 }
 
-#include "simulation/binsimulationlayer.h"
 #include "simulation/pdbsimulationlayer.h"
 #include "importdialog.h"
 
 void MainWindow::addLayer()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Import...", QSettings().value("locallib").toString(), "All QChromosome 4D Files (*.pdb *.bin);;RCSB Protein Data Bank (*.pdb);;Motions (*.bin)");
+    QString path = QFileDialog::getOpenFileName(0, "Import...", "", "All QChromosome 4D Files (*.pdb);;RCSB Protein Data Bank (*.pdb)");
 
     if (path.isEmpty())
         return;
@@ -398,9 +397,6 @@ void MainWindow::addLayer()
     int offset = session->atomBuffer.size();
 
     SimulationLayer* layer = Q_NULLPTR;
-
-    if (info.suffix() == "bin")
-        layer = new BINSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
     if (info.suffix() == "pdb")
         layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
