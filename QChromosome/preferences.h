@@ -23,13 +23,8 @@ public:
 
     PointerToMemberFunction coloringMethod() const;
 
-    uint bt2typename(int bt);
-    uint ev2typename(std::vector<int> ev);
-    uint rs2typename(const QString& rs);
-
-    const QString &typename2label(uint tn);
-    const QVariant &typename2color(uint tn);
-    const QVariant &chainnumber2color(int cn);
+    const QVariant& resName2color(const QString& resName) const;
+    const QVariant& chainID2color(uint chainID) const;
 
 signals:
     void coloringMethodChanged(PointerToMemberFunction);
@@ -43,10 +38,7 @@ private:
 
     static Preferences* instance;
 
-    QMap<int, uint> bt2tn; // maps binder type to its typename
-    QMap<std::vector<int>, uint> ev2tn; // maps energy vector to bead typename
-    QMap<uint, QString> tn2label; // maps typenames to their labels
-    QMap<uint, QVariant> tn2defaults; // maps typenames to their colors
+    QMap<QString, QVariant> rs2defaults; // maps residue names to their defaults
     QMap<uint, QVariant> cn2defaults; // maps chain numbers to their defaults
 };
 

@@ -265,7 +265,7 @@ private:
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(uint type, TreeItem *parentItem = 0);
+    explicit ResidueItem(const QString& resName, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

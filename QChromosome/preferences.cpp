@@ -25,145 +25,28 @@ public:
     }
 };
 
-#include <QJsonDocument>
-#include <QJsonArray>
-
-std::vector<int> toVector(const QVariant& variant)
-{
-    auto tmp = QJsonDocument::fromJson(variant.toByteArray()).array();
-
-    std::vector<int> ans;
-
-    for (auto i : tmp)
-        ans.push_back(i.toInt());
-
-    return ans;
-}
-
-#include <QSettings>
-#include <QStandardPaths>
 #include "materialbrowser.h"
 #include "tagsdelegate.h"
 #include "tablemodel.h"
 
-static const QString unresolved[] = {
-    "(unresolved binder type)",
-    "(unresolved bead type)"
-};
-
 Preferences::Preferences(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Preferences),
-    tn2label({{qHash(unresolved[0]), unresolved[0]},
-              {qHash(unresolved[1]), unresolved[1]}})
+    ui(new Ui::Preferences)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
 
     ui->TabWidget->tabBar()->setStyle(new MyProxyStyle);
 
-    connect(ui->lineEdit_2, &QLineEdit::editingFinished, [this]() {
-        QSettings().setValue("locallib", ui->lineEdit_2->text());
-    });
-
     connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         ui->stackedWidget->setCurrentIndex(index);
         emit coloringMethodChanged(coloringMethod());
     });
 
-    QSettings settings;
-    ui->lineEdit_2->setText(settings.value("locallib", QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).toString());
-
-    QVariantList mat[13];
+   QVariantList mat[13];
 
     for (int i = 0; i < 13; i++)
         mat[i] = {QVariant::fromValue(MaterialBrowser::getInstance()->mat[i])};
-
-    // first table
-    ui->tableView->setItemDelegateForColumn(0, new TableIntDelegate(this));
-    ui->tableView->setItemDelegateForColumn(1, new TableNameDelegate(this));
-
-    auto *m1 = new TableModel({"Binder Type", "Binder Name"}, this);
-
-    ui->tableView->setModel(m1);
-
-    connect(m1, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
-        switch (ix.column())
-        {
-        case 0: // binder type
-        {
-            auto pk = ix.data().toInt();
-            auto oldl = ix.sibling(ix.row(), 1).data();
-
-            if (oldl.isValid())
-            {
-                auto oldtn = old.isValid() ? bt2tn.take(old.toInt()) : qHash(oldl.toString());
-                bt2tn[pk] = oldtn;
-            }
-        }
-            break;
-        case 1: // binder name
-        {
-            auto pk = ix.sibling(ix.row(), 0).data();
-            auto newl = ix.data().toString();
-            auto newtn = qHash(newl);
-
-            if (pk.isValid())
-                bt2tn[pk.toInt()] = newtn;
-
-            tn2label[newtn] = newl;
-        }
-            break;
-        }
-    });
-
-    m1->insertRows(0, 2, m1->index(0, 0));
-    m1->setData(m1->index(0, 0), 0); m1->setData(m1->index(0, 1), "LAM");
-    m1->setData(m1->index(1, 0), 1); m1->setData(m1->index(1, 1), "BIN");
-
-    // second table
-    ui->tableView_2->setItemDelegateForColumn(0, new TableVectDelegate(this));
-    ui->tableView_2->setItemDelegateForColumn(1, new TableNameDelegate(this));
-
-    auto *m2 = new TableModel({"Energy Vector", "Bead Name"}, this);
-
-    ui->tableView_2->setModel(m2);
-
-    connect(m2, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
-        switch (ix.column())
-        {
-        case 0: // energy vector
-        {
-            auto pk = toVector(ix.data());
-            auto oldl = ix.sibling(ix.row(), 1).data();
-
-            if (oldl.isValid())
-            {
-                auto oldtn = old.isValid() ? ev2tn.take(toVector(old)) : qHash(oldl.toString());
-                ev2tn[pk] = oldtn;
-            }
-        }
-            break;
-        case 1: // bead name
-        {
-            auto pk = ix.sibling(ix.row(), 0).data();
-            auto newl = ix.data().toString();
-            auto newtn = qHash(newl);
-
-            if (pk.isValid())
-                ev2tn[toVector(pk)] = newtn;
-
-            tn2label[newtn] = newl;
-        }
-            break;
-        }
-    });
-
-    m2->insertRows(0, 4, m2->index(0, 0));
-    m2->setData(m2->index(0, 0), "[0,0]"); m2->setData(m2->index(0, 1), "UNB");
-    m2->setData(m2->index(1, 0), "[0,1]"); m2->setData(m2->index(1, 1), "BOU");
-    m2->setData(m2->index(2, 0), "[1,0]"); m2->setData(m2->index(2, 1), "LAM");
-    m2->setData(m2->index(3, 0), "[2,0]"); m2->setData(m2->index(3, 1), "LAM");
 
     // third table
     ui->tableView_3->setItemDelegateForColumn(0, new TableNameDelegate(this));
@@ -174,28 +57,24 @@ Preferences::Preferences(QWidget *parent) :
     ui->tableView_3->setModel(m3);
 
     connect(m3, &TableModel::foo, [this](QModelIndex ix, QVariant old) {
+        QString pk;
         switch (ix.column())
         {
         case 0: // residue name
-        {
-            auto newl = ix.data().toString();
-            auto newtn = qHash(newl);
-            auto oldc = ix.sibling(ix.row(), 1).data();
+            pk = old.toString();
 
-            if (oldc.isValid())
-                tn2defaults[newtn] = old.isValid() ? tn2defaults.take(qHash(old.toString())) : oldc;
+            if (!pk.isEmpty())
+                rs2defaults.remove(pk);
 
-            tn2label[newtn] = newl;
-        }
+            rs2defaults.insert(ix.data().toString(), ix.sibling(ix.row(), 1).data());
+
             break;
         case 1: // atom color
-        {
-            auto oldl = ix.sibling(ix.row(), 0).data();
-            auto newc = ix.data();
+            pk = ix.sibling(ix.row(), 0).data().toString();
 
-            if (oldl.isValid())
-                tn2defaults[qHash(oldl.toString())] = newc;
-        }
+            if (!pk.isEmpty())
+                rs2defaults[pk] = ix.data();
+
             break;
         }
     });
@@ -272,38 +151,16 @@ PointerToMemberFunction Preferences::coloringMethod() const
     Q_ASSERT(false);
 }
 
-uint Preferences::bt2typename(int bt)
-{
-    auto i = bt2tn.find(bt);
-    return i != bt2tn.end() ? i.value() : qHash(unresolved[0]);
-}
-
-uint Preferences::ev2typename(std::vector<int> ev)
-{
-    auto i = ev2tn.find(ev);
-    return i != ev2tn.end() ? i.value() : qHash(unresolved[1]);
-}
-
-uint Preferences::rs2typename(const QString &rs)
-{
-    auto ans = qHash(rs);
-    tn2label[ans] = rs;
-    return ans;
-}
-
-const QString& Preferences::typename2label(uint tn)
-{
-    return tn2label[tn];
-}
-
-const QVariant& Preferences::typename2color(uint tn)
-{
-    return tn2defaults[tn];
-}
-
-const QVariant& Preferences::chainnumber2color(int cn)
+const QVariant& Preferences::resName2color(const QString& resName) const
 {
     static const QVariant tmp;
-    auto i = cn2defaults.find(cn);
+    auto i = rs2defaults.find(resName);
+    return i != rs2defaults.end() ? i.value() : tmp;
+}
+
+const QVariant& Preferences::chainID2color(uint chainID) const
+{
+    static const QVariant tmp;
+    auto i = cn2defaults.find(chainID);
     return i != cn2defaults.end() ? i.value() : tmp;
 }

@@ -109,13 +109,12 @@ int PDBSimulationLayer::lastEntry() const
     return j - 1;
 }
 
-#include "preferences.h"
 #include "treeitem.h"
 #include <QBitArray>
 
 void PDBSimulationLayer::makeModel()
 {
-    QVector<uint> atoms;
+    QVector<QByteArray> atoms;
     QVector<QPair<int, int>> chains;
 
     QPair<int, int> range(-1, -1);
@@ -127,11 +126,7 @@ void PDBSimulationLayer::makeModel()
         file.readLine(buffer.data(), buffer.size());
 
         if (buffer.startsWith("ATOM  "))
-        {
-            uint residue = Preferences::getInstance()->rs2typename(buffer.mid(17, 3).trimmed());
-
-            atoms.append(residue);
-        }
+            atoms.append(buffer.mid(17, 3).trimmed());
 
         if (buffer.startsWith("CONECT"))
         {
@@ -166,11 +161,11 @@ void PDBSimulationLayer::makeModel()
 
         auto chain = new ChainItem(i, c_offset, session, model);
 
-        QMap<uint, ResidueItem*> residues;
+        QMap<QByteArray, ResidueItem*> residues;
 
         for (int j = chains[i].first; j < chains[i].second; j++)
         {
-            uint residue = atoms[j];
+            auto& residue = atoms[j];
 
             if (!residues.contains(residue))
                 residues[residue] = new ResidueItem(residue, chain);
@@ -179,14 +174,14 @@ void PDBSimulationLayer::makeModel()
         }
     }
 
-    QMap<uint, ResidueItem*> residues;
+    QMap<QByteArray, ResidueItem*> residues;
 
     for (int j = 0; j < atoms.size(); j++)
     {
         if (used.testBit(j))
             continue;
 
-        uint residue = atoms[j];
+        auto& residue = atoms[j];
 
         if (!residues.contains(residue))
             residues[residue] = new ResidueItem(residue, model);
