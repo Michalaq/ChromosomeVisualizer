@@ -1,9 +1,10 @@
 #include "pdbsimulationlayer.h"
 
 PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, int l, int t, bool b) :
-    SimulationLayer(name, s, f, l, t),
-    buffer(81, 0)
+    SimulationLayer(name, s, f, l, t)
 {
+    buffer.resize(128);
+
     if (cacheHeaders(b ? 0 : INT_MAX) == 0)
         makeModel();
 }
@@ -19,11 +20,11 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 {
     auto entry = time <= cacheHeaders(time) ? cache[time] : cache.last();
 
-    file.seek(entry.first);
+    file->seek(entry.first);
 
-    while (file.pos() < entry.second)
+    while (file->pos() < entry.second)
     {
-        file.readLine(buffer.data(), buffer.size());
+        file->readLine(buffer.data(), buffer.size());
 
         if (buffer.startsWith("ATOM  "))
         {
@@ -42,9 +43,9 @@ qint64 PDBSimulationLayer::skipHeader()
 {
     while (true)
     {
-        qint64 pos = file.pos();
+        qint64 pos = file->pos();
 
-        if (file.readLine(buffer.data(), buffer.size()) == -1)
+        if (!file->readLine(buffer.data(), buffer.size()))
         {
             atEnd = true;
             return pos;
@@ -63,7 +64,7 @@ int PDBSimulationLayer::cacheHeaders(int time)
     if (atEnd)
         return j - 1;
 
-    file.seek(pos);
+    file->seek(pos);
 
     while (i <= first)
     {
@@ -99,7 +100,7 @@ int PDBSimulationLayer::cacheHeaders(int time)
         }
     }
 
-    pos = file.pos();
+    pos = file->pos();
 
     return j - 1;
 }
@@ -119,11 +120,11 @@ void PDBSimulationLayer::makeModel()
 
     QPair<int, int> range(-1, -1);
 
-    file.seek(cache[0].first);
+    file->seek(cache[0].first);
 
-    while (file.pos() < cache[0].second)
+    while (file->pos() < cache[0].second)
     {
-        file.readLine(buffer.data(), buffer.size());
+        file->readLine(buffer.data(), buffer.size());
 
         if (buffer.startsWith("ATOM  "))
             atoms.append(buffer.mid(17, 3).trimmed());
@@ -200,7 +201,7 @@ void PDBSimulationLayer::readTitle()
 {
     static const QRegularExpression re(";([^=]*)=([^;]*)");
 
-    file.readLine(buffer.data(), buffer.size());
+    file->readLine(buffer.data(), buffer.size());
 
     if (buffer.startsWith("TITLE "))
     {

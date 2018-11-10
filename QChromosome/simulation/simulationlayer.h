@@ -3,7 +3,7 @@
 
 
 #include <QJsonObject>
-#include <QFile>
+#include "iodevice.h"
 
 class TreeItem;
 class Session;
@@ -29,7 +29,7 @@ protected:
     Session* session;
     int first, last, stride;
 
-    QFile file;
+    IODevice* file;
 
     TreeItem* model;
 };

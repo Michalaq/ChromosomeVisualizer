@@ -41,5 +41,4 @@ private:
     void readTitle();
 };
 
-
 #endif // PDBSIMULATIONLAYSER_H

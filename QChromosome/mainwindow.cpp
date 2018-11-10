@@ -381,7 +381,7 @@ void MainWindow::openProject()
 
 void MainWindow::addLayer()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Import...", "", "All QChromosome 4D Files (*.pdb);;RCSB Protein Data Bank (*.pdb)");
+    QString path = QFileDialog::getOpenFileName(0, "Import...", "", "All QChromosome 4D Files (*.pdb *.gz);;RCSB Protein Data Bank (*.pdb);;gzip archive (*.gz)");
 
     if (path.isEmpty())
         return;
@@ -398,7 +398,7 @@ void MainWindow::addLayer()
 
     SimulationLayer* layer = Q_NULLPTR;
 
-    if (info.suffix() == "pdb")
+    if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
         layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
     Q_ASSERT(layer);

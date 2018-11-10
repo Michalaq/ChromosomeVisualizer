@@ -6,16 +6,24 @@ SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, 
     session(s),
     first(f),
     last(l),
-    stride(t),
-    model(new LayerItem(QFileInfo(name).fileName(), this, s))
+    stride(t)
 {
-    file.setFileName(name);
-    file.open(QIODevice::ReadOnly);
+    QFileInfo info(name);
+
+    if (info.suffix() == "gz")
+        file = new GzFile;
+    else
+        file = new File;
+
+    file->setFileName(name);
+    file->open(QIODevice::ReadOnly);
+
+    model = new LayerItem(info.fileName(), this, session);
 }
 
 SimulationLayer::~SimulationLayer()
 {
-
+    delete file;
 }
 
 TreeItem* SimulationLayer::getModel() const
@@ -40,7 +48,7 @@ SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session
 
 void SimulationLayer::write(QJsonObject& json) const
 {
-    json["File name"] = file.fileName();
+    json["File name"] = file->fileName();
     json["First"] = first;
     json["Last"] = last;
     json["Stride"] = stride;

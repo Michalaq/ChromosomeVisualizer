@@ -68,7 +68,8 @@ SOURCES += \
     simulation/simulationlayer.cpp \
     simulation/pdbsimulationlayer.cpp \
     simulation/simulation.cpp \
-    opengl/vizwidget.cpp
+    opengl/vizwidget.cpp \
+    simulation/iodevice.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -132,7 +133,8 @@ HEADERS += \
     simulation/simulationlayer.h \
     simulation/pdbsimulationlayer.h \
     simulation/simulation.h \
-    opengl/vizwidget.h
+    opengl/vizwidget.h \
+    simulation/iodevice.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
@@ -175,6 +177,8 @@ DISTFILES += \
     opengl/sphere/fragment.glsl \
     opengl/sphere/geometry.glsl \
     opengl/sphere/vertex.glsl
+
+LIBS += -lz
 
 target.path = /usr/local/bin/
 INSTALLS += target
