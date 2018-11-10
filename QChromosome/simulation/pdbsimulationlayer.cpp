@@ -28,9 +28,9 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 
         if (buffer.startsWith("ATOM  "))
         {
-            int serial = buffer.mid(6, 5).trimmed().toUInt() - 1;
+            uint serial = buffer.mid(6, 5).trimmed().toUInt();
 
-            float* position = reinterpret_cast<float*>(data + stride * (model->atomOffset() + serial) + pointer);
+            float* position = reinterpret_cast<float*>(data + stride * (model->atomOffset() + offset[serial]) + pointer);
 
             position[0] = buffer.mid(30, 8).trimmed().toFloat();
             position[1] = buffer.mid(38, 8).trimmed().toFloat();
@@ -115,6 +115,7 @@ int PDBSimulationLayer::lastEntry() const
 
 void PDBSimulationLayer::makeModel()
 {
+    uint atomCount = 0;
     QVector<QByteArray> atoms;
     QVector<QPair<int, int>> chains;
 
@@ -127,12 +128,17 @@ void PDBSimulationLayer::makeModel()
         file->readLine(buffer.data(), buffer.size());
 
         if (buffer.startsWith("ATOM  "))
+        {
+            uint serial = buffer.mid(6, 5).trimmed().toUInt();
+            offset[serial] = atomCount++;
+
             atoms.append(buffer.mid(17, 3).trimmed());
+        }
 
         if (buffer.startsWith("CONECT"))
         {
-            int serial = buffer.mid(6, 5).trimmed().toUInt() - 1;
-            int bonded = buffer.mid(11, 5).trimmed().toUInt() - 1;
+            int serial = offset[buffer.mid(6, 5).trimmed().toUInt()];
+            int bonded = offset[buffer.mid(11, 5).trimmed().toUInt()];
 
             if (range.second == serial)
                 range.second = bonded;
