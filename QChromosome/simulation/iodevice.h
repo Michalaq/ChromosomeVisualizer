@@ -24,15 +24,36 @@ public:
 class File : public IODevice
 {
 public:
-    bool open(QIODevice::OpenMode mode) override;
+    inline bool open(QIODevice::OpenMode mode) override
+    {
+        return file.open(mode);
+    }
 
-    inline qint64 pos() const override;
-    inline bool seek(qint64 pos) override;
+    inline qint64 pos() const override
+    {
+        return file.pos();
+    }
 
-    inline bool readLine(char *data, qint64 maxSize) override;
+    inline bool seek(qint64 pos) override
+    {
+        return file.seek(pos);
+    }
 
-    void setFileName(const QString& name) override;
-    QString fileName() override;
+    inline bool readLine(char *data, qint64 maxSize) override
+    {
+        std::fill(data, data + maxSize, 0);
+        return file.readLine(data, maxSize) != -1;
+    }
+
+    inline void setFileName(const QString& name) override
+    {
+        file.setFileName(name);
+    }
+
+    inline QString fileName() override
+    {
+        return file.fileName();
+    }
 
 private:
     QFile file;
@@ -43,10 +64,21 @@ class GzFile : public IODevice
 public:
     bool open(QIODevice::OpenMode mode) override;
 
-    inline qint64 pos() const override;
-    inline bool seek(qint64 pos) override;
+    inline qint64 pos() const override
+    {
+        return gztell64(file);
+    }
 
-    inline bool readLine(char *data, qint64 maxSize) override;
+    inline bool seek(qint64 pos) override
+    {
+        return gzseek64(file, pos, SEEK_SET);
+    }
+
+    inline bool readLine(char *data, qint64 maxSize) override
+    {
+        std::fill(data, data + maxSize, 0);
+        return gzgets(file, data, maxSize) != NULL;
+    }
 
     void setFileName(const QString& name) override;
     QString fileName() override;
