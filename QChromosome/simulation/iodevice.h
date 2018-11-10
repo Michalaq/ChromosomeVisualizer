@@ -12,10 +12,10 @@ public:
 
     virtual bool open(QIODevice::OpenMode mode) = 0;
 
-    inline virtual qint64 pos() const = 0;
-    inline virtual bool seek(qint64 pos) = 0;
+    virtual qint64 pos() const = 0;
+    virtual bool seek(qint64 pos) = 0;
 
-    inline virtual bool readLine(char *data, qint64 maxSize) = 0;
+    virtual bool readLine(char *data, qint64 maxSize) = 0;
 
     virtual void setFileName(const QString& name) = 0;
     virtual QString fileName() = 0;

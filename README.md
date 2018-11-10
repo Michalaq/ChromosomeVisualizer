@@ -4,14 +4,13 @@ Chromosome Visualizer
 Requirements
 ------------
 
-Chromosome Visualizer is based on few components required for it to work correctly on Ubuntu 16.04:  
-1.  **Qt, version >= 5.9** -- the framework used to develop the application
-2.  **OpenGL, version >= 4.1** -- required for displaying the editor
-3.  **build-essential libgl1-mesa-dev** -- these are required for OpenGL support
-4.  **povray, version >= 3.7** -- required for picture capturing
-5.  **ffmpeg** -- required for movie rendering
-6.  **libprotobuf-dev protobuf-compiler** -- required for binary format support
-7.  **gcc, version >= 5.0** -- required for C++14 support
+QChromosome 4D Studio requires some libraries and headers installed to work correctly under Ubuntu 16.04:  
+1.  **build-essential libgl1-mesa-dev** -- dependencies required for Qt installation
+2.  **Qt, version >= 5.9** -- application framework
+3.  **OpenGL, version >= 4.1** -- required for displaying the editor
+4.  **povray, version >= 3.7.1** -- required for rendering pictures and movies
+5.  **ffmpeg** -- required for converting movies
+6.  **zlib** -- required for .gz support
 
 
 Installation

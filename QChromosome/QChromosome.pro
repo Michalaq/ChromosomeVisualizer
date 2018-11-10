@@ -1,10 +1,7 @@
-QT       += core gui opengl svg charts
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += opengl svg charts
 
 TARGET = qcstudio
 TEMPLATE = app
-
 
 SOURCES += \
     main.cpp \
@@ -155,7 +152,6 @@ FORMS += mainwindow.ui \
     jpegdialog.ui \
     targadialog.ui
 
-CONFIG += c++14
 CONFIG -= app_bundle
 
 RESOURCES += \
