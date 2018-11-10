@@ -41,6 +41,8 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 
 qint64 PDBSimulationLayer::skipHeader()
 {
+    static const QRegularExpression re(";([^=]*)=([^;]*)");
+
     while (true)
     {
         qint64 pos = file->pos();
@@ -55,6 +57,30 @@ qint64 PDBSimulationLayer::skipHeader()
         {
             atEnd = false;
             return pos;
+        }
+
+        if (buffer.startsWith("TITLE "))
+        {
+            auto i = re.globalMatch(buffer);
+
+            while (i.hasNext())
+            {
+                auto match = i.next();
+
+                auto name = match.capturedRef(1).trimmed().toString();
+                auto value = match.capturedRef(2).trimmed().toDouble();
+
+                if (!functions.contains(name))
+                {
+                    auto series = new QtCharts::QLineSeries;
+                    series->setName(name);
+
+                    session->chart->addSeries(series);
+                    functions.insert(name, series);
+                }
+
+                functions[name]->append(j, value);
+            }
         }
     }
 }
@@ -77,8 +103,6 @@ int PDBSimulationLayer::cacheHeaders(int time)
 
     while (j <= time)
     {
-        readTitle();
-
         range.second = skipHeader();
         i++;
 
@@ -200,36 +224,5 @@ void PDBSimulationLayer::makeModel()
     {
         session->chainBuffer[0][c_offset + j] = a_offset + chains[j].first;
         session->chainBuffer[1][c_offset + j] = chains[j].second - chains[j].first;
-    }
-}
-
-void PDBSimulationLayer::readTitle()
-{
-    static const QRegularExpression re(";([^=]*)=([^;]*)");
-
-    file->readLine(buffer.data(), buffer.size());
-
-    if (buffer.startsWith("TITLE "))
-    {
-        auto i = re.globalMatch(buffer);
-
-        while (i.hasNext())
-        {
-            auto match = i.next();
-
-            auto name = match.capturedRef(1).trimmed().toString();
-            auto value = match.capturedRef(2).trimmed().toDouble();
-
-            if (!functions.contains(name))
-            {
-                auto series = new QtCharts::QLineSeries;
-                series->setName(name);
-
-                session->chart->addSeries(series);
-                functions.insert(name, series);
-            }
-
-            functions[name]->append(j, value);
-        }
     }
 }

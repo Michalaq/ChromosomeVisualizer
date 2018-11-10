@@ -38,8 +38,6 @@ private:
     void makeModel();
 
     QMap<QString, QtCharts::QLineSeries*> functions;
-
-    void readTitle();
 };
 
 #endif // PDBSIMULATIONLAYSER_H
