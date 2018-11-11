@@ -66,6 +66,7 @@ Session::Session(MainWindow* w) :
 
 Session::~Session()
 {
+    qDeleteAll(chainIndicesBuffer);
     delete action;
     delete simulation;
     delete editorCamera;

@@ -24,7 +24,7 @@ public:
 private:
     QByteArray buffer;
 
-    QHash<uint, uint> offset;
+    uint* offset;
     QVector<QPair<qint64, qint64>> cache;
 
     qint64 pos = 0;

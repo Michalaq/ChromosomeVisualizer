@@ -368,8 +368,8 @@ void LayerItem::remove()
     session->atomBuffer.remove(a_offset, m_atomCount);
     session->indices.remove(a_offset, m_atomCount);
 
-    session->chainBuffer[0].remove(c_offset, m_chainCount);
-    session->chainBuffer[1].remove(c_offset, m_chainCount);
+    session->chainCountBuffer.remove(c_offset, m_chainCount);
+    session->chainIndicesBuffer.remove(c_offset, m_chainCount);
 
     session->setLastFrame(session->simulation->lastEntry());
     session->plot->updateSimulation();
@@ -600,10 +600,10 @@ void ChainItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
 {
     TreeItem::writePOVFrame(stream, data);
 
-    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id] - 1; i++)
+    for (int i = 0; i < session->chainCountBuffer[id] - 1; i++)
     {
-        const auto& first = session->atomBuffer[i];
-        const auto& second = session->atomBuffer[i + 1];
+        const auto& first = session->atomBuffer[session->chainIndicesBuffer[id][i]];
+        const auto& second = session->atomBuffer[session->chainIndicesBuffer[id][i+1]];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder(stream, data[i], data[i + 1], first.size / 2, second.size / 2, first.material, second.material);
@@ -614,10 +614,10 @@ void ChainItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 {
     TreeItem::writePOVFrames(stream, fbeg, fend);
 
-    for (int i = session->chainBuffer[0][id]; i < session->chainBuffer[0][id] + session->chainBuffer[1][id]; i++)
+    for (int i = 0; i < session->chainCountBuffer[id] - 1; i++)
     {
-        const auto& first = session->atomBuffer[i];
-        const auto& second = session->atomBuffer[i + 1];
+        const auto& first = session->atomBuffer[session->chainIndicesBuffer[id][i]];
+        const auto& second = session->atomBuffer[session->chainIndicesBuffer[id][i+1]];
 
         if ((first.flags & second.flags).testFlag(VisibleInRenderer))
             MovieMaker::addCylinder1(stream, i, i + 1, first.size / 2, second.size / 2, first.material, second.material);
@@ -627,7 +627,8 @@ void ChainItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
 void ChainItem::shift(int da, int dc)
 {
     id += dc;
-    session->chainBuffer[0][id] += da;
+    for (int i = 0; i < session->chainCountBuffer[id]; i++)
+        session->chainIndicesBuffer[id][i] += da;
     TreeItem::shift(da, dc);
 }
 

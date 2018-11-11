@@ -300,7 +300,7 @@ void VizWidget::paintGL()
         vaoSpheres_.bind();
         cylinderProgram_.bind();
 
-        glMultiDrawArrays(GL_LINE_STRIP, session->chainBuffer[0].data(), session->chainBuffer[1].data(), session->chainBuffer[0].count());
+        glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, reinterpret_cast<const GLvoid * const *>(session->chainIndicesBuffer.data()), session->chainCountBuffer.count());
 
         cylinderProgram_.release();
         sphereProgram_.bind();
