@@ -213,7 +213,7 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
+    explicit AtomItem(uint serial, const QByteArray& name, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
     void setLabel(const QString& l, const QRect& r);
@@ -248,24 +248,14 @@ private:
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(int id, int offset, Session *s, TreeItem *parentItem = 0);
+    explicit ChainItem(const QByteArray& chainID, TreeItem *parentItem = 0);
     ~ChainItem();
-
-    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
-
-protected:
-    void shift(int da, int dc);
-
-private:
-    int id;
-    Session *session;
 };
 
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(const QString& resName, TreeItem *parentItem = 0);
+    explicit ResidueItem(const QByteArray& resName, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

@@ -1,10 +1,13 @@
 #include "pdbsimulationlayer.h"
 
+static const uint SERIAL_MAX = 100000;
+
 PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, int l, int t, bool b) :
     SimulationLayer(name, s, f, l, t),
-    buffer(128, 0),
-    offset(new uint[100000])
+    offset(new uint[SERIAL_MAX])
 {
+    buffer.resize(128);
+
     if (cacheHeaders(b ? 0 : INT_MAX) == 0)
         makeModel();
 }
@@ -31,7 +34,7 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
         {
             uint serial = buffer.mid(6, 5).trimmed().toUInt();
 
-            float* position = reinterpret_cast<float*>(data + stride * (model->atomOffset() + offset[serial]) + pointer);
+            float* position = reinterpret_cast<float*>(data + stride * offset[serial] + pointer);
 
             position[0] = buffer.mid(30, 8).trimmed().toFloat();
             position[1] = buffer.mid(38, 8).trimmed().toFloat();
@@ -161,10 +164,11 @@ void traverse(uint v)
 void PDBSimulationLayer::makeModel()
 {
     bool ok;
-    uint v = 0, e = 0;
-    QVector<QByteArray> atoms;
-    connections = new QVector<QPair<uint, uint>>[100000];
-    const int a_offset = session->atomBuffer.size();
+    uint v = session->atomBuffer.size(), e = 0;
+    session->atomBuffer.reserve(v + SERIAL_MAX);
+
+    connections = new QVector<QPair<uint, uint>>[SERIAL_MAX];
+    QMap<QByteArray, QPair<ChainItem*, QMap<QByteArray, ResidueItem*>>> structure;
 
     file->seek(cache[0].first);
 
@@ -177,9 +181,22 @@ void PDBSimulationLayer::makeModel()
             uint serial = buffer.mid(6, 5).trimmed().toUInt(&ok);
             if (!ok) continue;
 
-            QByteArray resName = buffer.mid(17, 3).trimmed();
+            auto name = buffer.mid(12, 4).trimmed();
 
-            atoms.append(resName);
+            auto resName = buffer.mid(17, 3).trimmed();
+
+            auto chainID = buffer.mid(21, 1).trimmed();
+
+            if (!structure.contains(chainID))
+                structure.insert(chainID, {new ChainItem(chainID, model), {}});
+
+            auto& chain = structure[chainID];
+
+            if (!chain.second.contains(resName))
+                chain.second.insert(resName, new ResidueItem(resName, chain.first));
+
+            new AtomItem(serial, name, session, chain.second[resName]);
+
             offset[serial] = v++;
         }
 
@@ -206,7 +223,7 @@ void PDBSimulationLayer::makeModel()
 
     QVector<uint> odd;
 
-    for (uint i = 0; i < 100000; i++)
+    for (uint i = 0; i < SERIAL_MAX; i++)
         if (connections[i].count() & 1)
             odd.append(i);
 
@@ -219,7 +236,7 @@ void PDBSimulationLayer::makeModel()
 
     visited.fill(false, e);
 
-    for (uint i = 0; i < 100000; i++)
+    for (uint i = 0; i < SERIAL_MAX; i++)
         if (!connections[i].isEmpty())
         {
             traverse(i);
@@ -230,11 +247,11 @@ void PDBSimulationLayer::makeModel()
             for (auto i = circuit.rbegin(); i != circuit.rend(); i++)
             {
                 if (i->first < f)
-                    chain.append(a_offset + offset[i->second]);
+                    chain.append(offset[i->second]);
                 else
                 {
                     chains.append(chain);
-                    chain = {a_offset + offset[i->second]};
+                    chain = {offset[i->second]};
                 }
             }
 
@@ -261,23 +278,4 @@ void PDBSimulationLayer::makeModel()
 
     delete[] connections;
     visited.clear();
-
-    QBitArray used(atoms.size(), false);
-
-    session->atomBuffer.resize(a_offset + atoms.size());
-
-    QMap<QByteArray, ResidueItem*> residues;
-
-    for (int j = 0; j < atoms.size(); j++)
-    {
-        if (used.testBit(j))
-            continue;
-
-        auto& residue = atoms[j];
-
-        if (!residues.contains(residue))
-            residues[residue] = new ResidueItem(residue, model);
-
-        new AtomItem(j, a_offset, session, residues[residue]);
-    }
 }
