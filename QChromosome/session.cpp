@@ -243,3 +243,19 @@ void Session::setLastFrame(int time)
     if (expandPreviewTime)
         setPreviewMaxTime(lastFrame);
 }
+
+void Session::setOrigin(int offset, bool selected)
+{
+    origin = {};
+    int count = 0;
+
+    for (const auto& atom : atomBuffer.mid(offset))
+        if (!selected || atom.flags.testFlag(Selected))
+        {
+            origin += atom.position;
+            count++;
+        }
+
+    if (count > 0)
+        origin /= count;
+}

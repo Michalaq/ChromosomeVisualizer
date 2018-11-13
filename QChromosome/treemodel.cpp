@@ -298,20 +298,6 @@ void TreeModel::setCurrentCamera(QModelIndex index)
         emit cameraChanged(nullptr);
 }
 
-void TreeModel::propagateMaterial(const QModelIndex &root, const Material* m)
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
-
-    for (int r = 0; r < rowCount(root); r++)
-    {
-        auto c = index(r, 0, root);
-
-        if (c.sibling(c.row(), 5).data().toList().isEmpty())
-            propagateMaterial(c, m);
-    }
-}
-
 void TreeModel::setMaterial(const QModelIndex &root, Material *m, int position)
 {
     auto index = root.sibling(root.row(), 5);
@@ -322,7 +308,7 @@ void TreeModel::setMaterial(const QModelIndex &root, Material *m, int position)
     setData(index, list);
 
     if (position >= list.length() - 1)
-        propagateMaterial(root.sibling(root.row(), 0), m);
+        reinterpret_cast<TreeItem*>(root.internalPointer())->setMaterial(m);
 
     m->assign(index);
 
@@ -356,7 +342,7 @@ Material *TreeModel::removeMaterial(const QModelIndex &root, int position)
             index = index.parent();
         }
 
-        propagateMaterial(root.sibling(root.row(), 0), m);
+        reinterpret_cast<TreeItem*>(root.internalPointer())->setMaterial(m);
     }
 
     m->assign(index, false);
@@ -470,20 +456,6 @@ void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, Visi
     emit attributeChanged();
 }
 
-void TreeModel::pickSelected(const QModelIndex &root, QVector<VizBallInstance> &buffer) const
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-    {
-        auto atom = reinterpret_cast<AtomItem*>(root.internalPointer());
-
-        if (atom->isSelected())
-            buffer.append(atom->getInstance());
-    }
-
-    for (int r = 0; r < rowCount(root); r++)
-        pickSelected(index(r, 0, root), buffer);
-}
-
 void TreeModel::propagateSelected(const QModelIndex &root, bool s)
 {
     if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
@@ -493,15 +465,6 @@ void TreeModel::propagateSelected(const QModelIndex &root, bool s)
         propagateSelected(index(r, 0, root), s);
 }
 
-QVector<VizBallInstance> TreeModel::getSelected() const
-{
-    QVector<VizBallInstance> ans;
-
-    pickSelected(QModelIndex(), ans);
-
-    return ans;
-}
-
 void TreeModel::setSelected(const QModelIndexList &indices, bool s)
 {
     for (const auto& i : indices)
@@ -509,33 +472,6 @@ void TreeModel::setSelected(const QModelIndexList &indices, bool s)
             propagateSelected(i, s);
 
     emit propertyChanged();
-}
-
-void TreeModel::propagateOrigin(const QModelIndex &root, QVector3D &s, int& c, bool selected) const
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-    {
-        auto atom = reinterpret_cast<AtomItem*>(root.internalPointer());
-
-        if (atom->isSelected() || !selected)
-        {
-            s += atom->getPosition();
-            c += 1;
-        }
-    }
-
-    for (int r = 0; r < rowCount(root); r++)
-        propagateOrigin(index(r, 0, root), s, c, selected);
-}
-
-QVector3D TreeModel::getOrigin(bool selected) const
-{
-    QVector3D s;
-    int c = 0;
-
-    propagateOrigin(QModelIndex(), s, c, selected);
-
-    return c ? s / c : s;
 }
 
 void TreeModel::setName(const QModelIndex &index, const QString &name)

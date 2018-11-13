@@ -90,10 +90,7 @@ public:
     void setVisibility(const QModelIndex& index, Visibility v, VisibilityMode m);
     void setVisibility(const QModelIndexList& indices, Visibility v, VisibilityMode m);
 
-    QVector<VizBallInstance> getSelected() const;
     void setSelected(const QModelIndexList& indices, bool s);
-
-    QVector3D getOrigin(bool selected = true) const;
 
     void setName(const QModelIndex& index, const QString& name);
     void setName(const QModelIndexList& indices, const QString& name);
@@ -116,16 +113,12 @@ private:
 
     QString next_name() const;
 
-    void propagateMaterial(const QModelIndex &root, const Material* m);
     void updateMaterial(const QModelIndex &root, const Material* m);
 
     void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
     void updateVisibility(const QModelIndex &root, QPair<bool, bool> v);
 
-    void pickSelected(const QModelIndex &root, QVector<VizBallInstance> &buffer) const;
     void propagateSelected(const QModelIndex &root, bool s);
-
-    void propagateOrigin(const QModelIndex &root, QVector3D &s, int& c, bool selected) const;
 
     void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
     void dumpModel2(const QModelIndex& root, Material* m);

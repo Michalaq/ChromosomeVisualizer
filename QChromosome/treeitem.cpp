@@ -175,6 +175,13 @@ QVector3D TreeItem::getPosition() const
     return QVector3D(0, 0, 0);
 }
 
+void TreeItem::setMaterial(const Material* material)
+{
+    for (const auto c : m_childItems)
+        if (c->data(5).toList().isEmpty())
+            c->setMaterial(material);
+}
+
 void TreeItem::setFlag(VizFlag, bool)
 {
     ;
@@ -506,21 +513,13 @@ void AtomItem::setSphereRadius(float r)
 void AtomItem::setMaterial(const Material *material)
 {
     session->atomBuffer[id].material = material->getIndex();
+
+    TreeItem::setMaterial(material);
 }
 
 void AtomItem::setFlag(VizFlag flag, bool on)
 {
     session->atomBuffer[id].flags.setFlag(flag, on);
-}
-
-bool AtomItem::isSelected() const
-{
-    return session->atomBuffer[id].flags.testFlag(Selected);
-}
-
-const VizBallInstance& AtomItem::getInstance() const
-{
-    return session->atomBuffer[id];
 }
 
 void AtomItem::read(const QJsonObject &json)

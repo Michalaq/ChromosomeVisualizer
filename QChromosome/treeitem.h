@@ -55,6 +55,8 @@ enum VizFlag
 Q_DECLARE_FLAGS(VizFlags, VizFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(VizFlags)
 
+#include "material.h"
+
 class TreeItem
 {
 public:
@@ -79,6 +81,7 @@ public:
 
     virtual QVector3D getPosition() const;
 
+    virtual void setMaterial(const Material* material);
     virtual void setFlag(VizFlag flag, bool on = true);
 
     virtual void read(const QJsonObject& json);
@@ -208,8 +211,6 @@ struct VizBallInstance
     int material = 0;
 };
 
-#include "material.h"
-
 class AtomItem : public TreeItem
 {
 public:
@@ -224,9 +225,6 @@ public:
 
     void setMaterial(const Material* material);
     void setFlag(VizFlag flag, bool on = true);
-
-    bool isSelected() const;
-    const VizBallInstance& getInstance() const;
 
     QVector3D getPosition() const;
 

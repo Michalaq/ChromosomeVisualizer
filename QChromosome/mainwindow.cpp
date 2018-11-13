@@ -100,11 +100,11 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        session->currentCamera->callibrate(session->simulation->getModel()->getSelected());
+        session->currentCamera->callibrate(0, true);
     });
 
     connect(ui->actionPivot, &QAction::triggered, [this] {
-        session->origin = session->simulation->getModel()->getOrigin();
+        session->setOrigin(0, true);
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -408,8 +408,8 @@ void MainWindow::addLayer()
 
     session->setDocumentTime(0);
 
-    session->currentCamera->callibrate(session->atomBuffer.mid(offset));
-    session->origin = session->simulation->getModel()->getOrigin(false);
+    session->currentCamera->callibrate(offset, false);
+    session->setOrigin(offset, false);
 
     session->plot->updateSimulation();
 }

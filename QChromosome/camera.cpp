@@ -853,9 +853,9 @@ const QModelIndex& Camera::getUp() const
     return up;
 }
 
-void Camera::callibrate(const QVector<VizBallInstance> &atoms, qreal scale)
+void Camera::callibrate(int offset, bool selected, qreal scale)
 {
-    if (atoms.isEmpty())
+    if (selected && !session->treeView->selectionModel()->hasSelection())
         return;
 
     setRotation(-135, -35.2644, 0);
@@ -868,8 +868,11 @@ void Camera::callibrate(const QVector<VizBallInstance> &atoms, qreal scale)
 
     qreal dxr = -qInf(), dxl = -qInf(), dyr = -qInf(), dyl = -qInf(), tmp;
 
-    for (const auto& atom : atoms)
+    for (const auto& atom : session->atomBuffer.mid(offset))
     {
+        if (selected && !atom.flags.testFlag(Selected))
+            continue;
+
         auto p = modelView.map(QVector4D(atom.position, 1)).toVector3DAffine();
 
         tmp = p.x() / (+tha) + p.z() + atom.size / sha;

@@ -79,7 +79,7 @@ public:
     void setUp(const QModelIndex& index);
     const QModelIndex& getUp() const;
 
-    void callibrate(const QVector<VizBallInstance> &atoms, qreal scale = .75);
+    void callibrate(int offset, bool selected, qreal scale = .75);
 
     enum Mode {
         CM_Mono,

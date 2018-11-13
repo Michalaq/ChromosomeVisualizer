@@ -95,6 +95,8 @@ public:
 
     PlayMode playMode;
 
+    void setOrigin(int offset, bool selected);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;
