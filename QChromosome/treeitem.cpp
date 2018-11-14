@@ -280,18 +280,6 @@ void TreeItem::write(QJsonObject &json) const
         json["Descendants"] = children;
 }
 
-void TreeItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
-{
-    for (const auto c : m_childItems)
-        c->writePOVFrame(stream, data);
-}
-
-void TreeItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
-{
-    for (const auto c : m_childItems)
-        c->writePOVFrames(stream, fbeg, fend);
-}
-
 void TreeItem::setCylinderRadius(float r)
 {
     cylinderRadius = r;
@@ -549,28 +537,6 @@ void AtomItem::write(QJsonObject &json) const
 
     if (object.size() > 1)
         json["Object"] = object;
-}
-
-#include "moviemaker.h"
-
-void AtomItem::writePOVFrame(QTextStream &stream, QVector3D* data) const
-{
-    const auto& atom = session->atomBuffer[id];
-
-    if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::addSphere(stream, data[id], atom.size, atom.material);
-
-    TreeItem::writePOVFrame(stream, data);
-}
-
-void AtomItem::writePOVFrames(QTextStream &stream, int fbeg, int fend) const
-{
-    const auto& atom = session->atomBuffer[id];
-
-    if (atom.flags.testFlag(VisibleInRenderer))
-        MovieMaker::addSphere1(stream, id, atom.size, atom.material);
-
-    TreeItem::writePOVFrames(stream, fbeg, fend);
 }
 
 void AtomItem::shift(int da, int dc)

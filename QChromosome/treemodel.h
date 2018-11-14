@@ -98,9 +98,6 @@ public:
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
 
-    void writePOVFrame(QTextStream &stream, QVector3D* data);
-    void writePOVFrames(QTextStream &stream, int fbeg, int fend);
-
     void prepend(TreeItem* item);
 
     int atomCount() const;

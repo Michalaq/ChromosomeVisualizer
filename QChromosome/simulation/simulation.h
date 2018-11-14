@@ -29,6 +29,7 @@ public:
 
 private:
     TreeModel* model;
+    Session* session;
 };
 
 #endif // SIMULATION_H

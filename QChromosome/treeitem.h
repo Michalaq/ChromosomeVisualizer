@@ -87,9 +87,6 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    virtual void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    virtual void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
-
     inline int atomOffset() const
     {
         return a_offset;
@@ -230,9 +227,6 @@ public:
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
-
-    void writePOVFrame(QTextStream &stream, QVector3D* data) const;
-    void writePOVFrames(QTextStream &stream, int fbeg, int fend) const;
 
 protected:
     void shift(int da, int dc);

@@ -517,16 +517,6 @@ void TreeModel::write(QJsonObject &json) const
     header->write(json);
 }
 
-void TreeModel::writePOVFrame(QTextStream &stream, QVector3D* data)
-{
-    header->writePOVFrame(stream, data);
-}
-
-void TreeModel::writePOVFrames(QTextStream &stream, int fbeg, int fend)
-{
-    header->writePOVFrames(stream, fbeg, fend);
-}
-
 void TreeModel::prepend(TreeItem* item)
 {
     beginInsertRows(QModelIndex(), 0, 0);
