@@ -21,6 +21,9 @@ public:
 
     int lastEntry() const override;
 
+    QPair<int, int> remove() override;
+    void shift(QPair<int, int> offset) override;
+
 private:
     QByteArray buffer;
 
@@ -38,6 +41,9 @@ private:
     void makeModel();
 
     QMap<QString, QtCharts::QLineSeries*> functions;
+
+    QPair<uint, uint> a_range;
+    QPair<uint, uint> c_range;
 };
 
 #endif // PDBSIMULATIONLAYSER_H

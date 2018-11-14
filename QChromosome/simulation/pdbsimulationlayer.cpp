@@ -15,7 +15,6 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
 PDBSimulationLayer::~PDBSimulationLayer()
 {
     delete[] offset;
-    qDeleteAll(functions);
 }
 
 #include "session.h"
@@ -164,7 +163,7 @@ void traverse(uint v)
 void PDBSimulationLayer::makeModel()
 {
     bool ok;
-    uint v = session->atomBuffer.size(), e = 0;
+    uint v = a_range.first = session->atomBuffer.size(), e = 0;
 
     connections = new QVector<QPair<uint, uint>>[SERIAL_MAX];
     QMap<QByteArray, QPair<ChainItem*, QMap<QByteArray, ResidueItem*>>> structure;
@@ -216,7 +215,7 @@ void PDBSimulationLayer::makeModel()
         }
     }
 
-    session->atomBuffer.resize(v);
+    session->atomBuffer.resize(a_range.second = v);
 
     uint f = e;
 
@@ -228,12 +227,14 @@ void PDBSimulationLayer::makeModel()
 
     for (int i = 0; i < odd.count(); i += 2)
     {
-        connections[odd[i]].append({e, odd[i + 1]});
-        connections[odd[i + 1]].append({e, odd[i]});
-        e++;
+        connections[odd[i]].append({f, odd[i + 1]});
+        connections[odd[i + 1]].append({f, odd[i]});
+        f++;
     }
 
-    visited.fill(false, e);
+    c_range.first = session->chainIndicesBuffer.size();
+
+    visited.fill(false, f);
 
     for (uint i = 0; i < SERIAL_MAX; i++)
         if (!connections[i].isEmpty())
@@ -245,7 +246,7 @@ void PDBSimulationLayer::makeModel()
 
             for (auto i = circuit.rbegin(); i != circuit.rend(); i++)
             {
-                if (i->first < f)
+                if (i->first < e)
                     chain.append(offset[i->second]);
                 else
                 {
@@ -275,6 +276,42 @@ void PDBSimulationLayer::makeModel()
             circuit.clear();
         }
 
+    c_range.second = session->chainIndicesBuffer.size();
+
     delete[] connections;
     visited.clear();
+}
+
+QPair<int, int> PDBSimulationLayer::remove()
+{
+    session->simulation->removeOne(this);
+
+    session->atomBuffer.remove(a_range.first, a_range.second - a_range.first);
+    session->indices.remove(a_range.first, a_range.second - a_range.first);
+
+    session->chainCountBuffer.remove(c_range.first, c_range.second - c_range.first);
+    session->chainIndicesBuffer.remove(c_range.first, c_range.second - c_range.first);
+
+    session->setLastFrame(session->simulation->lastEntry());
+
+    qDeleteAll(functions);
+    session->plot->updateSimulation();
+
+    return {a_range.second - a_range.first, c_range.second - c_range.first};
+}
+
+void PDBSimulationLayer::shift(QPair<int, int> offset)
+{
+    a_range.first -= offset.first;
+    a_range.second -= offset.first;
+
+    for (int i = 0; i < SERIAL_MAX; i++)
+        this->offset[i] -= offset.first;
+
+    c_range.first -= offset.second;
+    c_range.second -= offset.second;
+
+    for (int i = c_range.first; i < c_range.second; i++)
+        for (int j = 0; j < session->chainCountBuffer[i]; j++)
+            session->chainIndicesBuffer[i][j] -= offset.first;
 }

@@ -523,11 +523,6 @@ void TreeModel::prepend(TreeItem* item)
     header->prependChild(item);
     endInsertRows();
 
-    session->indices.resize(session->indices.size() + item->atomCount());
+    session->indices.resize(session->atomBuffer.size());
     dumpModel1(index(0, 0), session->indices);
-}
-
-int TreeModel::atomCount() const
-{
-    return header->atomCount();
 }

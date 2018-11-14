@@ -100,8 +100,6 @@ public:
 
     void prepend(TreeItem* item);
 
-    int atomCount() const;
-
 private:
     TreeItem *header;
     QPersistentModelIndex currentCamera;

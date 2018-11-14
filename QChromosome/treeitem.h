@@ -87,16 +87,6 @@ public:
     virtual void read(const QJsonObject& json);
     virtual void write(QJsonObject& json) const;
 
-    inline int atomOffset() const
-    {
-        return a_offset;
-    }
-
-    inline int atomCount() const
-    {
-        return m_atomCount;
-    }
-
     virtual void setCylinderRadius(float r);
     float getCylinderRadius() const;
 
@@ -104,16 +94,11 @@ public:
     float getSphereRadius() const;
 
 protected:
-    explicit TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parentItem);
-
     float cylinderRadius;
     float sphereRadius;
 
-    int a_offset, m_atomCount;
-    int c_offset, m_chainCount;
-
-    virtual void remove();
-    virtual void shift(int da, int dc);
+    virtual QPair<int, int> remove();
+    virtual void shift(QPair<int, int> offset);
 
 private:
     QList<TreeItem*> m_childItems;
@@ -151,7 +136,8 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    void remove();
+    QPair<int, int> remove();
+    void shift(QPair<int, int> offset);
 
 private:
     SimulationLayer* layer;
@@ -186,7 +172,7 @@ public:
     Camera* getCamera() const;
 
 protected:
-    void remove();
+    QPair<int, int> remove();
 
 private:
     Camera* camera;
@@ -229,7 +215,7 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    void shift(int da, int dc);
+    void shift(QPair<int, int> offset);
 
 private:
     int id;

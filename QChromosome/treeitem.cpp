@@ -40,24 +40,14 @@
 
 #include "treeitem.h"
 
-TreeItem::TreeItem(const QVariantList &data, int acount, int ccount, TreeItem *parent) :
+TreeItem::TreeItem(const QVariantList &data, TreeItem *parent) :
     cylinderRadius(0.5),
     sphereRadius(1.0),
-    a_offset(0),
-    m_atomCount(acount),
-    c_offset(0),
-    m_chainCount(ccount),
     m_itemData(data),
     m_parentItem(parent)
 {
     if (parent)
         parent->appendChild(this);
-}
-
-TreeItem::TreeItem(const QVariantList &data, TreeItem *parent) :
-    TreeItem(data, 0, 0, parent)
-{
-
 }
 
 TreeItem::~TreeItem()
@@ -67,38 +57,14 @@ TreeItem::~TreeItem()
 
 void TreeItem::appendChild(TreeItem *item)
 {
-    item->a_offset = m_atomCount;
-    item->c_offset = m_chainCount;
-
     item->m_parentItem = this;
     m_childItems.append(item);
-
-    auto root = this;
-
-    while (root)
-    {
-        root->m_atomCount += item->m_atomCount;
-        root->m_chainCount += item->m_chainCount;
-        root = root->m_parentItem;
-    }
 }
 
 void TreeItem::prependChild(TreeItem *item)
 {
-    item->a_offset = m_atomCount;
-    item->c_offset = m_chainCount;
-
     item->m_parentItem = this;
     m_childItems.prepend(item);
-
-    auto root = this;
-
-    while (root)
-    {
-        root->m_atomCount += item->m_atomCount;
-        root->m_chainCount += item->m_chainCount;
-        root = root->m_parentItem;
-    }
 }
 
 TreeItem *TreeItem::child(int row)
@@ -145,29 +111,24 @@ int TreeItem::row() const
     return 0;
 }
 
+QPair<int, int> operator+(const QPair<int, int>& lhs, const QPair<int, int>& rhs)
+{
+    return {lhs.first + rhs.first, lhs.second + rhs.second};
+}
+
 void TreeItem::removeRows(int row, int count)
 {
-    int da = 0, dc = 0;
+    QPair<int, int> offset;
 
     for (int i = 0; i < count; i++)
     {
         auto item = m_childItems.takeAt(row);
-        da -= item->m_atomCount;
-        dc -= item->m_chainCount;
-        item->remove();
-    }
-
-    auto root = this;
-
-    while (root)
-    {
-        root->m_atomCount += da;
-        root->m_chainCount += dc;
-        root = root->m_parentItem;
+        offset = offset + item->remove();
+        delete item;
     }
 
     for (int i = 0; i < row; i++)
-        m_childItems[i]->shift(da, dc);
+        m_childItems[i]->shift(offset);
 }
 
 QVector3D TreeItem::getPosition() const
@@ -184,7 +145,7 @@ void TreeItem::setMaterial(const Material* material)
 
 void TreeItem::setFlag(VizFlag, bool)
 {
-    ;
+
 }
 
 #include <QJsonObject>
@@ -306,18 +267,15 @@ float TreeItem::getSphereRadius() const
     return sphereRadius;
 }
 
-void TreeItem::remove()
+QPair<int, int> TreeItem::remove()
 {
-    delete this;
+    return {};
 }
 
-void TreeItem::shift(int da, int dc)
+void TreeItem::shift(QPair<int, int> offset)
 {
-    a_offset += da;
-    c_offset += dc;
-
     for (auto c : m_childItems)
-        c->shift(da, dc);
+        c->shift(offset);
 }
 
 #include "session.h"
@@ -354,22 +312,19 @@ void LayerItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
-void LayerItem::remove()
+QPair<int, int> LayerItem::remove()
 {
+    auto offset = layer->remove();
     delete layer;
 
-    session->simulation->removeOne(layer);
+    return TreeItem::remove() + offset;
+}
 
-    session->atomBuffer.remove(a_offset, m_atomCount);
-    session->indices.remove(a_offset, m_atomCount);
+void LayerItem::shift(QPair<int, int> offset)
+{
+    layer->shift(offset);
 
-    session->chainCountBuffer.remove(c_offset, m_chainCount);
-    session->chainIndicesBuffer.remove(c_offset, m_chainCount);
-
-    session->setLastFrame(session->simulation->lastEntry());
-    session->plot->updateSimulation();
-
-    TreeItem::remove();
+    TreeItem::shift(offset);
 }
 
 #include "camera.h"
@@ -433,7 +388,7 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-void CameraItem::remove()
+QPair<int, int> CameraItem::remove()
 {
     session->userCameras.last()->id = camera->id;
     session->userCameras[camera->id - 1] = session->userCameras.last();
@@ -447,11 +402,11 @@ void CameraItem::remove()
 
     camera->deleteLater();
 
-    TreeItem::remove();
+    return TreeItem::remove();
 }
 
 AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, TreeItem *parentItem) :
-    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, offset, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
+    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, offset, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
     id(offset),
     session(s)
 {
@@ -539,10 +494,11 @@ void AtomItem::write(QJsonObject &json) const
         json["Object"] = object;
 }
 
-void AtomItem::shift(int da, int dc)
+void AtomItem::shift(QPair<int, int> offset)
 {
-    setData(2, id += da);
-    TreeItem::shift(da, dc);
+    setData(2, id -= offset.first);
+
+    TreeItem::shift(offset);
 }
 
 ChainItem::ChainItem(const QByteArray &chainID, TreeItem *parentItem) :
