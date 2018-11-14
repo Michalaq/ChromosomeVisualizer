@@ -348,33 +348,6 @@ Material *TreeModel::removeMaterial(const QModelIndex &root, int position)
     return m;
 }
 
-void TreeModel::updateMaterial(const QModelIndex &root, const Material* m)
-{
-    auto list = root.sibling(root.row(), 5).data().toList();
-
-    if (!list.isEmpty())
-    {
-        auto model = qobject_cast<MaterialListModel*>(session->listView->model());
-
-        QVariantList u;
-
-        for (auto i : list)
-            u.append(QVariant::fromValue(model->getMaterialById(i.toString())));
-
-        setData(root.sibling(root.row(), 5), u);
-
-        auto n = u.last().value<Material*>();
-        n->assign(root);
-        m = n;
-    }
-
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
-
-    for (int r = 0; r < rowCount(root); r++)
-        updateMaterial(index(r, 0, root), m);
-}
-
 void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v)
 {
     reinterpret_cast<TreeItem*>(root.internalPointer())->setFlag(m == Editor ? VisibleInEditor : VisibleInRenderer, v);
@@ -386,34 +359,6 @@ void TreeModel::propagateVisibility(const QModelIndex &root, VisibilityMode m, b
         if (c.sibling(c.row(), m).data().toInt() == Default)
             propagateVisibility(c, m, v);
     }
-}
-
-void TreeModel::updateVisibility(const QModelIndex &root, QPair<bool, bool> v)
-{
-    if (root.isValid())
-    {
-        Visibility w;
-
-        w = (Visibility)root.sibling(root.row(), Editor).data().toInt();
-
-        if (w != Default)
-            v.first = w == On;
-
-        w = (Visibility)root.sibling(root.row(), Renderer).data().toInt();
-
-        if (w != Default)
-            v.second = w == On;
-
-        if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        {
-            AtomItem* a = reinterpret_cast<AtomItem*>(root.internalPointer());
-            a->setFlag(VisibleInEditor, v.first);
-            a->setFlag(VisibleInRenderer, v.second);
-        }
-    }
-
-    for (int r = 0; r < rowCount(root); r++)
-        updateVisibility(index(r, 0, root), v);
 }
 
 void TreeModel::setVisibility(const QModelIndex &index, Visibility v, VisibilityMode m)
@@ -484,10 +429,7 @@ void TreeModel::read(const QJsonObject &json)
             addCamera(new Camera(session));
     }
 
-    header->read(json);
-
-    updateMaterial(QModelIndex(), Material::getDefault());
-    updateVisibility(QModelIndex(), {true, true});
+    header->read(json, reinterpret_cast<MaterialListModel*>(session->listView->model()));
 }
 
 void TreeModel::write(QJsonObject &json) const

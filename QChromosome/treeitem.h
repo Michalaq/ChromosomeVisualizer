@@ -2,7 +2,6 @@
 #define TREEITEM_H
 
 #include <QVariant>
-#include <QTextStream>
 
 enum VizFlag
 {
@@ -16,6 +15,7 @@ Q_DECLARE_FLAGS(VizFlags, VizFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(VizFlags)
 
 #include "material.h"
+#include "materialbrowser.h"
 
 class TreeItem
 {
@@ -45,7 +45,7 @@ public:
     virtual void setMaterial(const Material* material);
     virtual void setFlag(VizFlag flag, bool on = true);
 
-    virtual void read(const QJsonObject& json);
+    virtual void read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat = Material::getDefault(), bool ve = true, bool vr = true);
     virtual void write(QJsonObject& json) const;
 
     virtual void setCylinderRadius(float r);
@@ -127,7 +127,7 @@ public:
 
     void setFlag(VizFlag flag, bool on = true);
 
-    void read(const QJsonObject& json);
+    void read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat = Material::getDefault(), bool ve = true, bool vr = true);
     void write(QJsonObject& json) const;
 
     Camera* getCamera() const;
@@ -172,7 +172,7 @@ public:
 
     QVector3D getPosition() const;
 
-    void read(const QJsonObject& json);
+    void read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat = Material::getDefault(), bool ve = true, bool vr = true);
     void write(QJsonObject& json) const;
 
 protected:

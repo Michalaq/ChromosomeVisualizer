@@ -66,10 +66,7 @@ private:
 
     QString next_name() const;
 
-    void updateMaterial(const QModelIndex &root, const Material* m);
-
     void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
-    void updateVisibility(const QModelIndex &root, QPair<bool, bool> v);
 
     void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
     void dumpModel2(const QModelIndex& root, Material* m);

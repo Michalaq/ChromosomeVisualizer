@@ -125,28 +125,27 @@ void TreeItem::setFlag(VizFlag flag, bool on)
 
 #include <QJsonObject>
 #include <QJsonArray>
-#include "materialbrowser.h"
 
-void TreeItem::read(const QJsonObject &json)
+void TreeItem::read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat, bool ve, bool vr)
 {
     const QJsonObject object = json["Object"].toObject();
 
     auto vie = object.find("Visible in editor");
 
     if (vie != object.end())
-        m_itemData[3] = vie.value().toBool() ? On : Off;
+        m_itemData[3] = ve = vie.value().toBool() ? On : Off;
 
     auto vir = object.find("Visible in renderer");
 
     if (vir != object.end())
-        m_itemData[4] = vir.value().toBool() ? On : Off;
+        m_itemData[4] = vr = vir.value().toBool() ? On : Off;
 
     auto cr = object.find("Cylinder radius");
 
     if (cr != object.end())
         setCylinderRadius(cr.value().toDouble());
 
-    auto sr = object.find("Cylinder radius");
+    auto sr = object.find("Sphere radius");
 
     if (sr != object.end())
         setSphereRadius(sr.value().toDouble());
@@ -154,12 +153,19 @@ void TreeItem::read(const QJsonObject &json)
     auto t = object.find("Tags");
 
     if (t != object.end())
-        m_itemData[5] = t.value().toArray().toVariantList();
+    {
+        QVariantList tags;
+
+        for (auto i : t.value().toArray())
+            tags.append(QVariant::fromValue(mat = mlm->getMaterialById(i.toString())));
+
+        m_itemData[5] = tags;
+    }
 
     const QJsonObject children = json["Descendants"].toObject();
 
-    for (auto child = children.begin(); child != children.end(); child++)
-        m_childItems[child.key().toInt()]->read(child.value().toObject());
+    for (int i = 0; i < m_childItems.size(); i++)
+        m_childItems[i]->read(children[QString::number(i)].toObject(), mlm, mat, ve, vr);
 }
 
 void TreeItem::write(QJsonObject &json) const
@@ -182,7 +188,7 @@ void TreeItem::write(QJsonObject &json) const
             object["Cylinder radius"] = cylinderRadius;
 
         if (m_parentItem->sphereRadius != sphereRadius)
-            object["Cylinder radius"] = sphereRadius;
+            object["Sphere radius"] = sphereRadius;
     }
 
     auto t = m_itemData.value(5).toList();
@@ -337,9 +343,9 @@ void CameraItem::setFlag(VizFlag flag, bool on)
     TreeItem::setFlag(flag, on);
 }
 
-void CameraItem::read(const QJsonObject &json)
+void CameraItem::read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat, bool ve, bool vr)
 {
-    TreeItem::read(json);
+    TreeItem::read(json, mlm, mat, ve, vr);
 
     const QJsonObject object = json["Object"].toObject();
     camera->read(object);
@@ -442,9 +448,9 @@ void AtomItem::setFlag(VizFlag flag, bool on)
     TreeItem::setFlag(flag, on);
 }
 
-void AtomItem::read(const QJsonObject &json)
+void AtomItem::read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat, bool ve, bool vr)
 {
-    TreeItem::read(json);
+    TreeItem::read(json, mlm, mat, ve, vr);
 
     const QJsonObject object = json["Object"].toObject();
 
@@ -453,6 +459,10 @@ void AtomItem::read(const QJsonObject &json)
 
     auto lab = object.find("Label");
     if (lab != object.end()) label = (*lab).toString();
+
+    session->atomBuffer[id].flags.setFlag(VisibleInEditor, ve);
+    session->atomBuffer[id].flags.setFlag(VisibleInRenderer, vr);
+    session->atomBuffer[id].material = mat->getIndex();
 }
 
 void AtomItem::write(QJsonObject &json) const
