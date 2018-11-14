@@ -462,17 +462,15 @@ void CameraItem::remove()
     TreeItem::remove();
 }
 
-AtomItem::AtomItem(uint serial, const QByteArray &name, Session *s, TreeItem *parentItem) :
-    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, s->atomBuffer.size(), Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
-    id(s->atomBuffer.size()),
+AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, TreeItem *parentItem) :
+    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, offset, Visibility::Default, Visibility::Default, QVariant()}, 1, 0, parentItem),
+    id(offset),
     session(s)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
     decoration = icon;
-
-    session->atomBuffer.append({});
 }
 
 AtomItem::~AtomItem()

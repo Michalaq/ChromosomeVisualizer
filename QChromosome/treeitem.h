@@ -214,7 +214,7 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(uint serial, const QByteArray& name, Session *s, TreeItem *parentItem = 0);
+    explicit AtomItem(uint serial, const QByteArray& name, int offset, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
     void setLabel(const QString& l, const QRect& r);

@@ -165,7 +165,6 @@ void PDBSimulationLayer::makeModel()
 {
     bool ok;
     uint v = session->atomBuffer.size(), e = 0;
-    session->atomBuffer.reserve(v + SERIAL_MAX);
 
     connections = new QVector<QPair<uint, uint>>[SERIAL_MAX];
     QMap<QByteArray, QPair<ChainItem*, QMap<QByteArray, ResidueItem*>>> structure;
@@ -195,9 +194,7 @@ void PDBSimulationLayer::makeModel()
             if (!chain.second.contains(resName))
                 chain.second.insert(resName, new ResidueItem(resName, chain.first));
 
-            new AtomItem(serial, name, session, chain.second[resName]);
-
-            offset[serial] = v++;
+            new AtomItem(serial, name, offset[serial] = v++, session, chain.second[resName]);
         }
 
         if (buffer.startsWith("CONECT"))
@@ -218,6 +215,8 @@ void PDBSimulationLayer::makeModel()
             }
         }
     }
+
+    session->atomBuffer.resize(v);
 
     uint f = e;
 
