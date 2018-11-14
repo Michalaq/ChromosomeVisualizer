@@ -196,7 +196,7 @@ void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
     if (sibling(root.row(), 1, root).data().toInt() == ChainObject)
     {
         int chainID = sibling(root.row(), 2, root).data().toInt();
-        auto defl = Preferences::getInstance()->chainID2color(chainID).toList();
+        auto defl = Preferences::getInstance()->chainID2color(chainID % 12).toList();
 
         for (auto mat : defl)
         {

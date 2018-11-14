@@ -187,7 +187,7 @@ private:
 class ChainItem : public TreeItem
 {
 public:
-    explicit ChainItem(const QByteArray& chainID, TreeItem *parentItem = 0);
+    explicit ChainItem(const QByteArray& chainID, Session* s, TreeItem *parentItem = 0);
     ~ChainItem();
 };
 

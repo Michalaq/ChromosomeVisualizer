@@ -97,6 +97,8 @@ public:
 
     void setOrigin(int offset, bool selected);
 
+    int chainCount;
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;

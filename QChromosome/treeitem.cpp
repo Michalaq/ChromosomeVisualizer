@@ -480,8 +480,8 @@ void AtomItem::shift(QPair<int, int> offset)
     TreeItem::shift(offset);
 }
 
-ChainItem::ChainItem(const QByteArray &chainID, TreeItem *parentItem) :
-    TreeItem({chainID, NodeType::ChainObject, chainID, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+ChainItem::ChainItem(const QByteArray &chainID, Session *s, TreeItem *parentItem) :
+    TreeItem({chainID, NodeType::ChainObject, s->chainCount++, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);

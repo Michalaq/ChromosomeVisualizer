@@ -186,7 +186,7 @@ void PDBSimulationLayer::makeModel()
             auto chainID = buffer.mid(21, 1).trimmed();
 
             if (!structure.contains(chainID))
-                structure.insert(chainID, {new ChainItem(chainID, model), {}});
+                structure.insert(chainID, {new ChainItem(chainID, session, model), {}});
 
             auto& chain = structure[chainID];
 
