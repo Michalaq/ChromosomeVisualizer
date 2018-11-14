@@ -41,6 +41,7 @@ public:
 
     virtual QVector3D getPosition() const;
 
+    virtual void setSelected(bool on = true);
     virtual void setMaterial(const Material* material);
     virtual void setFlag(VizFlag flag, bool on = true);
 

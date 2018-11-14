@@ -273,7 +273,10 @@ Session* MainWindow::makeSession()
 
     // add tree view to objects
     ui->stackedWidget_3->addWidget(s->treeView);
-    connect(s->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::handleModelSelection);
+    connect(s->treeView->selectionModel(), &QItemSelectionModel::selectionChanged, [this] {
+        ui->scene->update();
+        handleModelSelection();
+    });
 
     // add project settings to attributes
     ui->stackedWidget->addWidget(s->projectSettings);
@@ -434,13 +437,8 @@ void MainWindow::handleSceneSelection(const QItemSelection&selected, QItemSelect
     session->treeView->selectionModel()->select(selected, flags | QItemSelectionModel::Rows);
 }
 
-void MainWindow::handleModelSelection(const QItemSelection& selected, const QItemSelection& deselected)
+void MainWindow::handleModelSelection()
 {
-    auto model = session->simulation->getModel();
-
-    model->setSelected(deselected.indexes(), false);
-    model->setSelected(selected.indexes(), true);
-
     if (recent) recent->unsetSelection();
 
     if (!session->treeView->selectionModel()->hasSelection())

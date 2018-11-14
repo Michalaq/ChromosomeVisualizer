@@ -223,39 +223,15 @@ void TreeView::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void dumpModel1(QAbstractItemModel* model, const QModelIndex& j, int d)
-{
-    model->setData(j, j.data(Qt::UserRole).toInt() + d, Qt::UserRole);
-
-    for (int r = 0; r < model->rowCount(j); r++)
-        dumpModel1(model, model->index(r, 0, j), d);
-}
-
 void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     QTreeView::selectionChanged(selected, deselected);
 
-    for (auto i : selected.indexes())
-    {
-        auto j = i.parent();
+    for (const auto& i : deselected.indexes())
+        reinterpret_cast<TreeItem*>(i.internalPointer())->setSelected(false);
 
-        do
-            model()->setData(j, j.data(Qt::UserRole).toInt() + 1, Qt::UserRole);
-        while ((j = j.parent()).isValid());
-
-        dumpModel1(model(), i, 1);
-    }
-
-    for (auto i : deselected.indexes())
-    {
-        auto j = i.parent();
-
-        do
-            model()->setData(j, j.data(Qt::UserRole).toInt() - 1, Qt::UserRole);
-        while ((j = j.parent()).isValid());
-
-        dumpModel1(model(), i, -1);
-    }
+    for (const auto& i : selected.indexes())
+        reinterpret_cast<TreeItem*>(i.internalPointer())->setSelected();
 
     update();
 }

@@ -23,7 +23,7 @@ class TreeModel : public QAbstractItemModel
 
 public:
     explicit TreeModel(Session *s, QObject *parent = 0);
-    ~TreeModel();
+    ~TreeModel() Q_DECL_OVERRIDE;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
@@ -36,10 +36,10 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) Q_DECL_OVERRIDE;
+
     void colorByResidue(const QModelIndex &root);
     void colorByChain(const QModelIndex &root);
-
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
     void addCamera(Camera* camera);
     void setCurrentCamera(QModelIndex index);
@@ -49,8 +49,6 @@ public:
 
     void setVisibility(const QModelIndex& index, Visibility v, VisibilityMode m);
     void setVisibility(const QModelIndexList& indices, Visibility v, VisibilityMode m);
-
-    void setSelected(const QModelIndexList& indices, bool s);
 
     void setName(const QModelIndex& index, const QString& name);
     void setName(const QModelIndexList& indices, const QString& name);
@@ -72,8 +70,6 @@ private:
 
     void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
     void updateVisibility(const QModelIndex &root, QPair<bool, bool> v);
-
-    void propagateSelected(const QModelIndex &root, bool s);
 
     void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
     void dumpModel2(const QModelIndex& root, Material* m);

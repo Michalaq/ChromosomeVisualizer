@@ -96,6 +96,19 @@ QVector3D TreeItem::getPosition() const
     return QVector3D(0, 0, 0);
 }
 
+void TreeItem::setSelected(bool on)
+{
+    auto root = m_parentItem;
+
+    while (root)
+    {
+        root->selected_children_count += on ? 1 : -1;
+        root = root->m_parentItem;
+    }
+
+    setFlag(Selected, on);
+}
+
 void TreeItem::setMaterial(const Material* material)
 {
     for (const auto c : m_childItems)
@@ -103,9 +116,11 @@ void TreeItem::setMaterial(const Material* material)
             c->setMaterial(material);
 }
 
-void TreeItem::setFlag(VizFlag, bool)
+void TreeItem::setFlag(VizFlag flag, bool on)
 {
-
+    if (flag == Selected)
+        for (auto c : m_childItems)
+            c->setFlag(flag, on);
 }
 
 #include <QJsonObject>
@@ -318,6 +333,8 @@ void CameraItem::setPosition(const QVector3D& p)
 void CameraItem::setFlag(VizFlag flag, bool on)
 {
     session->cameraBuffer[camera->id].flags.setFlag(flag, on);
+
+    TreeItem::setFlag(flag, on);
 }
 
 void CameraItem::read(const QJsonObject &json)
@@ -421,6 +438,8 @@ void AtomItem::setMaterial(const Material *material)
 void AtomItem::setFlag(VizFlag flag, bool on)
 {
     session->atomBuffer[id].flags.setFlag(flag, on);
+
+    TreeItem::setFlag(flag, on);
 }
 
 void AtomItem::read(const QJsonObject &json)

@@ -26,7 +26,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem *item = reinterpret_cast<TreeItem*>(index.internalPointer());
 
     switch (role)
     {
@@ -56,10 +56,6 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     {
     case Qt::DecorationRole:
         item->decoration = value;
-        ans = true;
-        break;
-    case Qt::UserRole:
-        item->selected_children_count = value.toInt();
         ans = true;
         break;
     case Qt::UserRole + 1:
@@ -454,24 +450,6 @@ void TreeModel::setVisibility(const QModelIndexList &indices, Visibility v, Visi
 
     emit propertyChanged();
     emit attributeChanged();
-}
-
-void TreeModel::propagateSelected(const QModelIndex &root, bool s)
-{
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setFlag(Selected, s);
-
-    for (int r = 0; r < rowCount(root); r++)
-        propagateSelected(index(r, 0, root), s);
-}
-
-void TreeModel::setSelected(const QModelIndexList &indices, bool s)
-{
-    for (const auto& i : indices)
-        if (i.column() == 0)
-            propagateSelected(i, s);
-
-    emit propertyChanged();
 }
 
 void TreeModel::setName(const QModelIndex &index, const QString &name)
