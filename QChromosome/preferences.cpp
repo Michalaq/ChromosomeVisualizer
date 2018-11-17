@@ -30,7 +30,7 @@ public:
 #include "tablemodel.h"
 
 Preferences::Preferences(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::Preferences)
 {
     ui->setupUi(this);

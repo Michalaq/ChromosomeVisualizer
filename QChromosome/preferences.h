@@ -1,7 +1,7 @@
 #ifndef PREFERENCES_H
 #define PREFERENCES_H
 
-#include <QWidget>
+#include <QMainWindow>
 #include <QMap>
 
 namespace Ui
@@ -13,7 +13,7 @@ class TreeModel;
 
 typedef void(TreeModel::*PointerToMemberFunction)(const QModelIndex&);
 
-class Preferences : public QWidget
+class Preferences : public QMainWindow
 {
     Q_OBJECT
 public:

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Preferences</class>
- <widget class="QWidget" name="Preferences">
+ <widget class="QMainWindow" name="Preferences">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,11 +11,233 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Preferences</string>
+   <string>Render Settings</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Preferences {
 	background: #262626;
+}
+
+QWidget {
+	color: lightgrey;
+	font-family: Roboto;
+}
+
+QTabWidget::pane {
+	background: #1a1a1a;
+	border: none;
+}
+
+QTabBar::tab {
+	background: none;
+	border: none;
+	margin: 0px;
+	color: lightgray;
+	width: 168px;
+	height: 48px;
+	padding-left: 12px;
+}
+
+QTabBar::tab:hover {
+	background: #333333;
+}
+
+QTabBar::tab:selected {
+	background: #214478;
+	color: white;
+}
+
+QPushButton {
+	background: #0044aa;
+	border: none;
+	width: 85px;
+	height: 27px;
+	color: white;
+	icon-size: 24px;
+}
+
+QPushButton:hover {
+	background: #0055d4;
+}
+
+QPushButton:pressed {
+	background: #003380;
+}
+
+MediaControl {
+	background: #b2b2b2;
+}
+
+MediaControl:hover {
+	background: white;
+}
+
+MediaControl:checked {
+	background: white;
+}
+
+QAbstractSpinBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QAbstractSpinBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {
+	border: none;
+}
+
+QAbstractSpinBox::up-arrow {
+	image: url(:/arrows/up);
+}
+
+QAbstractSpinBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QScrollArea {
+	border: none;
+}
+
+QScrollArea::corner {
+	background: #1a1a1a;
+}
+
+QScrollArea &gt; QWidget &gt; QWidget {
+	background: #1a1a1a;
+}
+
+QScrollBar:vertical {
+	background: #262626;
+	border: none;
+	width: 12px;
+	margin-top: 12px;
+	margin-bottom: 12px;
+}
+
+QScrollBar::handle:vertical {
+	background: #4d4d4d;
+	width: 12px;
+	min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+	border: none;
+	background: #262626;
+	height: 12px;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical {
+	image: url(:/arrows/up);
+}
+
+QScrollBar::down-arrow:vertical {
+	image: url(:/arrows/down);
+}
+
+QScrollBar:horizontal {
+	background: #262626;
+	border: none;
+	height: 12px;
+	margin-left: 12px;
+	margin-right: 12px;
+}
+
+QScrollBar::handle:horizontal {
+	background: #4d4d4d;
+	height: 12px;
+	min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: right;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+	border: none;
+	background: #262626;
+	width: 12px;
+	subcontrol-position: left;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal {
+	image: url(:/arrows/left);
+}
+
+QScrollBar::right-arrow:horizontal {
+	image: url(:/arrows/right);
+}
+
+QScrollBar::handle:hover {
+	background: #666666;
+}
+
+QComboBox {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #4d4d4d;
+	min-height: 30px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+QComboBox[focus=&quot;true&quot;] {
+	border-color: #808080;
+	color: #808080;
+}
+
+QComboBox::drop-down {
+	border: none;
+}
+
+QComboBox::down-arrow {
+	image: url(:/arrows/down);
+}
+
+QComboBox QAbstractItemView {
+	background: #1a1a1a;
+	border: 1px solid #4d4d4d;
+	color: #808080;
+}
+
+QComboBox QAbstractItemView::item {
+	border: none;
+	min-height: 30px;
+	padding-left: 7px;
+}
+
+QComboBox QAbstractItemView::item:selected {
+	background: #0044aa;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/checkbox/unchecked);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/checkbox/checked);
 }
 
 QLineEdit, QTextEdit {
@@ -37,155 +259,179 @@ QLineEdit[focus=&quot;true&quot;], QTextEdit[focus=&quot;true&quot;] {
 	border-color: #205375;
 	color: lightgray;
 }
-</string>
+
+Label {
+	min-width: 125px;
+	max-width: 125px;
+	min-height: 30px;
+    max-height: 30px;
+}
+
+Label:disabled {
+	color: #808080;
+}
+
+.section {
+	font: bold;
+	color: #4080d0;
+	min-height: 20px;
+}
+
+.item {
+	min-height: 30px;
+}
+
+QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
+	color: #4d4d4d;
+}</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
+  <widget class="QWidget" name="centralwidget">
+   <property name="windowTitle">
+    <string>Material Browser</string>
    </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <item>
-    <widget class="QWidget" name="widget" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">#widget {
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>48</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#widget {
 	background: #333333;
 }</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="MediaControl" name="pushButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background: #0066ff;</string>
-        </property>
-        <property name="icon">
-         <iconset resource="icons.qrc">
-          <normaloff>:/dialogs/equipment</normaloff>:/dialogs/equipment</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="styleSheet">
-         <string notr="true">color: white;</string>
-        </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PREFERENCES&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTabWidget" name="TabWidget">
-     <property name="styleSheet">
-      <string notr="true">QTabBar {
-	background: #262626;
-}
-
-QWidget {
-    font-family: Roboto;
-}
-
-QTabBar::tab {
-	background: none;
-	border: none;
-	margin: 0px;
-	color: lightgray;
-	width: 180px;
-	height: 48px;
-}
-
-QTabBar::tab:hover {
-	background: #333333;
-}
-
-QTabBar::tab:selected {
-	background: #214478;
-	color: white;
-}
-
-QTabWidget::pane {
-	background: #1a1a1a;
-	border: none;
-}
-
-QLabel {
-	color: lightgray;
-	min-width: 120px;
-	min-height: 25px;
-}
-
-QScrollArea {
-	border: none;
-}
-
-QScrollArea &gt; QWidget &gt; QWidget {
-	background: #1a1a1a;
-}</string>
-     </property>
-     <property name="tabPosition">
-      <enum>QTabWidget::West</enum>
-     </property>
-     <widget class="QWidget" name="tab">
-      <attribute name="title">
-       <string>General</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="widgetResizable">
-          <bool>true</bool>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="MediaControl" name="pushButton">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>602</width>
-            <height>534</height>
-           </rect>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QHeaderView {
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background: #0063b1;</string>
+         </property>
+         <property name="icon">
+          <iconset resource="icons.qrc">
+           <normaloff>:/dialogs/equipment</normaloff>:/dialogs/equipment</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>26</width>
+           <height>26</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">color: white;
+padding-left: 10px;
+</string>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PREFERENCES&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::AutoText</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="FileEdit" name="lineEdit_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">width: 300px;
+</string>
+         </property>
+         <property name="placeholderText">
+          <string>Find a preference</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="TabWidget">
+      <property name="styleSheet">
+       <string notr="true">QAbstractSpinBox {
+	min-width: 120px;
+	max-width: 120px;
+}
+
+QComboBox {
+	min-width: 120px;
+	max-width: 120px;
+}</string>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::West</enum>
+      </property>
+      <widget class="QScrollArea" name="tab">
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <attribute name="title">
+        <string>Import/Export</string>
+       </attribute>
+       <widget class="QWidget" name="scrollAreaWidgetContents">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>620</width>
+          <height>552</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QHeaderView {
 	background: transparent;
 }
 
@@ -220,109 +466,130 @@ QExpandingLineEdit {
 	padding: 1px;
 }
 </string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="0">
+          <widget class="Label" name="label_3">
+           <property name="text">
+            <string>Coloring method</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>item</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>RCSB Protein Data Bank (*.pdb) import</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>section</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="ComboBox" name="comboBox">
            <item>
-            <widget class="QLabel" name="label_2">
-             <property name="styleSheet">
-              <string notr="true">color: blue;</string>
-             </property>
-             <property name="text">
-              <string>Default tags</string>
-             </property>
-            </widget>
+            <property name="text">
+             <string>Residue name</string>
+            </property>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox">
-             <item>
-              <property name="text">
-               <string>Color by residue</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Color by chain</string>
-              </property>
-             </item>
-            </widget>
+            <property name="text">
+             <string>Chain identifier</string>
+            </property>
            </item>
-           <item>
-            <widget class="QStackedWidget" name="stackedWidget">
-             <widget class="TableView" name="tableView_3">
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="acceptDrops">
-               <bool>true</bool>
-              </property>
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="horizontalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <property name="showGrid">
-               <bool>false</bool>
-              </property>
-              <attribute name="horizontalHeaderHighlightSections">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>20</number>
-              </attribute>
-             </widget>
-             <widget class="TableView" name="tableView_4">
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="acceptDrops">
-               <bool>true</bool>
-              </property>
-              <property name="alternatingRowColors">
-               <bool>true</bool>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="horizontalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <property name="showGrid">
-               <bool>false</bool>
-              </property>
-              <attribute name="horizontalHeaderHighlightSections">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>20</number>
-              </attribute>
-             </widget>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="0" colspan="3">
+          <widget class="QStackedWidget" name="stackedWidget">
+           <widget class="TableView" name="tableView_3">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="horizontalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
+            <property name="showGrid">
+             <bool>false</bool>
+            </property>
+            <attribute name="horizontalHeaderHighlightSections">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>20</number>
+            </attribute>
+           </widget>
+           <widget class="TableView" name="tableView_4">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>true</bool>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+            <property name="horizontalScrollMode">
+             <enum>QAbstractItemView::ScrollPerPixel</enum>
+            </property>
+            <property name="showGrid">
+             <bool>false</bool>
+            </property>
+            <attribute name="horizontalHeaderHighlightSections">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>20</number>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </widget>
-    </widget>
-   </item>
-  </layout>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -335,12 +602,24 @@ QExpandingLineEdit {
    <extends>QTableView</extends>
    <header>tableview.h</header>
   </customwidget>
+  <customwidget>
+   <class>FileEdit</class>
+   <extends>QLineEdit</extends>
+   <header>fileedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Label</class>
+   <extends>QLabel</extends>
+   <header>label.h</header>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>
  <connections/>
- <slots>
-  <slot>updateOutput()</slot>
- </slots>
 </ui>
