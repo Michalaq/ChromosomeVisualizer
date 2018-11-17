@@ -66,7 +66,8 @@ SOURCES += \
     simulation/pdbsimulationlayer.cpp \
     simulation/simulation.cpp \
     opengl/vizwidget.cpp \
-    simulation/iodevice.cpp
+    simulation/iodevice.cpp \
+    myproxystyle.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -131,7 +132,8 @@ HEADERS += \
     simulation/pdbsimulationlayer.h \
     simulation/simulation.h \
     opengl/vizwidget.h \
-    simulation/iodevice.h
+    simulation/iodevice.h \
+    myproxystyle.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
