@@ -191,7 +191,7 @@ void PDBSimulationLayer::makeModel()
             auto& chain = structure[chainID];
 
             if (!chain.second.contains(resName))
-                chain.second.insert(resName, new ResidueItem(resName, chain.first));
+                chain.second.insert(resName, new ResidueItem(resName, session, chain.first));
 
             new AtomItem(serial, name, offset[serial] = v++, session, chain.second[resName]);
         }

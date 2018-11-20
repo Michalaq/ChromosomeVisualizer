@@ -19,6 +19,7 @@ Session::Session(MainWindow* w) :
     playBackwards(false),
     previewRange(false),
     playMode(PM_Cycle),
+    chainCount(0),
     nd(new NameDelegate),
     vd(new VisibilityDelegate),
     td(new TagsDelegate),

@@ -157,22 +157,19 @@ void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
     // update current tags
     if (sibling(root.row(), 1, root).data().toInt() == ResidueObject)
     {
-        auto resName = sibling(root.row(), 2, root).data().toString();
-        auto defl = Preferences::getInstance()->resName2color(resName).toList();
+        auto resName = sibling(root.row(), 2, root).data().toInt();
+        auto mat = Preferences::getInstance()->materialAt(resName);
 
-        for (auto mat : defl)
+        m = qobject_cast<Material*>(mat.value<QObject*>());
+        m->assign(sibling(root.row(), 5, root));
+
+        if (!materials.contains(m))
         {
-            m = qobject_cast<Material*>(mat.value<QObject*>());
-            m->assign(sibling(root.row(), 5, root));
-
-            if (!materials.contains(m))
-            {
-                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
-                materials.insert(m);
-            }
+            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+            materials.insert(m);
         }
 
-        setData(sibling(root.row(), 5, root), defl);
+        setData(sibling(root.row(), 5, root), QVariantList({mat}));
     }
     else
         setData(sibling(root.row(), 5, root), QVariant());
@@ -196,21 +193,18 @@ void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
     if (sibling(root.row(), 1, root).data().toInt() == ChainObject)
     {
         int chainID = sibling(root.row(), 2, root).data().toInt();
-        auto defl = Preferences::getInstance()->chainID2color(chainID % 12).toList();
+        auto mat = Preferences::getInstance()->materialAt(chainID);
 
-        for (auto mat : defl)
+        m = qobject_cast<Material*>(mat.value<QObject*>());
+        m->assign(sibling(root.row(), 5, root));
+
+        if (!materials.contains(m))
         {
-            m = qobject_cast<Material*>(mat.value<QObject*>());
-            m->assign(sibling(root.row(), 5, root));
-
-            if (!materials.contains(m))
-            {
-                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
-                materials.insert(m);
-            }
+            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+            materials.insert(m);
         }
 
-        setData(sibling(root.row(), 5, root), defl);
+        setData(sibling(root.row(), 5, root), QVariantList({mat}));
     }
     else
         setData(sibling(root.row(), 5, root), QVariant());

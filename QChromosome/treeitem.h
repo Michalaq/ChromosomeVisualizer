@@ -194,7 +194,7 @@ public:
 class ResidueItem : public TreeItem
 {
 public:
-    explicit ResidueItem(const QByteArray& resName, TreeItem *parentItem = 0);
+    explicit ResidueItem(const QByteArray& resName, Session *s, TreeItem *parentItem = 0);
     ~ResidueItem();
 };
 

@@ -98,6 +98,7 @@ public:
     void setOrigin(int offset, bool selected);
 
     int chainCount;
+    QMap<QString, int> residueCount;
 
 private:
     NameDelegate *nd;

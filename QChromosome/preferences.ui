@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Render Settings</string>
+   <string>Preferences</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Preferences {
@@ -431,36 +431,27 @@ QComboBox {
          </rect>
         </property>
         <property name="styleSheet">
-         <string notr="true">QHeaderView {
-	background: transparent;
-}
-
-QHeaderView::section {
-	background: #2d2d2d;
-	border: none;
-	color: white;
-	margin-right: 1px;
-	height: 20px;
-}
-
-QTableView {
-	font-family: RobotoMono;
+         <string notr="true">ListView {
 	color: gray;
 	border: none;
-	background: #1a1a1a;
-	alternate-background-color: #1f1f1f;
-	selection-background-color: #1a1a1a;
-	selection-color: white;
+	background: transparent;
 	outline: 0;
 }
 
-QTableView::item {
+ListView::item {
+	height: 32px;
 	border: none;
-	margin-right: 1px;
+	padding-left: 17px;
 }
 
-QExpandingLineEdit {
-	font-family: RobotoMono;
+ListView::item:selected {
+	color: white;
+	background: #262626;
+	border-radius: 2px;
+}
+
+QLineEdit {
+	background: #262626;
 	color: white;
 	border: none;
 	padding: 1px;
@@ -478,16 +469,6 @@ QExpandingLineEdit {
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>RCSB Protein Data Bank (*.pdb) import</string>
-           </property>
-           <property name="class" stdset="0">
-            <string>section</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="ComboBox" name="comboBox">
            <item>
@@ -500,6 +481,16 @@ QExpandingLineEdit {
              <string>Chain identifier</string>
             </property>
            </item>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>RCSB Protein Data Bank (*.pdb) import</string>
+           </property>
+           <property name="class" stdset="0">
+            <string>section</string>
+           </property>
           </widget>
          </item>
          <item row="0" column="2">
@@ -516,71 +507,10 @@ QExpandingLineEdit {
           </spacer>
          </item>
          <item row="2" column="0" colspan="3">
-          <widget class="QStackedWidget" name="stackedWidget">
-           <widget class="TableView" name="tableView_3">
-            <property name="focusPolicy">
-             <enum>Qt::ClickFocus</enum>
-            </property>
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <property name="horizontalScrollMode">
-             <enum>QAbstractItemView::ScrollPerPixel</enum>
-            </property>
-            <property name="showGrid">
-             <bool>false</bool>
-            </property>
-            <attribute name="horizontalHeaderHighlightSections">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="verticalHeaderVisible">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="verticalHeaderDefaultSectionSize">
-             <number>20</number>
-            </attribute>
-           </widget>
-           <widget class="TableView" name="tableView_4">
-            <property name="focusPolicy">
-             <enum>Qt::ClickFocus</enum>
-            </property>
-            <property name="acceptDrops">
-             <bool>true</bool>
-            </property>
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-            <property name="horizontalScrollMode">
-             <enum>QAbstractItemView::ScrollPerPixel</enum>
-            </property>
-            <property name="showGrid">
-             <bool>false</bool>
-            </property>
-            <attribute name="horizontalHeaderHighlightSections">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="horizontalHeaderStretchLastSection">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="verticalHeaderVisible">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="verticalHeaderDefaultSectionSize">
-             <number>20</number>
-            </attribute>
-           </widget>
+          <widget class="ListView" name="listView">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
           </widget>
          </item>
         </layout>
@@ -598,11 +528,6 @@ QExpandingLineEdit {
    <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
-   <class>TableView</class>
-   <extends>QTableView</extends>
-   <header>tableview.h</header>
-  </customwidget>
-  <customwidget>
    <class>FileEdit</class>
    <extends>QLineEdit</extends>
    <header>fileedit.h</header>
@@ -616,6 +541,11 @@ QExpandingLineEdit {
    <class>Label</class>
    <extends>QLabel</extends>
    <header>label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ListView</class>
+   <extends>QListView</extends>
+   <header>listview.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -504,10 +504,8 @@ ChainItem::~ChainItem()
 
 }
 
-#include "preferences.h"
-
-ResidueItem::ResidueItem(const QByteArray &resName, TreeItem *parentItem) :
-    TreeItem({resName, NodeType::ResidueObject, resName, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+ResidueItem::ResidueItem(const QByteArray &resName, Session* s, TreeItem *parentItem) :
+    TreeItem({resName, NodeType::ResidueObject, s->residueCount.contains(resName) ? s->residueCount[resName] : s->residueCount[resName] = s->residueCount.count() - 1, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
