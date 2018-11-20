@@ -43,8 +43,6 @@ SOURCES += \
     flowlayout.cpp \
     materialattributes.cpp \
     materialbrowser.cpp \
-    tablemodel.cpp \
-    tableview.cpp \
     moviemaker.cpp \
     attributes.cpp \
     titlelabel.cpp \
@@ -66,7 +64,8 @@ SOURCES += \
     simulation/simulation.cpp \
     opengl/vizwidget.cpp \
     simulation/iodevice.cpp \
-    myproxystyle.cpp
+    myproxystyle.cpp \
+    listview.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -109,8 +108,6 @@ HEADERS += \
     flowlayout.h \
     materialattributes.h \
     materialbrowser.h \
-    tablemodel.h \
-    tableview.h \
     attributes.h \
     titlelabel.h \
     pickwidget.h \
@@ -131,7 +128,8 @@ HEADERS += \
     simulation/simulation.h \
     opengl/vizwidget.h \
     simulation/iodevice.h \
-    myproxystyle.h
+    myproxystyle.h \
+    listview.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
