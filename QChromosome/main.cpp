@@ -3,14 +3,12 @@
 #include <QSurfaceFormat>
 #include <QFontDatabase>
 #include <QSplashScreen>
-#include "customstyle.h"
 
 int main(int argc, char *argv[])
 {
     qputenv("PATH", qgetenv("PATH") + ":/usr/local/bin:/usr/bin");
 
     QApplication a(argc, argv);
-    a.setStyle(new CustomStyle);
 
     QSplashScreen s(QPixmap(":/application/splash"), Qt::WindowStaysOnTopHint);
     s.show();

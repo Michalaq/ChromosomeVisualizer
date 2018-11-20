@@ -56,7 +56,6 @@ SOURCES += \
     fontcombobox.cpp \
     session.cpp \
     mediapanel.cpp \
-    customstyle.cpp \
     tabwidget.cpp \
     jpegdialog.cpp \
     slider.cpp \
@@ -123,7 +122,6 @@ HEADERS += \
     session.h \
     glbuffer.h \
     mediapanel.h \
-    customstyle.h \
     tabwidget.h \
     jpegdialog.h \
     slider.h \
