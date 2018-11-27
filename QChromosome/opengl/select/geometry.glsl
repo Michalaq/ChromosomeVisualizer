@@ -15,17 +15,12 @@ layout (std140) uniform shader_data
 
 flat in vec3 gvInstancePosition[1];
 flat in int giFlags[1];
-flat in int giInstanceID[1];
 flat in float gfInstanceSize[1];
-flat in int giMaterialID[1];
 
 out vec3 vViewPosition;
 
 flat out vec3 vInstancePosition;
-flat out int iFlags;
-flat out int iInstanceID;
 flat out float fInstanceSize;
-flat out int iMaterialID;
 
 // this can be passed from CPU (as uniform?) 
 vec3 tetrahedron[4] = vec3[](
@@ -36,15 +31,12 @@ vec3 tetrahedron[4] = vec3[](
 );
 
 void main() {
-    if ((giFlags[0] & 0x2) == 0x2)
+    if ((giFlags[0] & 0x3) == 0x3)
     {
         vec4 objectSpacePos = mv * vec4(gvInstancePosition[0], 1.0);
         
         vInstancePosition = objectSpacePos.xyz / objectSpacePos.w;
-        iFlags = giFlags[0];
-        iInstanceID = giInstanceID[0];
         fInstanceSize = gfInstanceSize[0];
-        iMaterialID = giMaterialID[0];
         
         for(int i = 0; i < 6; i++)
         {

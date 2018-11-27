@@ -14,12 +14,21 @@
         <file alias="geometry.glsl">camera/geometry.glsl</file>
         <file alias="vertex.glsl">camera/vertex.glsl</file>
     </qresource>
-    <qresource prefix="/labels">
-        <file alias="fragment.glsl">labels/fragment.glsl</file>
-        <file alias="geometry.glsl">labels/geometry.glsl</file>
-        <file alias="vertex.glsl">labels/vertex.glsl</file>
+    <qresource prefix="/label">
+        <file alias="fragment.glsl">label/fragment.glsl</file>
+        <file alias="geometry.glsl">label/geometry.glsl</file>
+        <file alias="vertex.glsl">label/vertex.glsl</file>
     </qresource>
-    <qresource prefix="/picking">
-        <file alias="fragment.glsl">picking/fragment.glsl</file>
+    <qresource prefix="/index">
+        <file alias="fragment.glsl">index/fragment.glsl</file>
+    </qresource>
+    <qresource prefix="/glow">
+        <file alias="fragment.glsl">glow/fragment.glsl</file>
+        <file alias="geometry.glsl">glow/geometry.glsl</file>
+        <file alias="vertex.glsl">glow/vertex.glsl</file>
+    </qresource>
+    <qresource prefix="/select">
+        <file alias="geometry.glsl">select/geometry.glsl</file>
+        <file alias="fragment.glsl">select/fragment.glsl</file>
     </qresource>
 </RCC>

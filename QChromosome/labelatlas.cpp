@@ -2,7 +2,7 @@
 
 LabelAtlas::LabelAtlas() :
     texture(QOpenGLTexture::Target2D),
-    image(1, 1, QImage::Format_ARGB32),
+    image(1, 1, QImage::Format_RGBA8888),
     offset(0),
     modified(true)
 {
@@ -28,11 +28,6 @@ void LabelAtlas::allocate()
 GLuint LabelAtlas::textureId() const
 {
     return texture.textureId();
-}
-
-QSize LabelAtlas::size() const
-{
-    return image.size();
 }
 
 #include <QPainter>

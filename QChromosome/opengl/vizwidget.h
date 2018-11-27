@@ -44,6 +44,7 @@ private:
     QOpenGLBuffer atomPositions_;
     QOpenGLVertexArrayObject vaoSpheres_;
     QOpenGLVertexArrayObject vaoLabels_;
+    QOpenGLVertexArrayObject vaoEmpty_;
 
     QOpenGLBuffer cameraPositions_;
     QOpenGLVertexArrayObject vaoCameras_;
@@ -53,13 +54,15 @@ private:
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
     QOpenGLShaderProgram cameraProgram_;
-    QOpenGLShaderProgram labelsProgram_;
-    QOpenGLShaderProgram pickingProgram_;
+    QOpenGLShaderProgram labelProgram_;
+    QOpenGLShaderProgram indexProgram_;
+    QOpenGLShaderProgram selectProgram_;
+    QOpenGLShaderProgram glowProgram_;
 
     GLuint buffers[2];
-    GLuint picking[1];
-    GLuint texture[2];
     QImage image;
+    QOpenGLTexture pb;
+    QOpenGLTexture sb;
 
     void pickSpheres();
 

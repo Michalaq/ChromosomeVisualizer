@@ -32,7 +32,6 @@ layout (std140) uniform material_data
     uvec4 materials[50];
 };
 
-in vec4 vPosition;
 in vec3 vViewPosition;
 
 flat in vec3 vInstancePosition;
@@ -46,8 +45,7 @@ void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = unpackUnorm4x8(materials[iMaterialID].x).bgra;
     
-    vec2 vScreenPos = (0.5f * vPosition.xy / vPosition.w + 0.5f) * uvScreenSize;
-    ivec2 iScreenPos = ivec2(vScreenPos) & 1;
+    ivec2 iScreenPos = ivec2(gl_FragCoord.xy) & 1;
     
     if (baseColor.a <= 0.51)
     {
@@ -89,24 +87,17 @@ void main() {
 
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);
-    vec3 cDiffuse = vec3(baseColor.rgb * lightness);
+    vec3 cDiffuse = baseColor.rgb * lightness;
 
     // Specular
     vec3 reflected = reflect(-cvLightDirection, vNormal);
     float specularFactor = pow(max(0.0, reflected.z), uintBitsToFloat(materials[iMaterialID].z));
-    vec3 cSpecular = vec3(specularFactor * unpackUnorm4x8(materials[iMaterialID].y).bgr);
+    vec3 cSpecular = specularFactor * unpackUnorm4x8(materials[iMaterialID].y).bgr;
 
     // Fog
     float linearDistance = length(vViewPosition.xyz);
     float fogFactor = exp(-linearDistance / ufFogDistance);
     if (!ubEnableFog) fogFactor = 1.f;
-
-    // Calculate stripes for selected molecules
-    float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
-    float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
-
-    float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), 1.f);
     
-    fragColor = mix(cResultColor, vec4(1.f), isSelected * whitening);
+    fragColor = vec4(mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), 1.f);
 }

@@ -1,7 +1,9 @@
 #include "vizwidget.h"
 
 VizWidget::VizWidget(QWidget *parent)
-    : Selection(parent)
+    : Selection(parent),
+      pb(QOpenGLTexture::Target2D),
+      sb(QOpenGLTexture::Target2D)
 {
     setAcceptDrops(true);
 }
@@ -11,7 +13,6 @@ VizWidget::~VizWidget()
 
 }
 
-#include "camera.h"
 #include "viewport.h"
 #include "session.h"
 
@@ -170,6 +171,8 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoLabels_.release();
 
+    vaoEmpty_.create();
+
     // Shaders
     sphereProgram_.create();
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
@@ -189,17 +192,29 @@ void VizWidget::initializeGL()
     cameraProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/camera/fragment.glsl");
     cameraProgram_.link();
 
-    labelsProgram_.create();
-    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/labels/vertex.glsl");
-    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/labels/geometry.glsl");
-    labelsProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/labels/fragment.glsl");
-    labelsProgram_.link();
+    labelProgram_.create();
+    labelProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/label/vertex.glsl");
+    labelProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/label/geometry.glsl");
+    labelProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/label/fragment.glsl");
+    labelProgram_.link();
 
-    pickingProgram_.create();
-    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
-    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
-    pickingProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/picking/fragment.glsl");
-    pickingProgram_.link();
+    indexProgram_.create();
+    indexProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
+    indexProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
+    indexProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/index/fragment.glsl");
+    indexProgram_.link();
+
+    selectProgram_.create();
+    selectProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
+    selectProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/select/geometry.glsl");
+    selectProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/select/fragment.glsl");
+    selectProgram_.link();
+
+    glowProgram_.create();
+    glowProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/glow/vertex.glsl");
+    glowProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/glow/geometry.glsl");
+    glowProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/glow/fragment.glsl");
+    glowProgram_.link();
 
     materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
@@ -224,11 +239,11 @@ void VizWidget::initializeGL()
         block_index = glGetUniformBlockIndex(cameraProgram_.programId(), "shader_data");
         glUniformBlockBinding(cameraProgram_.programId(), block_index, binding_point_index);
 
-        block_index = glGetUniformBlockIndex(labelsProgram_.programId(), "shader_data");
-        glUniformBlockBinding(labelsProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(labelProgram_.programId(), "shader_data");
+        glUniformBlockBinding(labelProgram_.programId(), block_index, binding_point_index);
 
-        block_index = glGetUniformBlockIndex(pickingProgram_.programId(), "shader_data");
-        glUniformBlockBinding(pickingProgram_.programId(), block_index, binding_point_index);
+        block_index = glGetUniformBlockIndex(indexProgram_.programId(), "shader_data");
+        glUniformBlockBinding(indexProgram_.programId(), block_index, binding_point_index);
     }
 
     {
@@ -259,94 +274,111 @@ void VizWidget::initializeGL()
         block_index = glGetUniformBlockIndex(cylinderProgram_.programId(), "material_data");
         glUniformBlockBinding(cylinderProgram_.programId(), block_index, binding_point_index);
     }
+}
 
-    glGenFramebuffers(1, picking);
-    glGenTextures(2, texture);
+static const GLfloat zf = 0;
+static const GLint sf = -1;
+
+void mix(const QColor& x, const QColor& y, qreal a, GLfloat ans[4])
+{
+    ans[0] = a * x.redF() + (1 - a) * y.redF();
+    ans[1] = a * x.greenF() + (1 - a) * y.greenF();
+    ans[2] = a * x.blueF() + (1 - a) * y.blueF();
+    ans[3] = 1;
 }
 
 void VizWidget::paintGL()
 {
-    // Ensure taht buffers are up to date
+    // Ensure that buffers are up to date
     allocate();
 
-    // Enable culling
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
-
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 
+    glDrawBuffer(GL_COLOR_ATTACHMENT2);
+
+    glClearBufferfv(GL_COLOR, 0, &zf);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Draw selection buffer
+    vaoSpheres_.bind();
+    selectProgram_.bind();
+
+    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+
+    selectProgram_.release();
+    vaoSpheres_.release();
+
+    GLfloat color[4];
     auto& buffer = Viewport::getBuffer();
-    QColor color = buffer.ucBackgroundColor;
+    mix(buffer.ucFogColor, buffer.ucBackgroundColor, buffer.ubEnableFog ? buffer.ufFogStrength : 0, color);
 
-    if (buffer.ubEnableFog)
-    {
-        float p = buffer.ufFogStrength;
-        float q = 1. - p;
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-        QColor fog = buffer.ucFogColor;
+    glClearBufferfv(GL_COLOR, 0, color);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
-        color.setRedF(p * fog.redF() + q * color.redF());
-        color.setGreenF(p * fog.greenF() + q * color.greenF());
-        color.setBlueF(p * fog.blueF() + q * color.blueF());
-    }
+    // Draw cylinders and spheres
+    vaoSpheres_.bind();
+    cylinderProgram_.bind();
 
-    glClearColor(color.redF(), color.greenF(), color.blueF(), 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, reinterpret_cast<const GLvoid * const *>(session->chainIndicesBuffer.data()), session->chainCountBuffer.count());
 
-    // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.empty())
-    {
-        vaoSpheres_.bind();
-        cylinderProgram_.bind();
+    cylinderProgram_.release();
+    sphereProgram_.bind();
 
-        glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, reinterpret_cast<const GLvoid * const *>(session->chainIndicesBuffer.data()), session->chainCountBuffer.count());
+    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
-        cylinderProgram_.release();
-        sphereProgram_.bind();
+    sphereProgram_.release();
+    vaoSpheres_.release();
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    // Draw cameras
+    vaoCameras_.bind();
+    cameraProgram_.bind();
 
-        sphereProgram_.release();
-        vaoSpheres_.release();
-    }
+    glDrawArrays(GL_POINTS, 1, session->cameraBuffer.count() - 1);
 
-    if (session->cameraBuffer.count() > 1)
-    {
-        vaoCameras_.bind();
-        cameraProgram_.bind();
+    cameraProgram_.release();
+    vaoCameras_.release();
 
-        glDrawArrays(GL_POINTS, 1, session->cameraBuffer.count() - 1);
+    glEnable(GL_TEXTURE_2D);
 
-        cameraProgram_.release();
-        vaoCameras_.release();
-    }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.empty())
-    {
-        vaoLabels_.bind();
-        labelsProgram_.bind();
+    // Draw selection glow
+    vaoEmpty_.bind();
+    glowProgram_.bind();
 
-        labelsProgram_.setUniformValue("uvTextureSize", QSizeF(session->labelAtlas.size()));
-        labelsProgram_.setUniformValue("SampleTexture", 0);
+    glowProgram_.setUniformValue("SampleTexture", 0);
 
-        glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, sb.textureId());
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDrawArrays(GL_POINTS, 0, 1);
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    glowProgram_.release();
+    vaoEmpty_.release();
 
-        labelsProgram_.release();
-        vaoLabels_.release();
+    glDepthMask(GL_FALSE);
 
-        glDisable(GL_BLEND);
-    }
+    // Draw labels
+    vaoLabels_.bind();
+    labelProgram_.bind();
 
-    glDisable(GL_CULL_FACE);
+    labelProgram_.setUniformValue("SampleTexture", 1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
+
+    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+
+    labelProgram_.release();
+    vaoLabels_.release();
+
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+
     glDisable(GL_DEPTH_TEST);
 }
 
@@ -354,9 +386,9 @@ QPersistentModelIndex VizWidget::pick(const QPoint &pos)
 {
     pickSpheres();
 
-    auto color = image.pixel(pos);
+    int color = image.pixel(pos);
 
-    return color != 0xFFFFFFFFU ? session->indices[color] : QPersistentModelIndex();
+    return color != sf ? session->indices[color] : QPersistentModelIndex();
 }
 
 void VizWidget::setSession(Session *s)
@@ -392,45 +424,31 @@ void VizWidget::pickSpheres()
 {
     makeCurrent();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
-
-    // Ensure taht buffers are up to date
+    // Ensure that buffers are up to date
     allocate();
-
-    // Enable culling
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
 
     glEnable(GL_DEPTH_TEST);
 
-    int color = -1;
-    glClearColor(reinterpret_cast<GLfloat&>(color), 0.f, 0.f, 0.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Draw picking framebuffer
+    glDrawBuffer(GL_COLOR_ATTACHMENT1);
 
-    // If there are no spheres, my driver crashes
-    if (!session->atomBuffer.empty())
-    {
-        vaoSpheres_.bind();
-        pickingProgram_.bind();
+    glClearBufferiv(GL_COLOR, 0, &sf);
+    glClear(GL_DEPTH_BUFFER_BIT);
 
-        glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    vaoSpheres_.bind();
+    indexProgram_.bind();
 
-        pickingProgram_.release();
-        vaoSpheres_.release();
-    }
+    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
 
-    glDisable(GL_CULL_FACE);
+    indexProgram_.release();
+    vaoSpheres_.release();
+
     glDisable(GL_DEPTH_TEST);
 
-    auto array = new uchar[sizeof(GLint) * width() * height()];
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
+    glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, image.bits());
 
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, array);
-
-    image = QImage(array, width(), height(), QImage::Format_ARGB32).mirrored();
-
-    delete[] array;
+    image = image.mirrored();
 }
 
 void VizWidget::dragEnterEvent(QDragEnterEvent *event)
@@ -476,15 +494,15 @@ void VizWidget::mouseReleaseEvent(QMouseEvent *event)
     mask.addRect(rect());
     mask = mask.subtracted(getSelectionPath());
 
-    QPainter(&image).fillPath(mask, QColor(-1));
+    QPainter(&image).fillPath(mask, QColor(sf));
 
-    auto first = (int*)image.constBits();
-    auto last = first + width() * height();
+    int* first = (int*)image.bits();
+    int* last = first + width() * height();
 
     std::sort(first, last);
     last = std::unique(first, last);
 
-    if (*first == -1)
+    if (*first == sf)
         first++;
 
     QMap<QPersistentModelIndex, QVector<int>> tmp;
@@ -539,13 +557,19 @@ void VizWidget::resizeEvent(QResizeEvent* event)
 {
     QOpenGLWidget::resizeEvent(event);
 
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width(), height(), 0, GL_RED_INTEGER, GL_INT, 0);
+    pb.destroy();
+    pb.setSize(width(), height());
+    pb.setFormat(QOpenGLTexture::R32I);
+    pb.allocateStorage(QOpenGLTexture::Red_Integer, QOpenGLTexture::Int32);
 
-    glBindTexture(GL_TEXTURE_2D, texture[1]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width(), height(), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, pb.textureId(), 0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, picking[0]);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture[0], 0);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, texture[1], 0);
+    sb.destroy();
+    sb.setSize(width(), height());
+    sb.setFormat(QOpenGLTexture::R32F);
+    sb.allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::Float32);
+
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, sb.textureId(), 0);
+
+    image = QImage(width(), height(), QImage::Format_RGBA8888);
 }

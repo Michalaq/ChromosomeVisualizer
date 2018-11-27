@@ -13,8 +13,6 @@ layout (std140) uniform shader_data
     ivec2 uvScreenSize;
 };
 
-uniform vec2 uvTextureSize;
-
 flat in vec3 gvInstancePosition[1];
 flat in int giFlags[1];
 flat in float gfInstanceSize[1];
@@ -46,7 +44,7 @@ void main() {
         
         for(int i = 0; i < 6; i++)
         {
-            vTextureCoord = ((tetrahedron[i & 3] + vec2(1, 1)) / 2 * rect + gvLabelRect[0].xy) / uvTextureSize;
+            vTextureCoord = (tetrahedron[i & 3] + vec2(1, 1)) / 2 * rect + gvLabelRect[0].xy;
             gl_Position = vec4(foo + vec3(tetrahedron[i & 3] * rect / uvScreenSize, 0), 1.0);
             EmitVertex();
         }

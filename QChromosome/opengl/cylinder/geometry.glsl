@@ -19,7 +19,6 @@ flat in vec3 gcSpecularColor[2];
 flat in float gfSpecularExponent[2];
 flat in float gfInstanceRadius[2];
 
-out vec4 vPosition;
 out vec4 vViewPosition;
 out vec3 vNormal;
 flat out int iFlags;
@@ -60,7 +59,7 @@ void main() {
             vNormal = rotatedVector(vInstanceRotation, vec3(cos(a), sin(a), 0));
             vViewPosition = mv * vec4(gvInstancePosition[0] + gfInstanceRadius[0] * vNormal, 1.0);
             vNormal = mvNormal * vNormal;
-            gl_Position = vPosition = pro * vViewPosition;
+            gl_Position = pro * vViewPosition;
             cColor = gcColor[0];
             cSpecularColor = gcSpecularColor[0];
             fSpecularExponent = gfSpecularExponent[0];
@@ -70,7 +69,7 @@ void main() {
             vNormal = rotatedVector(vInstanceRotation, vec3(cos(a), sin(a), 0));
             vViewPosition = mv * vec4(gvInstancePosition[1] + gfInstanceRadius[1] * vNormal, 1.0);
             vNormal = mvNormal * vNormal;
-            gl_Position = vPosition = pro * vViewPosition;
+            gl_Position = pro * vViewPosition;
             cColor = gcColor[1];
             cSpecularColor = gcSpecularColor[1];
             fSpecularExponent = gfSpecularExponent[1];

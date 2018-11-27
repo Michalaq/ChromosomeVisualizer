@@ -20,7 +20,6 @@ layout (std140) uniform viewport_data
     float ufFogDistance;
 };
 
-in vec4 vPosition;
 in vec4 vViewPosition;
 in vec3 vNormal;
 flat in int iFlags;
@@ -34,28 +33,41 @@ void main() {
     const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec3 vFixedNormal = normalize(vNormal);
     vec4 baseColor = cColor;
+    
+    ivec2 iScreenPos = ivec2(gl_FragCoord.xy) & 1;
+    
+    if (baseColor.a <= 0.51)
+    {
+        if (iScreenPos.x == 0 && iScreenPos.y == 1)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.33)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 0)
+            discard;
+    }
+    
+    if (baseColor.a <= 0.20)
+    {
+        if (iScreenPos.x == 1 && iScreenPos.y == 1)
+            discard;
+    }
 
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
-    vec4 cDiffuse = vec4(baseColor.xyz * lightness, baseColor.a);
+    vec3 cDiffuse = vec3(baseColor.rgb * lightness);
 
     // Specular
     vec3 reflected = reflect(-cvLightDirection, vFixedNormal);
     float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
-    vec4 cSpecular = vec4(specularFactor * cSpecularColor, 0.0);
+    vec3 cSpecular = specularFactor * cSpecularColor;
 
     // Fog
     float linearDistance = length(vViewPosition.xyz);
     float fogFactor = exp(-linearDistance / ufFogDistance);
     if (!ubEnableFog) fogFactor = 1.f;
-
-    // Calculate stripes for selected molecules
-    vec2 vScreenPos = 0.5f * (vPosition.xy * uvScreenSize) / vPosition.w;
-    float stripePhase = 0.5f * (vScreenPos.x + vScreenPos.y);
-    float whitening = clamp(0.5f * (3.f * sin(stripePhase)), 0.f, 0.666f);
-
-    float isSelected = ((iFlags & 0x1) == 0x1) ? 1.f : 0.f;
-    vec4 cResultColor = vec4(mix(cDiffuse.rgb + cSpecular.rgb, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), baseColor.a);
     
-    fragColor = mix(cResultColor, vec4(1.f), isSelected * whitening);
+    fragColor = vec4(mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), 1.f);
 }
+

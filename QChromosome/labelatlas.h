@@ -16,7 +16,6 @@ public:
     GLuint textureId() const;
 
     QRect addLabel(const QString& text, const QFont &font);
-    QSize size() const;
 
 private:
     QOpenGLTexture texture;
