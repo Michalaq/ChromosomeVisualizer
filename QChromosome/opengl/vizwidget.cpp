@@ -219,7 +219,7 @@ void VizWidget::initializeGL()
     materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    glGenBuffers(2, buffers);
+    glGenBuffers(1, buffers);
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
@@ -247,11 +247,8 @@ void VizWidget::initializeGL()
     }
 
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[1]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(viewport_data_t), &Viewport::getBuffer(), GL_DYNAMIC_DRAW);
-
         const GLuint binding_point_index = 1;
-        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[1]);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, viewport_.bufferId());
 
         unsigned int block_index;
 
@@ -281,9 +278,13 @@ static const GLint sf = -1;
 
 void mix(const QColor& x, const QColor& y, qreal a, GLfloat ans[4])
 {
-    ans[0] = a * x.redF() + (1 - a) * y.redF();
-    ans[1] = a * x.greenF() + (1 - a) * y.greenF();
-    ans[2] = a * x.blueF() + (1 - a) * y.blueF();
+    qreal tmp[2][3];
+    x.getRgbF(&tmp[0][0], &tmp[0][1], &tmp[0][2]);
+    y.getRgbF(&tmp[1][0], &tmp[1][1], &tmp[1][2]);
+
+    ans[0] = a * tmp[0][0] + (1 - a) * tmp[1][0];
+    ans[1] = a * tmp[0][1] + (1 - a) * tmp[1][1];
+    ans[2] = a * tmp[0][2] + (1 - a) * tmp[1][2];
     ans[3] = 1;
 }
 
@@ -310,7 +311,7 @@ void VizWidget::paintGL()
     vaoSpheres_.release();
 
     GLfloat color[4];
-    auto& buffer = Viewport::getBuffer();
+    auto& buffer = *session->viewportUniformBuffer.constBegin();
     mix(buffer.ucFogColor, buffer.ucBackgroundColor, buffer.ubEnableFog ? buffer.ufFogStrength : 0, color);
 
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -401,16 +402,7 @@ void VizWidget::allocate()
     session->cameraBuffer.allocate(cameraPositions_);
     session->atomBuffer.allocate(atomPositions_);
     session->labelAtlas.allocate();
-
-    if (Viewport::modified)
-    {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[1]);
-        GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-        memcpy(p, &Viewport::getBuffer(), sizeof(viewport_data_t));
-        glUnmapBuffer(GL_UNIFORM_BUFFER);
-
-        Viewport::modified = false;
-    }
+    session->viewportUniformBuffer.allocate(viewport_);
 
     Material::getBuffer().allocate(materials_);
 

@@ -27,11 +27,13 @@ struct viewport_data_t
     float ufFogDistance         __attribute__((aligned(4)));
 }                               __attribute__((aligned(16)));
 
+class Session;
+
 class Viewport : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Viewport(QWidget *parent = 0);
+    explicit Viewport(Session* s, QWidget *parent = 0);
     ~Viewport();
 
     double getSFOpacity() const;
@@ -40,9 +42,6 @@ public:
     AxisPosition getAxisPosition() const;
     double getAxisScale() const;
     bool getAxisTextVisible() const;
-
-    static const viewport_data_t& getBuffer();
-    static bool modified;
 
     void read(const QJsonObject& json);
     void write(QJsonObject& json) const;
@@ -54,8 +53,7 @@ public slots:
 
 private:
     Ui::Viewport *ui;
-
-    static viewport_data_t buffer;
+    Session* session;
 };
 
 #endif // VIEWPORT_H

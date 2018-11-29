@@ -57,6 +57,7 @@ public:
     ListView* listView;
 
     Viewport* viewport;
+    GLBuffer<viewport_data_t> viewportUniformBuffer;
 
     MediaPanel* mediaPanel;
 

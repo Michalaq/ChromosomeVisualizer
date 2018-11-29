@@ -50,6 +50,7 @@ private:
     QOpenGLVertexArrayObject vaoCameras_;
 
     QOpenGLBuffer materials_;
+    QOpenGLBuffer viewport_;
 
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;
@@ -59,7 +60,7 @@ private:
     QOpenGLShaderProgram selectProgram_;
     QOpenGLShaderProgram glowProgram_;
 
-    GLuint buffers[2];
+    GLuint buffers[1];
     QImage image;
     QOpenGLTexture pb;
     QOpenGLTexture sb;

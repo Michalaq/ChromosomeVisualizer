@@ -10,7 +10,6 @@ Session::Session(MainWindow* w) :
     currentCamera(editorCamera),
     origin(0, 0, 0),
     treeView(new TreeView),
-    viewport(new Viewport),
     mediaPanel(new MediaPanel(this, w)),
     chart(new QtCharts::QChart),
     plot(new Plot(this)),
@@ -63,6 +62,9 @@ Session::Session(MainWindow* w) :
 
     connect(plot, &QAbstractSlider::sliderPressed, mediaPanel, &MediaPanel::pause);
     connect(plot, &QAbstractSlider::sliderReleased, mediaPanel, &MediaPanel::resume);
+
+    viewportUniformBuffer.resize(1);
+    viewport = new Viewport(this);
 }
 
 Session::~Session()

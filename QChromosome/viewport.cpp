@@ -1,12 +1,11 @@
 #include "viewport.h"
 #include "ui_viewport.h"
+#include "session.h"
 
-viewport_data_t Viewport::buffer;
-bool Viewport::modified = false;
-
-Viewport::Viewport(QWidget *parent) :
+Viewport::Viewport(Session *s, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Viewport)
+    ui(new Ui::Viewport),
+    session(s)
 {
     ui->setupUi(this);
 
@@ -30,51 +29,44 @@ Viewport::Viewport(QWidget *parent) :
 
     // background color
     connect(ui->widget_2, &Picker::valueChanged, [this](QColor val) {
-        buffer.ucBackgroundColor = val.rgb();
-        modified = true;
+        session->viewportUniformBuffer[0].ucBackgroundColor = val.rgb();
         emit viewportChanged();
     });
 
     // environment color
     connect(ui->comboBox_2, &Picker::valueChanged, [this](QColor val) {
-        buffer.ucEnvironmentColor = val.rgb();
-        modified = true;
+        session->viewportUniformBuffer[0].ucEnvironmentColor = val.rgb();
         emit viewportChanged();
     });
 
     // environment strength
     connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
-        buffer.ufEnvironmentStrength = val / 100;
-        modified = true;
+        session->viewportUniformBuffer[0].ufEnvironmentStrength = val / 100;
         emit viewportChanged();
     });
 
     // enable fog
     connect(ui->checkBox_3, &QCheckBox::toggled, [this](bool checked) {
         ui->widget_5->setEnabled(checked);
-        buffer.ubEnableFog = checked;
-        modified = true;
+        session->viewportUniformBuffer[0].ubEnableFog = checked;
         emit viewportChanged();
     });
 
     // fog color
     connect(ui->comboBox_3, &Picker::valueChanged, [this](QColor val) {
-        buffer.ucFogColor = val.rgb();
-        modified = true;
+        session->viewportUniformBuffer[0].ucFogColor = val.rgb();
         emit viewportChanged();
     });
 
     // fog strength
     connect(ui->doubleSpinBox_3, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
-        buffer.ufFogStrength = val / 100;
-        modified = true;
+        session->viewportUniformBuffer[0].ufFogStrength = val / 100;
         emit viewportChanged();
     });
 
     // fog distance
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
-        buffer.ufFogDistance = val;
-        modified = true;
+        session->viewportUniformBuffer[0].ufFogDistance = val;
         emit viewportChanged();
     });
 
@@ -129,11 +121,6 @@ double Viewport::getAxisScale() const
 bool Viewport::getAxisTextVisible() const
 {
     return ui->checkBox_2->isChecked();
-}
-
-const viewport_data_t& Viewport::getBuffer()
-{
-    return buffer;
 }
 
 #include <QJsonObject>
