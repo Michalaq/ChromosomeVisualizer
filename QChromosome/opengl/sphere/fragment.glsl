@@ -99,5 +99,7 @@ void main() {
     float fogFactor = exp(-linearDistance / ufFogDistance);
     if (!ubEnableFog) fogFactor = 1.f;
     
-    fragColor = vec4(mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor)), 1.f);
+    vec3 cResultColor = mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor));
+    
+    fragColor = vec4(mix(cResultColor, vec3(1.f), ((iFlags & 0x1) == 0x1) ? .33 : 0.f), 1.f);
 }
