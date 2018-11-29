@@ -9,13 +9,13 @@ bool GzFile::open(QIODevice::OpenMode mode)
 {
     if (mode.testFlag(QIODevice::ReadOnly))
     {
-        file = gzopen64(name.toLocal8Bit(), "rb");
+        file = gzopen(name.toLocal8Bit(), "rb");
         return true;
     }
 
     if (mode.testFlag(QIODevice::WriteOnly))
     {
-        file = gzopen64(name.toLocal8Bit(), "wb");
+        file = gzopen(name.toLocal8Bit(), "wb");
         return true;
     }
 

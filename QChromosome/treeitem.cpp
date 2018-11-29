@@ -505,12 +505,15 @@ ChainItem::~ChainItem()
 }
 
 ResidueItem::ResidueItem(const QByteArray &resName, Session* s, TreeItem *parentItem) :
-    TreeItem({resName, NodeType::ResidueObject, s->residueCount.contains(resName) ? s->residueCount[resName] : s->residueCount[resName] = s->residueCount.count() - 1, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
+    TreeItem({resName, NodeType::ResidueObject, s->residueCount.contains(resName) ? s->residueCount[resName] : s->residueCount.count(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
     decoration = icon;
+
+    if (!s->residueCount.contains(resName))
+        s->residueCount.insert(resName, s->residueCount.count());
 }
 
 ResidueItem::~ResidueItem()

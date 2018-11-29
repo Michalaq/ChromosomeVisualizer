@@ -66,12 +66,12 @@ public:
 
     inline qint64 pos() const override
     {
-        return gztell64(file);
+        return gztell(file);
     }
 
     inline bool seek(qint64 pos) override
     {
-        return gzseek64(file, pos, SEEK_SET);
+        return gzseek(file, pos, SEEK_SET);
     }
 
     inline bool readLine(char *data, qint64 maxSize) override
