@@ -164,10 +164,15 @@ DISTFILES += \
     opengl/cylinder/fragment.glsl \
     opengl/cylinder/geometry.glsl \
     opengl/cylinder/vertex.glsl \
-    opengl/labels/fragment.glsl \
-    opengl/labels/geometry.glsl \
-    opengl/labels/vertex.glsl \
-    opengl/picking/fragment.glsl \
+    opengl/glow/fragment.glsl \
+    opengl/glow/geometry.glsl \
+    opengl/glow/vertex.glsl \
+    opengl/index/fragment.glsl \
+    opengl/label/fragment.glsl \
+    opengl/label/geometry.glsl \
+    opengl/label/vertex.glsl \
+    opengl/select/fragment.glsl \
+    opengl/select/geometry.glsl \
     opengl/sphere/fragment.glsl \
     opengl/sphere/geometry.glsl \
     opengl/sphere/vertex.glsl
