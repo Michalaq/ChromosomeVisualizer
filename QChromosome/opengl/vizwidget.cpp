@@ -97,7 +97,7 @@ void VizWidget::initializeGL()
             GL_FLOAT,
             GL_FALSE,
             sizeof(VizCameraInstance),
-            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
+            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
         );
     }
 
@@ -110,7 +110,7 @@ void VizWidget::initializeGL()
             GL_FLOAT,
             GL_FALSE,
             sizeof(VizCameraInstance),
-            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
+            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
         );
     }
 
@@ -227,7 +227,7 @@ void VizWidget::initializeGL()
 
     {
         glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(camera_data_t), &session->cameraUniformBuffer, GL_DYNAMIC_DRAW);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(VizCameraInstance), session->cameraBuffer.constData() + session->currentCameraId, GL_DYNAMIC_DRAW);
 
         const GLuint binding_point_index = 0;
         glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[0]);
@@ -374,6 +374,7 @@ void VizWidget::paintGL()
     labelProgram_.bind();
 
     labelProgram_.setUniformValue("SampleTexture", 1);
+    labelProgram_.setUniformValue("uvScreenSize", size());
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
@@ -411,7 +412,7 @@ void VizWidget::allocate()
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, session->cameraUniformBuffer, sizeof(camera_data_t));
+    memcpy(p, session->cameraBuffer.constData() + session->currentCameraId, sizeof(VizCameraInstance));
     glUnmapBuffer(GL_UNIFORM_BUFFER);
 
     session->labelAtlas.allocate();

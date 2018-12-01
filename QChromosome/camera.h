@@ -8,14 +8,6 @@
 #include <QMatrix4x4>
 
 class Session;
-struct VizCameraInstance;
-
-struct camera_data_t
-{
-    QMatrix4x4 projection   __attribute__((aligned(16)));
-    QMatrix4x4 modelView    __attribute__((aligned(16)));
-    QSize uvScreenSize      __attribute__((aligned(8)));
-}                           __attribute__((aligned(16)));
 
 class Camera : public SplineInterpolator
 {
@@ -169,8 +161,6 @@ private:
 
     Session *session;
     int id;
-
-    camera_data_t cameraUniformBuffer;
 
     Mode mode;
     qreal eyeSeparation;

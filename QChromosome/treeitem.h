@@ -109,10 +109,10 @@ private:
 
 struct VizCameraInstance
 {
-    QMatrix4x4 modelView;
-    QMatrix4x4 projection;
-    VizFlags flags = VisibleInEditor | VisibleInRenderer;
-};
+    QMatrix4x4 projection   __attribute__((aligned(16)));
+    QMatrix4x4 modelView    __attribute__((aligned(16)));
+    VizFlags flags          __attribute__((aligned(8))) = VisibleInEditor | VisibleInRenderer;
+}                           __attribute__((aligned(16)));
 
 class Camera;
 

@@ -67,7 +67,6 @@ Camera::Camera(const Camera& camera)
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
       session(camera.session),
-      cameraUniformBuffer(camera.cameraUniformBuffer),
       mode(camera.mode),
       eyeSeparation(camera.eyeSeparation)
 {
@@ -136,7 +135,6 @@ void Camera::loadFrame(const SplineKeyframe &frame)
 
 void Camera::resizeEvent(QResizeEvent *event)
 {
-    cameraUniformBuffer.uvScreenSize = event->size();
     emit projectionChanged(updateProjection());
 
     Draggable::resizeEvent(event);
@@ -166,8 +164,8 @@ void Camera::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
 
-    emit modelViewChanged(cameraUniformBuffer.modelView = modelView);
-    emit projectionChanged(cameraUniformBuffer.projection = projection);
+    emit modelViewChanged(modelView);
+    emit projectionChanged(projection);
 }
 
 #include <QPainter>
@@ -560,7 +558,7 @@ QMatrix4x4& Camera::updateModelView()
 
     update();
 
-    return session->cameraBuffer[id].modelView = modelView = cameraUniformBuffer.modelView = modelView.inverted();
+    return session->cameraBuffer[id].modelView = modelView = modelView.inverted();
 }
 
 QMatrix4x4& Camera::updateProjection()
@@ -580,7 +578,7 @@ QMatrix4x4& Camera::updateProjection()
         projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
     }
 
-    return session->cameraBuffer[id].projection = cameraUniformBuffer.projection = projection;
+    return session->cameraBuffer[id].projection = projection;
 }
 
 void Camera::updateAngles()

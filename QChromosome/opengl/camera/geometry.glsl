@@ -10,11 +10,10 @@ layout (std140) uniform shader_data
     int pro_flagBits; 
     mat4 mv;
     int mv_flagBits;
-    ivec2 uvScreenSize;
 };
 
-flat in mat4 gModelView[1];
 flat in mat4 gProjection[1];
+flat in mat4 gModelView[1];
 flat in int giFlags[1];
 
 vec3 tab[] = vec3[](

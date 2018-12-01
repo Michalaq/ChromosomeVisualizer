@@ -42,8 +42,6 @@ public:
     QVector<GLvoid*> chainOffsetsBuffer;
     GLBuffer<GLuint> chainIndicesBuffer;
 
-    camera_data_t* cameraUniformBuffer;
-
     LabelAtlas labelAtlas;
 
     ProjectSettings* projectSettings;
@@ -53,6 +51,8 @@ public:
     Camera* currentCamera;
     QList<Camera*> userCameras;
     QVector3D origin;
+
+    int currentCameraId;
 
     TreeView* treeView;
     ListView* listView;

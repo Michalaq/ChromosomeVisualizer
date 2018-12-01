@@ -6,7 +6,6 @@ layout (std140) uniform shader_data
     int pro_flagBits; 
     mat4 mv;
     int mv_flagBits;
-    ivec2 uvScreenSize;
 };
 
 in vec3 vViewPosition;

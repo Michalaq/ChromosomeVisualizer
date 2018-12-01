@@ -9,6 +9,7 @@ Session::Session(MainWindow* w) :
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
     origin(0, 0, 0),
+    currentCameraId(editorCamera->id),
     treeView(new TreeView),
     mediaPanel(new MediaPanel(this, w)),
     chart(new QtCharts::QChart),
@@ -148,9 +149,9 @@ void Session::reallocateBuffers()
 void Session::changeCamera(Camera* camera)
 {
     currentCamera = camera ? camera : editorCamera;
+    currentCameraId = currentCamera->id;
 
     mediaPanel->changeCamera(currentCamera);
-    cameraUniformBuffer = &currentCamera->cameraUniformBuffer;
 }
 
 bool Session::openProject()
