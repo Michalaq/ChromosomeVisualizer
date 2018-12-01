@@ -2,6 +2,7 @@
 
 VizWidget::VizWidget(QWidget *parent)
     : Selection(parent),
+      chainIndices_(QOpenGLBuffer::IndexBuffer),
       pb(QOpenGLTexture::Target2D),
       sb(QOpenGLTexture::Target2D)
 {
@@ -216,6 +217,9 @@ void VizWidget::initializeGL()
     glowProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/glow/fragment.glsl");
     glowProgram_.link();
 
+    chainIndices_.create();
+    chainIndices_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
     materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
@@ -322,9 +326,11 @@ void VizWidget::paintGL()
     // Draw cylinders and spheres
     vaoSpheres_.bind();
     cylinderProgram_.bind();
+    chainIndices_.bind();
 
-    glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, reinterpret_cast<const GLvoid * const *>(session->chainIndicesBuffer.data()), session->chainCountBuffer.count());
+    glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, session->chainOffsetsBuffer.data(), session->chainCountBuffer.count());
 
+    chainIndices_.release();
     cylinderProgram_.release();
     sphereProgram_.bind();
 
@@ -401,15 +407,17 @@ void VizWidget::allocate()
 {
     session->cameraBuffer.allocate(cameraPositions_);
     session->atomBuffer.allocate(atomPositions_);
-    session->labelAtlas.allocate();
-    session->viewportUniformBuffer.allocate(viewport_);
-
-    Material::getBuffer().allocate(materials_);
+    session->chainIndicesBuffer.allocate(chainIndices_);
 
     glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
     GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
     memcpy(p, session->cameraUniformBuffer, sizeof(camera_data_t));
     glUnmapBuffer(GL_UNIFORM_BUFFER);
+
+    session->labelAtlas.allocate();
+    session->viewportUniformBuffer.allocate(viewport_);
+
+    Material::getBuffer().allocate(materials_);
 }
 
 void VizWidget::pickSpheres()

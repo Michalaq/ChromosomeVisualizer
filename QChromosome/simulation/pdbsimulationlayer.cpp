@@ -232,7 +232,8 @@ void PDBSimulationLayer::makeModel()
         f++;
     }
 
-    c_range.first = session->chainIndicesBuffer.size();
+    c_range.first = session->chainCountBuffer.size();
+    i_range.first = session->chainIndicesBuffer.size();
 
     visited.fill(false, f);
 
@@ -265,24 +266,27 @@ void PDBSimulationLayer::makeModel()
 
             for (const auto& chain : chains)
             {
-                session->chainCountBuffer.append(chain.count());
+                auto count = chain.count();
+                auto offset = session->chainIndicesBuffer.count();
 
-                auto indices = new GLuint[chain.size()];
-                std::reverse_copy(chain.begin(), chain.end(), indices);
+                session->chainCountBuffer.append(count);
+                session->chainOffsetsBuffer.append(reinterpret_cast<GLvoid*>(offset * sizeof(GLuint)));
 
-                session->chainIndicesBuffer.append(indices);
+                session->chainIndicesBuffer.resize(offset + count);
+                qCopy(chain.rbegin(), chain.rend(), session->chainIndicesBuffer.data() + offset);
             }
 
             circuit.clear();
         }
 
-    c_range.second = session->chainIndicesBuffer.size();
+    c_range.second = session->chainCountBuffer.size();
+    i_range.second = session->chainIndicesBuffer.size();
 
     delete[] connections;
     visited.clear();
 }
 
-QPair<int, int> PDBSimulationLayer::remove()
+std::tuple<int, int, int> PDBSimulationLayer::remove()
 {
     session->simulation->removeOne(this);
 
@@ -290,28 +294,34 @@ QPair<int, int> PDBSimulationLayer::remove()
     session->indices.remove(a_range.first, a_range.second - a_range.first);
 
     session->chainCountBuffer.remove(c_range.first, c_range.second - c_range.first);
-    session->chainIndicesBuffer.remove(c_range.first, c_range.second - c_range.first);
+    session->chainOffsetsBuffer.remove(c_range.first, c_range.second - c_range.first);
+    session->chainIndicesBuffer.remove(i_range.first, i_range.second - i_range.first);
 
     session->setLastFrame(session->simulation->lastEntry());
 
     qDeleteAll(functions);
     session->plot->updateSimulation();
 
-    return {a_range.second - a_range.first, c_range.second - c_range.first};
+    return std::make_tuple(a_range.second - a_range.first, c_range.second - c_range.first, i_range.second - i_range.first);
 }
 
-void PDBSimulationLayer::shift(QPair<int, int> offset)
+void PDBSimulationLayer::shift(std::tuple<int, int, int> offset)
 {
-    a_range.first -= offset.first;
-    a_range.second -= offset.first;
+    a_range.first -= std::get<0>(offset);
+    a_range.second -= std::get<0>(offset);
 
     for (int i = 0; i < SERIAL_MAX; i++)
-        this->offset[i] -= offset.first;
+        this->offset[i] -= std::get<0>(offset);
 
-    c_range.first -= offset.second;
-    c_range.second -= offset.second;
+    c_range.first -= std::get<1>(offset);
+    c_range.second -= std::get<1>(offset);
 
     for (int i = c_range.first; i < c_range.second; i++)
-        for (int j = 0; j < session->chainCountBuffer[i]; j++)
-            session->chainIndicesBuffer[i][j] -= offset.first;
+        session->chainOffsetsBuffer[i] = reinterpret_cast<GLvoid*>(reinterpret_cast<quintptr>(session->chainOffsetsBuffer[i]) - std::get<2>(offset) * sizeof(GLuint));
+
+    i_range.first -= std::get<2>(offset);
+    i_range.second -= std::get<2>(offset);
+
+    for (int i = i_range.first; i < i_range.second; i++)
+        session->chainIndicesBuffer[i] -= std::get<0>(offset);
 }

@@ -17,13 +17,13 @@ class VizWidget :   public Selection,
     Q_INTERFACES(Pickable)
 
 public:
-    VizWidget(QWidget *parent = 0);
-    virtual ~VizWidget();
+    VizWidget(QWidget *parent = Q_NULLPTR);
+    virtual ~VizWidget() Q_DECL_OVERRIDE;
 
-    virtual void initializeGL() override;
-    virtual void paintGL() override;
+    virtual void initializeGL() Q_DECL_OVERRIDE;
+    virtual void paintGL() Q_DECL_OVERRIDE;
 
-    QPersistentModelIndex pick(const QPoint& pos);
+    QPersistentModelIndex pick(const QPoint& pos) Q_DECL_OVERRIDE;
 
     void setSession(Session* s);
 
@@ -31,26 +31,26 @@ signals:
     void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
+    void dragMoveEvent(QDragMoveEvent *event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
 
-    void mouseReleaseEvent(QMouseEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
 
 private:
     void allocate();
 
+    QOpenGLBuffer cameraPositions_;
     QOpenGLBuffer atomPositions_;
+    QOpenGLBuffer chainIndices_;
+    QOpenGLBuffer materials_;
+    QOpenGLBuffer viewport_;
+
+    QOpenGLVertexArrayObject vaoCameras_;
     QOpenGLVertexArrayObject vaoSpheres_;
     QOpenGLVertexArrayObject vaoLabels_;
     QOpenGLVertexArrayObject vaoEmpty_;
-
-    QOpenGLBuffer cameraPositions_;
-    QOpenGLVertexArrayObject vaoCameras_;
-
-    QOpenGLBuffer materials_;
-    QOpenGLBuffer viewport_;
 
     QOpenGLShaderProgram sphereProgram_;
     QOpenGLShaderProgram cylinderProgram_;

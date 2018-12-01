@@ -25,8 +25,8 @@ public:
 
     virtual int lastEntry() const = 0;
 
-    virtual QPair<int, int> remove() = 0;
-    virtual void shift(QPair<int, int> offset) = 0;
+    virtual std::tuple<int, int, int> remove() = 0;
+    virtual void shift(std::tuple<int, int, int> offset) = 0;
 
 protected:
     Session* session;

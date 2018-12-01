@@ -39,7 +39,8 @@ public:
     GLBuffer<VizCameraInstance> cameraBuffer;
     GLBuffer<VizBallInstance> atomBuffer;
     QVector<GLsizei> chainCountBuffer;
-    QVector<GLuint*> chainIndicesBuffer;
+    QVector<GLvoid*> chainOffsetsBuffer;
+    GLBuffer<GLuint> chainIndicesBuffer;
 
     camera_data_t* cameraUniformBuffer;
 

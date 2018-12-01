@@ -58,8 +58,8 @@ protected:
     float cylinderRadius;
     float sphereRadius;
 
-    virtual QPair<int, int> remove();
-    virtual void shift(QPair<int, int> offset);
+    virtual std::tuple<int, int, int> remove();
+    virtual void shift(std::tuple<int, int, int> offset);
 
 private:
     QList<TreeItem*> m_childItems;
@@ -97,8 +97,8 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    QPair<int, int> remove();
-    void shift(QPair<int, int> offset);
+    std::tuple<int, int, int> remove();
+    void shift(std::tuple<int, int, int> offset);
 
 private:
     SimulationLayer* layer;
@@ -133,7 +133,7 @@ public:
     Camera* getCamera() const;
 
 protected:
-    QPair<int, int> remove();
+    std::tuple<int, int, int> remove();
 
 private:
     Camera* camera;
@@ -176,7 +176,7 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    void shift(QPair<int, int> offset);
+    void shift(std::tuple<int, int, int> offset);
 
 private:
     int id;

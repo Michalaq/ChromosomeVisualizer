@@ -71,14 +71,14 @@ int TreeItem::row() const
     return 0;
 }
 
-QPair<int, int> operator+(const QPair<int, int>& lhs, const QPair<int, int>& rhs)
+std::tuple<int, int, int> operator+(const std::tuple<int, int, int>& lhs, const std::tuple<int, int, int>& rhs)
 {
-    return {lhs.first + rhs.first, lhs.second + rhs.second};
+    return std::make_tuple(std::get<0>(lhs) + std::get<0>(rhs), std::get<1>(lhs) + std::get<1>(rhs), std::get<2>(lhs) + std::get<2>(rhs));
 }
 
 void TreeItem::removeRows(int row, int count)
 {
-    QPair<int, int> offset;
+    std::tuple<int, int, int> offset;
 
     for (int i = 0; i < count; i++)
     {
@@ -248,12 +248,12 @@ float TreeItem::getSphereRadius() const
     return sphereRadius;
 }
 
-QPair<int, int> TreeItem::remove()
+std::tuple<int, int, int> TreeItem::remove()
 {
     return {};
 }
 
-void TreeItem::shift(QPair<int, int> offset)
+void TreeItem::shift(std::tuple<int, int, int> offset)
 {
     for (auto c : m_childItems)
         c->shift(offset);
@@ -293,7 +293,7 @@ void LayerItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
-QPair<int, int> LayerItem::remove()
+std::tuple<int, int, int> LayerItem::remove()
 {
     auto offset = layer->remove();
     delete layer;
@@ -301,7 +301,7 @@ QPair<int, int> LayerItem::remove()
     return TreeItem::remove() + offset;
 }
 
-void LayerItem::shift(QPair<int, int> offset)
+void LayerItem::shift(std::tuple<int, int, int> offset)
 {
     layer->shift(offset);
 
@@ -371,7 +371,7 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-QPair<int, int> CameraItem::remove()
+std::tuple<int, int, int> CameraItem::remove()
 {
     session->userCameras.last()->id = camera->id;
     session->userCameras[camera->id - 1] = session->userCameras.last();
@@ -483,9 +483,9 @@ void AtomItem::write(QJsonObject &json) const
         json["Object"] = object;
 }
 
-void AtomItem::shift(QPair<int, int> offset)
+void AtomItem::shift(std::tuple<int, int, int> offset)
 {
-    setData(2, id -= offset.first);
+    setData(2, id -= std::get<0>(offset));
 
     TreeItem::shift(offset);
 }

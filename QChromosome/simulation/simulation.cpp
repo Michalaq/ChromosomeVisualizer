@@ -73,12 +73,12 @@ void Simulation::writePOVFrames(QTextStream& stream, int fbeg, int fend)
             stream << "}\n";
         }
 
-    // connections
-    for (int i = 0; i < c_count; i++)
-        for (int j = 0; j < session->chainCountBuffer[i] - 1; j++)
-        {
-            uint* offset = &session->chainIndicesBuffer[i][j];
+    uint* offset = session->chainIndicesBuffer.data();
 
+    // connections
+    for (int i = 0; i < c_count; i++, offset++)
+        for (int j = 0; j < session->chainCountBuffer[i] - 1; j++, offset++)
+        {
             const auto& first = session->atomBuffer[offset[0]];
             const auto& second = session->atomBuffer[offset[1]];
 
