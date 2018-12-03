@@ -8,8 +8,7 @@ Session::Session(MainWindow* w) :
     renderSettings(new TabWidget(this)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
-    origin(0, 0, 0),
-    currentCameraId(editorCamera->id),
+    cameraUniformBuffer(editorCamera->id),
     treeView(new TreeView),
     mediaPanel(new MediaPanel(this, w)),
     chart(new QtCharts::QChart),
@@ -149,8 +148,7 @@ void Session::reallocateBuffers()
 void Session::changeCamera(Camera* camera)
 {
     currentCamera = camera ? camera : editorCamera;
-    currentCameraId = currentCamera->id;
-
+    cameraUniformBuffer = currentCamera->id;
     mediaPanel->changeCamera(currentCamera);
 }
 

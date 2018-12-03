@@ -223,14 +223,13 @@ void VizWidget::initializeGL()
     materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
-    glGenBuffers(1, buffers);
+    camera_.create();
+    camera_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    camera_.bind(); camera_.allocate(sizeof(VizCameraInstance)); camera_.release();
 
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(VizCameraInstance), session->cameraBuffer.constData() + session->currentCameraId, GL_DYNAMIC_DRAW);
-
         const GLuint binding_point_index = 0;
-        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, buffers[0]);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, camera_.bufferId());
 
         unsigned int block_index;
 
@@ -409,12 +408,7 @@ void VizWidget::allocate()
     session->cameraBuffer.allocate(cameraPositions_);
     session->atomBuffer.allocate(atomPositions_);
     session->chainIndicesBuffer.allocate(chainIndices_);
-
-    glBindBuffer(GL_UNIFORM_BUFFER, buffers[0]);
-    GLvoid* p = glMapBuffer(GL_UNIFORM_BUFFER, GL_WRITE_ONLY);
-    memcpy(p, session->cameraBuffer.constData() + session->currentCameraId, sizeof(VizCameraInstance));
-    glUnmapBuffer(GL_UNIFORM_BUFFER);
-
+    camera_.bind(); camera_.write(0, session->cameraBuffer.constData() + session->cameraUniformBuffer, sizeof(VizCameraInstance)); camera_.release();
     session->labelAtlas.allocate();
     session->viewportUniformBuffer.allocate(viewport_);
 

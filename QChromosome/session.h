@@ -52,7 +52,7 @@ public:
     QList<Camera*> userCameras;
     QVector3D origin;
 
-    int currentCameraId;
+    int cameraUniformBuffer;
 
     TreeView* treeView;
     ListView* listView;
