@@ -63,19 +63,16 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
     });
 
     // connect label
-    connect(ui->textEdit, &QTextEdit::textChanged, [this] {
-        QFont font = ui->fontComboBox->value();
-        font.setBold(ui->comboBox_4->currentText().contains("Bold"));
-        font.setItalic(ui->comboBox_4->currentText().contains("Italic"));
-        font.setPointSize(ui->spinBox->value());
+    connect(ui->textEdit, &QTextEdit::textChanged, this, &AtomAttributes::updateLabels);
+    connect(ui->comboBox_4, &Picker::valueChanged, this, &AtomAttributes::updateLabels);
+    connect(ui->comboBox_6, &Picker::valueChanged, this, &AtomAttributes::updateLabels);
+    connect(ui->fontComboBox, &FontComboBox::valueChanged, this, &AtomAttributes::updateLabels);
+    connect(ui->comboBox_3, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &AtomAttributes::updateLabels);
+    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &AtomAttributes::updateLabels);
 
-        QString val = ui->textEdit->toPlainText();
-
-        auto r = session->labelAtlas.addLabel(val, font);
-        for (auto a : atoms)
-            a->setLabel(val, r);
-        emit attributeChanged();
-    });
+    ui->comboBox_4->setValue(QColor(0, 0, 0, 76), false);
+    ui->comboBox_6->setValue(Qt::white, false);
+    ui->spinBox->setValue(9, false);
 }
 
 AtomAttributes::~AtomAttributes()
@@ -298,4 +295,15 @@ void AtomAttributes::updatePosition()
         ui->doubleSpinBox_3->setMultipleValues();
     else
         ui->doubleSpinBox_3->setValue(z, false);
+}
+
+void AtomAttributes::updateLabels()
+{
+    const QString& val = ui->textEdit->toPlainText();
+    auto r = session->labelAtlas.addLabel(ui);
+
+    for (auto a : atoms)
+        a->setLabel(val, r);
+
+    emit attributeChanged();
 }

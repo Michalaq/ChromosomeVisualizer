@@ -6,6 +6,8 @@
 #include <QImage>
 #include <QFont>
 
+#include "ui_atomattributes.h"
+
 class LabelAtlas
 {
 public:
@@ -15,7 +17,7 @@ public:
     void allocate();
     GLuint textureId() const;
 
-    QRect addLabel(const QString& text, const QFont &font);
+    QRect addLabel(const Ui::AtomAttributes* ui);
 
 private:
     QOpenGLTexture texture;

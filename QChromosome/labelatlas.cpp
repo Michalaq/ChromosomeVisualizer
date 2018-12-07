@@ -32,17 +32,28 @@ GLuint LabelAtlas::textureId() const
 
 #include <QPainter>
 
-QRect LabelAtlas::addLabel(const QString &text, const QFont& font)
+QRect LabelAtlas::addLabel(const Ui::AtomAttributes* ui)
 {
-    if (text.isEmpty())
+    const auto& text = ui->textEdit->toPlainText();
+
+    if (text.isEmpty() || ui->spinBox->value() == 0)
         return QRect();
+
+    auto font = ui->fontComboBox->value();
+    font.setPointSize(qAbs(ui->spinBox->value()));
 
     auto fm = QFontMetrics(font);
 
-    int textWidth = fm.width(text);
-    int textHeight = fm.height();
+    int textWidth = 0;
+    int textHeight = 0;
 
-    QRect rect(offset, 0, textWidth, textHeight);
+    for (const auto& tmp : text.split('\n'))
+    {
+        textWidth = qMax(textWidth, fm.width(tmp));
+        textHeight += fm.height();
+    }
+
+    QRect rect(offset, 0, textWidth += 6, textHeight += 6);
     offset += textWidth;
 
     int width = image.width();
@@ -60,10 +71,17 @@ QRect LabelAtlas::addLabel(const QString &text, const QFont& font)
     painter.translate(0, textHeight);
     painter.scale(1, -1);
 
-    painter.setFont(font);
-    painter.setPen(Qt::green);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(ui->comboBox_4->value());
 
-    painter.drawText(rect, Qt::AlignCenter, text);
+    painter.drawRoundedRect(rect, 3, 3);
+
+    painter.setFont(font);
+    painter.setPen(ui->comboBox_6->value());
+
+    static const int flags[] = {Qt::AlignLeft, Qt::AlignCenter, Qt::AlignRight};
+
+    painter.drawText(rect.marginsRemoved({3,3,3,3}), flags[ui->comboBox_3->currentIndex()], text);
 
     modified = true;
 

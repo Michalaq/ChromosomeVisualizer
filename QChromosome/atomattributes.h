@@ -42,6 +42,7 @@ private:
     QList<AtomItem*> atoms;
 
     void updateModelSelection();
+    void updateLabels();
 };
 
 #endif // ATOMATTRIBUTES_H

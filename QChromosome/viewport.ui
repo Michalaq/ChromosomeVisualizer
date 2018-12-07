@@ -811,8 +811,8 @@ QToolBox::tab:selected {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>344</width>
-                <height>68</height>
+                <width>244</width>
+                <height>40</height>
                </rect>
               </property>
               <attribute name="label">
@@ -861,7 +861,7 @@ QToolBox::tab:selected {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>330</width>
+                <width>210</width>
                 <height>96</height>
                </rect>
               </property>
@@ -927,8 +927,8 @@ QToolBox::tab:selected {
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>344</width>
-                <height>68</height>
+                <width>330</width>
+                <height>96</height>
                </rect>
               </property>
               <attribute name="label">
@@ -968,10 +968,49 @@ QToolBox::tab:selected {
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="ComboBox" name="comboBox_8"/>
+                <widget class="ComboBox" name="comboBox_8">
+                 <item>
+                  <property name="text">
+                   <string>Left</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Middle</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Right</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
                <item row="0" column="1">
                 <widget class="FontComboBox" name="comboBox_7"/>
+               </item>
+               <item row="2" column="0">
+                <widget class="Label" name="label_21">
+                 <property name="text">
+                  <string>Height</string>
+                 </property>
+                 <property name="class" stdset="0">
+                  <string>item</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="spinBox">
+                 <property name="suffix">
+                  <string> pt</string>
+                 </property>
+                 <property name="minimum">
+                  <number>-2147483647</number>
+                 </property>
+                 <property name="maximum">
+                  <number>2147483647</number>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
