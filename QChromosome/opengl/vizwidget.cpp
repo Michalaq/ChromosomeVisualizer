@@ -423,6 +423,7 @@ void VizWidget::pickSpheres()
     allocate();
 
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 
     // Draw picking framebuffer
     glDrawBuffer(GL_COLOR_ATTACHMENT1);
@@ -443,6 +444,8 @@ void VizWidget::pickSpheres()
     glReadBuffer(GL_COLOR_ATTACHMENT1);
     glReadPixels(0, 0, width(), height(), GL_RED_INTEGER, GL_INT, image.bits());
 
+    doneCurrent();
+
     image = image.mirrored();
 }
 
@@ -457,7 +460,7 @@ void VizWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void VizWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (image.pixel(event->pos()) != 0xFFFFFFFF)
+    if (image.pixel(event->pos()) != sf)
         event->acceptProposedAction();
     else
         event->ignore();
@@ -566,5 +569,5 @@ void VizWidget::resizeEvent(QResizeEvent* event)
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, sb.textureId(), 0);
 
-    image = QImage(width(), height(), QImage::Format_RGBA8888);
+    image = QImage(width(), height(), QImage::Format_ARGB32_Premultiplied);
 }
