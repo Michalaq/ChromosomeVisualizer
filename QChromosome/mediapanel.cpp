@@ -22,7 +22,7 @@ MediaPanel::MediaPanel(Session* s, MainWindow* w, QWidget *parent) :
     setFPS(session->projectSettings->getFPS());
     connect(&timer, &QTimer::timeout, [this] {timerEvent(Q_NULLPTR);});
 
-    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setDocumentTime);
+    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setFPS);
     connect(ui->horizontalSlider, &QSlider::valueChanged, session, &Session::setDocumentTime);
     connect(ui->spinBox_2, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setMinimumTime);
     connect(ui->spinBox_3, QOverload<int>::of(&QSpinBox::valueChanged), session, &Session::setMaximumTime);
@@ -100,12 +100,12 @@ void MediaPanel::goToPreviousFrame()
 
 void MediaPanel::setFPS(int fps)
 {
+    ui->spinBox->setValue(fps, false);
     timer.setInterval(1000 / fps);
 }
 
 void MediaPanel::setDocumentTime(int time)
 {
-    ui->spinBox->setValue(time, false);
     ui->horizontalSlider->setValue(time, false);
 }
 
@@ -137,7 +137,6 @@ void MediaPanel::setPreviewMaxTime(int time)
 
 void MediaPanel::setLastFrame(int time)
 {
-    ui->spinBox->setMaximum(time);
     ui->horizontalSlider->setMaximum(time);
     ui->spinBox_3->setMaximum(time);
 }
@@ -177,7 +176,7 @@ void MediaPanel::timerEvent(QTimerEvent*)
             session->setDocumentTime(next);
         else
         {
-            if (maxTime == ui->spinBox->maximum())
+            if (maxTime == ui->horizontalSlider->maximum())
             {
                 int tmp = session->simulation->cacheHeaders(next);
 

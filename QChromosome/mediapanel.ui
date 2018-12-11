@@ -46,11 +46,11 @@
        <property name="accelerated">
         <bool>true</bool>
        </property>
-       <property name="suffix">
-        <string>F</string>
+       <property name="minimum">
+        <number>1</number>
        </property>
        <property name="maximum">
-        <number>0</number>
+        <number>500</number>
        </property>
       </widget>
      </item>
