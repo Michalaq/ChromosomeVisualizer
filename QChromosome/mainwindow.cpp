@@ -92,9 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                                      ui->dockWidget_3->recentlyClosedAction()
                                                  });
 
-    addAction(ui->actionViewport);
-
-    connect(ui->actionViewport, &QAction::triggered, [this] {
+    connect(ui->actionConfigure, &QAction::triggered, [this] {
         ui->stackedWidget->setCurrentWidget(session->viewport);
         ui->dockWidget_2->show();
     });

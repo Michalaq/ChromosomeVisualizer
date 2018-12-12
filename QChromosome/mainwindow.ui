@@ -586,8 +586,39 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
     <addaction name="separator"/>
     <addaction name="actionRender_settings"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuCameras">
+     <property name="title">
+      <string>Cameras</string>
+     </property>
+     <widget class="QMenu" name="menuUse_camera">
+      <property name="title">
+       <string>Use camera</string>
+      </property>
+      <addaction name="actionDefault_camera"/>
+      <addaction name="separator"/>
+     </widget>
+     <addaction name="menuUse_camera"/>
+     <addaction name="separator"/>
+     <addaction name="actionPerspective"/>
+     <addaction name="actionParallel"/>
+    </widget>
+    <widget class="QMenu" name="menuOptions">
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <addaction name="actionDefault_light"/>
+     <addaction name="actionConfigure"/>
+    </widget>
+    <addaction name="menuCameras"/>
+    <addaction name="menuOptions"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
    <addaction name="menuObject"/>
    <addaction name="menuSelection"/>
    <addaction name="menuTools"/>
@@ -959,18 +990,6 @@ QLineEdit {
     <string>Alt+F4</string>
    </property>
   </action>
-  <action name="actionViewport">
-   <property name="icon">
-    <iconset resource="icons.qrc">
-     <normaloff>:/dialogs/view</normaloff>:/dialogs/view</iconset>
-   </property>
-   <property name="text">
-    <string>Viewport</string>
-   </property>
-   <property name="shortcut">
-    <string>Shift+V</string>
-   </property>
-  </action>
   <action name="actionInfo">
    <property name="text">
     <string>About...</string>
@@ -1214,6 +1233,38 @@ QLineEdit {
    </property>
    <property name="statusTip">
     <string>Pivot point</string>
+   </property>
+  </action>
+  <action name="actionPerspective">
+   <property name="text">
+    <string>Perspective</string>
+   </property>
+  </action>
+  <action name="actionParallel">
+   <property name="text">
+    <string>Parallel</string>
+   </property>
+  </action>
+  <action name="actionDefault_camera">
+   <property name="text">
+    <string>Default camera</string>
+   </property>
+  </action>
+  <action name="actionDefault_light">
+   <property name="text">
+    <string>Default light...</string>
+   </property>
+  </action>
+  <action name="actionConfigure">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/view</normaloff>:/dialogs/view</iconset>
+   </property>
+   <property name="text">
+    <string>Configure...</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+V</string>
    </property>
   </action>
  </widget>
