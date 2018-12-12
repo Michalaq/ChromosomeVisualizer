@@ -30,7 +30,7 @@
         <file alias="povray">icons/povray_icon.svg</file>
         <file alias="ffmpeg">icons/ffmpeg_icon.svg</file>
         <file alias="render">icons/render_icon.svg</file>
-        <file alias="settings">icons/render_settings_icon.svg</file>
+        <file alias="settings">icons/gear_icon.svg</file>
     </qresource>
     <qresource prefix="/objects">
         <file alias="atom">icons/atom_icon.svg</file>
