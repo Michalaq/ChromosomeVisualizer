@@ -267,8 +267,8 @@ LayerItem::LayerItem(const QString &name, SimulationLayer* l, Session* s, TreeIt
     session(s)
 {
     QIcon icon;
-    icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/objects/layer"), QIcon::Selected);
+    icon.addPixmap(QPixmap(":/create/layer"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/create/layer"), QIcon::Selected);
     decoration = icon;
 }
 
@@ -316,8 +316,8 @@ CameraItem::CameraItem(const QString &name, Camera *cam, Session *s, TreeItem *p
     session(s)
 {
     QIcon icon;
-    icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/dialogs/film camera"), QIcon::Selected);
+    icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Selected);
     decoration = icon;
 }
 
@@ -394,8 +394,8 @@ AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, 
     session(s)
 {
     QIcon icon;
-    icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/objects/atom"), QIcon::Selected);
+    icon.addPixmap(QPixmap(":/create/atom"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/create/atom"), QIcon::Selected);
     decoration = icon;
 }
 
@@ -494,8 +494,8 @@ ChainItem::ChainItem(const QByteArray &chainID, Session *s, TreeItem *parentItem
     TreeItem({chainID, NodeType::ChainObject, s->chainCount++, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
-    icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/objects/chain"), QIcon::Selected);
+    icon.addPixmap(QPixmap(":/create/chain"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/create/chain"), QIcon::Selected);
     decoration = icon;
 }
 
@@ -508,8 +508,8 @@ ResidueItem::ResidueItem(const QByteArray &resName, Session* s, TreeItem *parent
     TreeItem({resName, NodeType::ResidueObject, s->residueCount.contains(resName) ? s->residueCount[resName] : s->residueCount.count(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
     QIcon icon;
-    icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/objects/residue"), QIcon::Selected);
+    icon.addPixmap(QPixmap(":/create/residue"), QIcon::Normal);
+    icon.addPixmap(QPixmap(":/create/residue"), QIcon::Selected);
     decoration = icon;
 
     if (!s->residueCount.contains(resName))

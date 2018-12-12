@@ -134,7 +134,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/start</normaloff>:/media/start</iconset>
+           <normaloff>:/animate/start</normaloff>:/animate/start</iconset>
          </property>
         </widget>
        </item>
@@ -157,7 +157,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
+           <normaloff>:/animate/previous</normaloff>:/animate/previous</iconset>
          </property>
         </widget>
        </item>
@@ -185,8 +185,8 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/reverse</normaloff>
-           <normalon>:/media/pause</normalon>:/media/reverse</iconset>
+           <normaloff>:/animate/reverse</normaloff>
+           <normalon>:/animate/pause</normalon>:/animate/reverse</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -217,8 +217,8 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/play</normaloff>
-           <normalon>:/media/pause</normalon>:/media/play</iconset>
+           <normaloff>:/animate/play</normaloff>
+           <normalon>:/animate/pause</normalon>:/animate/play</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -244,7 +244,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/next</normaloff>:/media/next</iconset>
+           <normaloff>:/animate/next</normaloff>:/animate/next</iconset>
          </property>
         </widget>
        </item>
@@ -267,7 +267,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/end</normaloff>:/media/end</iconset>
+           <normaloff>:/animate/end</normaloff>:/animate/end</iconset>
          </property>
         </widget>
        </item>
@@ -302,7 +302,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/key</normaloff>:/media/key</iconset>
+           <normaloff>:/animate/key</normaloff>:/animate/key</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -339,7 +339,7 @@
          </property>
          <property name="icon">
           <iconset resource="icons.qrc">
-           <normaloff>:/media/record</normaloff>:/media/record</iconset>
+           <normaloff>:/animate/record</normaloff>:/animate/record</iconset>
          </property>
          <property name="shortcut">
           <string>Ctrl+F9</string>

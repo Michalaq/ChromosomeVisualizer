@@ -744,7 +744,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/selection/rectangular</normaloff>:/selection/rectangular</iconset>
+     <normaloff>:/select/rectangular</normaloff>:/select/rectangular</iconset>
    </property>
    <property name="text">
     <string>Rectangle selection</string>
@@ -765,7 +765,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/mouse/move</normaloff>:/mouse/move</iconset>
+     <normaloff>:/tools/move</normaloff>:/tools/move</iconset>
    </property>
    <property name="text">
     <string>Move</string>
@@ -783,7 +783,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/mouse/rotate</normaloff>:/mouse/rotate</iconset>
+     <normaloff>:/tools/rotate</normaloff>:/tools/rotate</iconset>
    </property>
    <property name="text">
     <string>Rotate</string>
@@ -801,7 +801,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/mouse/scale</normaloff>:/mouse/scale</iconset>
+     <normaloff>:/tools/scale</normaloff>:/tools/scale</iconset>
    </property>
    <property name="text">
     <string>Scale</string>
@@ -839,8 +839,8 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/play</normaloff>
-     <normalon>:/media/pause</normalon>:/media/play</iconset>
+     <normaloff>:/animate/play</normaloff>
+     <normalon>:/animate/pause</normalon>:/animate/play</iconset>
    </property>
    <property name="text">
     <string>Play forwards</string>
@@ -855,8 +855,8 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/reverse</normaloff>
-     <normalon>:/media/pause</normalon>:/media/reverse</iconset>
+     <normaloff>:/animate/reverse</normaloff>
+     <normalon>:/animate/pause</normalon>:/animate/reverse</iconset>
    </property>
    <property name="text">
     <string>Play backwards</string>
@@ -865,7 +865,7 @@ QLineEdit {
   <action name="actionGo_to_start">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/start</normaloff>:/media/start</iconset>
+     <normaloff>:/animate/start</normaloff>:/animate/start</iconset>
    </property>
    <property name="text">
     <string>Go to start</string>
@@ -877,7 +877,7 @@ QLineEdit {
   <action name="actionGo_to_end">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/end</normaloff>:/media/end</iconset>
+     <normaloff>:/animate/end</normaloff>:/animate/end</iconset>
    </property>
    <property name="text">
     <string>Go to end</string>
@@ -889,7 +889,7 @@ QLineEdit {
   <action name="actionGo_to_next_frame">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/next</normaloff>:/media/next</iconset>
+     <normaloff>:/animate/next</normaloff>:/animate/next</iconset>
    </property>
    <property name="text">
     <string>Go to next frame</string>
@@ -901,7 +901,7 @@ QLineEdit {
   <action name="actionGo_to_previous_frame">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/previous</normaloff>:/media/previous</iconset>
+     <normaloff>:/animate/previous</normaloff>:/animate/previous</iconset>
    </property>
    <property name="text">
     <string>Go to previous frame</string>
@@ -985,8 +985,8 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/lock x</normaloff>
-     <normalon>:/locks/move x</normalon>:/locks/lock x</iconset>
+     <normaloff>:/tools/lock x</normaloff>
+     <normalon>:/tools/move x</normalon>:/tools/lock x</iconset>
    </property>
    <property name="text">
     <string>X-Axis / Heading</string>
@@ -1007,8 +1007,8 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/lock y</normaloff>
-     <normalon>:/locks/move y</normalon>:/locks/lock y</iconset>
+     <normaloff>:/tools/lock y</normaloff>
+     <normalon>:/tools/move y</normalon>:/tools/lock y</iconset>
    </property>
    <property name="text">
     <string>Y-Axis / Pitch</string>
@@ -1029,8 +1029,8 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/locks/lock z</normaloff>
-     <normalon>:/locks/move z</normalon>:/locks/lock z</iconset>
+     <normaloff>:/tools/lock z</normaloff>
+     <normalon>:/tools/move z</normalon>:/tools/lock z</iconset>
    </property>
    <property name="text">
     <string>Z-Axis / Bank</string>
@@ -1045,7 +1045,7 @@ QLineEdit {
   <action name="actionFocus">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/selection/focus</normaloff>:/selection/focus</iconset>
+     <normaloff>:/target</normaloff>:/target</iconset>
    </property>
    <property name="text">
     <string>Focus</string>
@@ -1060,7 +1060,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/selection/custom</normaloff>:/selection/custom</iconset>
+     <normaloff>:/select/custom</normaloff>:/select/custom</iconset>
    </property>
    <property name="text">
     <string>Lasso selection</string>
@@ -1140,7 +1140,7 @@ QLineEdit {
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/record</normaloff>:/media/record</iconset>
+     <normaloff>:/animate/record</normaloff>:/animate/record</iconset>
    </property>
    <property name="text">
     <string>Autokeying</string>
@@ -1152,7 +1152,7 @@ QLineEdit {
   <action name="actionRecord_Active_Objects">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/media/key</normaloff>:/media/key</iconset>
+     <normaloff>:/animate/key</normaloff>:/animate/key</iconset>
    </property>
    <property name="text">
     <string>Record Active Objects</string>
@@ -1207,7 +1207,7 @@ QLineEdit {
   <action name="actionPivot">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/selection/pivot</normaloff>:/selection/pivot</iconset>
+     <normaloff>:/pivot</normaloff>:/pivot</iconset>
    </property>
    <property name="text">
     <string>Pivot</string>

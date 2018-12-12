@@ -41,7 +41,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/dialogs/film camera</normaloff>:/dialogs/film camera</iconset>
+         <normaloff>:/create/film camera</normaloff>:/create/film camera</iconset>
        </property>
       </widget>
      </item>
@@ -1182,9 +1182,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header>combobox.h</header>
+   <class>MediaControl</class>
+   <extends>QPushButton</extends>
+   <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
    <class>Label</class>
@@ -1192,14 +1192,14 @@
    <header>label.h</header>
   </customwidget>
   <customwidget>
+   <class>ComboBox</class>
+   <extends>QComboBox</extends>
+   <header>combobox.h</header>
+  </customwidget>
+  <customwidget>
    <class>DoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header>doublespinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>MediaControl</class>
-   <extends>QPushButton</extends>
-   <header>mediacontrol.h</header>
   </customwidget>
   <customwidget>
    <class>LineEdit</class>

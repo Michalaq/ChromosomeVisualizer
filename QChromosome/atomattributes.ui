@@ -41,7 +41,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/objects/atom</normaloff>:/objects/atom</iconset>
+         <normaloff>:/create/atom</normaloff>:/create/atom</iconset>
        </property>
       </widget>
      </item>
@@ -378,7 +378,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>297</height>
+            <height>279</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">

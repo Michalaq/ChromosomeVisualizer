@@ -1,24 +1,24 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="location">icons/location_icon.svg</file>
+        <file alias="location">misc/location_icon.svg</file>
     </qresource>
     <qresource prefix="/checkbox">
-        <file alias="unchecked">misc/checkbox_unchecked.svg</file>
-        <file alias="checked">misc/checkbox_checked.svg</file>
+        <file alias="unchecked">misc/checkbox/checkbox_unchecked.svg</file>
+        <file alias="checked">misc/checkbox/checkbox_checked.svg</file>
     </qresource>
     <qresource prefix="/arrows">
-        <file alias="up">misc/up_arrow.svg</file>
-        <file alias="right">misc/right_arrow.svg</file>
-        <file alias="left">misc/left_arrow.svg</file>
-        <file alias="down">misc/down_arrow.svg</file>
-        <file alias="branch-closed">misc/branch_closed.svg</file>
-        <file alias="branch-open">misc/branch_open.svg</file>
-        <file alias="branch-open_">misc/branch_open_.svg</file>
-        <file alias="branch-closed_">misc/branch_closed_.svg</file>
+        <file alias="up">misc/arrows/up_arrow.svg</file>
+        <file alias="right">misc/arrows/right_arrow.svg</file>
+        <file alias="left">misc/arrows/left_arrow.svg</file>
+        <file alias="down">misc/arrows/down_arrow.svg</file>
+        <file alias="branch-closed">misc/arrows/branch_closed.svg</file>
+        <file alias="branch-open">misc/arrows/branch_open.svg</file>
+        <file alias="branch-open_">misc/arrows/branch_open_.svg</file>
+        <file alias="branch-closed_">misc/arrows/branch_closed_.svg</file>
     </qresource>
     <qresource prefix="/lineedit">
-        <file alias="search">icons/search_icon.svg</file>
-        <file alias="pick">icons/select_point_icon.svg</file>
+        <file alias="search">misc/lineedit/search_icon.svg</file>
+        <file alias="pick">misc/lineedit/select_point_icon.svg</file>
     </qresource>
     <qresource prefix="/fonts">
         <file alias="Roboto-Regular">fonts/Roboto-Regular.ttf</file>
@@ -26,13 +26,17 @@
         <file alias="Roboto-Bold">fonts/Roboto-Bold.ttf</file>
     </qresource>
     <qresource prefix="/tabwidget">
-        <file alias="tear">misc/tear_indicator.svg</file>
-        <file alias="bar">misc/tab_bar.svg</file>
-        <file alias="scroll-right">misc/scroll_right.svg</file>
-        <file alias="scroll-left">misc/scroll_left.svg</file>
+        <file alias="tear">misc/tabwidget/tear_indicator.svg</file>
+        <file alias="bar">misc/tabwidget/tab_bar.svg</file>
+        <file alias="scroll-right">misc/tabwidget/scroll_right.svg</file>
+        <file alias="scroll-left">misc/tabwidget/scroll_left.svg</file>
     </qresource>
     <qresource prefix="/radio">
-        <file alias="checked">misc/radio_checked.svg</file>
-        <file alias="unchecked">misc/radio_unchecked.svg</file>
+        <file alias="checked">misc/radio/radio_checked.svg</file>
+        <file alias="unchecked">misc/radio/radio_unchecked.svg</file>
+    </qresource>
+    <qresource prefix="/application">
+        <file alias="icon">misc/application/QChromosome_icon.svg</file>
+        <file alias="splash">misc/application/splash.png</file>
     </qresource>
 </RCC>

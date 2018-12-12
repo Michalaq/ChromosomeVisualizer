@@ -1,69 +1,64 @@
 <RCC>
-    <qresource prefix="/mouse">
-        <file alias="move">icons/move_icon.svg</file>
-        <file alias="rotate">icons/rotate_icon.svg</file>
-        <file alias="scale">icons/scale_icon.svg</file>
+    <qresource prefix="/tools">
+        <file alias="move">icons/tools/move_icon.svg</file>
+        <file alias="rotate">icons/tools/rotate_icon.svg</file>
+        <file alias="scale">icons/tools/scale_icon.svg</file>
+        <file alias="move x">icons/tools/move_x_icon.svg</file>
+        <file alias="move y">icons/tools/move_y_icon.svg</file>
+        <file alias="move z">icons/tools/move_z_icon.svg</file>
+        <file alias="lock y">icons/tools/y_icon.svg</file>
+        <file alias="lock x">icons/tools/x_icon.svg</file>
+        <file alias="lock z">icons/tools/z_icon.svg</file>
     </qresource>
-    <qresource prefix="/media">
-        <file alias="end">icons/end.svg</file>
-        <file alias="next">icons/next.svg</file>
-        <file alias="pause">icons/pause.svg</file>
-        <file alias="play">icons/play.svg</file>
-        <file alias="previous">icons/previous.svg</file>
-        <file alias="record">icons/record.svg</file>
-        <file alias="reverse">icons/reverse.svg</file>
-        <file alias="start">icons/start.svg</file>
-        <file alias="key">icons/key_icon.svg</file>
+    <qresource prefix="/animate">
+        <file alias="end">icons/animate/end.svg</file>
+        <file alias="next">icons/animate/next.svg</file>
+        <file alias="pause">icons/animate/pause.svg</file>
+        <file alias="play">icons/animate/play.svg</file>
+        <file alias="previous">icons/animate/previous.svg</file>
+        <file alias="record">icons/animate/record.svg</file>
+        <file alias="reverse">icons/animate/reverse.svg</file>
+        <file alias="start">icons/animate/start.svg</file>
+        <file alias="key">icons/animate/key_icon.svg</file>
     </qresource>
-    <qresource prefix="/selection">
-        <file alias="rectangular">icons/selection_rectangular_icon.svg</file>
-        <file alias="custom">icons/selection_custom_shape_icon.svg</file>
-        <file alias="focus">icons/target_icon.svg</file>
-        <file alias="pivot">icons/pivot_point_icon.svg</file>
+    <qresource prefix="/select">
+        <file alias="rectangular">icons/select/selection_rectangular_icon.svg</file>
+        <file alias="custom">icons/select/selection_custom_shape_icon.svg</file>
     </qresource>
     <qresource prefix="/dock">
-        <file alias="float">icons/float_icon.svg</file>
-        <file alias="dock">icons/dock_icon.svg</file>
-        <file alias="close">icons/cross_icon.svg</file>
+        <file alias="float">icons/dock/float_icon.svg</file>
+        <file alias="dock">icons/dock/dock_icon.svg</file>
+        <file alias="close">icons/dock/cross_icon.svg</file>
     </qresource>
     <qresource prefix="/render">
-        <file alias="povray">icons/povray_icon.svg</file>
-        <file alias="ffmpeg">icons/ffmpeg_icon.svg</file>
-        <file alias="render">icons/render_icon.svg</file>
-        <file alias="settings">icons/gear_icon.svg</file>
+        <file alias="povray">icons/render/povray_icon.svg</file>
+        <file alias="ffmpeg">icons/render/ffmpeg_icon.svg</file>
+        <file alias="render">icons/render/render_icon.svg</file>
+        <file alias="settings">icons/render/gear_icon.svg</file>
     </qresource>
-    <qresource prefix="/objects">
-        <file alias="atom">icons/atom_icon.svg</file>
-        <file alias="layer">icons/layers_icon.svg</file>
-        <file alias="chain">icons/chain_icon.svg</file>
-        <file alias="residue">icons/residue_icon.svg</file>
+    <qresource prefix="/create">
+        <file alias="atom">icons/create/atom_icon.svg</file>
+        <file alias="layer">icons/create/layer_icon.svg</file>
+        <file alias="chain">icons/create/chain_icon.svg</file>
+        <file alias="residue">icons/create/residue_icon.svg</file>
+        <file alias="film camera">icons/create/camera_icon.svg</file>
     </qresource>
     <qresource prefix="/dialogs">
-        <file alias="view">icons/view_icon.svg</file>
-        <file alias="document">icons/document_icon.svg</file>
-        <file alias="equipment">icons/equipment_icon.svg</file>
-        <file alias="keyframe">icons/keyframe_icon.svg</file>
-        <file alias="import">icons/file_import_icon.svg</file>
-        <file alias="diskette">icons/diskette_icon.svg</file>
-        <file alias="material">icons/material_icon.svg</file>
-        <file alias="focus">icons/focus_icon.svg</file>
-        <file alias="primitives">icons/primitives_icon.svg</file>
-        <file alias="world">icons/world_icon.svg</file>
-        <file alias="pdb">icons/file_format_pdb.svg</file>
-        <file alias="ttf">icons/file_format_ttf.svg</file>
-        <file alias="film camera">icons/camera_icon.svg</file>
-        <file alias="project">icons/edit_icon.svg</file>
+        <file alias="view">icons/dialogs/view_icon.svg</file>
+        <file alias="document">icons/dialogs/document_icon.svg</file>
+        <file alias="equipment">icons/dialogs/equipment_icon.svg</file>
+        <file alias="keyframe">icons/dialogs/keyframe_icon.svg</file>
+        <file alias="import">icons/dialogs/file_import_icon.svg</file>
+        <file alias="diskette">icons/dialogs/diskette_icon.svg</file>
+        <file alias="material">icons/dialogs/material_icon.svg</file>
+        <file alias="focus">icons/dialogs/focus_icon.svg</file>
+        <file alias="primitives">icons/dialogs/primitives_icon.svg</file>
+        <file alias="world">icons/dialogs/world_icon.svg</file>
+        <file alias="film camera">icons/dialogs/camera_icon.svg</file>
+        <file alias="project">icons/dialogs/edit_icon.svg</file>
     </qresource>
-    <qresource prefix="/application">
-        <file alias="icon">icons/QChromosome_icon.svg</file>
-        <file alias="splash">misc/splash.png</file>
-    </qresource>
-    <qresource prefix="/locks">
-        <file alias="move x">icons/move_x_icon.svg</file>
-        <file alias="move y">icons/move_y_icon.svg</file>
-        <file alias="move z">icons/move_z_icon.svg</file>
-        <file alias="lock y">icons/y_icon.svg</file>
-        <file alias="lock x">icons/x_icon.svg</file>
-        <file alias="lock z">icons/z_icon.svg</file>
+    <qresource prefix="/">
+        <file alias="pivot">icons/pivot_point_icon.svg</file>
+        <file alias="target">icons/target_icon.svg</file>
     </qresource>
 </RCC>
