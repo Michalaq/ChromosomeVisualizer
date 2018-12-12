@@ -1,7 +1,7 @@
 #include "labelatlas.h"
 
 LabelAtlas::LabelAtlas() :
-    texture(QOpenGLTexture::Target2D),
+    QOpenGLTexture(QOpenGLTexture::Target2D),
     image(1, 1, QImage::Format_RGBA8888),
     offset(0),
     modified(true)
@@ -18,16 +18,11 @@ void LabelAtlas::allocate()
 {
     if (modified)
     {
-        texture.destroy();
-        texture.setData(image, QOpenGLTexture::DontGenerateMipMaps);
+        destroy();
+        setData(image, QOpenGLTexture::DontGenerateMipMaps);
 
         modified = false;
     }
-}
-
-GLuint LabelAtlas::textureId() const
-{
-    return texture.textureId();
 }
 
 #include <QPainter>
