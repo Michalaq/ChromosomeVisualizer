@@ -223,6 +223,9 @@ void VizWidget::initializeGL()
     materials_.create();
     materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
+    viewport_.create();
+    viewport_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
     camera_.create();
     camera_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
     camera_.bind(); camera_.allocate(sizeof(VizCameraInstance)); camera_.release();
@@ -297,7 +300,6 @@ void VizWidget::paintGL()
     allocate();
 
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
 
     glDrawBuffer(GL_COLOR_ATTACHMENT2);
 
@@ -383,6 +385,8 @@ void VizWidget::paintGL()
     labelProgram_.release();
     vaoLabels_.release();
 
+    glDepthMask(GL_TRUE);
+
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
@@ -423,7 +427,6 @@ void VizWidget::pickSpheres()
     allocate();
 
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
 
     // Draw picking framebuffer
     glDrawBuffer(GL_COLOR_ATTACHMENT1);

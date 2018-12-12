@@ -8,17 +8,6 @@ layout (std140) uniform shader_data
     int mv_flagBits;
 };
 
-layout (std140) uniform viewport_data
-{
-    uint ucBackgroundColor;
-    uint ucEnvironmentColor;
-    float ufEnvironmentStrength;
-    bool ubEnableFog;
-    uint ucFogColor;
-    float ufFogStrength;
-    float ufFogDistance;
-};
-
 struct Material
 {
     uint cColor;
