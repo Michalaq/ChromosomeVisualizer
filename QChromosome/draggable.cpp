@@ -32,6 +32,7 @@ void Draggable::mousePressEvent(QMouseEvent *event)
 
     QApplication::setOverrideCursor(Qt::BlankCursor);
     QCursor::setPos(center);
+    center = QCursor::pos();
 }
 
 void Draggable::mouseMoveEvent(QMouseEvent *event)
@@ -46,6 +47,7 @@ void Draggable::mouseMoveEvent(QMouseEvent *event)
             emit delta(event->globalX() - center.x(), event->globalY() - center.y());
 
             QCursor::setPos(center);
+            center = QCursor::pos();
         }
 }
 
