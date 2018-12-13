@@ -21,10 +21,71 @@ void VizWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    vaoSpheres_.create();
+    // OpenGL buffers
+    cameraPositions_.create();
+    cameraPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     atomPositions_.create();
     atomPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    chainIndices_.create();
+    chainIndices_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    materials_.create();
+    materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    viewport_.create();
+    viewport_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+
+    camera_.create();
+    camera_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
+    camera_.bind(); camera_.allocate(sizeof(VizCameraInstance)); camera_.release();
+
+    // OpenGL VAOs
+    vaoCameras_.create();
+
+    vaoCameras_.bind();
+    cameraPositions_.bind();
+
+    for (int i = 0; i < 4; i++)
+    {
+        glEnableVertexAttribArray(i);
+        glVertexAttribPointer(
+            i,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(VizCameraInstance),
+            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
+        );
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        glEnableVertexAttribArray(i + 4);
+        glVertexAttribPointer(
+            i + 4,
+            4,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(VizCameraInstance),
+            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
+        );
+    }
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribIPointer(
+        8,
+        1,
+        GL_INT,
+        sizeof(VizCameraInstance),
+        (void*)offsetof(VizCameraInstance, flags)
+    );
+
+    cameraPositions_.release();
+    vaoCameras_.release();
+
+    vaoSpheres_.create();
 
     vaoSpheres_.bind();
     atomPositions_.bind();
@@ -80,52 +141,6 @@ void VizWidget::initializeGL()
     atomPositions_.release();
     vaoSpheres_.release();
 
-    vaoCameras_.create();
-
-    cameraPositions_.create();
-    cameraPositions_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
-    vaoCameras_.bind();
-    cameraPositions_.bind();
-
-    for (int i = 0; i < 4; i++)
-    {
-        glEnableVertexAttribArray(i);
-        glVertexAttribPointer(
-            i,
-            4,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(VizCameraInstance),
-            (void*)(offsetof(VizCameraInstance, projection) + i * sizeof(QVector4D))
-        );
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        glEnableVertexAttribArray(i + 4);
-        glVertexAttribPointer(
-            i + 4,
-            4,
-            GL_FLOAT,
-            GL_FALSE,
-            sizeof(VizCameraInstance),
-            (void*)(offsetof(VizCameraInstance, modelView) + i * sizeof(QVector4D))
-        );
-    }
-
-    glEnableVertexAttribArray(8);
-    glVertexAttribIPointer(
-        8,
-        1,
-        GL_INT,
-        sizeof(VizCameraInstance),
-        (void*)offsetof(VizCameraInstance, flags)
-    );
-
-    cameraPositions_.release();
-    vaoCameras_.release();
-
     vaoLabels_.create();
 
     vaoLabels_.bind();
@@ -174,7 +189,7 @@ void VizWidget::initializeGL()
 
     vaoEmpty_.create();
 
-    // Shaders
+    // OpenGL shaders
     sphereProgram_.create();
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/sphere/vertex.glsl");
     sphereProgram_.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/sphere/geometry.glsl");
@@ -217,19 +232,7 @@ void VizWidget::initializeGL()
     glowProgram_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/glow/fragment.glsl");
     glowProgram_.link();
 
-    chainIndices_.create();
-    chainIndices_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
-    materials_.create();
-    materials_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
-    viewport_.create();
-    viewport_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-
-    camera_.create();
-    camera_.setUsagePattern(QOpenGLBuffer::DynamicDraw);
-    camera_.bind(); camera_.allocate(sizeof(VizCameraInstance)); camera_.release();
-
+    // OpenGL uniform buffers
     {
         const GLuint binding_point_index = 0;
         glBindBufferBase(GL_UNIFORM_BUFFER, binding_point_index, camera_.bufferId());
