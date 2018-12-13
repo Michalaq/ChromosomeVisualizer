@@ -530,6 +530,11 @@
                  <string>Perspective</string>
                 </property>
                </item>
+               <item>
+                <property name="text">
+                 <string>Parallel</string>
+                </property>
+               </item>
               </widget>
              </item>
             </layout>

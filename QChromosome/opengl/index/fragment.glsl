@@ -6,6 +6,8 @@ layout (std140) uniform shader_data
     int pro_flagBits; 
     mat4 mv;
     int mv_flagBits;
+    int flags;
+    int ptype;
 };
 
 in vec3 vViewPosition;

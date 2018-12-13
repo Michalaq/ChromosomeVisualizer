@@ -86,6 +86,9 @@ public:
     qreal getEyeSeparation() const;
     void setEyeSeparation(qreal es);
 
+    Projection getProjectionType() const;
+    void setProjectionType(Projection p);
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);

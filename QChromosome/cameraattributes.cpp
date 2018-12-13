@@ -88,6 +88,12 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
         emit modelViewChanged();
     });
 
+    //connect projection
+    connect(ui->comboBox_3, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int val) {
+        for (auto c : cameras)
+            c->setProjectionType(static_cast<Projection>(val));
+    });
+
     //connect focal length
     connect(ui->doubleSpinBox_7, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
@@ -218,6 +224,22 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
 
     auto fst = cameras.first();
     bool multiple;
+
+    //set projection
+    Projection p = fst->getProjectionType();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (p != c->getProjectionType())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->comboBox_3->setMultipleValues();
+    else
+        ui->comboBox_3->setCurrentIndex(p, false);
 
     //set mode
     Camera::Mode m = fst->getMode();

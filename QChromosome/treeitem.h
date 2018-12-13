@@ -107,11 +107,18 @@ private:
 
 #include <QMatrix4x4>
 
+enum Projection
+{
+    CP_Perspective,
+    CP_Parallel
+};
+
 struct VizCameraInstance
 {
     QMatrix4x4 projection   __attribute__((aligned(16)));
     QMatrix4x4 modelView    __attribute__((aligned(16)));
-    VizFlags flags          __attribute__((aligned(8))) = VisibleInEditor | VisibleInRenderer;
+    VizFlags flags          __attribute__((aligned(4))) = VisibleInEditor | VisibleInRenderer;
+    Projection ptype        __attribute__((aligned(4))) = CP_Perspective;
 }                           __attribute__((aligned(16)));
 
 class Camera;

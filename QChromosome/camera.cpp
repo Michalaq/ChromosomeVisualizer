@@ -240,7 +240,11 @@ void Camera::paintEvent(QPaintEvent *event)
         }
     }
 
-    QRect r(2, 2, fontMetrics().width("Perspective") + 6, fontMetrics().height() + 6);
+    static const char* pnames[] = {"Perspective", "Parallel"};
+
+    const char* pname = pnames[session->cameraBuffer[id].ptype];
+
+    QRect r(2, 2, fontMetrics().width(pname) + 6, fontMetrics().height() + 6);
 
     QPainter p(this);
     p.save();
@@ -252,7 +256,7 @@ void Camera::paintEvent(QPaintEvent *event)
 
     p.restore();
     p.setPen(Qt::white);
-    p.drawText(r, Qt::AlignCenter, "Perspective");
+    p.drawText(r, Qt::AlignCenter, pname);
 }
 
 QVector3D Camera::getPosition() const
@@ -567,15 +571,39 @@ QMatrix4x4& Camera::updateProjection()
 
     projection.setToIdentity();
 
-    if (aspectRatio_ < aspectRatio)
+    switch (session->cameraBuffer[id].ptype)
     {
-        projection.rotate(-90, {0, 0, 1});
-        projection.perspective(horizontalAngle, 1. / aspectRatio_, nearClipping, farClipping);
-        projection.rotate(+90, {0, 0, 1});
-    }
-    else
-    {
-        projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
+    case CP_Perspective:
+        if (aspectRatio_ < aspectRatio)
+        {
+            projection.rotate(-90, {0, 0, 1});
+            projection.perspective(horizontalAngle, 1. / aspectRatio_, nearClipping, farClipping);
+            projection.rotate(+90, {0, 0, 1});
+        }
+        else
+        {
+            projection.perspective(verticalAngle, aspectRatio_, nearClipping, farClipping);
+        }
+
+        break;
+
+    case CP_Parallel:
+        if (aspectRatio_ < aspectRatio)
+        {
+            auto w = 100;
+            auto h = 100 / aspectRatio_;
+
+            projection.ortho(-w/2, +w/2, -h/2, +h/2, nearClipping, farClipping);
+        }
+        else
+        {
+            auto w = 100 * aspectRatio_ / aspectRatio;
+            auto h = 100 / aspectRatio;
+
+            projection.ortho(-w/2, +w/2, -h/2, +h/2, nearClipping, farClipping);
+        }
+
+        break;
     }
 
     return session->cameraBuffer[id].projection = projection;
@@ -911,4 +939,15 @@ qreal Camera::getEyeSeparation() const
 void Camera::setEyeSeparation(qreal es)
 {
     eyeSeparation = es;
+}
+
+Projection Camera::getProjectionType() const
+{
+    return session->cameraBuffer[id].ptype;
+}
+
+void Camera::setProjectionType(Projection p)
+{
+    session->cameraBuffer[id].ptype = p;
+    emit projectionChanged(updateProjection());
 }

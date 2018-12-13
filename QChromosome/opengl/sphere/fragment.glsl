@@ -6,6 +6,8 @@ layout (std140) uniform shader_data
     int pro_flagBits; 
     mat4 mv;
     int mv_flagBits;
+    int flags;
+    int ptype;
 };
 
 layout (std140) uniform viewport_data
@@ -65,25 +67,53 @@ void main() {
     }
     
     // Normal
-    float p = dot(vViewPosition, vViewPosition);
-    float q = dot(vViewPosition, vInstancePosition);
-    float r = dot(vInstancePosition, vInstancePosition);
+    vec3 vNormal;
+    vec4 vFragCoord;
+    
+    switch (ptype)
+    {
+    case 0:
+        {
+            float p = dot(vViewPosition, vViewPosition);
+            float q = dot(vViewPosition, vInstancePosition);
+            float r = dot(vInstancePosition, vInstancePosition);
 
-    float d = q * q - p * (r - fInstanceSize * fInstanceSize);
-    
-    if (d < 0.0)
+            float d = q * q - p * (r - fInstanceSize * fInstanceSize);
+            
+            if (d < 0.0)
+                discard;
+            
+            d = sqrt(d);
+            
+            float s = sign(q - d);
+            float t = (q - s * d) / p;
+            
+            vNormal = s * (t * vViewPosition - vInstancePosition) / fInstanceSize;
+            vFragCoord = pro * vec4(t * vViewPosition, 1.0);
+        }
+        break;
+        
+    case 1:
+        {
+            vec2 r = vInstancePosition.xy - vViewPosition.xy;
+            float d = fInstanceSize * fInstanceSize - dot(r, r);
+            
+            if (d < 0.0)
+                discard;
+            
+            vec3 t = vec3(vViewPosition.xy, vInstancePosition.z + sqrt(d));
+            
+            vNormal = (t - vInstancePosition) / fInstanceSize;
+            vFragCoord = pro * vec4(t, 1.0);
+        }
+        break;
+        
+    default:
         discard;
-    
-    d = sqrt(d);
-    
-    float s = sign(q - d);
-    float t = (q - s * d) / p;
-    
-    vec3 vNormal = s * (t * vViewPosition - vInstancePosition) / fInstanceSize;
-    vec4 vFragCoord = pro * vec4(t * vViewPosition, 1.0);
+    }
     
     gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
-
+    
     // Diffuse
     float lightness = 0.5 + 0.5 * dot(uvDefaultLight, vNormal);
     vec3 cDiffuse = baseColor.rgb * lightness;
@@ -97,8 +127,8 @@ void main() {
     float linearDistance = length(vViewPosition.xyz);
     float fogFactor = exp(-linearDistance / ufFogDistance);
     if (!ubEnableFog) fogFactor = 1.f;
-    
+
     vec3 cResultColor = mix(cDiffuse + cSpecular, unpackUnorm4x8(ucFogColor).bgr, ufFogStrength * (1.f - fogFactor));
-    
+
     fragColor = vec4(mix(cResultColor, vec3(1.f), ((iFlags & 0x1) == 0x1) ? .33 : 0.f), 1.f);
 }
