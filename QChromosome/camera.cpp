@@ -646,14 +646,30 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                 stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
             });
 
-            stream << "camera { perspective\n"
-                   << "right x * " << aspectRatio << "\n"
-                   << "look_at -z\n"
-                   << "angle MySplineFov(clock).x\n"
-                   << "rotate -MySplineAng(clock)\n"
-                   << "translate MySplinePos(clock)\n"
-                   << "}\n"
-                   << "\n";
+            switch (session->cameraBuffer[id].ptype)
+            {
+            case CP_Perspective:
+                stream << "camera { perspective\n"
+                       << "right x * " << aspectRatio << "\n"
+                       << "look_at -z\n"
+                       << "angle MySplineFov(clock).x\n"
+                       << "rotate -MySplineAng(clock)\n"
+                       << "translate MySplinePos(clock)\n"
+                       << "}\n"
+                       << "\n";
+                break;
+
+            case CP_Parallel:
+                stream << "camera { orthographic\n"
+                       << "right x * " << 100 << "\n"
+                       << "up y * " << 100 / aspectRatio << "\n"
+                       << "look_at -z\n"
+                       << "rotate -MySplineAng(clock)\n"
+                       << "translate MySplinePos(clock)\n"
+                       << "}\n"
+                       << "\n";
+                break;
+            }
 
             stream << "light_source {\n"
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
@@ -664,14 +680,30 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         }
         else
         {
-            stream << "camera { perspective\n"
-                   << "right x * " << aspectRatio << "\n"
-                   << "look_at -z\n"
-                   << "angle " << horizontalAngle << "\n"
-                   << "rotate " << -getRotation() << "\n"
-                   << "translate " << getPosition() << "\n"
-                   << "}\n"
-                   << "\n";
+            switch (session->cameraBuffer[id].ptype)
+            {
+            case CP_Perspective:
+                stream << "camera { perspective\n"
+                       << "right x * " << aspectRatio << "\n"
+                       << "look_at -z\n"
+                       << "angle " << horizontalAngle << "\n"
+                       << "rotate " << -getRotation() << "\n"
+                       << "translate " << getPosition() << "\n"
+                       << "}\n"
+                       << "\n";
+                break;
+
+            case CP_Parallel:
+                stream << "camera { orthographic\n"
+                       << "right x * " << 100 << "\n"
+                       << "up y * " << 100 / aspectRatio << "\n"
+                       << "look_at -z\n"
+                       << "rotate " << -getRotation() << "\n"
+                       << "translate " << getPosition() << "\n"
+                       << "}\n"
+                       << "\n";
+                break;
+            }
 
             stream << "light_source {\n"
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
