@@ -11,7 +11,7 @@ VizWidget::VizWidget(QWidget *parent)
 
 VizWidget::~VizWidget()
 {
-
+    makeCurrent();
 }
 
 #include "viewport.h"

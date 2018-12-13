@@ -594,6 +594,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     case QMessageBox::No:
 
+        ui->scene->makeCurrent();
+
         remaining.removeOne(session);
         delete session;
 
