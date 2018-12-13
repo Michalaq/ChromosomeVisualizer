@@ -31,4 +31,8 @@
         <file alias="geometry.glsl">select/geometry.glsl</file>
         <file alias="fragment.glsl">select/fragment.glsl</file>
     </qresource>
+    <qresource prefix="/light">
+        <file alias="fragment.glsl">light/fragment.glsl</file>
+        <file alias="geometry.glsl">light/geometry.glsl</file>
+    </qresource>
 </RCC>

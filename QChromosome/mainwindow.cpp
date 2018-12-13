@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     pw(nullptr),
     recent(nullptr),
     session(nullptr),
-    sessions(new QActionGroup(this))
+    sessions(new QActionGroup(this)),
+    light(new DefaultLight)
 {
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
@@ -97,6 +98,13 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->dockWidget_2->show();
     });
 
+    connect(ui->actionDefault_light, &QAction::triggered, light, &DefaultLight::show);
+
+    connect(light, &DefaultLight::defaultLightChanged, [this](const QVector3D& direction) {
+        session->viewportUniformBuffer[0].uvDefaultLight = direction;
+        ui->scene->update();
+    });
+
     connect(ui->actionFocus, &QAction::triggered, [this] {
         session->currentCamera->callibrate(0, true);
     });
@@ -176,6 +184,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete light;
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -336,6 +345,7 @@ void MainWindow::setCurrentSession(Session *s)
 
     // update view
     ui->scene->setSession(session);
+    light->setDirection(session->viewportUniformBuffer[0].uvDefaultLight);
 
     // update materials
     materialBrowser->setSession(session);

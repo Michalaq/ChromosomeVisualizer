@@ -13,6 +13,7 @@
 #include "pickwidget.h"
 #include "attributes.h"
 #include "session.h"
+#include "opengl/defaultlight.h"
 
 namespace Ui
 {
@@ -100,6 +101,8 @@ private:
     Session* session;
     QActionGroup* sessions;
     QList<Session*> remaining;
+
+    DefaultLight* light;
 };
 
 #endif // MAINWINDOW_H

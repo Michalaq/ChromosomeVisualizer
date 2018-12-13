@@ -17,6 +17,7 @@ layout (std140) uniform viewport_data
     uint ucFogColor;
     float ufFogStrength;
     float ufFogDistance;
+    vec3 uvDefaultLight;
 };
 
 struct Material
@@ -41,7 +42,6 @@ flat in int iMaterialID;
 out vec4 fragColor;
 
 void main() {
-    const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec4 baseColor = unpackUnorm4x8(materials[iMaterialID].x).bgra;
     
     ivec2 iScreenPos = ivec2(gl_FragCoord.xy) & 1;
@@ -85,11 +85,11 @@ void main() {
     gl_FragDepth = 0.5 * vFragCoord.z / vFragCoord.w + 0.5;
 
     // Diffuse
-    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vNormal);
+    float lightness = 0.5 + 0.5 * dot(uvDefaultLight, vNormal);
     vec3 cDiffuse = baseColor.rgb * lightness;
 
     // Specular
-    vec3 reflected = reflect(-cvLightDirection, vNormal);
+    vec3 reflected = reflect(-uvDefaultLight, vNormal);
     float specularFactor = pow(max(0.0, reflected.z), uintBitsToFloat(materials[iMaterialID].z));
     vec3 cSpecular = specularFactor * unpackUnorm4x8(materials[iMaterialID].y).bgr;
 

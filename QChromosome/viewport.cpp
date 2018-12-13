@@ -86,6 +86,8 @@ Viewport::Viewport(Session *s, QWidget *parent) :
     ui->doubleSpinBox_3->setValue(50);
     // fog distance
     ui->doubleSpinBox_4->setValue(200);
+    // default light
+    session->viewportUniformBuffer[0].uvDefaultLight = QVector3D(0, 0, 1);
 
     ui->tabWidget->removeTab(2);
 }

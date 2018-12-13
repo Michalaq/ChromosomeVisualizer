@@ -2,6 +2,7 @@
 #define VIEWPORT_H
 
 #include <QWidget>
+#include <QVector3D>
 
 namespace Ui {
     class Viewport;
@@ -25,6 +26,7 @@ struct viewport_data_t
     QRgb ucFogColor             __attribute__((aligned(4)));
     float ufFogStrength         __attribute__((aligned(4)));
     float ufFogDistance         __attribute__((aligned(4)));
+    QVector3D uvDefaultLight    __attribute__((aligned(16)));
 }                               __attribute__((aligned(16)));
 
 class Session;

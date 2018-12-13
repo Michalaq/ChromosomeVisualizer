@@ -1251,6 +1251,10 @@ QLineEdit {
    </property>
   </action>
   <action name="actionDefault_light">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/dialogs/lighting</normaloff>:/dialogs/lighting</iconset>
+   </property>
    <property name="text">
     <string>Default light...</string>
    </property>

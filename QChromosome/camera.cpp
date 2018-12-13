@@ -630,7 +630,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
             stream << "light_source {\n"
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
                    << "parallel\n"
-                   << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+                   << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
                    << "rotate -MySplineAng(clock)\n"
                    << "}\n";
         }
@@ -648,7 +648,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
             stream << "light_source {\n"
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
                    << "parallel\n"
-                   << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+                   << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
                    << "rotate " << -getRotation() << "\n"
                    << "}\n";
         }
@@ -704,7 +704,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "light_source {\n"
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
-               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
                << "rotate -odsAngles\n"
                << "}\n";
         break;
@@ -759,7 +759,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "light_source {\n"
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
-               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
                << "rotate -odsAngles\n"
                << "}\n";
         break;
@@ -814,7 +814,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "light_source {\n"
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
-               << "point_at " << -QVector3D(-1, 1, 2) << "\n"
+               << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
                << "rotate -odsAngles\n"
                << "}\n";
         break;

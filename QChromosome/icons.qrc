@@ -56,6 +56,7 @@
         <file alias="world">icons/dialogs/world_icon.svg</file>
         <file alias="film camera">icons/dialogs/camera_icon.svg</file>
         <file alias="project">icons/dialogs/edit_icon.svg</file>
+        <file alias="lighting">icons/dialogs/lighting_icon.svg</file>
     </qresource>
     <qresource prefix="/">
         <file alias="pivot">icons/pivot_point_icon.svg</file>

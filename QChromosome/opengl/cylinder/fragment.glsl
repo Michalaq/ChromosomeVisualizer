@@ -17,6 +17,7 @@ layout (std140) uniform viewport_data
     uint ucFogColor;
     float ufFogStrength;
     float ufFogDistance;
+    vec3 uvDefaultLight;
 };
 
 in vec4 vViewPosition;
@@ -29,7 +30,6 @@ in float fSpecularExponent;
 out vec4 fragColor;
 
 void main() {
-    const vec3 cvLightDirection = normalize(vec3(-1., 1., 2.));
     vec3 vFixedNormal = normalize(vNormal);
     vec4 baseColor = cColor;
     
@@ -54,11 +54,11 @@ void main() {
     }
 
     // Diffuse
-    float lightness = 0.5 + 0.5 * dot(cvLightDirection, vFixedNormal);
+    float lightness = 0.5 + 0.5 * dot(uvDefaultLight, vFixedNormal);
     vec3 cDiffuse = vec3(baseColor.rgb * lightness);
 
     // Specular
-    vec3 reflected = reflect(-cvLightDirection, vFixedNormal);
+    vec3 reflected = reflect(-uvDefaultLight, vFixedNormal);
     float specularFactor = pow(max(0.0, reflected.z), fSpecularExponent);
     vec3 cSpecular = specularFactor * cSpecularColor;
 
