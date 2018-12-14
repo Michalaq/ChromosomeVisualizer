@@ -92,6 +92,18 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->comboBox_3, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int val) {
         for (auto c : cameras)
             c->setProjectionType(static_cast<Projection>(val));
+
+        switch (val)
+        {
+        case CP_Perspective:
+            ui->widget->setEnabled(true);
+            ui->widget_2->setEnabled(false);
+            break;
+        case CP_Parallel:
+            ui->widget->setEnabled(false);
+            ui->widget_2->setEnabled(true);
+            break;
+        }
     });
 
     //connect focal length
@@ -132,6 +144,13 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_12, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
             c->setFarClipping(val);
+    });
+
+    //connect zoom
+    connect(ui->doubleSpinBox_16, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
+        for (auto c : cameras)
+            c->setZoom(val);
+        updateProjection();
     });
 
     //connect mode
@@ -237,9 +256,27 @@ void CameraAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
         }
 
     if (multiple)
+    {
         ui->comboBox_3->setMultipleValues();
+        ui->widget->setEnabled(false);
+        ui->widget_2->setEnabled(false);
+    }
     else
+    {
         ui->comboBox_3->setCurrentIndex(p, false);
+
+        switch (p)
+        {
+        case CP_Perspective:
+            ui->widget->setEnabled(true);
+            ui->widget_2->setEnabled(false);
+            break;
+        case CP_Parallel:
+            ui->widget->setEnabled(false);
+            ui->widget_2->setEnabled(true);
+            break;
+        }
+    }
 
     //set mode
     Camera::Mode m = fst->getMode();
@@ -597,4 +634,20 @@ void CameraAttributes::updateProjection()
         ui->doubleSpinBox_12->setMultipleValues();
     else
         ui->doubleSpinBox_12->setValue(fc, false);
+
+    // set zoom
+    qreal z = fst->getZoom();
+    multiple = false;
+
+    for (const auto& c : cameras)
+        if (z != c->getZoom())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox_16->setMultipleValues();
+    else
+        ui->doubleSpinBox_16->setValue(z, false);
 }

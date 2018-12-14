@@ -89,6 +89,9 @@ public:
     Projection getProjectionType() const;
     void setProjectionType(Projection p);
 
+    qreal getZoom() const;
+    void setZoom(qreal z);
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);
@@ -167,6 +170,8 @@ private:
 
     Mode mode;
     qreal eyeSeparation;
+
+    qreal zoom;
 
 signals:
     void modelViewChanged(QMatrix4x4);

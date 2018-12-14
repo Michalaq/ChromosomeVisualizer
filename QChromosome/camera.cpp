@@ -23,7 +23,8 @@ Camera::Camera(Session *s, QWidget *parent)
       farClipping(1000.),
       session(s),
       mode(CM_Mono),
-      eyeSeparation(6.5)
+      eyeSeparation(6.5),
+      zoom(1.0)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
@@ -68,7 +69,8 @@ Camera::Camera(const Camera& camera)
       farClipping(camera.farClipping),
       session(camera.session),
       mode(camera.mode),
-      eyeSeparation(camera.eyeSeparation)
+      eyeSeparation(camera.eyeSeparation),
+      zoom(camera.zoom)
 {
     resize(camera.size());
 
@@ -144,9 +146,18 @@ void Camera::resizeEvent(QResizeEvent *event)
 
 void Camera::wheelEvent(QWheelEvent *event)
 {
-    scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
-
     event->accept();
+
+    switch (session->cameraBuffer[id].ptype)
+    {
+    case CP_Perspective:
+        scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
+        break;
+    case CP_Parallel:
+        zoom *= exp(0.16 * event->angleDelta().y() / 120);
+        emit projectionChanged(updateProjection());
+        break;
+    }
 }
 
 #include <QMetaMethod>
@@ -590,15 +601,15 @@ QMatrix4x4& Camera::updateProjection()
     case CP_Parallel:
         if (aspectRatio_ < aspectRatio)
         {
-            auto w = 100;
-            auto h = 100 / aspectRatio_;
+            auto w = 100 / zoom;
+            auto h = 100 / aspectRatio_ / zoom;
 
             projection.ortho(-w/2, +w/2, -h/2, +h/2, nearClipping, farClipping);
         }
         else
         {
-            auto w = 100 * aspectRatio_ / aspectRatio;
-            auto h = 100 / aspectRatio;
+            auto w = 100 * aspectRatio_ / aspectRatio / zoom;
+            auto h = 100 / aspectRatio / zoom;
 
             projection.ortho(-w/2, +w/2, -h/2, +h/2, nearClipping, farClipping);
         }
@@ -661,8 +672,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
 
             case CP_Parallel:
                 stream << "camera { orthographic\n"
-                       << "right x * " << 100 << "\n"
-                       << "up y * " << 100 / aspectRatio << "\n"
+                       << "right x * " << 100 / zoom << "\n"
+                       << "up y * " << 100 / aspectRatio / zoom << "\n"
                        << "look_at -z\n"
                        << "rotate -MySplineAng(clock)\n"
                        << "translate MySplinePos(clock)\n"
@@ -695,8 +706,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
 
             case CP_Parallel:
                 stream << "camera { orthographic\n"
-                       << "right x * " << 100 << "\n"
-                       << "up y * " << 100 / aspectRatio << "\n"
+                       << "right x * " << 100 / zoom << "\n"
+                       << "up y * " << 100 / aspectRatio / zoom << "\n"
                        << "look_at -z\n"
                        << "rotate " << -getRotation() << "\n"
                        << "translate " << getPosition() << "\n"
@@ -981,5 +992,16 @@ Projection Camera::getProjectionType() const
 void Camera::setProjectionType(Projection p)
 {
     session->cameraBuffer[id].ptype = p;
+    emit projectionChanged(updateProjection());
+}
+
+qreal Camera::getZoom() const
+{
+    return zoom;
+}
+
+void Camera::setZoom(qreal z)
+{
+    zoom = z;
     emit projectionChanged(updateProjection());
 }

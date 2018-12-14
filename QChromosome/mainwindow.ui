@@ -366,6 +366,10 @@ Label {
 	min-width: 135px;
 }
 
+Label:disabled {
+	color: #808080;
+}
+
 .heading {
 	color: lightgray;
 }
