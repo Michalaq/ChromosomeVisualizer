@@ -991,8 +991,13 @@ Projection Camera::getProjectionType() const
 
 void Camera::setProjectionType(Projection p)
 {
-    session->cameraBuffer[id].ptype = p;
-    emit projectionChanged(updateProjection());
+    if (session->cameraBuffer[id].ptype != p)
+    {
+        session->cameraBuffer[id].ptype = p;
+
+        emit projectionChanged(updateProjection());
+        emit projectionTypeChanged(p);
+    }
 }
 
 qreal Camera::getZoom() const

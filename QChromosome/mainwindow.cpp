@@ -179,6 +179,18 @@ MainWindow::MainWindow(QWidget *parent) :
         (session->simulation->getModel()->*cm)(QModelIndex());
         ui->scene->update();
     });
+
+    ag = new QActionGroup(this);
+    ag->addAction(ui->actionPerspective);
+    ag->addAction(ui->actionParallel);
+
+    connect(ui->actionPerspective, &QAction::triggered, [this] {
+        session->currentCamera->setProjectionType(CP_Perspective);
+    });
+
+    connect(ui->actionParallel, &QAction::triggered, [this] {
+        session->currentCamera->setProjectionType(CP_Parallel);
+    });
 }
 
 MainWindow::~MainWindow()
@@ -637,6 +649,17 @@ void MainWindow::addCamera(Camera* camera)
             ui->dockWidget_2->show();
         }
     });
+    connect(camera, &Camera::projectionTypeChanged, [this](Projection p) {
+        switch (p)
+        {
+        case CP_Perspective:
+            ui->actionPerspective->setChecked(true);
+            break;
+        case CP_Parallel:
+            ui->actionParallel->setChecked(true);
+            break;
+        }
+    });
 
     ui->stackedWidget_2->addWidget(camera);
 }
@@ -645,4 +668,14 @@ void MainWindow::changeCamera(Camera *camera)
 {
     session->changeCamera(camera);
     ui->stackedWidget_2->setCurrentWidget(session->currentCamera);
+
+    switch (session->currentCamera->getProjectionType())
+    {
+    case CP_Perspective:
+        ui->actionPerspective->setChecked(true);
+        break;
+    case CP_Parallel:
+        ui->actionParallel->setChecked(true);
+        break;
+    }
 }

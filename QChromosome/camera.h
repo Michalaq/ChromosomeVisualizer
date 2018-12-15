@@ -176,6 +176,7 @@ private:
 signals:
     void modelViewChanged(QMatrix4x4);
     void projectionChanged(QMatrix4x4);
+    void projectionTypeChanged(Projection);
 
 friend class CameraItem;
 friend class Session;
