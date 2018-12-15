@@ -18,7 +18,7 @@ public:
     ~Camera();
 
     QVector3D getPosition() const;
-    QVector3D getRotation() const;
+    QQuaternion getRotation() const;
     qreal getFocalLength() const;
     qreal getSensorSize() const;
     qreal getHorizontalAngle() const;
@@ -27,7 +27,7 @@ public:
     qreal getFarClipping() const;
 
     void setPosition(const QVector3D& p);
-    void setRotation(qreal h_, qreal p_, qreal b_);
+    void setRotation(const QQuaternion& q);
     void setFocalLength(qreal fl);
     void setSensorSize(qreal ss);
     void setHorizontalAngle(qreal ha);
@@ -118,17 +118,14 @@ private:
     /* eye position */
     QVector3D eye;
 
-    /* direction vectors */
-    QVector3D x, y, z;
-
     /* Euler angles */
-    qreal h, p, b;
+    QQuaternion phb;
 
     /* moves camera with respect to current coordinates system */
     void move(qreal dx, qreal dy, qreal dz);
 
     /* rotates camera with respect to current coordinates system */
-    void rotate(qreal dh, qreal dp, qreal db);
+    void rotate(qreal dp, qreal dh, qreal db);
 
     qreal focalLength;
     qreal sensorSize;

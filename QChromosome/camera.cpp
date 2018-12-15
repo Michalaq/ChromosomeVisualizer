@@ -55,8 +55,7 @@ Camera::Camera(Session *s, QWidget *parent)
 Camera::Camera(const Camera& camera)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}),
       eye(camera.eye),
-      x(camera.x), y(camera.y), z(camera.z),
-      h(camera.h), p(camera.p), b(camera.b),
+      phb(camera.phb),
       focalLength(camera.focalLength),
       sensorSize(camera.sensorSize),
       horizontalAngle(camera.horizontalAngle),
@@ -103,12 +102,14 @@ SplineKeyframe Camera::saveFrame() const
 {
     SplineKeyframe f;
 
-    f.insert("X", eye.x());
-    f.insert("Y", eye.y());
-    f.insert("Z", eye.z());
-    f.insert("H", h);
-    f.insert("P", p);
-    f.insert("B", b);
+    auto angles = phb.toEulerAngles();
+
+    f.insert("X", eye[0]);
+    f.insert("Y", eye[1]);
+    f.insert("Z", eye[2]);
+    f.insert("P", angles[0]);
+    f.insert("H", angles[1]);
+    f.insert("B", angles[2]);
     f.insert("Focal length", focalLength);
     f.insert("Sensor size", sensorSize);
 
@@ -117,16 +118,17 @@ SplineKeyframe Camera::saveFrame() const
 
 void Camera::loadFrame(const SplineKeyframe &frame)
 {
-    QVector3D _eye;
-    _eye.setX(frame.value("X", eye.x()));
-    _eye.setY(frame.value("Y", eye.y()));
-    _eye.setZ(frame.value("Z", eye.z()));
-    setPosition(_eye);
+    auto angles = phb.toEulerAngles();
 
-    double _h = frame.value("H", h);
-    double _p = frame.value("P", p);
-    double _b = frame.value("B", b);
-    setRotation(_h, _p, _b);
+    auto x = frame.value("X", eye[0]);
+    auto y = frame.value("Y", eye[1]);
+    auto z = frame.value("Z", eye[2]);
+    setPosition(QVector3D(x, y, z));
+
+    auto p = frame.value("P", angles[0]);
+    auto h = frame.value("H", angles[1]);
+    auto b = frame.value("B", angles[2]);
+    setRotation(QQuaternion::fromEulerAngles(p, h, b));
 
     focalLength = frame.value("Focal length", focalLength);
     sensorSize = frame.value("Sensor size", sensorSize);
@@ -275,9 +277,9 @@ QVector3D Camera::getPosition() const
     return eye;
 }
 
-QVector3D Camera::getRotation() const
+QQuaternion Camera::getRotation() const
 {
-    return QVector3D(p, h, b);
+    return phb;
 }
 
 qreal Camera::getFocalLength() const
@@ -319,6 +321,9 @@ void Camera::setPosition(const QVector3D &p)
 
 void Camera::move(int dx, int dy)
 {
+    QVector3D x, y, z;
+    phb.getAxes(&x, &y, &z);
+
     const qreal scale = distanceFactor * qMax(qAbs(QVector3D::dotProduct(eye - session->origin, z)), 1.f) / focalLength;
 
     move(scale * dx, -scale * dy, 0.);
@@ -332,7 +337,7 @@ void Camera::move(int dx, int dy)
 
 void Camera::rotate(int dx, int dy)
 {
-    rotate(-angleFactor * dx, -angleFactor * dy, 0.);
+    rotate(angleFactor * dy, angleFactor * dx, 0);
 
     if (session->autokeying)
     {
@@ -373,6 +378,9 @@ void Camera::setCurrentAction(Action ca)
 
 void Camera::move(qreal dx, qreal dy, qreal dz)
 {
+    QVector3D x, y, z;
+    phb.getAxes(&x, &y, &z);
+
     /* change to global coordinates */
     QVector3D delta = x * dx + y * dy + z * dz;
 
@@ -387,18 +395,9 @@ void Camera::move(qreal dx, qreal dy, qreal dz)
     emit modelViewChanged(updateModelView());
 }
 
-void Camera::setRotation(qreal h_, qreal p_, qreal b_)
+void Camera::setRotation(const QQuaternion &q)
 {
-    h = h_;
-    p = p_;
-    b = b_;
-
-    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
-
-    x = q.rotatedVector({1,0,0});
-    y = q.rotatedVector({0,1,0});
-    z = q.rotatedVector({0,0,1});
-
+    phb = q;
     emit modelViewChanged(updateModelView());
 }
 
@@ -452,8 +451,10 @@ void Camera::setFarClipping(qreal fc)
 void Camera::setLookAt(const QVector3D &target)
 {
     auto f = target - eye;
-    f.setZ(-f.z());
-    setRotation(qRadiansToDegrees(qAtan2(-f.x(), f.z())), qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), f.z()).length())), 0);
+    auto p = qRadiansToDegrees(qAtan2(f.y(), QVector2D(f.x(), -f.z()).length()));
+    auto h = qRadiansToDegrees(qAtan2(-f.x(), -f.z()));
+    auto b = 0;
+    setRotation(QQuaternion::fromEulerAngles(p, h, b));
 }
 
 #include <QJsonObject>
@@ -462,12 +463,15 @@ void Camera::setLookAt(const QVector3D &target)
 void Camera::read(const QJsonObject &json)
 {
     const QJsonObject coordinates = json["Coordinates"].toObject();
-    eye.setX(coordinates["X"].toDouble());
-    eye.setY(coordinates["Y"].toDouble());
-    eye.setZ(coordinates["Z"].toDouble());
-    h = coordinates["H"].toDouble();
-    p = coordinates["P"].toDouble();
-    b = coordinates["B"].toDouble();
+    auto x = coordinates["X"].toDouble();
+    auto y = coordinates["Y"].toDouble();
+    auto z = coordinates["Z"].toDouble();
+    eye = QVector3D(x, y, z);
+
+    auto p = coordinates["P"].toDouble();
+    auto h = coordinates["H"].toDouble();
+    auto b = coordinates["B"].toDouble();
+    phb = QQuaternion::fromEulerAngles(p, h, b);
 
     const QJsonObject objectProperties = json["Object properties"].toObject();
     focalLength = objectProperties["Focal length"].toDouble();
@@ -477,12 +481,6 @@ void Camera::read(const QJsonObject &json)
     const QJsonObject depthOfField = json["Depth of field"].toObject();
     nearClipping = depthOfField["Near clipping"].toDouble();
     farClipping = depthOfField["Far clipping"].toDouble();
-
-    QQuaternion q = QQuaternion::fromEulerAngles(p, h, b);
-
-    x = q.rotatedVector({1,0,0});
-    y = q.rotatedVector({0,1,0});
-    z = q.rotatedVector({0,0,1});
 
     emit modelViewChanged(updateModelView());
 
@@ -494,13 +492,16 @@ void Camera::read(const QJsonObject &json)
 
 void Camera::write(QJsonObject &json) const
 {
+    auto angles = phb.toEulerAngles();
+
     QJsonObject coordinates;
-    coordinates["X"] = eye.x();
-    coordinates["Y"] = eye.y();
-    coordinates["Z"] = eye.z();
-    coordinates["H"] = h;
-    coordinates["P"] = p;
-    coordinates["B"] = b;
+    coordinates["X"] = eye[0];
+    coordinates["Y"] = eye[1];
+    coordinates["Z"] = eye[2];
+    coordinates["P"] = angles[0];
+    coordinates["H"] = angles[1];
+    coordinates["B"] = angles[2];
+
     json["Coordinates"] = coordinates;
 
     QJsonObject objectProperties;
@@ -519,44 +520,29 @@ void Camera::write(QJsonObject &json) const
     json["Key frames"] = keyframes;
 }
 
-void Camera::rotate(qreal dh, qreal dp, qreal db)
+void Camera::rotate(qreal dp, qreal dh, qreal db)
 {
-    /* update Euler angles */
-    h -= dh;
-    p -= dp;
-    b -= db;
+    /* get direction vectors */
+    QVector3D x, y, z;
+    phb.getAxes(&x, &y, &z);
 
-    /* reset direction vectors */
-    x = QVector3D(1, 0, 0);
-    y = QVector3D(0, 1, 0);
-    z = QVector3D(0, 0, 1);
-
-    QQuaternion q, dq;
+    QQuaternion dq;
 
     /* rotate local coordinates */
-    q = QQuaternion::fromAxisAndAngle(y, h);
     dq = QQuaternion::fromAxisAndAngle(y, -dh);
-
-    x = q.rotatedVector(x);
-    z = q.rotatedVector(z);
+    phb = dq * phb;
 
     if (rotationType == RT_World)
         eye = session->origin + dq.rotatedVector(eye - session->origin);
 
-    q = QQuaternion::fromAxisAndAngle(x, p);
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
-
-    y = q.rotatedVector(y);
-    z = q.rotatedVector(z);
+    phb = dq * phb;
 
     if (rotationType == RT_World)
         eye = session->origin + dq.rotatedVector(eye - session->origin);
 
-    q = QQuaternion::fromAxisAndAngle(z, b);
     dq = QQuaternion::fromAxisAndAngle(z, -db);
-
-    x = q.rotatedVector(x);
-    y = q.rotatedVector(y);
+    phb = dq * phb;
 
     if (rotationType == RT_World)
         eye = session->origin + dq.rotatedVector(eye - session->origin);
@@ -569,7 +555,7 @@ QMatrix4x4& Camera::updateModelView()
     modelView.setToIdentity();
 
     modelView.translate(eye);
-    modelView.rotate(QQuaternion::fromAxes(x, y, z));
+    modelView.rotate(phb);
 
     update();
 
@@ -698,8 +684,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << aspectRatio << "\n"
                        << "look_at -z\n"
                        << "angle " << horizontalAngle << "\n"
-                       << "rotate " << -getRotation() << "\n"
-                       << "translate " << getPosition() << "\n"
+                       << "rotate " << -phb.toEulerAngles() << "\n"
+                       << "translate " << eye << "\n"
                        << "}\n"
                        << "\n";
                 break;
@@ -709,8 +695,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << 100 / zoom << "\n"
                        << "up y * " << 100 / aspectRatio / zoom << "\n"
                        << "look_at -z\n"
-                       << "rotate " << -getRotation() << "\n"
-                       << "translate " << getPosition() << "\n"
+                       << "rotate " << -phb.toEulerAngles() << "\n"
+                       << "translate " << eye << "\n"
                        << "}\n"
                        << "\n";
                 break;
@@ -720,7 +706,7 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
                    << "parallel\n"
                    << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-                   << "rotate " << -getRotation() << "\n"
+                   << "rotate " << -phb.toEulerAngles() << "\n"
                    << "}\n";
         }
         break;
@@ -732,8 +718,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
         else
-            stream << "#declare odsLocation = " << getPosition() << ";\n"
-                   << "#declare odsAngles = " << getRotation() << ";\n";
+            stream << "#declare odsLocation = " << eye << ";\n"
+                   << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
 
         stream << "#declare odsX = <1, 0, 0>;\n"
                << "#declare odsY = <0, 1, 0>;\n"
@@ -787,8 +773,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
         else
-            stream << "#declare odsLocation = " << getPosition() << ";\n"
-                   << "#declare odsAngles = " << getRotation() << ";\n";
+            stream << "#declare odsLocation = " << eye << ";\n"
+                   << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
 
         stream << "#declare odsX = <1, 0, 0>;\n"
                << "#declare odsY = <0, 1, 0>;\n"
@@ -842,8 +828,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
         else
-            stream << "#declare odsLocation = " << getPosition() << ";\n"
-                   << "#declare odsAngles = " << getRotation() << ";\n";
+            stream << "#declare odsLocation = " << eye << ";\n"
+                   << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
 
         stream << "#declare odsX = <1, 0, 0>;\n"
                << "#declare odsY = <0, 1, 0>;\n"
@@ -927,7 +913,7 @@ void Camera::callibrate(int offset, bool selected, qreal scale)
     if (selected && !session->treeView->selectionModel()->hasSelection())
         return;
 
-    setRotation(-135, -35.2644, 0);
+    setRotation(QQuaternion::fromEulerAngles(-35.2644, -135, 0));
 
     qreal tha = qTan(qDegreesToRadians(horizontalAngle / 2)) * scale;
     qreal tva = qTan(qDegreesToRadians(verticalAngle / 2)) * scale;
@@ -960,6 +946,9 @@ void Camera::callibrate(int offset, bool selected, qreal scale)
         if (dyl < tmp)
             dyl = tmp;
     }
+
+    QVector3D x, y, z;
+    phb.getAxes(&x, &y, &z);
 
     setPosition(eye + (dxr - dxl) / 2 * tha * x + (dyr - dyl) / 2 * tva * y + qMax((dxr + dxl) / 2, (dyr + dyl) / 2) * z);
 }

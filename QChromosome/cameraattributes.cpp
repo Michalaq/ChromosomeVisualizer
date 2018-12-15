@@ -62,8 +62,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_4, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->getRotation();
-            c->setRotation(val, ang.x(), ang.z());
+            auto ang = c->getRotation().toEulerAngles();
+            c->setRotation(QQuaternion::fromEulerAngles(ang[0], val, ang[2]));
         }
         emit modelViewChanged();
     });
@@ -72,8 +72,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_5, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->getRotation();
-            c->setRotation(ang.y(), val, ang.z());
+            auto ang = c->getRotation().toEulerAngles();
+            c->setRotation(QQuaternion::fromEulerAngles(val, ang[1], ang[2]));
         }
         emit modelViewChanged();
     });
@@ -82,8 +82,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->doubleSpinBox_6, QOverload<double>::of(&DoubleSpinBox::valueChanged), [this](double val) {
         for (auto c : cameras)
         {
-            auto ang = c->getRotation();
-            c->setRotation(ang.y(), ang.x(), val);
+            auto ang = c->getRotation().toEulerAngles();
+            c->setRotation(QQuaternion::fromEulerAngles(ang[0], ang[1], val));
         }
         emit modelViewChanged();
     });
@@ -486,11 +486,11 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_3->setValue(z, false);
 
     // set R.H
-    double h = fst->getRotation().y();
+    double h = fst->getRotation().toEulerAngles()[1];
     multiple = false;
 
     for (const auto c : cameras)
-        if (h != c->getRotation().y())
+        if (h != c->getRotation().toEulerAngles()[1])
         {
             multiple = true;
             break;
@@ -502,11 +502,11 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_4->setValue(h, false);
 
     // set R.P
-    double p = fst->getRotation().x();
+    double p = fst->getRotation().toEulerAngles()[0];
     multiple = false;
 
     for (const auto c : cameras)
-        if (p != c->getRotation().x())
+        if (p != c->getRotation().toEulerAngles()[0])
         {
             multiple = true;
             break;
@@ -518,11 +518,11 @@ void CameraAttributes::updateModelView()
         ui->doubleSpinBox_5->setValue(p, false);
 
     // set R.B
-    double b = fst->getRotation().z();
+    double b = fst->getRotation().toEulerAngles()[2];
     multiple = false;
 
     for (const auto c : cameras)
-        if (b != c->getRotation().z())
+        if (b != c->getRotation().toEulerAngles()[2])
         {
             multiple = true;
             break;
