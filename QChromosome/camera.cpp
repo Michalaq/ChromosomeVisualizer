@@ -1,8 +1,10 @@
 #include "camera.h"
 
-const qreal Camera::distanceFactor = 0.025;
-const qreal Camera::angleFactor = 0.05;
-const qreal Camera::wheelFactor = 2.00;
+const qreal Camera::distanceFactor = 0.06;
+const qreal Camera::angleFactor = 0.50;
+const qreal Camera::scaleFactor = 0.75;
+const qreal Camera::wheelFactor = 0.15;
+const qreal Camera::zoomFactor = 0.01;
 
 bool Camera::lockX = false;
 bool Camera::lockY = false;
@@ -168,18 +170,9 @@ void Camera::resizeEvent(QResizeEvent *event)
 
 void Camera::wheelEvent(QWheelEvent *event)
 {
-    event->accept();
+    scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
 
-    switch (session->cameraBuffer[id].ptype)
-    {
-    case CP_Perspective:
-        scale(wheelFactor * event->angleDelta().y(), wheelFactor * event->angleDelta().y());
-        break;
-    case CP_Parallel:
-        zoom *= exp(0.16 * event->angleDelta().y() / 120);
-        emit projectionChanged(updateProjection());
-        break;
-    }
+    event->accept();
 }
 
 #include <QMetaMethod>
@@ -368,7 +361,16 @@ void Camera::rotate(int dx, int dy)
 
 void Camera::scale(int dx, int)
 {
-    move(0., 0., distanceFactor * dx);
+    switch (session->cameraBuffer[id].ptype)
+    {
+    case CP_Perspective:
+        move(0., 0., scaleFactor * dx);
+        break;
+    case CP_Parallel:
+        zoom *= exp(zoomFactor * dx);
+        emit projectionChanged(updateProjection());
+        break;
+    }
 
     if (session->autokeying)
     {

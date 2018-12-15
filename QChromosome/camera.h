@@ -149,7 +149,9 @@ private:
 
     static const qreal distanceFactor;
     static const qreal angleFactor;
+    static const qreal scaleFactor;
     static const qreal wheelFactor;
+    static const qreal zoomFactor;
 
     qreal aspectRatio;
 
