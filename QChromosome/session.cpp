@@ -6,6 +6,8 @@ Session::Session(MainWindow* w) :
     simulation(new Simulation(this)),
     projectSettings(new ProjectSettings(this)),
     renderSettings(new TabWidget(this)),
+    cameras(new QMenu("User cameras")),
+    camerasGroup(new QActionGroup(cameras)),
     editorCamera(new Camera(this)),
     currentCamera(editorCamera),
     cameraUniformBuffer(editorCamera->id),
@@ -65,6 +67,11 @@ Session::Session(MainWindow* w) :
 
     viewportUniformBuffer.resize(1);
     viewport = new Viewport(this);
+
+    editorCamera->action->setText("Default camera");
+    editorCamera->action->setIcon(QPixmap(":/dialogs/film camera"));
+
+    cameras->addSeparator();
 }
 
 Session::~Session()
@@ -72,6 +79,7 @@ Session::~Session()
     delete action;
     delete simulation;
     delete editorCamera;
+    delete cameras;
     delete treeView;
     delete projectSettings;
     delete viewport;

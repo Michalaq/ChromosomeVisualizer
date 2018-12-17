@@ -30,7 +30,7 @@ public:
     int childCount() const;
     int columnCount() const;
     QVariant data(int column) const;
-    bool setData(int column, const QVariant& data);
+    virtual bool setData(int column, const QVariant& data);
     int row() const;
     TreeItem *parentItem();
     void removeRows(int row, int count);
@@ -128,6 +128,8 @@ class CameraItem : public TreeItem
 public:
     explicit CameraItem(const QString& name, Camera* cam, Session* s, TreeItem *parentItem = 0);
     ~CameraItem();
+
+    bool setData(int column, const QVariant& data);
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);

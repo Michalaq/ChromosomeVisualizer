@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+    separator = ui->menuCameras->insertSeparator(ui->actionPerspective);
+
     newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
@@ -310,6 +312,10 @@ Session* MainWindow::makeSession()
     // add editor camera to available cameras
     addCamera(s->editorCamera);
 
+    // add list of available cameras to menu View
+    ui->menuCameras->insertMenu(separator, s->cameras);
+    s->cameras->setStyleSheet(styleSheet());
+
     // add media panel to available panels
     ui->stackedWidget_4->addWidget(s->mediaPanel);
 
@@ -337,7 +343,12 @@ void MainWindow::newProject()
 
 void MainWindow::setCurrentSession(Session *s)
 {
+    if (session)
+        session->cameras->menuAction()->setVisible(false);
+
     session = s;
+
+    session->cameras->menuAction()->setVisible(true);
 
     // update window title
     setWindowTitle(QString("QChromosome 4D Studio - [%1]").arg(session->projectSettings->getFileName()));
@@ -610,6 +621,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
         remaining.removeOne(session);
         delete session;
+        session = nullptr;
 
         if (remaining.isEmpty())
             event->accept();

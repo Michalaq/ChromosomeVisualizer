@@ -92,6 +92,8 @@ public:
     qreal getZoom() const;
     void setZoom(qreal z);
 
+    QAction* action;
+
 public slots:
     /* handles mouse move event */
     void move(int dx, int dy);

@@ -42,6 +42,7 @@ public:
     void colorByChain(const QModelIndex &root);
 
     void addCamera(Camera* camera);
+    void changeCamera(Camera* camera);
     void setCurrentCamera(QModelIndex index);
 
     void setMaterial(const QModelIndex& root, Material* m, int position = INT_MAX);
@@ -63,6 +64,7 @@ private:
     QPersistentModelIndex currentCamera;
     Session *session;
     QSet<Material*> materials;
+    QMap<Camera*, QPersistentModelIndex> cameras;
 
     QString next_name() const;
 

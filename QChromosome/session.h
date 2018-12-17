@@ -19,6 +19,7 @@
 #include "tabwidget.h"
 #include "simulation/simulation.h"
 #include <QChart>
+#include <QMenu>
 
 class MainWindow;
 
@@ -46,6 +47,9 @@ public:
 
     ProjectSettings* projectSettings;
     TabWidget* renderSettings;
+
+    QMenu* cameras;
+    QActionGroup* camerasGroup;
 
     Camera* editorCamera;
     Camera* currentCamera;

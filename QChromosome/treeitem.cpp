@@ -319,11 +319,21 @@ CameraItem::CameraItem(const QString &name, Camera *cam, Session *s, TreeItem *p
     icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Normal);
     icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Selected);
     decoration = icon;
+
+    camera->action->setText(name);
 }
 
 CameraItem::~CameraItem()
 {
 
+}
+
+bool CameraItem::setData(int column, const QVariant& data)
+{
+    if (column == 0)
+        camera->action->setText(data.toString());
+
+    return TreeItem::setData(column, data);
 }
 
 QVector3D CameraItem::getPosition() const

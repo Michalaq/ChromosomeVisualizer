@@ -15,6 +15,7 @@ Camera::Action Camera::currentAction;
 
 Camera::Camera(Session *s, QWidget *parent)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
+      action(new QAction),
       eye(60, 30, 60),
       focalLength(36),
       sensorSize(36),
@@ -50,10 +51,20 @@ Camera::Camera(Session *s, QWidget *parent)
     });
 
     connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
+
+    action->setIcon(QPixmap(":/dialogs/film camera"));
+    action->setCheckable(true);
+    session->cameras->addAction(action);
+    session->camerasGroup->addAction(action);
+
+    connect(action, &QAction::triggered, [this] {
+        session->simulation->getModel()->changeCamera(this);
+    });
 }
 
 Camera::Camera(const Camera& camera)
     : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}),
+      action(new QAction),
       eye(camera.eye),
       phb(camera.phb),
       focalLength(camera.focalLength),
@@ -91,11 +102,20 @@ Camera::Camera(const Camera& camera)
     session->cameraBuffer.append(session->cameraBuffer[camera.id]);
 
     connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
+
+    action->setIcon(QPixmap(":/dialogs/film camera"));
+    action->setCheckable(true);
+    session->cameras->addAction(action);
+    session->camerasGroup->addAction(action);
+
+    connect(action, &QAction::triggered, [this] {
+        session->simulation->getModel()->changeCamera(this);
+    });
 }
 
 Camera::~Camera()
 {
-
+    delete action;
 }
 
 SplineKeyframe Camera::saveFrame() const

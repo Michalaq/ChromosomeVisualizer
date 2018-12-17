@@ -103,6 +103,8 @@ private:
     QList<Session*> remaining;
 
     DefaultLight* light;
+
+    QAction* separator;
 };
 
 #endif // MAINWINDOW_H

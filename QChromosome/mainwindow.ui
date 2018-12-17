@@ -598,15 +598,6 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
      <property name="title">
       <string>Cameras</string>
      </property>
-     <widget class="QMenu" name="menuUse_camera">
-      <property name="title">
-       <string>Use camera</string>
-      </property>
-      <addaction name="actionDefault_camera"/>
-      <addaction name="separator"/>
-     </widget>
-     <addaction name="menuUse_camera"/>
-     <addaction name="separator"/>
      <addaction name="actionPerspective"/>
      <addaction name="actionParallel"/>
     </widget>

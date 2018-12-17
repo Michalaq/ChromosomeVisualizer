@@ -270,10 +270,19 @@ void TreeModel::addCamera(Camera *camera)
     endInsertRows();
 
     session->userCameras.append(camera);
+    cameras[camera] = index(0, 6);
+}
+
+void TreeModel::changeCamera(Camera *camera)
+{
+    setCurrentCamera(cameras[camera]);
 }
 
 void TreeModel::setCurrentCamera(QModelIndex index)
 {
+    if (currentCamera == index)
+        return;
+
     if (currentCamera.isValid())
         setData(currentCamera, false);
 
