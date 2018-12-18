@@ -21,7 +21,6 @@ Camera::Camera(Session *s, QWidget *parent)
       eye(60, 30, 60),
       focalLength(36),
       sensorSize(36),
-      rotationType(RT_World),
       nearClipping(.3),
       farClipping(1000.),
       session(s),
@@ -76,7 +75,6 @@ Camera::Camera(const Camera& camera)
       modelView(camera.modelView),
       projection(camera.projection),
       aspectRatio(camera.aspectRatio),
-      rotationType(camera.rotationType),
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
       session(camera.session),
@@ -453,11 +451,6 @@ void Camera::setVerticalAngle(qreal va)
     setFocalLength(h / 2 / qTan(qDegreesToRadians(va / 2)));
 }
 
-void Camera::setRotationType(int rt)
-{
-    rotationType = rt;
-}
-
 void Camera::setNearClipping(qreal nc)
 {
     nearClipping = nc;
@@ -497,18 +490,23 @@ void Camera::read(const QJsonObject &json)
     auto b = coordinates["B"].toDouble();
     phb = QQuaternion::fromEulerAngles(p, h, b);
 
-    const QJsonObject objectProperties = json["Object properties"].toObject();
-    focalLength = objectProperties["Focal length"].toDouble();
-    sensorSize = objectProperties["Sensor size"].toDouble();
-    rotationType = objectProperties["Rotation type"].toInt();
-
-    const QJsonObject depthOfField = json["Depth of field"].toObject();
-    nearClipping = depthOfField["Near clipping"].toDouble();
-    farClipping = depthOfField["Far clipping"].toDouble();
-
     emit modelViewChanged(updateModelView());
 
+    const QJsonObject objectProperties = json["Object properties"].toObject();
+    session->cameraBuffer[id].ptype = static_cast<Projection>(objectProperties["Projection"].toInt());
+    focalLength = objectProperties["Focal length"].toDouble();
+    sensorSize = objectProperties["Sensor size"].toDouble();
+    zoom = objectProperties["Zoom"].toDouble();
+
+    const QJsonObject details = json["Details"].toObject();
+    nearClipping = details["Near clipping"].toDouble();
+    farClipping = details["Far clipping"].toDouble();
+
     updateAngles();
+
+    const QJsonObject stereoscopic = json["Stereoscopic"].toObject();
+    mode = static_cast<Mode>(stereoscopic["Mode"].toInt());
+    eyeSeparation = stereoscopic["Eye separation"].toDouble();
 
     const QJsonArray keyframes = json["Key frames"].toArray();
     SplineInterpolator::read(keyframes);
@@ -525,19 +523,24 @@ void Camera::write(QJsonObject &json) const
     coordinates["P"] = angles[0];
     coordinates["H"] = angles[1];
     coordinates["B"] = angles[2];
-
     json["Coordinates"] = coordinates;
 
     QJsonObject objectProperties;
+    objectProperties["Projection"] = session->cameraBuffer[id].ptype;
     objectProperties["Focal length"] = focalLength;
     objectProperties["Sensor size"] = sensorSize;
-    objectProperties["Rotation type"] = rotationType;
+    objectProperties["Zoom"] = zoom;
     json["Object properties"] = objectProperties;
 
-    QJsonObject depthOfField;
-    depthOfField["Near clipping"] = nearClipping;
-    depthOfField["Far clipping"] = farClipping;
-    json["Depth of field"] = depthOfField;
+    QJsonObject details;
+    details["Near clipping"] = nearClipping;
+    details["Far clipping"] = farClipping;
+    json["Details"] = details;
+
+    QJsonObject stereoscopic;
+    stereoscopic["Mode"] = mode;
+    stereoscopic["Eye separation"] = eyeSeparation;
+    json["Stereoscopic"] = stereoscopic;
 
     QJsonArray keyframes;
     SplineInterpolator::write(keyframes);
@@ -556,20 +559,22 @@ void Camera::rotate(qreal dp, qreal dh, qreal db)
     dq = QQuaternion::fromAxisAndAngle(y, -dh);
     phb = dq * phb;
 
-    if (rotationType == RT_World)
-        eye = session->origin + dq.rotatedVector(eye - session->origin);
+    x = dq.rotatedVector(x);
+    z = dq.rotatedVector(z);
+
+    eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     dq = QQuaternion::fromAxisAndAngle(x, -dp);
     phb = dq * phb;
 
-    if (rotationType == RT_World)
-        eye = session->origin + dq.rotatedVector(eye - session->origin);
+    z = dq.rotatedVector(z);
+
+    eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     dq = QQuaternion::fromAxisAndAngle(z, -db);
     phb = dq * phb;
 
-    if (rotationType == RT_World)
-        eye = session->origin + dq.rotatedVector(eye - session->origin);
+    eye = session->origin + dq.rotatedVector(eye - session->origin);
 
     emit modelViewChanged(updateModelView());
 }

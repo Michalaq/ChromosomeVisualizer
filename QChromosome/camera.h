@@ -35,14 +35,7 @@ public:
     void setNearClipping(qreal nc);
     void setFarClipping(qreal fc);
 
-    void setRotationType(int rt);
     void setLookAt(const QVector3D& target);
-
-    enum RotationType
-    {
-        RT_World,
-        RT_Camera
-    };
 
     static void lockCoordinates(bool x, bool y, bool z);
 
@@ -154,8 +147,6 @@ private:
     static const qreal zoomFactor;
 
     qreal aspectRatio;
-
-    int rotationType;
 
     qreal nearClipping;
     qreal farClipping;
