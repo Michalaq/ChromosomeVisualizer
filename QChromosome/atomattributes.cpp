@@ -68,11 +68,9 @@ AtomAttributes::AtomAttributes(QWidget *parent) :
     connect(ui->comboBox_6, &Picker::valueChanged, this, &AtomAttributes::updateLabels);
     connect(ui->fontComboBox, &FontComboBox::valueChanged, this, &AtomAttributes::updateLabels);
     connect(ui->comboBox_3, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &AtomAttributes::updateLabels);
-    connect(ui->spinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &AtomAttributes::updateLabels);
 
     ui->comboBox_4->setValue(QColor(0, 0, 0, 76), false);
     ui->comboBox_6->setValue(Qt::white, false);
-    ui->spinBox->setValue(9, false);
 }
 
 AtomAttributes::~AtomAttributes()

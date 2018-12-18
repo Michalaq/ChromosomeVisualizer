@@ -195,6 +195,8 @@ CameraAttributes::CameraAttributes(QWidget *parent) :
     connect(ui->lineEdit_4, &PickWidget::selected, [this](const QPersistentModelIndex& index) {
         emit selected(index);
     });
+
+    ui->tabWidget->removeTab(5);
 }
 
 CameraAttributes::~CameraAttributes()

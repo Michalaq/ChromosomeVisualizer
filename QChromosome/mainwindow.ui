@@ -516,7 +516,6 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
      <addaction name="actionCycle"/>
      <addaction name="actionPing_Pong"/>
     </widget>
-    <addaction name="actionRecord"/>
     <addaction name="actionRecord_Active_Objects"/>
     <addaction name="separator"/>
     <addaction name="actionAutokeying"/>

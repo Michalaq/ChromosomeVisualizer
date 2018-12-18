@@ -31,12 +31,10 @@ QRect LabelAtlas::addLabel(const Ui::AtomAttributes* ui)
 {
     const auto& text = ui->textEdit->toPlainText();
 
-    if (text.isEmpty() || ui->spinBox->value() == 0)
+    if (text.isEmpty())
         return QRect();
 
     auto font = ui->fontComboBox->value();
-    font.setPointSize(qAbs(ui->spinBox->value()));
-
     auto fm = QFontMetrics(font);
 
     int textWidth = 0;

@@ -236,23 +236,6 @@ padding-left: 10px;
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="FileEdit" name="lineEdit_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">width: 300px;
-</string>
-         </property>
-         <property name="placeholderText">
-          <string>Find a material</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -337,11 +320,6 @@ QLineEdit {
    <class>MediaControl</class>
    <extends>QPushButton</extends>
    <header>mediacontrol.h</header>
-  </customwidget>
-  <customwidget>
-   <class>FileEdit</class>
-   <extends>QLineEdit</extends>
-   <header>fileedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>
