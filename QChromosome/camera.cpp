@@ -737,8 +737,25 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
 
         if (interpolate)
+        {
+            stream << "#declare MySplinePos = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+            });
+
+            stream << "#declare MySplineAng = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+            });
+
+            stream << "#declare MySplineFov = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
+            });
+
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
+        }
         else
             stream << "#declare odsLocation = " << eye << ";\n"
                    << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
@@ -792,8 +809,25 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
 
         if (interpolate)
+        {
+            stream << "#declare MySplinePos = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+            });
+
+            stream << "#declare MySplineAng = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+            });
+
+            stream << "#declare MySplineFov = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
+            });
+
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
+        }
         else
             stream << "#declare odsLocation = " << eye << ";\n"
                    << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
@@ -847,8 +881,25 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
         stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
 
         if (interpolate)
+        {
+            stream << "#declare MySplinePos = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+            });
+
+            stream << "#declare MySplineAng = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+            });
+
+            stream << "#declare MySplineFov = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << "< " << (qreal)2.f * qRadiansToDegrees(qAtan(frame.value("Sensor size") / 2 / frame.value("Focal length"))) << ", 0 >";
+            });
+
             stream << "#declare odsLocation = MySplinePos(clock);\n"
                    << "#declare odsAngles = MySplineAng(clock);\n";
+        }
         else
             stream << "#declare odsLocation = " << eye << ";\n"
                    << "#declare odsAngles = " << phb.toEulerAngles() << ";\n";
