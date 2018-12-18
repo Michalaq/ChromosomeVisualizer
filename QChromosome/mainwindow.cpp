@@ -28,7 +28,13 @@ MainWindow::MainWindow(QWidget *parent) :
     newProject();
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
-        QMessageBox::about(0, "About QChromosome 4D Studio", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hendrerit arcu eu bibendum laoreet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Sed ultricies consectetur nunc, in mollis libero malesuada vel. In nec ultrices dolor. Aenean nulla nisl, condimentum viverra molestie et, lobortis efficitur metus. Suspendisse eget condimentum mi, eget placerat nisl. Phasellus sit amet enim nulla. Ut vel enim ac lacus convallis sagittis. Vivamus dapibus felis magna, non dictum dolor finibus non. Cras porta nec risus ac tincidunt. Aliquam nisi arcu, dapibus ut nisl vel, pretium convallis nunc. Praesent ac rhoncus metus. Vivamus est nunc, finibus et dolor a, cursus sollicitudin lectus.");
+        QMessageBox::about(0, "About QChromosome 4D Studio", QString(
+                           "<h3>QChromosome 4D Studio</h3>"
+                           "<p>Version 1.0</p>"
+                           "<p>License GNU Lesser General Public License (LGPL)</p>"
+                           "<p>Based on Qt 5.9.1</p>"
+                           "<p><small>Copyright &copy; 2018 Bartłomiej Zawalski &lt;<a href=\"mailto:%1\">%1</a>&gt;</small></p>"
+                           ).arg("bz337736@students.mimuw.edu.pl"));
     });
 
     actionGroup->addAction(ui->actionSelect);
