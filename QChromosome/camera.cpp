@@ -16,7 +16,7 @@ Camera::Action Camera::currentAction;
 #include "session.h"
 
 Camera::Camera(Session *s, QWidget *parent)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}, parent),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size", "Zoom"}, parent),
       action(new QAction),
       eye(60, 30, 60),
       focalLength(36),
@@ -65,7 +65,7 @@ Camera::Camera(Session *s, QWidget *parent)
 }
 
 Camera::Camera(const Camera& camera)
-    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size"}),
+    : SplineInterpolator({"X", "Y", "Z", "H", "P", "B", "Focal length", "Sensor size", "Zoom"}),
       action(new QAction),
       eye(camera.eye),
       phb(camera.phb),
@@ -134,6 +134,7 @@ SplineKeyframe Camera::saveFrame() const
     f.insert("B", angles[2]);
     f.insert("Focal length", focalLength);
     f.insert("Sensor size", sensorSize);
+    f.insert("Zoom", zoom);
 
     return f;
 }
@@ -154,6 +155,7 @@ void Camera::loadFrame(const SplineKeyframe &frame)
 
     focalLength = frame.value("Focal length", focalLength);
     sensorSize = frame.value("Sensor size", sensorSize);
+    zoom = frame.value("Zoom", zoom);
     updateAngles();
 }
 
