@@ -145,8 +145,14 @@ void Viewport::read(const QJsonObject &json)
     ui->widget_2->setValue(background["Color"].toString());
 
     const QJsonObject environment = json["Environment"].toObject();
-    ui->doubleSpinBox_3->setValue(environment["Fog density"].toDouble());
-    ui->doubleSpinBox_4->setValue(environment["Fog contribution"].toDouble());
+    ui->comboBox_2->setValue(environment["Color"].toString());
+    ui->doubleSpinBox_5->setValue(environment["Strength"].toDouble());
+
+    const QJsonObject fog = json["Fog"].toObject();
+    ui->checkBox_3->setChecked(fog["Enable fog"].toBool());
+    ui->comboBox_3->setValue(fog["Color"].toString());
+    ui->doubleSpinBox_3->setValue(fog["Strength"].toDouble());
+    ui->doubleSpinBox_4->setValue(fog["Distance"].toDouble());
 
     /*const QJsonObject atomLabels = json["Atom labels"].toObject();
     ui->widget_3->setValue(atomLabels["Background color"].toString());
@@ -172,9 +178,16 @@ void Viewport::write(QJsonObject &json) const
     json["Background"] = background;
 
     QJsonObject environment;
-    environment["Fog density"] = ui->doubleSpinBox_3->value();
-    environment["Fog contribution"] = ui->doubleSpinBox_4->value();
+    environment["Color"] = ui->comboBox_2->value().name();
+    environment["Strength"] = ui->doubleSpinBox_5->value();
     json["Environment"] = environment;
+
+    QJsonObject fog;
+    fog["Enable fog"] = ui->checkBox_3->isChecked();
+    fog["Color"] = ui->comboBox_3->value().name();
+    fog["Strength"] = ui->doubleSpinBox_3->value();
+    fog["Distance"] = ui->doubleSpinBox_4->value();
+    json["Fog"] = fog;
 
     /*QJsonObject atomLabels;
     atomLabels["Background color"] = ui->widget_3->value().name();
