@@ -48,6 +48,9 @@ public:
 
     void getFFmpegArgs(QStringList& argv) const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 protected:
     void connectNotify(const QMetaMethod& signal);
 

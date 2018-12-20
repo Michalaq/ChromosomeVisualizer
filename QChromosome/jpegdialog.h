@@ -18,6 +18,9 @@ public:
     void setQuality(int q);
     int getQuality() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     Ui::JPEGDialog *ui;
 

@@ -116,6 +116,9 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject camera_ = project["Editor Camera"].toObject();
     editorCamera->read(camera_);
 
+    const QJsonObject renderSettings_ = project["Render settings"].toObject();
+    renderSettings->read(renderSettings_);
+
     plot->updateSimulation();
 }
 
@@ -142,6 +145,10 @@ QJsonDocument Session::toJson() const
     QJsonObject objects_;
     simulation->getModel()->write(objects_);
     project["Objects"] = objects_;
+
+    QJsonObject renderSettings_;
+    renderSettings->write(renderSettings_);
+    project["Render settings"] = renderSettings_;
 
     return QJsonDocument(project);
 }

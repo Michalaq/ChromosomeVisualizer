@@ -27,3 +27,22 @@ int TARGADialog::getCompression() const
 {
     return index;
 }
+
+#include <QJsonObject>
+
+void TARGADialog::read(const QJsonObject& json)
+{
+    if (json.contains("TARGA Settings"))
+    {
+        QJsonObject settings = json["TARGA Settings"].toObject();
+        ui->comboBox->setCurrentText(settings["Compression"].toString());
+        index = ui->comboBox->currentIndex();
+    }
+}
+
+void TARGADialog::write(QJsonObject& json) const
+{
+    QJsonObject settings;
+    settings["Compression"] = ui->comboBox->currentText();
+    json["TARGA Settings"] = settings;
+}

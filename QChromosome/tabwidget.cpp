@@ -134,7 +134,7 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     connect(ui->spinBox_5, QOverload<int>::of(&SpinBox::valueChanged), this, &TabWidget::updateFrames);
 
     // save (image)
-    connect(ui->checkBox, &QCheckBox::clicked, ui->widget_3, &QWidget::setEnabled);
+    connect(ui->checkBox, &QCheckBox::toggled, ui->widget_3, &QWidget::setEnabled);
 
     // format
     connect(ui->comboBox, &QComboBox::currentTextChanged, [this](const QString& value) {
@@ -145,14 +145,14 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
 
         if (value == "JPEG")
         {
-            disconnect(ui->pushButton);
+            ui->pushButton->disconnect();
             connect(ui->pushButton, &QPushButton::clicked, jpegSettings, &QDialog::open);
             ui->pushButton->show();
         }
 
         if (value == "TARGA")
         {
-            disconnect(ui->pushButton);
+            ui->pushButton->disconnect();
             connect(ui->pushButton, &QPushButton::clicked, targaSettings, &QDialog::open);
             ui->pushButton->show();
         }
@@ -184,13 +184,13 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     });
 
     // save (translator)
-    connect(ui->checkBox_3, &QCheckBox::clicked, ui->widget_4, &QWidget::setEnabled);
+    connect(ui->checkBox_3, &QCheckBox::toggled, ui->widget_4, &QWidget::setEnabled);
 
     // antialias
-    connect(ui->checkBox_6, &QCheckBox::clicked, ui->widget, &QWidget::setEnabled);
+    connect(ui->checkBox_6, &QCheckBox::toggled, ui->widget, &QWidget::setEnabled);
 
     // jitter
-    connect(ui->checkBox_7, &QCheckBox::clicked, ui->widget_2, &QWidget::setEnabled);
+    connect(ui->checkBox_7, &QCheckBox::toggled, ui->widget_2, &QWidget::setEnabled);
 
     ui->comboBox_4->setCurrentText("Pixels/Inch (DPI)");
     ui->comboBox_3->setCurrentText("Pixels");
@@ -417,6 +417,121 @@ void TabWidget::getFFmpegArgs(QStringList& argv) const
         argv << "-vf" << QString("[in]drawtext=text='%{pts\\:hms\\:%1}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/%2 (%{eif\\:n+%3\\:d} F)': x=10: y=15+lh: fontcolor=white[out]").arg(1. * ui->spinBox_3->value() / session->projectSettings->getFPS()).arg(endFrame - startFrame + 1).arg(startFrame);
 
     argv << name + ".avi";
+}
+
+void TabWidget::read(const QJsonObject& json)
+{
+    const QJsonObject general = json["General"].toObject();
+
+    const QJsonObject output = json["General output options"].toObject();
+    ui->comboBox_3->setCurrentText(output["Width unit"].toString());
+    ui->doubleSpinBox_4->setValue(output["Width"].toDouble());
+    ui->doubleSpinBox_5->setValue(output["Height"].toDouble());
+    ui->checkBox_5->setChecked(output["Lock ratio"].toBool());
+    ui->comboBox_4->setCurrentText(output["Resolution unit"].toString());
+    ui->doubleSpinBox_6->setValue(output["Resolution"].toDouble());
+    ui->spinBox_2->setValue(output["Frame rate"].toInt());
+    ui->comboBox_5->setCurrentText(output["Frame range"].toString());
+    ui->spinBox_3->setValue(output["From"].toInt());
+    ui->spinBox_4->setValue(output["To"].toInt());
+    ui->spinBox_5->setValue(output["Frame step"].toInt());
+    ui->textEdit->setPlainText(output["Annotations"].toString());
+
+    const QJsonObject file = json["File output options"].toObject();
+
+    const QJsonObject imageFileOutput = file["Image file output"].toObject();
+    ui->checkBox->setChecked(imageFileOutput["Save"].toBool());
+    ui->lineEdit->setText(imageFileOutput["File"].toString());
+    ui->comboBox->setCurrentText(imageFileOutput["Format"].toString());
+    ui->spinBox->setValue(imageFileOutput["Depth"].toInt());
+    ui->checkBox_2->setChecked(imageFileOutput["Alpha channel"].toBool());
+
+    if (imageFileOutput["Format"] == "JPEG")
+        jpegSettings->read(imageFileOutput);
+
+    if (imageFileOutput["Format"] == "TARGA")
+        targaSettings->read(imageFileOutput);
+
+    const QJsonObject translator = file["Translator"].toObject();
+    ui->checkBox_3->setChecked(translator["Save"].toBool());
+    ui->lineEdit_2->setText(translator["File"].toString());
+    ui->comboBox_7->setCurrentText(translator["Target application"].toString());
+
+    const QJsonObject tracing = json["Tracing"].toObject();
+
+    const QJsonObject qualitySettings = tracing["Quality settings"].toObject();
+    ui->spinBox_6->setValue(qualitySettings["Quality"].toInt());
+
+    const QJsonObject antialiasing = tracing["Anti-Aliasing options"].toObject();
+    ui->checkBox_6->setChecked(antialiasing["Antialias"].toBool());
+    ui->comboBox_6->setCurrentText(antialiasing["Sampling method"].toString());
+    ui->doubleSpinBox->setValue(antialiasing["Threshold"].toDouble());
+    ui->checkBox_7->setChecked(antialiasing["Jitter"].toBool());
+    ui->doubleSpinBox_2->setValue(antialiasing["Jitter amount"].toDouble());
+    ui->spinBox_7->setValue(antialiasing["Depth"].toInt());
+}
+
+void TabWidget::write(QJsonObject& json) const
+{
+    QJsonObject general;
+    json["General"] = general;
+
+    QJsonObject output;
+    output["Width unit"] = ui->comboBox_3->currentText();
+    output["Width"] = ui->doubleSpinBox_4->value();
+    output["Height"] = ui->doubleSpinBox_5->value();
+    output["Lock ratio"] = ui->checkBox_5->isChecked();
+    output["Resolution unit"] = ui->comboBox_4->currentText();
+    output["Resolution"] = ui->doubleSpinBox_6->value();
+    output["Frame rate"] = ui->spinBox_2->value();
+    output["Frame range"] = ui->comboBox_5->currentText();
+    output["From"] = ui->spinBox_3->value();
+    output["To"] = ui->spinBox_4->value();
+    output["Frame step"] = ui->spinBox_5->value();
+    output["Annotations"] = ui->textEdit->toPlainText();
+    json["General output options"] = output;
+
+    QJsonObject file;
+
+    QJsonObject imageFileOutput;
+    imageFileOutput["Save"] = ui->checkBox->isChecked();
+    imageFileOutput["File"] = ui->lineEdit->text();
+    imageFileOutput["Format"] = ui->comboBox->currentText();
+    imageFileOutput["Depth"] = ui->spinBox->value();
+    imageFileOutput["Alpha channel"] = ui->checkBox_2->isChecked();
+
+    if (imageFileOutput["Format"] == "JPEG")
+        jpegSettings->write(imageFileOutput);
+
+    if (imageFileOutput["Format"] == "TARGA")
+        targaSettings->write(imageFileOutput);
+
+    file["Image file output"] = imageFileOutput;
+
+    QJsonObject translator;
+    translator["Save"] = ui->checkBox_3->isChecked();
+    translator["File"] = ui->lineEdit_2->text();
+    translator["Target application"] = ui->comboBox_7->currentText();
+    file["Translator"] = translator;
+
+    json["File output options"] = file;
+
+    QJsonObject tracing;
+
+    QJsonObject qualitySettings;
+    qualitySettings["Quality"] = ui->spinBox_6->value();
+    tracing["Quality settings"] = qualitySettings;
+
+    QJsonObject antialiasing;
+    antialiasing["Antialias"] = ui->checkBox_6->isChecked();
+    antialiasing["Sampling method"] = ui->comboBox_6->currentText();
+    antialiasing["Threshold"] = ui->doubleSpinBox->value();
+    antialiasing["Jitter"] = ui->checkBox_7->isChecked();
+    antialiasing["Jitter amount"] = ui->doubleSpinBox_2->value();
+    antialiasing["Depth"] = ui->spinBox_7->value();
+    tracing["Anti-Aliasing options"] = antialiasing;
+
+    json["Tracing"] = tracing;
 }
 
 #include <QMetaMethod>

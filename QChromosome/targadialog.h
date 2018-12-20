@@ -17,6 +17,9 @@ public:
 
     int getCompression() const;
 
+    void read(const QJsonObject& json);
+    void write(QJsonObject& json) const;
+
 private:
     Ui::TARGADialog *ui;
 

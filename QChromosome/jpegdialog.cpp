@@ -36,3 +36,21 @@ int JPEGDialog::getQuality() const
 {
     return quality;
 }
+
+#include <QJsonObject>
+
+void JPEGDialog::read(const QJsonObject& json)
+{
+    if (json.contains("JPEG Settings"))
+    {
+        QJsonObject settings = json["JPEG Settings"].toObject();
+        setQuality(settings["JPEG Quality"].toInt());
+    }
+}
+
+void JPEGDialog::write(QJsonObject& json) const
+{
+    QJsonObject settings;
+    settings["JPEG Quality"] = ui->spinBox->value();
+    json["JPEG Settings"] = settings;
+}
