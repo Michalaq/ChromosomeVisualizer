@@ -6,6 +6,13 @@
 #include <QVector>
 #include <QLineSeries>
 
+struct CacheLog
+{
+    qint64 first;
+    qint64 last;
+    int line;
+};
+
 class Session;
 class LayerItem;
 
@@ -28,11 +35,11 @@ private:
     QByteArray buffer;
 
     uint* offset;
-    QVector<QPair<qint64, qint64>> cache;
+    QVector<CacheLog> cache;
 
     qint64 pos = 0;
     int i = 0, j = 0;
-    QPair<qint64, qint64> range;
+    CacheLog range = {0, 0, -1};
 
     bool atEnd = false;
 
