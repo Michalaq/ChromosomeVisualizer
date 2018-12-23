@@ -133,12 +133,12 @@ void TreeItem::read(const QJsonObject& json, const MaterialListModel* mlm, Mater
     auto vie = object.find("Visible in editor");
 
     if (vie != object.end())
-        m_itemData[3] = ve = vie.value().toBool() ? On : Off;
+        m_itemData[3] = (ve = vie.value().toBool()) ? On : Off;
 
     auto vir = object.find("Visible in renderer");
 
     if (vir != object.end())
-        m_itemData[4] = vr = vir.value().toBool() ? On : Off;
+        m_itemData[4] = (vr = vir.value().toBool()) ? On : Off;
 
     auto cr = object.find("Cylinder radius");
 
