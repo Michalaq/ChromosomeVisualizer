@@ -1,4 +1,5 @@
 #include "pdbsimulationlayer.h"
+#include "messagehandler.h"
 
 static const uint SERIAL_MAX = 100000;
 
@@ -7,8 +8,11 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
     offset(new uint[SERIAL_MAX])
 {
     buffer.resize(128);
+    std::fill(offset, offset + SERIAL_MAX, -1);
 
-    if (cacheHeaders(b ? 0 : INT_MAX) == 0)
+    if (cacheHeaders(b ? 0 : INT_MAX) < 0)
+        qcCritical("No HEADER record was found.", file->fileName(), -1, -1);
+    else
         makeModel();
 }
 
@@ -21,6 +25,9 @@ PDBSimulationLayer::~PDBSimulationLayer()
 
 void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
+    if (cache.isEmpty())
+        return;
+
     auto entry = time <= cacheHeaders(time) ? cache[time] : cache.last();
 
     file->seek(entry.first);
@@ -31,13 +38,38 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 
         if (buffer.startsWith("ATOM  ") || buffer.startsWith("HETATM"))
         {
-            uint serial = buffer.mid(6, 5).trimmed().toUInt();
+            bool ok;
+
+            uint serial = buffer.mid(6, 5).trimmed().toUInt(&ok);
+
+            if (!ok)
+            {
+                qcWarning("Atom serial number is malformed.", file->fileName(), 0, 6);
+                continue;
+            }
+
+            if (offset[serial] == -1)
+            {
+                qcWarning("Atom serial number is undefined.", file->fileName(), 0, 6);
+                continue;
+            }
 
             float* position = reinterpret_cast<float*>(data + stride * offset[serial] + pointer);
 
-            position[0] = buffer.mid(30, 8).trimmed().toFloat();
-            position[1] = buffer.mid(38, 8).trimmed().toFloat();
-            position[2] = buffer.mid(46, 8).trimmed().toFloat();
+            position[0] = buffer.mid(30, 8).trimmed().toFloat(&ok);
+
+            if (!ok)
+                qcWarning("Orthogonal coordinate for X is malformed.", file->fileName(), 0, 30);
+
+            position[1] = buffer.mid(38, 8).trimmed().toFloat(&ok);
+
+            if (!ok)
+                qcWarning("Orthogonal coordinate for Y is malformed.", file->fileName(), 0, 38);
+
+            position[2] = buffer.mid(46, 8).trimmed().toFloat(&ok);
+
+            if (!ok)
+                qcWarning("Orthogonal coordinate for Z is malformed.", file->fileName(), 0, 46);
         }
     }
 }
@@ -177,7 +209,12 @@ void PDBSimulationLayer::makeModel()
         if (buffer.startsWith("ATOM  ") || buffer.startsWith("HETATM"))
         {
             uint serial = buffer.mid(6, 5).trimmed().toUInt(&ok);
-            if (!ok) continue;
+
+            if (!ok)
+            {
+                qcWarning("Atom serial number is malformed.", file->fileName(), 0, 6);
+                continue;
+            }
 
             auto name = buffer.mid(12, 4).trimmed();
 
@@ -199,7 +236,18 @@ void PDBSimulationLayer::makeModel()
         if (buffer.startsWith("CONECT"))
         {
             uint serial = buffer.mid(6, 5).trimmed().toUInt(&ok);
-            if (!ok) continue;
+
+            if (!ok)
+            {
+                qcWarning("Atom serial number is malformed.", file->fileName(), 0, 6);
+                continue;
+            }
+
+            if (offset[serial] == -1)
+            {
+                qcWarning("Atom serial number is undefined.", file->fileName(), 0, 6);
+                continue;
+            }
 
             for (int column : {11, 16, 21, 26})
             {

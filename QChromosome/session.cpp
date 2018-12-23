@@ -262,7 +262,7 @@ void Session::setLastFrame(int time)
 
 void Session::setOrigin(int offset, bool selected)
 {
-    origin = {};
+    QVector3D origin;
     int count = 0;
 
     for (const auto& atom : atomBuffer.mid(offset))
@@ -273,5 +273,5 @@ void Session::setOrigin(int offset, bool selected)
         }
 
     if (count > 0)
-        origin /= count;
+        this->origin = origin / count;
 }

@@ -990,7 +990,7 @@ const QModelIndex& Camera::getUp() const
 
 void Camera::callibrate(int offset, bool selected, qreal scale)
 {
-    if (selected && !session->treeView->selectionModel()->hasSelection())
+    if ((selected && !session->treeView->selectionModel()->hasSelection()) || offset >= session->atomBuffer.count())
         return;
 
     setRotation(QQuaternion::fromEulerAngles(-35.2644, -135, 0));
