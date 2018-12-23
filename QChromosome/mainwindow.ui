@@ -538,7 +538,6 @@ QFrame[frameShape=&quot;4&quot;] {/* QFrame::HLine == 0x0004 */
      <property name="title">
       <string>Dockable dialogs</string>
      </property>
-     <addaction name="actionError_console"/>
     </widget>
     <widget class="QMenu" name="menuRecently_closed_docks">
      <property name="title">
@@ -741,6 +740,70 @@ QLineEdit {
 	padding-left: 25px;
 }</string>
     </property>
+   </widget>
+  </widget>
+  <widget class="DockWidget" name="dockWidget_5">
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QHeaderView {
+	background: transparent;
+	color: lightgray;
+}
+
+QHeaderView::section {
+	height: 32px;
+	background: transparent;
+	border: 1px solid #333333;
+	padding: 4px;
+}
+
+QHeaderView::section:!last {
+	border-right: none;
+}
+
+QTableView {
+	color: lightgray;
+	border: none;
+	background: transparent;
+	outline: 0;
+	selection-background-color: #262626;
+}
+
+QTableView::item {
+	height: 32px;
+	border: none;
+	padding: 4px;
+}
+
+QTableView::item:selected {
+	color: white;
+}
+</string>
+   </property>
+   <property name="floating">
+    <bool>true</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Error console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QTableView" name="tableView">
+    <property name="selectionBehavior">
+     <enum>QAbstractItemView::SelectRows</enum>
+    </property>
+    <property name="showGrid">
+     <bool>false</bool>
+    </property>
+    <property name="sortingEnabled">
+     <bool>true</bool>
+    </property>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
    </widget>
   </widget>
   <action name="actionOpen">

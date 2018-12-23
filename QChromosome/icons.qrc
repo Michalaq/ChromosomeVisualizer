@@ -62,4 +62,9 @@
         <file alias="pivot">icons/pivot_point_icon.svg</file>
         <file alias="target">icons/target_icon.svg</file>
     </qresource>
+    <qresource prefix="/error">
+        <file alias="critical">icons/error/critical_icon.svg</file>
+        <file alias="info">icons/error/info_icon.svg</file>
+        <file alias="warning">icons/error/warning_icon.svg</file>
+    </qresource>
 </RCC>

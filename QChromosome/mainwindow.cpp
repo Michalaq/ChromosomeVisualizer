@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "session.h"
+#include "messagehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -92,13 +93,15 @@ MainWindow::MainWindow(QWidget *parent) :
                                                 ui->dockWidget->toggleViewAction(),
                                                 ui->dockWidget_2->toggleViewAction(),
                                                 ui->dockWidget_3->toggleViewAction(),
-                                                s
+                                                s,
+                                                ui->dockWidget_5->toggleViewAction()
                                             });
 
     ui->menuRecently_closed_docks->insertActions(0, {
                                                      ui->dockWidget->recentlyClosedAction(),
                                                      ui->dockWidget_2->recentlyClosedAction(),
-                                                     ui->dockWidget_3->recentlyClosedAction()
+                                                     ui->dockWidget_3->recentlyClosedAction(),
+                                                     ui->dockWidget_5->recentlyClosedAction()
                                                  });
 
     connect(ui->actionConfigure, &QAction::triggered, [this] {
@@ -199,6 +202,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionParallel, &QAction::triggered, [this] {
         session->currentCamera->setProjectionType(CP_Parallel);
     });
+
+    connect(MessageHandler::getInstance(), &QAbstractListModel::rowsInserted, ui->dockWidget_5, &QDockWidget::show);
+
+    ui->tableView->setModel(MessageHandler::getInstance());
+    ui->tableView->setColumnWidth(0, 29);
+    ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 }
 
 MainWindow::~MainWindow()
@@ -396,6 +405,9 @@ void MainWindow::setCurrentSession(Session *s)
 
     // update render settings
     renderSettings->setSession(session);
+
+    // update error console
+    MessageHandler::getInstance()->setProject(session->projectSettings->getFileName());
 }
 
 void MainWindow::openProject()

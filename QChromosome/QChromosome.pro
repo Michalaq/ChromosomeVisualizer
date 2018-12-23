@@ -66,7 +66,8 @@ SOURCES += \
     simulation/iodevice.cpp \
     myproxystyle.cpp \
     listview.cpp \
-    opengl/defaultlight.cpp
+    opengl/defaultlight.cpp \
+    messagehandler.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -131,7 +132,8 @@ HEADERS += \
     simulation/iodevice.h \
     myproxystyle.h \
     listview.h \
-    opengl/defaultlight.h
+    opengl/defaultlight.h \
+    messagehandler.h
 
 FORMS += mainwindow.ui \
     dockwidget.ui \
