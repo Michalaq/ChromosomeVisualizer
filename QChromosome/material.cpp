@@ -244,6 +244,15 @@ void Material::read(const QJsonObject& json)
     const QJsonObject color_ = json["Color"].toObject();
     color = color_["Color"].toString();
     color.setAlphaF(1. - color_["Transparency"].toDouble());
+    finish = color_["Finish"].toInt();
+    ambient = color_["Ambient"].toDouble();
+    diffuse = color_["Diffuse"].toDouble();
+    phong = color_["Phong"].toDouble();
+    phongSize = color_["Phong size"].toInt();
+    metallic = color_["Metallic"].toBool();
+    iridescence = color_["Iridescence"].toDouble();
+    iridescenceThickness = color_["Iridescence thickness"].toDouble();
+    iridescenceTurbulence = color_["Iridescence turbulence"].toDouble();
 
     const QJsonObject specular = json["Specular"].toObject();
     specularExponent = specular["Shininess exponent"].toDouble();
@@ -262,6 +271,15 @@ void Material::write(QJsonObject& json) const
     QJsonObject color_;
     color_["Color"] = color.name();
     color_["Transparency"] = 1. - color.alphaF();
+    color_["Finish"] = finish;
+    color_["Ambient"] = ambient;
+    color_["Diffuse"] = diffuse;
+    color_["Phong"] = phong;
+    color_["Phong size"] = phongSize;
+    color_["Metallic"] = metallic;
+    color_["Iridescence"] = iridescence;
+    color_["Iridescence thickness"] = iridescenceThickness;
+    color_["Iridescence turbulence"] = iridescenceTurbulence;
     json["Color"] = color_;
 
     QJsonObject specular;

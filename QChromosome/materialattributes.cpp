@@ -40,7 +40,7 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
     connect(ui->comboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this] (int index) {
         selection->setFinish(index);
         emit attributesChanged(selection);
-        ui->widget_4->setVisible(index == 0);
+        ui->widget_4->setEnabled(index == 0);
     });
 
     // set ambient
@@ -92,6 +92,8 @@ MaterialAttributes::MaterialAttributes(QWidget *parent) :
     });
 
     connect(this, SIGNAL(attributesChanged(const Material*)), this, SLOT(update()));
+
+    ui->tabWidget->removeTab(2);
 }
 
 MaterialAttributes::~MaterialAttributes()
