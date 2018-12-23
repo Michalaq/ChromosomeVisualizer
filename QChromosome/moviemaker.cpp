@@ -35,6 +35,7 @@ MovieMaker *MovieMaker::getInstance()
 #include "viewport.h"
 #include <QDesktopServices>
 #include <QUrl>
+#include "messagehandler.h"
 
 void MovieMaker::captureScene(Session* session)
 {
@@ -107,13 +108,13 @@ void MovieMaker::captureScene(Session* session)
 
         if (!ini.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(ini.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(ini.filePath())))
             if (!iniFile.copy(ini.filePath()))
-                QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+                qcCritical("Files cannot be written - please check output paths!", ini.filePath(), -1, -1);
 
         QFileInfo pov(session->renderSettings->getTranslatorDir().filePath(tname + ".pov"));
 
         if (!pov.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(pov.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(pov.filePath())))
             if (!povFile.copy(pov.filePath()))
-                QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+                qcCritical("Files cannot be written - please check output paths!", pov.filePath(), -1, -1);
     }
 
 #ifdef Q_OS_UNIX
@@ -179,7 +180,7 @@ void MovieMaker::captureScene(Session* session)
 
                 if (!out.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(out.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(out.filePath())))
                     if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), out.filePath()))
-                        QMessageBox::critical(Q_NULLPTR, "QChromosome 4D Studio", "Files cannot be written - please check output paths!");
+                        qcCritical("Files cannot be written - please check output paths!", out.filePath(), -1, -1);
             }
 
             if (session->renderSettings->openFile())
