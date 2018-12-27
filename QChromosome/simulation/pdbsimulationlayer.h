@@ -4,7 +4,6 @@
 
 #include "simulationlayer.h"
 #include <QVector>
-#include <QLineSeries>
 
 struct CacheLog
 {
@@ -46,8 +45,6 @@ private:
     qint64 skipHeader();
 
     void makeModel();
-
-    QMap<QString, QtCharts::QLineSeries*> functions;
 
     QPair<uint, uint> a_range;
     QPair<uint, uint> c_range;

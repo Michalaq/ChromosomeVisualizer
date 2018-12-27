@@ -429,11 +429,12 @@ void MainWindow::openProject()
 }
 
 #include "simulation/pdbsimulationlayer.h"
+#include "simulation/xvgsimulationseries.h"
 #include "importdialog.h"
 
 void MainWindow::addLayer()
 {
-    QString path = QFileDialog::getOpenFileName(0, "Import...", "", "All QChromosome 4D Files (*.pdb *.gz);;RCSB Protein Data Bank (*.pdb);;gzip archive (*.gz)");
+    QString path = QFileDialog::getOpenFileName(0, "Import...", "", "All QChromosome 4D Files (*.pdb *.pdb.gz *.xvg *.xvg.gz);;RCSB Protein Data Bank (*.pdb *.pdb.gz);;GROMACS Output File (*.xvg *.xvg.gz)");
 
     if (path.isEmpty())
         return;
@@ -453,17 +454,26 @@ void MainWindow::addLayer()
     if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
         layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
-    Q_ASSERT(layer);
+    if (layer)
+    {
+        session->simulation->prepend(layer);
+        (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+        session->setDocumentTime(0);
+        session->currentCamera->callibrate(offset, false);
+        session->setOrigin(offset, false);
+    }
 
-    session->simulation->prepend(layer);
-    (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+    SimulationSeries* series = Q_NULLPTR;
 
-    session->setDocumentTime(0);
+    if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
+        series = new XVGSimulationSeries(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
 
-    session->currentCamera->callibrate(offset, false);
-    session->setOrigin(offset, false);
-
-    session->plot->updateSimulation();
+    if (series)
+    {
+        session->simulation->prepend(series);
+        session->setDocumentTime(0);
+        session->plot->updateSimulation();
+    }
 }
 
 void MainWindow::saveProject()

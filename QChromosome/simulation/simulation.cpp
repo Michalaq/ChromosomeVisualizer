@@ -20,6 +20,9 @@ void Simulation::readEntry(int time, char* data, std::size_t stride, std::size_t
 {
     for (auto i : layers)
         i->readEntry(time, data, stride, pointer);
+
+    for (auto i : series)
+        i->cacheHeaders(time);
 }
 
 int Simulation::cacheHeaders(int time)
@@ -128,9 +131,12 @@ void Simulation::writePOVFrames(QTextStream& stream, int fbeg, int fend)
 
 int Simulation::lastEntry() const
 {
-    int ans = 0;
+    int ans = -1;
 
     for (auto i : layers)
+        ans = qMax(ans, i->lastEntry());
+
+    for (auto i : series)
         ans = qMax(ans, i->lastEntry());
 
     return ans;

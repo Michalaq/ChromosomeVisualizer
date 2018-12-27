@@ -77,8 +77,6 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 
 qint64 PDBSimulationLayer::skipHeader()
 {
-    static const QRegularExpression re(";([^=]*)=([^;]*)");
-
     while (true)
     {
         qint64 pos = file->pos();
@@ -95,30 +93,6 @@ qint64 PDBSimulationLayer::skipHeader()
         {
             atEnd = false;
             return pos;
-        }
-
-        if (buffer.startsWith("TITLE "))
-        {
-            auto i = re.globalMatch(buffer);
-
-            while (i.hasNext())
-            {
-                auto match = i.next();
-
-                auto name = match.capturedRef(1).trimmed().toString();
-                auto value = match.capturedRef(2).trimmed().toDouble();
-
-                if (!functions.contains(name))
-                {
-                    auto series = new QtCharts::QLineSeries;
-                    series->setName(name);
-
-                    session->chart->addSeries(series);
-                    functions.insert(name, series);
-                }
-
-                functions[name]->append(j, value);
-            }
         }
     }
 }
@@ -362,7 +336,6 @@ std::tuple<int, int, int> PDBSimulationLayer::remove()
 
     session->setLastFrame(session->simulation->lastEntry());
 
-    qDeleteAll(functions);
     session->plot->updateSimulation();
 
     return std::make_tuple(a_range.second - a_range.first, c_range.second - c_range.first, i_range.second - i_range.first);

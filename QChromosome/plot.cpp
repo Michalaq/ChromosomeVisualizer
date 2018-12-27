@@ -159,6 +159,7 @@ void Plot::paintEvent(QPaintEvent *event)
     for (auto i : session->chart->series())
     {
         auto interval = reinterpret_cast<QtCharts::QLineSeries*>(i)->pointsVector().mid(softMinimum, softMaximum - softMinimum + 1);
+        if (interval.isEmpty()) continue;
         interval.prepend({interval.first().x(), 0});
         interval.append({interval.last().x(), 0});
 
