@@ -3,7 +3,6 @@
 #include "treemodel.h"
 
 Simulation::Simulation(Session* s) :
-    QVector<SimulationLayer*>(),
     model(new TreeModel(s)),
     session(s)
 {
@@ -12,13 +11,14 @@ Simulation::Simulation(Session* s) :
 
 Simulation::~Simulation()
 {
-    qDeleteAll(*this);
+    qDeleteAll(layers);
+    qDeleteAll(series);
     delete model;
 }
 
 void Simulation::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
-    for (auto i : *this)
+    for (auto i : layers)
         i->readEntry(time, data, stride, pointer);
 }
 
@@ -26,7 +26,10 @@ int Simulation::cacheHeaders(int time)
 {
     int ans = -1;
 
-    for (auto i : *this)
+    for (auto i : layers)
+        ans = qMax(ans, i->cacheHeaders(time));
+
+    for (auto i : series)
         ans = qMax(ans, i->cacheHeaders(time));
 
     return ans;
@@ -39,9 +42,23 @@ TreeModel* Simulation::getModel() const
 
 void Simulation::prepend(SimulationLayer* value)
 {
-    QVector<SimulationLayer*>::prepend(value);
-
+    layers.prepend(value);
     model->prepend(value->getModel());
+}
+
+void Simulation::prepend(SimulationSeries* value)
+{
+    series.prepend(value);
+}
+
+void Simulation::removeOne(SimulationLayer* layer)
+{
+    layers.removeOne(layer);
+}
+
+void Simulation::removeOne(SimulationSeries* value)
+{
+    series.removeOne(value);
 }
 
 static QTextStream& operator<<(QTextStream& out, const QVector3D& vec)
@@ -113,7 +130,7 @@ int Simulation::lastEntry() const
 {
     int ans = 0;
 
-    for (auto i : *this)
+    for (auto i : layers)
         ans = qMax(ans, i->lastEntry());
 
     return ans;

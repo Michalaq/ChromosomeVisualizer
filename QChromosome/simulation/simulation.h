@@ -3,13 +3,14 @@
 
 
 #include "simulationlayer.h"
+#include "simulationseries.h"
 #include <QVector>
 #include <QTextStream>
 
 class Session;
 class TreeModel;
 
-class Simulation : public QVector<SimulationLayer*>
+class Simulation
 {
 public:
     Simulation(Session* s);
@@ -22,12 +23,19 @@ public:
     TreeModel* getModel() const;
 
     void prepend(SimulationLayer* value);
+    void prepend(SimulationSeries* value);
+
+    void removeOne(SimulationLayer* layer);
+    void removeOne(SimulationSeries* layer);
 
     void writePOVFrames(QTextStream& stream, int fbeg, int fend);
 
     int lastEntry() const;
 
 private:
+    QVector<SimulationLayer*> layers;
+    QVector<SimulationSeries*> series;
+
     TreeModel* model;
     Session* session;
 };
