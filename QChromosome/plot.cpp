@@ -88,8 +88,16 @@ void Plot::paintEvent(QPaintEvent *event)
 {
     QWidget::paintEvent(event);
 
-    if (session->chart->series().isEmpty() || softMinimum == softMaximum)
+    if (softMinimum == softMaximum)
         return;
+
+    for (const auto l : legend)
+        if (l->pen() != Qt::transparent)
+            goto draw;
+
+    return;
+
+    draw:
 
     QPainter painter(this);
 
@@ -101,8 +109,9 @@ void Plot::paintEvent(QPaintEvent *event)
     double minval = 0;//double minval = qFloor(minimax.minimum(softMinimum, softMaximum));
     double maxval = 0;//qCeil(minimax.maximum(softMinimum, softMaximum));
     for (auto i : session->chart->series())
-        for (int j = softMinimum; j <= softMaximum && j < reinterpret_cast<QtCharts::QLineSeries*>(i)->count(); j++)
-            maxval = qMax(maxval, reinterpret_cast<QtCharts::QLineSeries*>(i)->at(j).y());
+        if (legend[i]->pen() != Qt::transparent)
+            for (int j = softMinimum; j <= softMaximum && j < reinterpret_cast<QtCharts::QLineSeries*>(i)->count(); j++)
+                maxval = qMax(maxval, reinterpret_cast<QtCharts::QLineSeries*>(i)->at(j).y());
 
     if (minval == maxval)
         minval--;
@@ -113,10 +122,15 @@ void Plot::paintEvent(QPaintEvent *event)
     double ut = maxval = qCeil(maxval / delta) * delta;//double ut = qFloor(maxval / delta) * delta;
     double lt = qCeil(minval / delta) * delta;
 
+    int scale = 1;
+
+    while (delta * scale < 1)
+        scale *= 10;
+
     s.setWidth(width() - 50 - 20);
 
     painter.setViewport(50 + 10, height() - padding_bottom, s.width(), -s.height());
-    painter.setWindow(softMinimum, minval, softMaximum - softMinimum, maxval - minval);
+    painter.setWindow(softMinimum, minval, softMaximum - softMinimum, (maxval - minval) * scale);
 
     auto transform = painter.combinedTransform();
 
@@ -128,7 +142,7 @@ void Plot::paintEvent(QPaintEvent *event)
 
     painter.setPen(pen1);
 
-    painter.drawLine(softMinimum, minval, softMaximum, minval);
+    painter.drawLine(softMinimum, minval * scale, softMaximum, minval * scale);
 
     int gap = tickSpan(painter.fontMetrics().width(QString::number(softMaximum)) + 20, width() - 50);
 
@@ -136,14 +150,14 @@ void Plot::paintEvent(QPaintEvent *event)
 
     for (int i = softMinimum + (gap - (softMinimum % gap)) % gap; i <= softMaximum; i += gap)
     {
-        auto tick = transform.map(QPoint(i, minval));
+        auto tick = transform.map(QPointF(i, minval)).toPoint();
 
         painter.drawLine(tick, tick + QPoint(0, 5));
         painter.drawText(QRect(tick + QPoint(0, 9), QSize()), Qt::AlignHCenter | Qt::AlignTop | Qt::TextDontClip, QString::number(i));
     }
 
     for (qreal i = lt; i <= ut; i += delta)
-        painter.drawText(QRect(transform.map(QPoint(softMinimum, i)) - QPoint(9, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
+        painter.drawText(QRect(transform.map(QPointF(softMinimum, i * scale)).toPoint() - QPoint(9, 0), QSize()), Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString::number(i));
 
     painter.setViewTransformEnabled(true);
 
@@ -153,7 +167,10 @@ void Plot::paintEvent(QPaintEvent *event)
     painter.setPen(pen1);
 
     for (qreal i = (lt != minval ? lt : lt + delta); i <= ut; i += delta)
-        painter.drawLine(softMinimum, i, softMaximum, i);
+        painter.drawLine(softMinimum, i * scale, softMaximum, i * scale);
+
+    painter.save();
+    painter.scale(1, scale);
 
     // plot data
     for (auto i : session->chart->series())
@@ -180,11 +197,13 @@ void Plot::paintEvent(QPaintEvent *event)
         painter.drawPolyline(&interval[1], interval.size() - 2);
     }
 
+    painter.restore();
+
     if (softMinimum <= value() && value() <= softMaximum)
     {
         painter.setViewTransformEnabled(false);
 
-        auto crs = transform.map(QPoint(value(), 0)).x();
+        int crs = transform.map(QPointF(value(), 0)).x();
 
         QPen pen3(Qt::white, 2.);
         pen3.setJoinStyle(Qt::MiterJoin);
