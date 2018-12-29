@@ -359,6 +359,8 @@ void Camera::rotate(int dx, int dy)
     }
 }
 
+#include <QtMath>
+
 void Camera::scale(int dx, int)
 {
     switch (session->cameraBuffer[id].ptype)
@@ -367,7 +369,7 @@ void Camera::scale(int dx, int)
         move(0., 0., scaleFactor * dx);
         break;
     case CP_Parallel:
-        zoom *= exp(zoomFactor * dx);
+        zoom *= qExp(zoomFactor * dx);
         emit projectionChanged(updateProjection());
         break;
     }
@@ -434,8 +436,6 @@ void Camera::setSensorSize(qreal ss)
     sensorSize = ss;
     updateAngles();
 }
-
-#include <QtMath>
 
 void Camera::setHorizontalAngle(qreal ha)
 {
