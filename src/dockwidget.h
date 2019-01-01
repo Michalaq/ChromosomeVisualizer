@@ -2,6 +2,7 @@
 #define DOCKWIDGET_H
 
 #include <QDockWidget>
+#include <QAction>
 
 namespace Ui
 {

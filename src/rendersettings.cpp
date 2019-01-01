@@ -23,6 +23,7 @@ RenderSettings* RenderSettings::getInstance()
 
 #include "tabwidget.h"
 #include "myproxystyle.h"
+#include <QTabBar>
 
 void RenderSettings::addTabWidget(TabWidget* tabWidget)
 {
