@@ -22,10 +22,10 @@ If you think something is a bug then please do report an issue on the GitHub iss
 Building QChromosome 4D Studio
 ------------------------------
 
-Application should compile on any POSIX-compilant system with the required tools, on Microsoft Windows systems and also on Mac OS X systems. As for now we recommend building from [`master` branch](https://github.com/Michalaq/ChromosomeVisualizer/tree/master). For platform specific notes choose one of the following options:
-- [Instructions for *Windows*](win.md)
-- [Instructions for *Mac OS X*](mac.md)
-- [Instructions for *Linux*](nix.md)
+Application should compile on any POSIX-compilant system with the required tools, on Microsoft Windows systems and also on Mac OS systems. As for now we recommend building from [`master` branch](https://github.com/Michalaq/ChromosomeVisualizer/tree/master). For platform specific notes choose one of the following options:
+- [Instructions for *Windows*](windows.md)
+- [Instructions for *Mac OS*](macos.md)
+- [Instructions for *Linux*](linux.md)
 
 Documentation
 -------------
