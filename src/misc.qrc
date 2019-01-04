@@ -36,7 +36,7 @@
         <file alias="unchecked">misc/radio/radio_unchecked.svg</file>
     </qresource>
     <qresource prefix="/application">
-        <file alias="icon">misc/application/QChromosome_icon.svg</file>
-        <file alias="splash">misc/application/splash.png</file>
+        <file alias="icon">misc/application/icon.svg</file>
+        <file alias="splash">misc/application/splash.svg</file>
     </qresource>
 </RCC>
