@@ -107,13 +107,13 @@ void MovieMaker::captureScene(Session* session)
         QFileInfo ini(session->renderSettings->getTranslatorDir().filePath(tname + ".ini"));
 
         if (!ini.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(ini.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(ini.filePath())))
-            if (!iniFile.copy(ini.filePath()))
+            if (!ini.dir().mkpath(".") || !iniFile.copy(ini.filePath()))
                 qcCritical("Files cannot be written - please check output paths!", ini.filePath(), -1, -1);
 
         QFileInfo pov(session->renderSettings->getTranslatorDir().filePath(tname + ".pov"));
 
         if (!pov.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(pov.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(pov.filePath())))
-            if (!povFile.copy(pov.filePath()))
+            if (!pov.dir().mkpath(".") || !povFile.copy(pov.filePath()))
                 qcCritical("Files cannot be written - please check output paths!", pov.filePath(), -1, -1);
     }
 
@@ -179,7 +179,7 @@ void MovieMaker::captureScene(Session* session)
                 QFileInfo out(session->renderSettings->getOutputDir().filePath(oname + "." + (interpolate ? "avi" : session->renderSettings->getExtension())));
 
                 if (!out.exists() || (QMessageBox::question(0, "QChromosome 4D Studio", QString("Do you really want to overwrite file\n%1 ?").arg(out.filePath()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes) == QMessageBox::Yes && QFile::remove(out.filePath())))
-                    if (!QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), out.filePath()))
+                    if (!out.dir().mkpath(".") || !QFile::copy(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension())), out.filePath()))
                         qcCritical("Files cannot be written - please check output paths!", out.filePath(), -1, -1);
             }
 
