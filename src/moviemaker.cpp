@@ -2,8 +2,9 @@
 
 MovieMaker* MovieMaker::instance = nullptr;
 
-const QRegularExpression MovieMaker::re1 = QRegularExpression("Rendering frame (\\d+) of (\\d+)");
-const QRegularExpression MovieMaker::re2 = QRegularExpression("Rendered (\\d+) of (\\d+) pixels");
+const QRegularExpression re1 = QRegularExpression("Rendering frame (\\d+) of (\\d+)");
+const QRegularExpression re2 = QRegularExpression("Rendered (\\d+) of (\\d+) pixels");
+const QRegularExpression re3 = QRegularExpression("^File:\\s+(.*?)\\s+Line:\\s+(\\d+)\n$");
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec)
 {
@@ -126,6 +127,8 @@ void MovieMaker::captureScene(Session* session)
         QStringList argv;
         argv << "-D"
              << "+V"
+             << "-GA"
+             << "Fatal_File=true"
              << "+Iscene";
 
         buffer.clear();
@@ -163,16 +166,47 @@ void MovieMaker::captureScene(Session* session)
                 buffer.clear();
         });
 
-        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this,interpolate,dir,session,oname] {
+        p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, interpolate, dir, session, oname] {
             p.disconnect();
 
-            QStringList argv;
-            session->renderSettings->getFFmpegArgs(argv);
+            if (p.exitCode())
+            {
+                QFile fatal(dir->filePath("fatal.out"));
+                fatal.open(QIODevice::ReadOnly);
 
-            p.start("ffmpeg", argv);
-            p.waitForFinished(-1);
+                auto match = re3.globalMatch(fatal.readLine()).next();
+                fatal.readLine();
+                fatal.readLine();
+
+                qcCritical(fatal.readAll().simplified(), match.captured(1), match.captured(2).toInt(), -1);
+
+                fatal.close();
+                return;
+            }
 
             emit progressChanged(101);
+
+            if (interpolate)
+            {
+                QStringList argv;
+                session->renderSettings->getFFmpegArgs(argv);
+
+                argv << "-loglevel" << "error";
+
+                p.start("ffmpeg", argv);
+                p.waitForFinished(-1);
+
+                if (p.exitCode())
+                {
+                    auto messages = p.readAllStandardError().split('\n');
+                    messages.removeLast();
+
+                    for (const auto& message : messages)
+                        qcCritical(message, "", -1, -1);
+
+                    return;
+                }
+            }
 
             if (session->renderSettings->saveOutput() && !oname.isEmpty())
             {

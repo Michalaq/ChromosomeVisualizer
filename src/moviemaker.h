@@ -29,9 +29,6 @@ private:
 
     QProcess p;
 
-    static const QRegularExpression re1;
-    static const QRegularExpression re2;
-
     QByteArray buffer;
 
     uint64_t cf, tf;
