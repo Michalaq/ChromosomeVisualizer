@@ -79,7 +79,7 @@ void MovieMaker::captureScene(Session* session)
 
     QTextStream povStream(&povFile);
 
-    povStream << "#version 3.7;\n"
+    povStream << "#version " << (session->currentCamera->getMode() == Camera::CM_Mono ? "3.7" : "3.8") << ";\n"
               << "global_settings { assumed_gamma 1.0 }\n";
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
