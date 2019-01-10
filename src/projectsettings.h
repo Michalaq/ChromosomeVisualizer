@@ -34,7 +34,7 @@ public:
     void setPreviewMaxTime(int time);
     void setLastFrame(int time);
 
-    bool getOpenFileName();
+    bool getOpenFileName(const QString& path);
     bool getSaveFileName();
     bool getNewSaveFileName();
 

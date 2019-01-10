@@ -3,7 +3,7 @@
 #include "session.h"
 #include "messagehandler.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     actionGroup(new QActionGroup(this)),
@@ -26,7 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     separator = ui->menuCameras->insertSeparator(ui->actionPerspective);
 
-    newProject();
+    if (paths.isEmpty())
+        newProject();
+    else
+        for (const auto& path : paths)
+            openProject(path);
 
     connect(ui->actionInfo, &QAction::triggered, [this] {
         QMessageBox::about(0, "About QChromosome 4D Studio", QString(
@@ -410,11 +414,11 @@ void MainWindow::setCurrentSession(Session *s)
     MessageHandler::getInstance()->setProject(session->projectSettings->getFileName());
 }
 
-void MainWindow::openProject()
+void MainWindow::openProject(const QString &path)
 {
     auto s = makeSession();
 
-    if (s->openProject())
+    if (s->openProject(path))
     {
         for (Camera* camera : s->userCameras)
             addCamera(camera);

@@ -117,9 +117,9 @@ QString ProjectSettings::getFileName() const
 
 #include <QFileDialog>
 
-bool ProjectSettings::getOpenFileName()
+bool ProjectSettings::getOpenFileName(const QString &path_)
 {
-    QString path = QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(suffix));
+    QString path = path_.isEmpty() ? QFileDialog::getOpenFileName(0, "Open...", QStandardPaths::writableLocation(QStandardPaths::HomeLocation), QString("QChromosome 4D Project File (*.%1)").arg(suffix)) : path_;
 
     if (!path.isEmpty())
     {

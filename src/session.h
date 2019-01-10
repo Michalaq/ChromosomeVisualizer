@@ -75,7 +75,7 @@ public:
     void reallocateBuffers();
     void changeCamera(Camera* camera);
 
-    bool openProject();
+    bool openProject(const QString& path);
     void saveProject() const;
     void saveProjectAs() const;
 

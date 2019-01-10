@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold");
     QFontDatabase::addApplicationFont(":/fonts/RobotoMono-Regular");
 
-    MainWindow w;
+    MainWindow w(a.arguments().mid(1));
 
     a.installEventFilter(&w);
 

@@ -25,14 +25,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(const QStringList& paths, QWidget *parent = 0);
     ~MainWindow();
 
     bool eventFilter(QObject *watched, QEvent *event);
 
 public slots:
     void newProject();
-    void openProject();
+    void openProject(const QString& path = "");
 
     void saveProject();
     void saveProjectAs();

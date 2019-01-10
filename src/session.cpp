@@ -167,9 +167,9 @@ void Session::changeCamera(Camera* camera)
     mediaPanel->changeCamera(currentCamera);
 }
 
-bool Session::openProject()
+bool Session::openProject(const QString &path)
 {
-    if (projectSettings->getOpenFileName())
+    if (projectSettings->getOpenFileName(path))
     {
         fromJson(projectSettings->readSaveFile());
         return true;
