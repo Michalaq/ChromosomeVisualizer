@@ -11,7 +11,7 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
     std::fill(offset, offset + SERIAL_MAX, -1);
 
     if (cacheHeaders(b ? 0 : INT_MAX) < 0)
-        qcCritical("No HEADER record was found.", file->fileName(), -1, -1);
+        qcCritical("No corresponding pair of MODEL/ENDMDL records was found.", file->fileName(), -1, -1);
     else
         makeModel();
 }
@@ -75,75 +75,83 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
     }
 }
 
-qint64 PDBSimulationLayer::skipHeader()
+bool PDBSimulationLayer::skipHeader()
 {
-    while (true)
+    do
     {
-        qint64 pos = file->pos();
-
         if (!file->readLine(buffer.data(), buffer.size()))
         {
             atEnd = true;
-            return pos;
+            return false;
         }
 
-        range.line++;
-
-        if (buffer.startsWith("HEADER"))
-        {
-            atEnd = false;
-            return pos;
-        }
+        line++;
     }
+    while (!buffer.startsWith("MODEL "));
+
+    range.first = file->pos();
+    range.line = line;
+
+    do
+    {
+        if (!file->readLine(buffer.data(), buffer.size()))
+        {
+            atEnd = true;
+            return false;
+        }
+
+        line++;
+    }
+    while (!buffer.startsWith("ENDMDL"));
+
+    range.last = file->pos();
+
+    i++;
+
+    atEnd = false;
+    return true;
 }
 
 int PDBSimulationLayer::cacheHeaders(int time)
 {
     if (atEnd)
-        return j - 1;
+        return j;
 
     file->seek(pos);
 
-    while (i <= first)
-    {
-        range.first = skipHeader();
-        i++;
+    while (i < first)
+        if (!skipHeader())
+            return j;
 
-        if (atEnd)
-            return j - 1;
-    }
-
-    while (j <= time)
-    {
-        range.last = skipHeader();
-        i++;
-
-        cache.append(range);
-        j++;
-
-        range.first = range.last;
-
-        for (int k = 1; k < stride; k++)
+    while (j < time)
+        if (skipHeader())
         {
-            range.first = skipHeader();
-            i++;
+            cache.append(range);
+            j++;
 
-            if (i > last)
-                atEnd = true;
+            for (int k = 1; k < stride; k++)
+            {
+                if (!skipHeader())
+                    return j;
 
-            if (atEnd)
-                return j - 1;
+                if (i > last)
+                {
+                    atEnd = true;
+                    return j;
+                }
+            }
         }
-    }
+        else
+            return j;
 
     pos = file->pos();
 
-    return j - 1;
+    return j;
 }
 
 int PDBSimulationLayer::lastEntry() const
 {
-    return j - 1;
+    return j;
 }
 
 #include <QBitArray>

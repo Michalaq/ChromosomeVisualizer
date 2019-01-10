@@ -37,12 +37,12 @@ private:
     QVector<CacheLog> cache;
 
     qint64 pos = 0;
-    int i = 0, j = 0;
-    CacheLog range = {0, 0, -1};
+    int i = 0, j = -1, line = 0;
+    CacheLog range;
 
     bool atEnd = false;
 
-    qint64 skipHeader();
+    bool skipHeader();
 
     void makeModel();
 
