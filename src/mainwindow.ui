@@ -1240,11 +1240,6 @@ QTableView::item:selected {
     <string>F9</string>
    </property>
   </action>
-  <action name="actionRecord">
-   <property name="text">
-    <string>Record</string>
-   </property>
-  </action>
   <action name="actionPing_Pong">
    <property name="checkable">
     <bool>true</bool>
@@ -1311,11 +1306,6 @@ QTableView::item:selected {
     <string>Parallel</string>
    </property>
   </action>
-  <action name="actionDefault_camera">
-   <property name="text">
-    <string>Default camera</string>
-   </property>
-  </action>
   <action name="actionDefault_light">
    <property name="icon">
     <iconset resource="icons.qrc">
@@ -1335,6 +1325,14 @@ QTableView::item:selected {
    </property>
    <property name="shortcut">
     <string>Shift+V</string>
+   </property>
+  </action>
+  <action name="actionStop_renderer">
+   <property name="text">
+    <string>Stop renderer</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
    </property>
   </action>
  </widget>

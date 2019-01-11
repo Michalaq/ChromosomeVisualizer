@@ -40,17 +40,8 @@ MovieMaker *MovieMaker::getInstance()
 
 void MovieMaker::captureScene(Session* session)
 {
-    if (p.state() != QProcess::NotRunning)
-    {
-        if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
-        {
-            p.disconnect();
-            p.kill();
-            p.waitForFinished(-1);
-        }
-        else
-            return;
-    }
+    if (!stopRenderer())
+        return;
 
     auto range = session->renderSettings->frameRange();
     bool interpolate = range.first != range.second;
@@ -122,6 +113,7 @@ void MovieMaker::captureScene(Session* session)
     // tracing
     if (session->renderSettings->render())
     {
+        p.waitForFinished(-1);
         p.setWorkingDirectory(dir->path());
 
         QStringList argv;
@@ -224,6 +216,24 @@ void MovieMaker::captureScene(Session* session)
         p.start("povray", argv);
     }
 #endif
+}
+
+bool MovieMaker::stopRenderer()
+{
+    if (p.state() == QProcess::NotRunning)
+        return true;
+
+    if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
+    {
+        p.disconnect();
+        p.kill();
+
+        emit progressChanged(101);
+
+        return true;
+    }
+
+    return false;
 }
 
 void MovieMaker::addSphere(QTextStream& outFile, const QVector3D & position, float radius, int color)

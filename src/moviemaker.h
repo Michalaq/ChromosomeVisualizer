@@ -13,6 +13,7 @@ public:
     static MovieMaker* getInstance();
 
     void captureScene(Session* session);
+    bool stopRenderer();
 
     static void addSphere(QTextStream& outFile, const QVector3D & position, float radius, int color);
     static void addCylinder(QTextStream& outFile, const QVector3D & positionA, const QVector3D & positionB, float radiusA, float radiusB, int colorA, int colorB);

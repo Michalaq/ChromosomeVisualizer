@@ -212,6 +212,12 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
     ui->tableView->setModel(MessageHandler::getInstance());
     ui->tableView->setColumnWidth(0, 29);
     ui->tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
+    addAction(ui->actionStop_renderer);
+
+    connect(ui->actionStop_renderer, &QAction::triggered, [this] {
+        movieMaker->stopRenderer();
+    });
 }
 
 MainWindow::~MainWindow()
