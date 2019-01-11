@@ -12,6 +12,9 @@ class StatusBar : public QStatusBar
 public:
     explicit StatusBar(QWidget *parent = nullptr);
 
+    void start();
+    void stop();
+
 protected:
     void paintEvent(QPaintEvent *event);
 
@@ -25,12 +28,15 @@ private:
     int elapsed;
     QTime t;
 
+    int frame, total;
+
 signals:
 
 public slots:
     void clearPermanentMessage();
     void showPermanentMessage(const QString &text);
 
+    void setFrame(int frame, int total);
     void setProgress(int progress);
 };
 

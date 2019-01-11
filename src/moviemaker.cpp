@@ -124,7 +124,6 @@ void MovieMaker::captureScene(Session* session)
              << "+Iscene";
 
         buffer.clear();
-        cf = 1; tf = 1;
 
         p.connect(&p, &QProcess::readyReadStandardError, [this] {
             buffer += p.readAllStandardError();
@@ -134,9 +133,7 @@ void MovieMaker::captureScene(Session* session)
 
             while (match1.hasMatch())
             {
-                cf = match1.captured(1).toUInt();
-                tf = match1.captured(2).toUInt();
-
+                emit frameChanged(match1.captured(1).toInt(), match1.captured(2).toInt());
                 match1 = re1.match(buffer, offset = match1.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
@@ -144,11 +141,7 @@ void MovieMaker::captureScene(Session* session)
 
             while (match.hasMatch())
             {
-                unsigned a = match.captured(1).toUInt();
-                unsigned b = match.captured(2).toUInt();
-
-                emit progressChanged(100 * ((cf - 1) * b + a) / (tf * b));
-
+                emit progressChanged(100 * match.captured(1).toInt() / match.captured(2).toInt());
                 match = re2.match(buffer, offset = match.capturedEnd(), QRegularExpression::PartialPreferFirstMatch);
             }
 
@@ -159,6 +152,8 @@ void MovieMaker::captureScene(Session* session)
         });
 
         p.connect(&p, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), [this, interpolate, dir, session, oname] {
+            emit finished();
+
             p.disconnect();
 
             if (p.exitCode())
@@ -175,8 +170,6 @@ void MovieMaker::captureScene(Session* session)
                 fatal.close();
                 return;
             }
-
-            emit progressChanged(101);
 
             if (interpolate)
             {
@@ -225,10 +218,10 @@ bool MovieMaker::stopRenderer()
 
     if (QMessageBox::question(Q_NULLPTR, "QChromosome 4D Studio", "The external renderer is calculating an image. Do you want to stop it?") == QMessageBox::Yes)
     {
+        emit finished();
+
         p.disconnect();
         p.kill();
-
-        emit progressChanged(101);
 
         return true;
     }

@@ -32,10 +32,10 @@ private:
 
     QByteArray buffer;
 
-    uint64_t cf, tf;
-
 signals:
+    void frameChanged(int, int);
     void progressChanged(int);
+    void finished();
 };
 
 QTextStream& operator<<(QTextStream& out, const QVector3D & vec);

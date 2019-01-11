@@ -162,7 +162,9 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
     connect(ui->page_3, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
     connect(ui->page_8, SIGNAL(attributeChanged()), ui->scene, SLOT(update()));
 
+    connect(movieMaker, &MovieMaker::frameChanged, ui->statusBar, &StatusBar::setFrame);
     connect(movieMaker, &MovieMaker::progressChanged, ui->statusBar, &StatusBar::setProgress);
+    connect(movieMaker, &MovieMaker::finished, ui->statusBar, &StatusBar::stop);
 
     connect(ui->scene, &VizWidget::selectionChanged, this, &MainWindow::handleSceneSelection);
 
@@ -605,6 +607,7 @@ void MainWindow::goToPreviousFrame()
 void MainWindow::render() const
 {
     movieMaker->captureScene(session);
+    ui->statusBar->start();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
