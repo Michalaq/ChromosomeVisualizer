@@ -25,8 +25,7 @@ public:
 
     virtual int lastEntry() const = 0;
 
-    virtual std::tuple<int, int, int> remove() = 0;
-    virtual void shift(std::tuple<int, int, int> offset) = 0;
+    virtual void remove() = 0;
 
 protected:
     Session* session;

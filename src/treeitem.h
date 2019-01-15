@@ -58,8 +58,7 @@ protected:
     float cylinderRadius;
     float sphereRadius;
 
-    virtual std::tuple<int, int, int> remove();
-    virtual void shift(std::tuple<int, int, int> offset);
+    virtual void remove();
 
 private:
     QList<TreeItem*> m_childItems;
@@ -97,8 +96,7 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    std::tuple<int, int, int> remove();
-    void shift(std::tuple<int, int, int> offset);
+    void remove();
 
 private:
     SimulationLayer* layer;
@@ -142,7 +140,7 @@ public:
     Camera* getCamera() const;
 
 protected:
-    std::tuple<int, int, int> remove();
+    void remove();
 
 private:
     Camera* camera;
@@ -167,8 +165,10 @@ struct VizBallInstance
 class AtomItem : public TreeItem
 {
 public:
-    explicit AtomItem(uint serial, const QByteArray& name, int offset, Session *s, TreeItem *parentItem = 0);
+    explicit AtomItem(uint serial, const QByteArray& name, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
+
+    int getId() const;
 
     void setLabel(const QString& l, const QRect& r);
     const QString& getLabel() const;
@@ -184,11 +184,8 @@ public:
     void read(const QJsonObject& json, const MaterialListModel* mlm, Material* mat = Material::getDefault(), bool ve = true, bool vr = true);
     void write(QJsonObject& json) const;
 
-protected:
-    void shift(std::tuple<int, int, int> offset);
-
 private:
-    int id;
+    const int id;
     QString label;
     Session *session;
 };

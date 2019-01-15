@@ -24,14 +24,12 @@ Camera::Camera(Session *s, QWidget *parent)
       nearClipping(.3),
       farClipping(1000.),
       session(s),
+      id(session->cameraBuffer.append({})),
       mode(CM_Mono),
       eyeSeparation(6.5),
       zoom(1.0)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
-    id = session->cameraBuffer.count();
-    session->cameraBuffer.append({});
 
     setLookAt(QVector3D(0, 0, 0));
 
@@ -78,6 +76,7 @@ Camera::Camera(const Camera& camera)
       nearClipping(camera.nearClipping),
       farClipping(camera.farClipping),
       session(camera.session),
+      id(session->cameraBuffer.append(session->cameraBuffer[camera.id])),
       mode(camera.mode),
       eyeSeparation(camera.eyeSeparation),
       zoom(camera.zoom)
@@ -97,9 +96,6 @@ Camera::Camera(const Camera& camera)
             break;
         };
     });
-
-    id = session->cameraBuffer.count();
-    session->cameraBuffer.append(session->cameraBuffer[camera.id]);
 
     connect(session->renderSettings, &TabWidget::filmRatioChanged, this, &Camera::setAspectRatio);
 
@@ -988,9 +984,11 @@ const QModelIndex& Camera::getUp() const
     return up;
 }
 
-void Camera::callibrate(int offset, bool selected, qreal scale)
+void Camera::callibrate(const QModelIndex &index, bool selected, qreal scale)
 {
-    if ((selected && !session->treeView->selectionModel()->hasSelection()) || offset >= session->atomBuffer.count())
+    const auto model = session->simulation->getModel();
+
+    if ((selected && !session->treeView->selectionModel()->hasSelection()) || model->rowCount(index) == 0)
         return;
 
     setRotation(QQuaternion::fromEulerAngles(-35.2644, -135, 0));
@@ -1003,10 +1001,19 @@ void Camera::callibrate(int offset, bool selected, qreal scale)
 
     qreal dxr = -qInf(), dxl = -qInf(), dyr = -qInf(), dyl = -qInf(), tmp;
 
-    for (const auto& atom : session->atomBuffer.mid(offset))
-    {
+    std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root) {
+        for (int r = 0; r < model->rowCount(root); r++)
+            visit(model->index(r, 0, root));
+
+        auto item = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+
+        if (!item)
+            return;
+
+        const auto& atom = session->atomBuffer[item->getId()];
+
         if (selected && !atom.flags.testFlag(Selected))
-            continue;
+            return;
 
         auto p = modelView.map(QVector4D(atom.position, 1)).toVector3DAffine();
 
@@ -1025,7 +1032,9 @@ void Camera::callibrate(int offset, bool selected, qreal scale)
         tmp = p.y() / (-tva) + p.z() + atom.size / sva;
         if (dyl < tmp)
             dyl = tmp;
-    }
+    };
+
+    visit(index);
 
     QVector3D x, y, z;
     phb.getAxes(&x, &y, &z);

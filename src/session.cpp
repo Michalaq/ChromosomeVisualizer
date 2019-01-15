@@ -65,7 +65,7 @@ Session::Session(MainWindow* w) :
     connect(plot, &QAbstractSlider::sliderPressed, mediaPanel, &MediaPanel::pause);
     connect(plot, &QAbstractSlider::sliderReleased, mediaPanel, &MediaPanel::resume);
 
-    viewportUniformBuffer.resize(1);
+    viewportUniformBuffer.append({});
     viewport = new Viewport(this);
 
     editorCamera->action->setText("Default camera");
@@ -260,17 +260,32 @@ void Session::setLastFrame(int time)
         setPreviewMaxTime(lastFrame);
 }
 
-void Session::setOrigin(int offset, bool selected)
+void Session::setOrigin(const QModelIndex& index, bool selected)
 {
     QVector3D origin;
     int count = 0;
 
-    for (const auto& atom : atomBuffer.mid(offset))
-        if (!selected || atom.flags.testFlag(Selected))
-        {
-            origin += atom.position;
-            count++;
-        }
+    const auto model = simulation->getModel();
+
+    std::function<void(const QModelIndex&)> dfs = [&](const QModelIndex& root) {
+        for (int r = 0; r < model->rowCount(root); r++)
+            dfs(model->index(r, 0, root));
+
+        auto item = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+
+        if (!item)
+            return;
+
+        const auto& atom = atomBuffer[item->getId()];
+
+        if (selected && !atom.flags.testFlag(Selected))
+            return;
+
+        origin += atom.position;
+        count++;
+    };
+
+    dfs(index);
 
     if (count > 0)
         this->origin = origin / count;

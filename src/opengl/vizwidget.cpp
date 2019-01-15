@@ -313,13 +313,13 @@ void VizWidget::paintGL()
     vaoSpheres_.bind();
     selectProgram_.bind();
 
-    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    session->atomBuffer.glDrawArrays(this);
 
     selectProgram_.release();
     vaoSpheres_.release();
 
     GLfloat color[4];
-    auto& buffer = *session->viewportUniformBuffer.constBegin();
+    const auto& buffer = session->viewportUniformBuffer[0];
     mix(buffer.ucFogColor, buffer.ucBackgroundColor, buffer.ubEnableFog ? buffer.ufFogStrength : 0, color);
 
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -332,13 +332,13 @@ void VizWidget::paintGL()
     cylinderProgram_.bind();
     chainIndices_.bind();
 
-    glMultiDrawElements(GL_LINE_STRIP, session->chainCountBuffer.data(), GL_UNSIGNED_INT, session->chainOffsetsBuffer.data(), session->chainCountBuffer.count());
+    session->chainBuffer.glDrawElements(this);
 
     chainIndices_.release();
     cylinderProgram_.release();
     sphereProgram_.bind();
 
-    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    session->atomBuffer.glDrawArrays(this);
 
     sphereProgram_.release();
     vaoSpheres_.release();
@@ -347,7 +347,7 @@ void VizWidget::paintGL()
     vaoCameras_.bind();
     cameraProgram_.bind();
 
-    glDrawArrays(GL_POINTS, 1, session->cameraBuffer.count() - 1);
+    session->cameraBuffer.glDrawArrays(this);
 
     cameraProgram_.release();
     vaoCameras_.release();
@@ -383,7 +383,7 @@ void VizWidget::paintGL()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, session->labelAtlas.textureId());
 
-    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    session->atomBuffer.glDrawArrays(this);
 
     labelProgram_.release();
     vaoLabels_.release();
@@ -414,8 +414,8 @@ void VizWidget::allocate()
 {
     session->cameraBuffer.allocate(cameraPositions_);
     session->atomBuffer.allocate(atomPositions_);
-    session->chainIndicesBuffer.allocate(chainIndices_);
-    camera_.bind(); camera_.write(0, session->cameraBuffer.constData() + session->cameraUniformBuffer, sizeof(VizCameraInstance)); camera_.release();
+    session->chainBuffer.allocate(chainIndices_);
+    camera_.bind(); camera_.write(0, &session->cameraBuffer[session->cameraUniformBuffer], sizeof(VizCameraInstance)); camera_.release();
     session->labelAtlas.allocate();
     session->viewportUniformBuffer.allocate(viewport_);
 
@@ -440,7 +440,7 @@ void VizWidget::pickSpheres()
     vaoSpheres_.bind();
     indexProgram_.bind();
 
-    glDrawArrays(GL_POINTS, 0, session->atomBuffer.count());
+    session->atomBuffer.glDrawArrays(this);
 
     indexProgram_.release();
     vaoSpheres_.release();

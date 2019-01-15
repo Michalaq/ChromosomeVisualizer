@@ -121,11 +121,11 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        session->currentCamera->callibrate(0, true);
+        session->currentCamera->callibrate(QModelIndex(), true);
     });
 
     connect(ui->actionPivot, &QAction::triggered, [this] {
-        session->setOrigin(0, true);
+        session->setOrigin(QModelIndex(), true);
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -459,8 +459,6 @@ void MainWindow::addLayer()
     if (impd.exec() != QDialog::Accepted)
         return;
 
-    int offset = session->atomBuffer.size();
-
     SimulationLayer* layer = Q_NULLPTR;
 
     if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
@@ -471,8 +469,8 @@ void MainWindow::addLayer()
         session->simulation->prepend(layer);
         (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
         session->setDocumentTime(0);
-        session->currentCamera->callibrate(offset, false);
-        session->setOrigin(offset, false);
+        session->currentCamera->callibrate(session->simulation->getModel()->index(0, 0), false);
+        session->setOrigin(session->simulation->getModel()->index(0, 0), false);
     }
 
     SimulationSeries* series = Q_NULLPTR;

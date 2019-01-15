@@ -71,24 +71,14 @@ int TreeItem::row() const
     return 0;
 }
 
-std::tuple<int, int, int> operator+(const std::tuple<int, int, int>& lhs, const std::tuple<int, int, int>& rhs)
-{
-    return std::make_tuple(std::get<0>(lhs) + std::get<0>(rhs), std::get<1>(lhs) + std::get<1>(rhs), std::get<2>(lhs) + std::get<2>(rhs));
-}
-
 void TreeItem::removeRows(int row, int count)
 {
-    std::tuple<int, int, int> offset;
-
     for (int i = 0; i < count; i++)
     {
         auto item = m_childItems.takeAt(row);
-        offset = offset + item->remove();
+        item->remove();
         delete item;
     }
-
-    for (int i = 0; i < row; i++)
-        m_childItems[i]->shift(offset);
 }
 
 QVector3D TreeItem::getPosition() const
@@ -248,15 +238,9 @@ float TreeItem::getSphereRadius() const
     return sphereRadius;
 }
 
-std::tuple<int, int, int> TreeItem::remove()
+void TreeItem::remove()
 {
-    return {};
-}
 
-void TreeItem::shift(std::tuple<int, int, int> offset)
-{
-    for (auto c : m_childItems)
-        c->shift(offset);
 }
 
 #include "session.h"
@@ -293,19 +277,10 @@ void LayerItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
-std::tuple<int, int, int> LayerItem::remove()
+void LayerItem::remove()
 {
-    auto offset = layer->remove();
+    layer->remove();
     delete layer;
-
-    return TreeItem::remove() + offset;
-}
-
-void LayerItem::shift(std::tuple<int, int, int> offset)
-{
-    layer->shift(offset);
-
-    TreeItem::shift(offset);
 }
 
 #include "camera.h"
@@ -381,26 +356,20 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-std::tuple<int, int, int> CameraItem::remove()
+void CameraItem::remove()
 {
-    session->userCameras.last()->id = camera->id;
-    session->userCameras[camera->id - 1] = session->userCameras.last();
-    session->userCameras.removeLast();
-
-    session->cameraBuffer[camera->id] = session->cameraBuffer.last();
-    session->cameraBuffer.removeLast();
+    session->userCameras.removeOne(camera);
+    session->cameraBuffer.remove(camera->id, 1);
 
     if (data(6).toBool())
         session->simulation->getModel()->setCurrentCamera(QModelIndex());
 
     camera->deleteLater();
-
-    return TreeItem::remove();
 }
 
-AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, TreeItem *parentItem) :
-    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, offset, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(offset),
+AtomItem::AtomItem(uint serial, const QByteArray &name, Session *s, TreeItem *parentItem) :
+    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    id(s->atomBuffer.append({})),
     session(s)
 {
     QIcon icon;
@@ -412,6 +381,11 @@ AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, 
 AtomItem::~AtomItem()
 {
 
+}
+
+int AtomItem::getId() const
+{
+    return id;
 }
 
 QVector3D AtomItem::getPosition() const
@@ -491,13 +465,6 @@ void AtomItem::write(QJsonObject &json) const
 
     if (object.size() > 1)
         json["Object"] = object;
-}
-
-void AtomItem::shift(std::tuple<int, int, int> offset)
-{
-    setData(2, id -= std::get<0>(offset));
-
-    TreeItem::shift(offset);
 }
 
 ChainItem::ChainItem(const QByteArray &chainID, Session *s, TreeItem *parentItem) :

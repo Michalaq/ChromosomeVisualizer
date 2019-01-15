@@ -75,7 +75,7 @@ void MovieMaker::captureScene(Session* session)
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
 
-    const auto& viewport = *session->viewportUniformBuffer.constBegin();
+    const auto& viewport = session->viewportUniformBuffer[0];
 
     povStream << "background{color " << QColor(viewport.ucBackgroundColor) << "}\n";
 

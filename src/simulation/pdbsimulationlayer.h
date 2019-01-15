@@ -27,8 +27,7 @@ public:
 
     int lastEntry() const override;
 
-    std::tuple<int, int, int> remove() override;
-    void shift(std::tuple<int, int, int> offset) override;
+    void remove() override;
 
 private:
     QByteArray buffer;
@@ -46,9 +45,8 @@ private:
 
     void makeModel();
 
-    QPair<uint, uint> a_range;
-    QPair<uint, uint> c_range;
-    QPair<uint, uint> i_range;
+    QVector<QPair<uint, uint>> a_range;
+    QVector<void*> c_range;
 };
 
 #endif // PDBSIMULATIONLAYSER_H

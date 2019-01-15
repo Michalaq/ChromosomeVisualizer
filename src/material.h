@@ -84,7 +84,7 @@ public:
     static const Material* fetch(int index);
     static void writePOVMaterials(QTextStream &stream);
 
-    static GLBuffer<material_data_t>& getBuffer();
+    static OpenGLArraysBuffer<material_data_t>& getBuffer();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -113,7 +113,7 @@ private:
     QProcess p;
 
     int index;
-    static GLBuffer<material_data_t> buffer;
+    static OpenGLArraysBuffer<material_data_t> buffer;
     static QVector<const Material*> library;
 
     double ambient;
