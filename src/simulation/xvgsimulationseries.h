@@ -17,12 +17,12 @@ public:
 private:
     QByteArray buffer;
 
-    int i = 0, j = 0;
+    int i = 0, j = -1;
     int line = 0;
 
     bool atEnd = false;
 
-    void skipHeader();
+    bool skipHeader();
 
     QMap<int, QtCharts::QLineSeries*> legend;
 };

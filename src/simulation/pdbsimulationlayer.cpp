@@ -126,8 +126,8 @@ int PDBSimulationLayer::cacheHeaders(int time)
     while (j < time)
         if (skipHeader())
         {
-            cache.append(range);
             j++;
+            cache.append(range);
 
             for (int k = 1; k < stride; k++)
             {
