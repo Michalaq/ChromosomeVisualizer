@@ -29,15 +29,11 @@ public:
     TreeItem *child(int row);
     int childCount() const;
     int columnCount() const;
-    QVariant data(int column) const;
-    virtual bool setData(int column, const QVariant& data);
+    virtual QVariant data(int column, int role = Qt::DisplayRole) const;
+    virtual bool setData(int column, const QVariant &value, int role = Qt::EditRole);
     int row() const;
     TreeItem *parentItem();
     void removeRows(int row, int count);
-
-    int selected_children_count = 0;
-    int selected_tag_index = -1;
-    QVariant decoration;
 
     virtual QVector3D getPosition() const;
 
@@ -54,6 +50,8 @@ public:
     virtual void setSphereRadius(float r);
     float getSphereRadius() const;
 
+    QList<Material*> selectedTags() const;
+
 protected:
     float cylinderRadius;
     float sphereRadius;
@@ -64,6 +62,9 @@ private:
     QList<TreeItem*> m_childItems;
     QList<QVariant> m_itemData;
     TreeItem *m_parentItem;
+
+    int selected_children_count = 0;
+    int selected_tag_index = -1;
 };
 
 enum NodeType
@@ -93,6 +94,8 @@ public:
     explicit LayerItem(const QString& name, SimulationLayer* l, Session* s, TreeItem *parentItem = 0);
     ~LayerItem();
 
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+
     void write(QJsonObject& json) const;
 
 protected:
@@ -101,6 +104,8 @@ protected:
 private:
     SimulationLayer* layer;
     Session* session;
+
+    static QVariant icon;
 };
 
 #include <QMatrix4x4>
@@ -127,7 +132,8 @@ public:
     explicit CameraItem(const QString& name, Camera* cam, Session* s, TreeItem *parentItem = 0);
     ~CameraItem();
 
-    bool setData(int column, const QVariant& data);
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+    bool setData(int column, const QVariant &value, int role = Qt::EditRole);
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D& p);
@@ -145,6 +151,8 @@ protected:
 private:
     Camera* camera;
     Session* session;
+
+    static QVariant icon;
 
 friend class Camera;
 };
@@ -168,6 +176,8 @@ public:
     explicit AtomItem(uint serial, const QByteArray& name, Session *s, TreeItem *parentItem = 0);
     ~AtomItem();
 
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+
     int getId() const;
 
     void setLabel(const QString& l, const QRect& r);
@@ -188,6 +198,8 @@ private:
     const int id;
     QString label;
     Session *session;
+
+    static QVariant icon;
 };
 
 class ChainItem : public TreeItem
@@ -195,6 +207,11 @@ class ChainItem : public TreeItem
 public:
     explicit ChainItem(const QByteArray& chainID, Session* s, TreeItem *parentItem = 0);
     ~ChainItem();
+
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+
+private:
+    static QVariant icon;
 };
 
 class ResidueItem : public TreeItem
@@ -202,6 +219,11 @@ class ResidueItem : public TreeItem
 public:
     explicit ResidueItem(const QByteArray& resName, Session *s, TreeItem *parentItem = 0);
     ~ResidueItem();
+
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+
+private:
+    static QVariant icon;
 };
 
 #endif // TREEITEM_H

@@ -23,24 +23,7 @@ int TreeModel::columnCount(const QModelIndex &) const
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
-
-    TreeItem *item = reinterpret_cast<TreeItem*>(index.internalPointer());
-
-    switch (role)
-    {
-    case Qt::DisplayRole:
-        return item->data(index.column());
-    case Qt::DecorationRole:
-        return item->decoration;
-    case Qt::UserRole:
-        return item->selected_children_count;
-    case Qt::UserRole + 1:
-        return item->selected_tag_index;
-    }
-
-    return QVariant();
+    return index.isValid() ? reinterpret_cast<TreeItem*>(index.internalPointer())->data(index.column(), role) : QVariant();
 }
 
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -48,27 +31,12 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     if (!index.isValid())
         return false;
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    auto item = reinterpret_cast<TreeItem*>(index.internalPointer());
 
-    bool ans;
+    bool ans = item->setData(index.column(), value, role);
 
-    switch (role)
-    {
-    case Qt::DecorationRole:
-        item->decoration = value;
-        ans = true;
-        break;
-    case Qt::UserRole + 1:
-        item->selected_tag_index = value.toInt();
-        if (item->selected_tag_index == -1)
-            emit tagSelected({});
-        else
-            emit tagSelected({index.sibling(index.row(), 5).data().toList().at(item->selected_tag_index).value<Material*>()});
-        ans = true;
-        break;
-    default:
-        ans = item->setData(index.column(), value);
-    }
+    if (role == Qt::UserRole + 1)
+        emit tagSelected(item->selectedTags());
 
     if (ans)
         emit dataChanged(index, index, {role});
