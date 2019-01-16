@@ -70,10 +70,6 @@ private:
 
     void propagateVisibility(const QModelIndex &root, VisibilityMode m, bool v);
 
-    void dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id);
-    void dumpModel2(const QModelIndex& root, Material* m);
-    void dumpModel3(const QModelIndex& root, Material* m);
-
 signals:
     void propertyChanged();
     void attributeChanged();
