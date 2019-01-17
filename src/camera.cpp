@@ -675,7 +675,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << aspectRatio << "\n"
                        << "look_at -z\n"
                        << "angle MySplineFov(clock).x\n"
-                       << "rotate -MySplineAng(clock)\n"
+                       << "rotate -<0, 0, MySplineAng(clock).z>\n"
+                       << "rotate -<MySplineAng(clock).x, MySplineAng(clock).y, 0>\n"
                        << "translate MySplinePos(clock)\n"
                        << "}\n"
                        << "\n";
@@ -686,7 +687,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << 100 / zoom << "\n"
                        << "up y * " << 100 / aspectRatio / zoom << "\n"
                        << "look_at -z\n"
-                       << "rotate -MySplineAng(clock)\n"
+                       << "rotate -<0, 0, MySplineAng(clock).z>\n"
+                       << "rotate -<MySplineAng(clock).x, MySplineAng(clock).y, 0>\n"
                        << "translate MySplinePos(clock)\n"
                        << "}\n"
                        << "\n";
@@ -697,11 +699,14 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
                    << "parallel\n"
                    << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-                   << "rotate -MySplineAng(clock)\n"
+                   << "rotate -<0, 0, MySplineAng(clock).z>\n"
+                   << "rotate -<MySplineAng(clock).x, MySplineAng(clock).y, 0>\n"
                    << "}\n";
         }
         else
         {
+            auto angles = phb.toEulerAngles();
+
             switch (session->cameraBuffer[id].ptype)
             {
             case CP_Perspective:
@@ -709,7 +714,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << aspectRatio << "\n"
                        << "look_at -z\n"
                        << "angle " << horizontalAngle << "\n"
-                       << "rotate " << -phb.toEulerAngles() << "\n"
+                       << "rotate -" << QVector3D(0, 0, angles.z()) << "\n"
+                       << "rotate -" << QVector3D(angles.x(), angles.y(), 0) << "\n"
                        << "translate " << eye << "\n"
                        << "}\n"
                        << "\n";
@@ -720,7 +726,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                        << "right x * " << 100 / zoom << "\n"
                        << "up y * " << 100 / aspectRatio / zoom << "\n"
                        << "look_at -z\n"
-                       << "rotate " << -phb.toEulerAngles() << "\n"
+                       << "rotate -" << QVector3D(0, 0, angles.z()) << "\n"
+                       << "rotate -" << QVector3D(angles.x(), angles.y(), 0) << "\n"
                        << "translate " << eye << "\n"
                        << "}\n"
                        << "\n";
@@ -731,7 +738,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                    << QVector3D() << "," << QColor(Qt::white) << "\n"
                    << "parallel\n"
                    << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-                   << "rotate " << -phb.toEulerAngles() << "\n"
+                   << "rotate -" << QVector3D(0, 0, angles.z()) << "\n"
+                   << "rotate -" << QVector3D(angles.x(), angles.y(), 0) << "\n"
                    << "}\n";
         }
         break;
@@ -804,7 +812,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
                << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-               << "rotate -odsAngles\n"
+               << "rotate -<0, 0, odsAngles.z>\n"
+               << "rotate -<odsAngles.x, odsAngles.y, 0>\n"
                << "}\n";
         break;
 
@@ -876,7 +885,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
                << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-               << "rotate -odsAngles\n"
+               << "rotate -<0, 0, odsAngles.z>\n"
+               << "rotate -<odsAngles.x, odsAngles.y, 0>\n"
                << "}\n";
         break;
 
@@ -948,7 +958,8 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << QVector3D() << "," << QColor(Qt::white) << "\n"
                << "parallel\n"
                << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
-               << "rotate -odsAngles\n"
+               << "rotate -<0, 0, odsAngles.z>\n"
+               << "rotate -<odsAngles.x, odsAngles.y, 0>\n"
                << "}\n";
         break;
     }
