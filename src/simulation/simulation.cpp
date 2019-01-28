@@ -133,7 +133,7 @@ void Simulation::writePOVFrames(QTextStream& stream, int fbeg, int fend)
 
 int Simulation::lastEntry() const
 {
-    int ans = -1;
+    int ans = 0;
 
     for (auto i : layers)
         ans = qMax(ans, i->lastEntry());
