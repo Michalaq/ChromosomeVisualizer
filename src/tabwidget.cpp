@@ -411,7 +411,10 @@ void TabWidget::getFFmpegArgs(QStringList& argv) const
     argv << "-y"
          << "-start_number" << startFrame
          << "-framerate" << session->projectSettings->getFPS() * ui->spinBox_2->value()
-         << "-i" << name + "%0" + QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() + "d." + ext;
+         << "-i" << name + "%0" + QString::number(session->projectSettings->getMaximumTime() * ui->spinBox_2->value()).length() + "d." + ext
+         << "-c:v" << "libx264"
+         << "-pix_fmt" << "yuv420p"
+         << "-vf" << "pad=ceil(iw/2)*2:ceil(ih/2)*2";
 
     if (ui->checkBox_4->isChecked())
         argv << "-vf" << QString("[in]drawtext=text='%{pts\\:hms\\:%1}': x=10: y=10: fontcolor=white, drawtext=text='%{eif\\:n+1\\:d}/%2 (%{eif\\:n+%3\\:d} F)': x=10: y=15+lh: fontcolor=white[out]").arg(1. * ui->spinBox_3->value() / session->projectSettings->getFPS()).arg(endFrame - startFrame + 1).arg(startFrame);
