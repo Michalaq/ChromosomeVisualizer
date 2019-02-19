@@ -1,7 +1,9 @@
 [QChromosome 4D Studio](https://sites.google.com/view/qchromosome4dstudio)
 ==========================================================================
 
-[![Maintenance Status](https://img.shields.io/maintenance/yes/2019.svg)](README.md "Last edited 2019-01-01")
+[![Maintenance](https://img.shields.io/maintenance/yes/2019.svg)](README.md)
+[![License](https://img.shields.io/github/license/Michalaq/ChromosomeVisualizer.svg)](README.md)
+[![Donate](https://img.shields.io/badge/donate-PayPal.Me-informational.svg)](https://www.paypal.me/QChromosome4DStudio)
 
 - [License](#license)
 - [Bug Reports](#bug-reports)
