@@ -32,15 +32,18 @@ ffmpeg
 
 ## Building the code
 
+Create a build directory and from inside it run
+
 ```shell
-qmake qcstudio.pro
+qmake ..
 make
 ```
 
 ## Installing
 
+From inside a build directory run
+
 ```shell
 su
 make install
 ```
-
