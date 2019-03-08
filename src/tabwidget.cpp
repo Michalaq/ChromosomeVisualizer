@@ -196,6 +196,7 @@ TabWidget::TabWidget(Session* s, QWidget *parent) :
     ui->comboBox_3->setCurrentText("Pixels");
     ui->doubleSpinBox_4->setValue(320);
     ui->doubleSpinBox_5->setValue(240);
+    ui->checkBox_5->setChecked(true);
     ui->doubleSpinBox_6->setValue(72);
     ui->spinBox_2->setValue(1);
     ui->comboBox_5->setCurrentText("Current frame");
