@@ -384,7 +384,10 @@ void TreeModel::read(const QJsonObject &json)
         const QJsonObject object = child.value().toObject()["Object"].toObject();
 
         if (object["class"] == "Layer")
-            session->simulation->prepend(SimulationLayer::read(object, session));
+        {
+            auto layer = SimulationLayer::read(object, session);
+            if (layer) session->simulation->prepend(layer);
+        }
 
         if (object["class"] == "Camera")
             addCamera(new Camera(session));

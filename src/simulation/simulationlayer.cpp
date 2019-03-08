@@ -32,6 +32,7 @@ TreeItem* SimulationLayer::getModel() const
 }
 
 #include "pdbsimulationlayer.h"
+#include "messagehandler.h"
 
 SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session)
 {
@@ -40,10 +41,13 @@ SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session
     int last = json["Last"].toInt();
     int stride = json["Stride"].toInt();
 
-    if (QFileInfo(name).suffix() == "pdb")
+    QFileInfo info(name);
+
+    if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
         return new PDBSimulationLayer(name, session, first, last, stride);
 
-    Q_ASSERT(false);
+    qcCritical("File format not recognized.", name, -1, -1);
+    return nullptr;
 }
 
 void SimulationLayer::write(QJsonObject& json) const
