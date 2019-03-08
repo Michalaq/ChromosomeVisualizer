@@ -1,5 +1,6 @@
 #include "xvgsimulationseries.h"
 #include "messagehandler.h"
+#include "session.h"
 
 XVGSimulationSeries::XVGSimulationSeries(const QString& name, Session* s, int f, int l, int t, bool b) :
     SimulationSeries(name, s, f, l, t)
@@ -8,6 +9,14 @@ XVGSimulationSeries::XVGSimulationSeries(const QString& name, Session* s, int f,
 
     if (cacheHeaders(b ? 0 : INT_MAX) < 0)
         qcCritical("No data was found.", file->fileName(), -1, -1);
+
+    if (!b)
+    {
+        int maxTime = s->previewRange ? s->projectSettings->getPreviewMaxTime() : s->projectSettings->getMaximumTime();
+
+        if (maxTime == s->projectSettings->getPreviewMaxTime() && maxTime < j)
+            session->setLastFrame(j);
+    }
 }
 
 XVGSimulationSeries::~XVGSimulationSeries()

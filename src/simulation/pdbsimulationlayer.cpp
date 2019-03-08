@@ -1,5 +1,6 @@
 #include "pdbsimulationlayer.h"
 #include "messagehandler.h"
+#include "session.h"
 
 static const uint SERIAL_MAX = 100000;
 
@@ -14,6 +15,14 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
         qcCritical("No corresponding pair of MODEL/ENDMDL records was found.", file->fileName(), -1, -1);
     else
         makeModel();
+
+    if (!b)
+    {
+        int maxTime = s->previewRange ? s->projectSettings->getPreviewMaxTime() : s->projectSettings->getMaximumTime();
+
+        if (maxTime == s->projectSettings->getPreviewMaxTime() && maxTime < j)
+            session->setLastFrame(j);
+    }
 }
 
 PDBSimulationLayer::~PDBSimulationLayer()
