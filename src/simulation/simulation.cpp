@@ -64,6 +64,27 @@ void Simulation::removeOne(SimulationSeries* value)
     series.removeOne(value);
 }
 
+#include <QJsonArray>
+
+void Simulation::read(const QJsonArray& json)
+{
+    for (const auto& object : json)
+    {
+        auto s = SimulationSeries::read(object.toObject(), session);
+        if (s) series.append(s);
+    }
+}
+
+void Simulation::write(QJsonArray& json) const
+{
+    for (auto s : series)
+    {
+        QJsonObject object;
+        s->write(object);
+        json.append(object);
+    }
+}
+
 static QTextStream& operator<<(QTextStream& out, const QVector3D& vec)
 {
     return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
