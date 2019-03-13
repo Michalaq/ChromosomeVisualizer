@@ -51,8 +51,6 @@ Session::Session(MainWindow* w) :
     header->setSectionResizeMode(5, QHeaderView::Fixed);
 
     listView = MaterialBrowser::getInstance()->makeListView();
-
-    listView->setFocusPolicy(Qt::NoFocus);
     listView->setItemDelegate(md);
 
     connect(projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
