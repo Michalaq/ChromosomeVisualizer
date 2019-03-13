@@ -8,7 +8,7 @@ XVGSimulationSeries::XVGSimulationSeries(const QString& name, Session* s, int f,
     buffer.resize(1024);
 
     if (cacheHeaders(b ? 0 : INT_MAX) < 0)
-        qcCritical("No data was found.", file->fileName(), -1, -1);
+        throw MessageLog({QtCriticalMsg, "No data was found.", file->fileName(), nullptr, -1, -1});
 
     if (!b)
     {

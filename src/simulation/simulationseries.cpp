@@ -1,4 +1,5 @@
 #include "simulationseries.h"
+#include "messagehandler.h"
 #include <QFileInfo>
 
 SimulationSeries::SimulationSeries(const QString& name, Session* s, int f, int l, int t) :
@@ -15,7 +16,9 @@ SimulationSeries::SimulationSeries(const QString& name, Session* s, int f, int l
         file = new File;
 
     file->setFileName(name);
-    file->open(QIODevice::ReadOnly);
+
+    if (!file->open(QIODevice::ReadOnly))
+        throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
 }
 
 SimulationSeries::~SimulationSeries()
@@ -24,7 +27,6 @@ SimulationSeries::~SimulationSeries()
 }
 
 #include "xvgsimulationseries.h"
-#include "messagehandler.h"
 
 SimulationSeries* SimulationSeries::read(const QJsonObject& json, Session* session)
 {
@@ -38,8 +40,7 @@ SimulationSeries* SimulationSeries::read(const QJsonObject& json, Session* sessi
     if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
         return new XVGSimulationSeries(name, session, first, last, stride);
 
-    qcCritical("File format not recognized.", name, -1, -1);
-    return nullptr;
+    throw MessageLog({QtCriticalMsg, "File format not recognized.", name, nullptr, -1, -1});
 }
 
 void SimulationSeries::write(QJsonObject& json) const

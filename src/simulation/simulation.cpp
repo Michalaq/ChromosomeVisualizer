@@ -64,15 +64,20 @@ void Simulation::removeOne(SimulationSeries* value)
     series.removeOne(value);
 }
 
+#include "messagehandler.h"
 #include <QJsonArray>
 
 void Simulation::read(const QJsonArray& json)
 {
     for (const auto& object : json)
-    {
-        auto s = SimulationSeries::read(object.toObject(), session);
-        if (s) series.append(s);
-    }
+        try
+        {
+            series.append(SimulationSeries::read(object.toObject(), session));
+        }
+        catch (const MessageLog& log)
+        {
+            MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
+        }
 }
 
 void Simulation::write(QJsonArray& json) const

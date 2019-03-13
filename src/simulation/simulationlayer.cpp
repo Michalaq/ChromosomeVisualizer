@@ -1,4 +1,5 @@
 #include "simulationlayer.h"
+#include "messagehandler.h"
 #include "treeitem.h"
 #include <QFileInfo>
 
@@ -16,7 +17,9 @@ SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, 
         file = new File;
 
     file->setFileName(name);
-    file->open(QIODevice::ReadOnly);
+
+    if (!file->open(QIODevice::ReadOnly))
+        throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
 
     model = new LayerItem(info.fileName(), this, session);
 }
@@ -32,7 +35,6 @@ TreeItem* SimulationLayer::getModel() const
 }
 
 #include "pdbsimulationlayer.h"
-#include "messagehandler.h"
 
 SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session)
 {
@@ -46,8 +48,7 @@ SimulationLayer* SimulationLayer::read(const QJsonObject& json, Session* session
     if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
         return new PDBSimulationLayer(name, session, first, last, stride);
 
-    qcCritical("File format not recognized.", name, -1, -1);
-    return nullptr;
+    throw MessageLog({QtCriticalMsg, "File format not recognized.", name, nullptr, -1, -1});
 }
 
 void SimulationLayer::write(QJsonObject& json) const

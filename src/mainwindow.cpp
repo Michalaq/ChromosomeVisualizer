@@ -459,30 +459,31 @@ void MainWindow::addLayer()
     if (impd.exec() != QDialog::Accepted)
         return;
 
-    SimulationLayer* layer = Q_NULLPTR;
-
-    if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
-        layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
-
-    if (layer)
+    try
     {
-        session->simulation->prepend(layer);
-        (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
-        session->setDocumentTime(0);
-        session->currentCamera->callibrate(session->simulation->getModel()->index(0, 0), false);
-        session->setOrigin(session->simulation->getModel()->index(0, 0), false);
+        if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
+        {
+            SimulationLayer* layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+
+            session->simulation->prepend(layer);
+            (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+            session->setDocumentTime(0);
+            session->currentCamera->callibrate(session->simulation->getModel()->index(0, 0), false);
+            session->setOrigin(session->simulation->getModel()->index(0, 0), false);
+        }
+
+        if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
+        {
+            SimulationSeries* series = new XVGSimulationSeries(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+
+            session->simulation->prepend(series);
+            session->setDocumentTime(0);
+            session->plot->updateSimulation();
+        }
     }
-
-    SimulationSeries* series = Q_NULLPTR;
-
-    if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
-        series = new XVGSimulationSeries(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
-
-    if (series)
+    catch (const MessageLog& log)
     {
-        session->simulation->prepend(series);
-        session->setDocumentTime(0);
-        session->plot->updateSimulation();
+        MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
     }
 }
 

@@ -12,9 +12,9 @@ PDBSimulationLayer::PDBSimulationLayer(const QString& name, Session* s, int f, i
     std::fill(offset, offset + SERIAL_MAX, -1);
 
     if (cacheHeaders(b ? 0 : INT_MAX) < 0)
-        qcCritical("No corresponding pair of MODEL/ENDMDL records was found.", file->fileName(), -1, -1);
-    else
-        makeModel();
+        throw MessageLog({QtCriticalMsg, "No corresponding pair of MODEL/ENDMDL records was found.", file->fileName(), nullptr, -1, -1});
+
+    makeModel();
 
     if (!b)
     {
