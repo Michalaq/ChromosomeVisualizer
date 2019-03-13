@@ -21,7 +21,7 @@ SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, 
     if (!file->open(QIODevice::ReadOnly))
         throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
 
-    model = new LayerItem(info.fileName(), this, session);
+    model = new LayerItem(info.fileName(), this);
 }
 
 SimulationLayer::~SimulationLayer()

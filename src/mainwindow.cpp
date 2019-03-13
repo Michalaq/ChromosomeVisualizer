@@ -32,7 +32,7 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
         for (const auto& path : paths)
             openProject(path);
 
-    connect(ui->actionInfo, &QAction::triggered, [this] {
+    connect(ui->actionInfo, &QAction::triggered, [] {
         QMessageBox::about(0, "About QChromosome 4D Studio", QString(
                            "<h3>QChromosome 4D Studio</h3>"
                            "<p>Version 1.0</p>"

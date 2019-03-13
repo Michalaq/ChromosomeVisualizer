@@ -91,7 +91,7 @@ class Session;
 class LayerItem : public TreeItem
 {
 public:
-    explicit LayerItem(const QString& name, SimulationLayer* l, Session* s, TreeItem *parentItem = 0);
+    explicit LayerItem(const QString& name, SimulationLayer* l, TreeItem *parentItem = 0);
     ~LayerItem();
 
     QVariant data(int column, int role = Qt::DisplayRole) const;
@@ -103,7 +103,6 @@ protected:
 
 private:
     SimulationLayer* layer;
-    Session* session;
 
     static QVariant icon;
 };
