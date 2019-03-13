@@ -119,6 +119,9 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject camera_ = project["Editor Camera"].toObject();
     editorCamera->read(camera_);
 
+    const QJsonArray origin_ = project["Origin"].toArray();
+    origin = QVector3D(origin_[0].toDouble(), origin_[1].toDouble(), origin_[2].toDouble());
+
     const QJsonObject renderSettings_ = project["Render settings"].toObject();
     renderSettings->read(renderSettings_);
 
@@ -140,6 +143,9 @@ QJsonDocument Session::toJson() const
     QJsonObject camera_;
     editorCamera->write(camera_);
     project["Editor Camera"] = camera_;
+
+    QJsonArray origin_({origin[0], origin[1], origin[2]});
+    project["Origin"] = origin_;
 
     QJsonArray materials_;
     qobject_cast<MaterialListModel*>(listView->model())->write(materials_);
