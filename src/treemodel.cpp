@@ -399,6 +399,18 @@ void TreeModel::read(const QJsonObject &json)
     }
 
     header->read(json, reinterpret_cast<MaterialListModel*>(session->listView->model()));
+
+    // this could be moved to TreeItem::read if QStandardItem/QStandardItemModel were used
+    std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root)
+    {
+        for (auto mat : root.sibling(root.row(), 5).data().toList())
+            mat.value<Material*>()->assign(root);
+
+        for (int r = 0; r < rowCount(root); r++)
+            visit(index(r, 0, root));
+    };
+
+    visit(index(0, 0));
 }
 
 void TreeModel::write(QJsonObject &json) const
