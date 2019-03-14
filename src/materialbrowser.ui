@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Material Browser</string>
+   <string>Content Browser</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QMainWindow {
@@ -229,7 +229,7 @@ padding-left: 10px;
 </string>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;MATERIAL BROWSER&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CONTENT BROWSER&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -300,7 +300,10 @@ QLineEdit {
   </widget>
   <action name="actionNew_Material">
    <property name="text">
-    <string>New Material</string>
+    <string>New material</string>
+   </property>
+   <property name="toolTip">
+    <string>New material</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -308,7 +311,10 @@ QLineEdit {
   </action>
   <action name="actionClose_Manager">
    <property name="text">
-    <string>Close Manager</string>
+    <string>Close manager</string>
+   </property>
+   <property name="toolTip">
+    <string>Close manager</string>
    </property>
    <property name="shortcut">
     <string>Shift+W</string>

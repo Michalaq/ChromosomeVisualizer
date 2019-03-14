@@ -51,8 +51,6 @@ Session::Session(MainWindow* w) :
     header->setSectionResizeMode(5, QHeaderView::Fixed);
 
     listView = MaterialBrowser::getInstance()->makeListView();
-
-    listView->setFocusPolicy(Qt::NoFocus);
     listView->setItemDelegate(md);
 
     connect(projectSettings, &ProjectSettings::fileNameChanged, [this](const QString& fileName) {
@@ -65,7 +63,7 @@ Session::Session(MainWindow* w) :
     connect(plot, &QAbstractSlider::sliderPressed, mediaPanel, &MediaPanel::pause);
     connect(plot, &QAbstractSlider::sliderReleased, mediaPanel, &MediaPanel::resume);
 
-    viewportUniformBuffer.resize(1);
+    viewportUniformBuffer.append({});
     viewport = new Viewport(this);
 
     editorCamera->action->setText("Default camera");
@@ -107,6 +105,9 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject objects = project["Objects"].toObject();
     simulation->getModel()->read(objects);
 
+    const QJsonArray series = project["Series"].toArray();
+    simulation->read(series);
+
     const QJsonObject projectSettings_ = project["Project Settings"].toObject();
     projectSettings->read(projectSettings_);
 
@@ -116,8 +117,14 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject camera_ = project["Editor Camera"].toObject();
     editorCamera->read(camera_);
 
+    const QJsonArray origin_ = project["Origin"].toArray();
+    origin = QVector3D(origin_[0].toDouble(), origin_[1].toDouble(), origin_[2].toDouble());
+
     const QJsonObject renderSettings_ = project["Render settings"].toObject();
     renderSettings->read(renderSettings_);
+
+    previewRange = project["Preview range"].toBool();
+    playMode = static_cast<PlayMode>(project["Play mode"].toInt());
 
     plot->updateSimulation();
 }
@@ -138,6 +145,9 @@ QJsonDocument Session::toJson() const
     editorCamera->write(camera_);
     project["Editor Camera"] = camera_;
 
+    QJsonArray origin_({origin[0], origin[1], origin[2]});
+    project["Origin"] = origin_;
+
     QJsonArray materials_;
     qobject_cast<MaterialListModel*>(listView->model())->write(materials_);
     project["Materials"] = materials_;
@@ -146,9 +156,16 @@ QJsonDocument Session::toJson() const
     simulation->getModel()->write(objects_);
     project["Objects"] = objects_;
 
+    QJsonArray series_;
+    simulation->write(series_);
+    project["Series"] = series_;
+
     QJsonObject renderSettings_;
     renderSettings->write(renderSettings_);
     project["Render settings"] = renderSettings_;
+
+    project["Preview range"] = previewRange;
+    project["Play mode"] = playMode;
 
     return QJsonDocument(project);
 }
@@ -260,17 +277,32 @@ void Session::setLastFrame(int time)
         setPreviewMaxTime(lastFrame);
 }
 
-void Session::setOrigin(int offset, bool selected)
+void Session::setOrigin(const QModelIndex& index, bool selected)
 {
     QVector3D origin;
     int count = 0;
 
-    for (const auto& atom : atomBuffer.mid(offset))
-        if (!selected || atom.flags.testFlag(Selected))
-        {
-            origin += atom.position;
-            count++;
-        }
+    const auto model = simulation->getModel();
+
+    std::function<void(const QModelIndex&)> dfs = [&](const QModelIndex& root) {
+        for (int r = 0; r < model->rowCount(root); r++)
+            dfs(model->index(r, 0, root));
+
+        auto item = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+
+        if (!item)
+            return;
+
+        const auto& atom = atomBuffer[item->getId()];
+
+        if (selected && !atom.flags.testFlag(Selected))
+            return;
+
+        origin += atom.position;
+        count++;
+    };
+
+    dfs(index);
 
     if (count > 0)
         this->origin = origin / count;

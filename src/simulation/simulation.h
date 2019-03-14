@@ -28,6 +28,9 @@ public:
     void removeOne(SimulationLayer* layer);
     void removeOne(SimulationSeries* layer);
 
+    void read(const QJsonArray& json);
+    void write(QJsonArray& json) const;
+
     void writePOVFrames(QTextStream& stream, int fbeg, int fend);
 
     int lastEntry() const;

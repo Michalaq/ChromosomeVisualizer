@@ -206,6 +206,12 @@
            </item>
            <item>
             <layout class="QFormLayout" name="formLayout_2">
+             <property name="labelAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+             </property>
              <item row="0" column="0">
               <widget class="Label" name="label">
                <property name="text">
@@ -240,6 +246,12 @@
            <item>
             <widget class="QWidget" name="widget_4" native="true">
              <layout class="QFormLayout" name="formLayout">
+              <property name="labelAlignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="formAlignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -490,7 +502,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>376</width>
+            <width>362</width>
             <height>97</height>
            </rect>
           </property>

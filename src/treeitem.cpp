@@ -42,20 +42,40 @@ int TreeItem::columnCount() const
     return m_itemData.count();
 }
 
-QVariant TreeItem::data(int column) const
+QVariant TreeItem::data(int column, int role) const
 {
-    return m_itemData.value(column);
+    if (column >= columnCount())
+        return QVariant();
+
+    switch (role)
+    {
+    case Qt::DisplayRole:
+        return m_itemData.value(column);
+    case Qt::UserRole:
+        return selected_children_count;
+    case Qt::UserRole + 1:
+        return selected_tag_index;
+    default:
+        return QVariant();
+    }
 }
 
-bool TreeItem::setData(int column, const QVariant& data)
+bool TreeItem::setData(int column, const QVariant &value, int role)
 {
-    if (column < columnCount())
-    {
-        m_itemData[column] = data;
-        return true;
-    }
-    else
+    if (column >= columnCount())
         return false;
+
+    switch (role)
+    {
+    case Qt::EditRole:
+        m_itemData.replace(column, value);
+        break;
+    case Qt::UserRole + 1:
+        selected_tag_index = value.toInt();
+        break;
+    }
+
+    return true;
 }
 
 TreeItem *TreeItem::parentItem()
@@ -71,24 +91,14 @@ int TreeItem::row() const
     return 0;
 }
 
-std::tuple<int, int, int> operator+(const std::tuple<int, int, int>& lhs, const std::tuple<int, int, int>& rhs)
-{
-    return std::make_tuple(std::get<0>(lhs) + std::get<0>(rhs), std::get<1>(lhs) + std::get<1>(rhs), std::get<2>(lhs) + std::get<2>(rhs));
-}
-
 void TreeItem::removeRows(int row, int count)
 {
-    std::tuple<int, int, int> offset;
-
     for (int i = 0; i < count; i++)
     {
         auto item = m_childItems.takeAt(row);
-        offset = offset + item->remove();
+        item->remove();
         delete item;
     }
-
-    for (int i = 0; i < row; i++)
-        m_childItems[i]->shift(offset);
 }
 
 QVector3D TreeItem::getPosition() const
@@ -248,33 +258,52 @@ float TreeItem::getSphereRadius() const
     return sphereRadius;
 }
 
-std::tuple<int, int, int> TreeItem::remove()
+QList<Material*> TreeItem::selectedTags() const
 {
-    return {};
+    if (selected_tag_index == -1)
+        return {};
+    else
+        return {m_itemData[5].toList()[selected_tag_index].value<Material*>()};
 }
 
-void TreeItem::shift(std::tuple<int, int, int> offset)
+void TreeItem::remove()
 {
-    for (auto c : m_childItems)
-        c->shift(offset);
+
 }
 
 #include "session.h"
 
-LayerItem::LayerItem(const QString &name, SimulationLayer* l, Session* s, TreeItem *parentItem) :
+LayerItem::LayerItem(const QString &name, SimulationLayer* l, TreeItem *parentItem) :
     TreeItem({name, NodeType::LayerObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    layer(l),
-    session(s)
+    layer(l)
 {
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/create/layer"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/create/layer"), QIcon::Selected);
-    decoration = icon;
+
 }
 
 LayerItem::~LayerItem()
 {
 
+}
+
+QVariant LayerItem::icon;
+
+QVariant LayerItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/layer"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/layer"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
 }
 
 void LayerItem::write(QJsonObject &json) const
@@ -293,19 +322,10 @@ void LayerItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
-std::tuple<int, int, int> LayerItem::remove()
+void LayerItem::remove()
 {
-    auto offset = layer->remove();
+    layer->remove();
     delete layer;
-
-    return TreeItem::remove() + offset;
-}
-
-void LayerItem::shift(std::tuple<int, int, int> offset)
-{
-    layer->shift(offset);
-
-    TreeItem::shift(offset);
 }
 
 #include "camera.h"
@@ -315,11 +335,6 @@ CameraItem::CameraItem(const QString &name, Camera *cam, Session *s, TreeItem *p
     camera(cam),
     session(s)
 {
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Selected);
-    decoration = icon;
-
     camera->action->setText(name);
 }
 
@@ -328,12 +343,33 @@ CameraItem::~CameraItem()
 
 }
 
-bool CameraItem::setData(int column, const QVariant& data)
+QVariant CameraItem::icon;
+
+QVariant CameraItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/film camera"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
+bool CameraItem::setData(int column, const QVariant &value, int role)
 {
     if (column == 0)
-        camera->action->setText(data.toString());
+        camera->action->setText(value.toString());
 
-    return TreeItem::setData(column, data);
+    return TreeItem::setData(column, value, role);
 }
 
 QVector3D CameraItem::getPosition() const
@@ -381,37 +417,54 @@ Camera* CameraItem::getCamera() const
     return camera;
 }
 
-std::tuple<int, int, int> CameraItem::remove()
+void CameraItem::remove()
 {
-    session->userCameras.last()->id = camera->id;
-    session->userCameras[camera->id - 1] = session->userCameras.last();
-    session->userCameras.removeLast();
-
-    session->cameraBuffer[camera->id] = session->cameraBuffer.last();
-    session->cameraBuffer.removeLast();
+    session->userCameras.removeOne(camera);
+    session->cameraBuffer.remove(camera->id, 1);
 
     if (data(6).toBool())
         session->simulation->getModel()->setCurrentCamera(QModelIndex());
 
     camera->deleteLater();
-
-    return TreeItem::remove();
 }
 
-AtomItem::AtomItem(uint serial, const QByteArray &name, int offset, Session *s, TreeItem *parentItem) :
-    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, offset, Visibility::Default, Visibility::Default, QVariant()}, parentItem),
-    id(offset),
+AtomItem::AtomItem(uint serial, const QByteArray &name, Session *s, TreeItem *parentItem) :
+    TreeItem({name + "." + QString::number(serial), NodeType::AtomObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    id(s->atomBuffer.append({})),
     session(s)
 {
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/create/atom"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/create/atom"), QIcon::Selected);
-    decoration = icon;
+
 }
 
 AtomItem::~AtomItem()
 {
 
+}
+
+QVariant AtomItem::icon;
+
+QVariant AtomItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/atom"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/atom"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
+int AtomItem::getId() const
+{
+    return id;
 }
 
 QVector3D AtomItem::getPosition() const
@@ -493,20 +546,10 @@ void AtomItem::write(QJsonObject &json) const
         json["Object"] = object;
 }
 
-void AtomItem::shift(std::tuple<int, int, int> offset)
-{
-    setData(2, id -= std::get<0>(offset));
-
-    TreeItem::shift(offset);
-}
-
 ChainItem::ChainItem(const QByteArray &chainID, Session *s, TreeItem *parentItem) :
     TreeItem({chainID, NodeType::ChainObject, s->chainCount++, Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/create/chain"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/create/chain"), QIcon::Selected);
-    decoration = icon;
+
 }
 
 ChainItem::~ChainItem()
@@ -514,14 +557,30 @@ ChainItem::~ChainItem()
 
 }
 
+QVariant ChainItem::icon;
+
+QVariant ChainItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/chain"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/chain"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
 ResidueItem::ResidueItem(const QByteArray &resName, Session* s, TreeItem *parentItem) :
     TreeItem({resName, NodeType::ResidueObject, s->residueCount.contains(resName) ? s->residueCount[resName] : s->residueCount.count(), Visibility::Default, Visibility::Default, QVariant()}, parentItem)
 {
-    QIcon icon;
-    icon.addPixmap(QPixmap(":/create/residue"), QIcon::Normal);
-    icon.addPixmap(QPixmap(":/create/residue"), QIcon::Selected);
-    decoration = icon;
-
     if (!s->residueCount.contains(resName))
         s->residueCount.insert(resName, s->residueCount.count());
 }
@@ -529,4 +588,25 @@ ResidueItem::ResidueItem(const QByteArray &resName, Session* s, TreeItem *parent
 ResidueItem::~ResidueItem()
 {
 
+}
+
+QVariant ResidueItem::icon;
+
+QVariant ResidueItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/residue"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/residue"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
 }

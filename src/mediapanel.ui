@@ -30,6 +30,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="Timeline" name="horizontalSlider">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
        <property name="maximum">
         <number>0</number>
        </property>

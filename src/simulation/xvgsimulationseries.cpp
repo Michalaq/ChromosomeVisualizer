@@ -1,5 +1,6 @@
 #include "xvgsimulationseries.h"
 #include "messagehandler.h"
+#include "session.h"
 
 XVGSimulationSeries::XVGSimulationSeries(const QString& name, Session* s, int f, int l, int t, bool b) :
     SimulationSeries(name, s, f, l, t)
@@ -7,7 +8,15 @@ XVGSimulationSeries::XVGSimulationSeries(const QString& name, Session* s, int f,
     buffer.resize(1024);
 
     if (cacheHeaders(b ? 0 : INT_MAX) < 0)
-        qcCritical("No data was found.", file->fileName(), -1, -1);
+        throw MessageLog({QtCriticalMsg, "No data was found.", file->fileName(), nullptr, -1, -1});
+
+    if (!b)
+    {
+        int maxTime = s->previewRange ? s->projectSettings->getPreviewMaxTime() : s->projectSettings->getMaximumTime();
+
+        if (maxTime == s->projectSettings->getPreviewMaxTime() && maxTime < j)
+            session->setLastFrame(j);
+    }
 }
 
 XVGSimulationSeries::~XVGSimulationSeries()
@@ -18,7 +27,7 @@ XVGSimulationSeries::~XVGSimulationSeries()
 #include <QRegularExpression>
 #include "session.h"
 
-void XVGSimulationSeries::skipHeader()
+bool XVGSimulationSeries::skipHeader()
 {
     static const QRegularExpression re("^@\\s*s(\\d+)\\b.*?\\blegend\\s*\"(.*?)\"");
 
@@ -27,7 +36,7 @@ void XVGSimulationSeries::skipHeader()
         if (!file->readLine(buffer.data(), buffer.size()))
         {
             atEnd = true;
-            return;
+            return false;
         }
 
         line++;
@@ -54,8 +63,10 @@ void XVGSimulationSeries::skipHeader()
         if (buffer[0] == '&')
             continue;
 
+        i++;
+
         atEnd = false;
-        return;
+        return true;
     }
 }
 
@@ -64,59 +75,57 @@ int XVGSimulationSeries::cacheHeaders(int time)
     static const QRegularExpression re("\\S+");
 
     if (atEnd)
-        return j - 1;
+        return j;
 
-    while (i <= first)
-    {
-        skipHeader();
-        i++;
+    while (i < first)
+        if (!skipHeader())
+            return j;
 
-        if (atEnd)
-            return j - 1;
-    }
-
-    while (j <= time)
-    {
-        auto g = re.globalMatch(buffer);
-        g.next();
-
-        for (int k = 0; g.hasNext(); k++)
+    while (j < time)
+        if (skipHeader())
         {
-            auto match = g.next();
+            j++;
 
-            if (legend.contains(k))
+            auto g = re.globalMatch(buffer);
+            g.next();
+
+            for (int k = 0; g.hasNext(); k++)
             {
-                bool ok;
-                qreal value = match.captured().toDouble(&ok);
+                auto match = g.next();
 
-                if (ok)
-                    legend[k]->append(j, value);
+                if (legend.contains(k))
+                {
+                    bool ok;
+                    qreal value = match.captured().toDouble(&ok);
+
+                    if (ok)
+                        legend[k]->append(j, value);
+                    else
+                        qcWarning("Real value is malformed.", file->fileName(), line, match.capturedStart() + 1);
+                }
                 else
-                    qcWarning("Real value is malformed.", file->fileName(), line, match.capturedStart() + 1);
+                    qcWarning("Series is undefined.", file->fileName(), line, match.capturedStart() + 1);
             }
-            else
-                qcWarning("Series is undefined.", file->fileName(), line, match.capturedStart() + 1);
+
+            for (int k = 1; k < stride; k++)
+            {
+                if (!skipHeader())
+                    return j;
+
+                if (i > last)
+                {
+                    atEnd = true;
+                    return j;
+                }
+            }
         }
+        else
+            return j;
 
-        j++;
-
-        for (int k = 0; k < stride; k++)
-        {
-            skipHeader();
-            i++;
-
-            if (i > last)
-                atEnd = true;
-
-            if (atEnd)
-                return j - 1;
-        }
-    }
-
-    return j - 1;
+    return j;
 }
 
 int XVGSimulationSeries::lastEntry() const
 {
-    return j - 1;
+    return j;
 }

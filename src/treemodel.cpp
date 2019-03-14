@@ -23,24 +23,7 @@ int TreeModel::columnCount(const QModelIndex &) const
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
-
-    TreeItem *item = reinterpret_cast<TreeItem*>(index.internalPointer());
-
-    switch (role)
-    {
-    case Qt::DisplayRole:
-        return item->data(index.column());
-    case Qt::DecorationRole:
-        return item->decoration;
-    case Qt::UserRole:
-        return item->selected_children_count;
-    case Qt::UserRole + 1:
-        return item->selected_tag_index;
-    }
-
-    return QVariant();
+    return index.isValid() ? reinterpret_cast<TreeItem*>(index.internalPointer())->data(index.column(), role) : QVariant();
 }
 
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -48,27 +31,12 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     if (!index.isValid())
         return false;
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    auto item = reinterpret_cast<TreeItem*>(index.internalPointer());
 
-    bool ans;
+    bool ans = item->setData(index.column(), value, role);
 
-    switch (role)
-    {
-    case Qt::DecorationRole:
-        item->decoration = value;
-        ans = true;
-        break;
-    case Qt::UserRole + 1:
-        item->selected_tag_index = value.toInt();
-        if (item->selected_tag_index == -1)
-            emit tagSelected({});
-        else
-            emit tagSelected({index.sibling(index.row(), 5).data().toList().at(item->selected_tag_index).value<Material*>()});
-        ans = true;
-        break;
-    default:
-        ans = item->setData(index.column(), value);
-    }
+    if (role == Qt::UserRole + 1)
+        emit tagSelected(item->selectedTags());
 
     if (ans)
         emit dataChanged(index, index, {role});
@@ -134,87 +102,77 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return (parent.isValid() ? static_cast<TreeItem*>(parent.internalPointer()) : header)->childCount();
 }
 
-void TreeModel::dumpModel1(const QModelIndex& root, QVector<QPersistentModelIndex>& id)
-{
-    // update index buffer
-    if (root.sibling(root.row(), 1).data().toInt() == AtomObject)
-        id[root.sibling(root.row(), 2).data().toUInt()] = root;
-
-    for (int r = 0; r < rowCount(root); r++)
-        dumpModel1(index(r, 0, root), id);
-}
-
-void TreeModel::colorByResidue(const QModelIndex& root)
-{
-    dumpModel2(root, Material::getDefault());
-}
-
 #include "session.h"
 #include "preferences.h"
 
-void TreeModel::dumpModel2(const QModelIndex& root, Material* m)
+void TreeModel::colorByResidue(const QModelIndex& root)
 {
-    // update current tags
-    if (sibling(root.row(), 1, root).data().toInt() == ResidueObject)
+    std::function<void(const QModelIndex&, Material*)> visit = [this, &visit](const QModelIndex& root, Material* m)
     {
-        auto resName = sibling(root.row(), 2, root).data().toInt();
-        auto mat = Preferences::getInstance()->materialAt(resName);
-
-        m = qobject_cast<Material*>(mat.value<QObject*>());
-        m->assign(sibling(root.row(), 5, root));
-
-        if (!materials.contains(m))
+        // update current tags
+        if (sibling(root.row(), 1, root).data().toInt() == ResidueObject)
         {
-            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
-            materials.insert(m);
+            auto resName = sibling(root.row(), 2, root).data().toInt();
+            auto mat = Preferences::getInstance()->materialAt(resName);
+
+            m = qobject_cast<Material*>(mat.value<QObject*>());
+            m->assign(sibling(root.row(), 5, root));
+
+            if (!materials.contains(m))
+            {
+                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+                materials.insert(m);
+            }
+
+            setData(sibling(root.row(), 5, root), QVariantList({mat}));
         }
+        else
+            setData(sibling(root.row(), 5, root), QVariant());
 
-        setData(sibling(root.row(), 5, root), QVariantList({mat}));
-    }
-    else
-        setData(sibling(root.row(), 5, root), QVariant());
+        // update current material
+        if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
+            reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
 
-    // update current material
-    if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+        for (int r = 0; r < rowCount(root); r++)
+            visit(index(r, 0, root), m);
+    };
 
-    for (int r = 0; r < rowCount(root); r++)
-        dumpModel2(index(r, 0, root), m);
+    visit(root, Material::getDefault());
 }
 
 void TreeModel::colorByChain(const QModelIndex& root)
 {
-    dumpModel3(root, Material::getDefault());
-}
-
-void TreeModel::dumpModel3(const QModelIndex& root, Material* m)
-{
-    // update current tags
-    if (sibling(root.row(), 1, root).data().toInt() == ChainObject)
+    std::function<void(const QModelIndex&, Material*)> visit = [this, &visit](const QModelIndex& root, Material* m)
     {
-        int chainID = sibling(root.row(), 2, root).data().toInt();
-        auto mat = Preferences::getInstance()->materialAt(chainID);
-
-        m = qobject_cast<Material*>(mat.value<QObject*>());
-        m->assign(sibling(root.row(), 5, root));
-
-        if (!materials.contains(m))
+        // update current tags
+        if (sibling(root.row(), 1, root).data().toInt() == ChainObject)
         {
-            qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
-            materials.insert(m);
+            int chainID = sibling(root.row(), 2, root).data().toInt();
+            auto mat = Preferences::getInstance()->materialAt(chainID);
+
+            m = qobject_cast<Material*>(mat.value<QObject*>());
+            m->assign(sibling(root.row(), 5, root));
+
+            if (!materials.contains(m))
+            {
+                qobject_cast<MaterialListModel*>(session->listView->model())->prepend(m);
+                materials.insert(m);
+            }
+
+            setData(sibling(root.row(), 5, root), QVariantList({mat}));
         }
+        else
+            setData(sibling(root.row(), 5, root), QVariant());
 
-        setData(sibling(root.row(), 5, root), QVariantList({mat}));
-    }
-    else
-        setData(sibling(root.row(), 5, root), QVariant());
+        // update current material
+        if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
+            reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
 
-    // update current material
-    if (sibling(root.row(), 1, root).data().toInt() == AtomObject)
-        reinterpret_cast<AtomItem*>(root.internalPointer())->setMaterial(m);
+        for (int r = 0; r < rowCount(root); r++)
+            visit(index(r, 0, root), m);
+    };
 
-    for (int r = 0; r < rowCount(root); r++)
-        dumpModel3(index(r, 0, root), m);
+    visit(root, Material::getDefault());
 }
 
 bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -416,6 +374,7 @@ void TreeModel::setName(const QModelIndexList &indices, const QString &name)
 
 #include <QJsonObject>
 #include "simulation/simulationlayer.h"
+#include "messagehandler.h"
 
 void TreeModel::read(const QJsonObject &json)
 {
@@ -426,13 +385,32 @@ void TreeModel::read(const QJsonObject &json)
         const QJsonObject object = child.value().toObject()["Object"].toObject();
 
         if (object["class"] == "Layer")
-            session->simulation->prepend(SimulationLayer::read(object, session));
+            try
+            {
+                session->simulation->prepend(SimulationLayer::read(object, session));
+            }
+            catch (const MessageLog& log)
+            {
+                MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
+            }
 
         if (object["class"] == "Camera")
             addCamera(new Camera(session));
     }
 
     header->read(json, reinterpret_cast<MaterialListModel*>(session->listView->model()));
+
+    // this could be moved to TreeItem::read if QStandardItem/QStandardItemModel were used
+    std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root)
+    {
+        for (auto mat : root.sibling(root.row(), 5).data().toList())
+            mat.value<Material*>()->assign(root);
+
+        for (int r = 0; r < rowCount(root); r++)
+            visit(index(r, 0, root));
+    };
+
+    visit(index(0, 0));
 }
 
 void TreeModel::write(QJsonObject &json) const
@@ -447,5 +425,17 @@ void TreeModel::prepend(TreeItem* item)
     endInsertRows();
 
     session->indices.resize(session->atomBuffer.size());
-    dumpModel1(index(0, 0), session->indices);
+
+    std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root)
+    {
+        // update index buffer
+        auto item = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+
+        if (item) session->indices[item->getId()] = root;
+
+        for (int r = 0; r < rowCount(root); r++)
+            visit(index(r, 0, root));
+    };
+
+    visit(index(0, 0));
 }
