@@ -123,6 +123,9 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject renderSettings_ = project["Render settings"].toObject();
     renderSettings->read(renderSettings_);
 
+    previewRange = project["Preview range"].toBool();
+    playMode = static_cast<PlayMode>(project["Play mode"].toInt());
+
     plot->updateSimulation();
 }
 
@@ -160,6 +163,9 @@ QJsonDocument Session::toJson() const
     QJsonObject renderSettings_;
     renderSettings->write(renderSettings_);
     project["Render settings"] = renderSettings_;
+
+    project["Preview range"] = previewRange;
+    project["Play mode"] = playMode;
 
     return QJsonDocument(project);
 }
