@@ -1,9 +1,8 @@
-[QChromosome 4D Studio](https://sites.google.com/view/qchromosome4dstudio)
+[QChromosome 4D Studio](http://regulomics.mimuw.edu.pl/wp/qcv/)
 ==========================================================================
 
-[![Maintenance](https://img.shields.io/maintenance/yes/2019.svg)](README.md)
 [![License](https://img.shields.io/github/license/Michalaq/ChromosomeVisualizer.svg)](README.md)
-[![Donate](https://img.shields.io/badge/donate-PayPal.Me-informational.svg)](https://www.paypal.me/QChromosome4DStudio)
+[![Maintenance](https://img.shields.io/maintenance/yes/2019.svg)](README.md)
 
 - [License](#license)
 - [Bug Reports](#bug-reports)
@@ -32,10 +31,10 @@ Application should compile on any POSIX-compilant system with the required tools
 Documentation
 -------------
 
-The official location for the online documentation is https://sites.google.com/view/qchromosome4dstudio.
+The official project website is located at http://regulomics.mimuw.edu.pl/wp/qcv/. There you will find plenty of additional materials (reference manual, quick tutorial) and supplementary files.
 
 Credits
 -------
 
-Application is based on prototype written by Maciej Baranowski, Piotr Dulikowski, Bartosz Michalak and Bartłomiej Zawalski under supervision of Bartosz Wilczyński and Irina Tuszyńska from Regulomics. Present release version was developed and maintained by Bartłomiej Zawalski.
+Application is based on proof of concept written by Maciej Baranowski, Piotr Dulikowski, Bartosz Michalak and Bartłomiej Zawalski under supervision of Bartosz Wilczyński, Irina Tuszyńska and Paweł Bednarz from Regulomics. Present release version was developed and maintained by **Bartłomiej Zawalski** under supervision of **Bartosz Wilczyński** and **Irina Tuszyńska**.
 

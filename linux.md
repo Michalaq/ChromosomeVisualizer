@@ -1,4 +1,4 @@
-# Building [QChromosome 4D Studio](https://sites.google.com/view/qchromosome4dstudio) on Linux
+# Building [QChromosome 4D Studio](http://regulomics.mimuw.edu.pl/wp/qcv/) on Linux
 
 This distribution contains complete source code for QChromosome 4D Studio.
 
