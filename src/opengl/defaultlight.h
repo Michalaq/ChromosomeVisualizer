@@ -2,9 +2,9 @@
 #define DEFAULTLIGHT_H
 
 #include <QtOpenGL>
-#include <QOpenGLFunctions_4_1_Core>
+#include <QOpenGLFunctions_4_0_Core>
 
-class DefaultLight : public QOpenGLWidget, protected QOpenGLFunctions_4_1_Core
+class DefaultLight : public QOpenGLWidget, protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 public:
