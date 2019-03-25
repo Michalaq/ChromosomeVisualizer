@@ -206,6 +206,14 @@ void MovieMaker::captureScene(Session* session)
                 QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension()))));
         });
 
+        connect(&p, &QProcess::errorOccurred, [this](QProcess::ProcessError) {
+            qcCritical(p.errorString(), "", -1, -1);
+
+            emit finished();
+
+            p.disconnect();
+        });
+
         p.start("povray", argv);
     }
 #endif
