@@ -109,7 +109,6 @@ void MovieMaker::captureScene(Session* session)
                 qcCritical("Files cannot be written - please check output paths!", pov.filePath(), -1, -1);
     }
 
-#ifdef Q_OS_UNIX
     // tracing
     if (session->renderSettings->render())
     {
@@ -121,7 +120,8 @@ void MovieMaker::captureScene(Session* session)
              << "+V"
              << "-GA"
              << "Fatal_File=true"
-             << "+Iscene";
+             << "povray.ini"
+             << "scene.pov";
 
         buffer.clear();
 
@@ -214,9 +214,12 @@ void MovieMaker::captureScene(Session* session)
             p.disconnect();
         });
 
+#if defined(Q_OS_WIN)
+        p.start("pvengine", argv);
+#elif defined(Q_OS_UNIX)
         p.start("povray", argv);
-    }
 #endif
+    }
 }
 
 bool MovieMaker::stopRenderer()
