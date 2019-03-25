@@ -4,7 +4,7 @@ This distribution contains complete source code for QChromosome 4D Studio.
 
 ## Dependencies
 
-QChromosome 4D Studio is developed with cross-platform software framework **Qt 5.9**. Before installation verify that your graphic driver supports **OpenGL 4.1**.
+QChromosome 4D Studio is developed with cross-platform software framework **Qt 5.9 LTS**. Before installation verify that your graphic driver supports **OpenGL 4.0**.
 
 By default aplication will attempt to build using system libraries. On *macOS 10.14 Mojave* we recommend you have the following packages pre-installed:
 
