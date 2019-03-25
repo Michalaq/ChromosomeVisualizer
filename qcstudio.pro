@@ -189,5 +189,7 @@ DISTFILES += \
 
 LIBS += -lz
 
-target.path = /usr/local/bin/
+unix: target.path = "/usr/local/bin/"
+win32: target.path = "C:/Program Files/Regulomics/QChromosome 4D Studio/"
+
 INSTALLS += target
