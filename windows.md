@@ -41,3 +41,13 @@ Launch the *Command Prompt* as Administrator. Press *Windows + X* or right-click
 ```shell
 mingw32-make install
 ```
+
+## :warning: Running
+
+In order to use **POV-Ray** and **FFmpeg**, the `PATH` environment variable needs to be extended. For **POV-Ray** this is done by adding
+
+```shell
+C:\Program Files\POV-Ray\v3.7\bin
+```
+
+to the `PATH` variable through the *Control Panel | System | Advanced | Environment variables* menu.

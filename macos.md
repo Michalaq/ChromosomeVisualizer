@@ -50,3 +50,7 @@ From inside a build directory run
 su
 make install
 ```
+
+## :warning: Running
+
+In order to use **POV-Ray** or **FFmpeg**, the `PATH` environment variable may need to be extended.
