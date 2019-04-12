@@ -1,10 +1,10 @@
-# Building [QChromosome 4D Studio](https://sites.google.com/view/qchromosome4dstudio) on Mac OS
+# Building [QChromosome 4D Studio](http://regulomics.mimuw.edu.pl/wp/qcv/) on Mac OS
 
 This distribution contains complete source code for QChromosome 4D Studio.
 
 ## Dependencies
 
-QChromosome 4D Studio is developed with cross-platform software framework **Qt 5.9**. Before installation verify that your graphic driver supports **OpenGL 4.1**.
+QChromosome 4D Studio is developed with cross-platform software framework **Qt 5.9 LTS**. Before installation verify that your graphic driver supports **OpenGL 4.0**.
 
 By default aplication will attempt to build using system libraries. On *macOS 10.14 Mojave* we recommend you have the following packages pre-installed:
 
@@ -35,15 +35,22 @@ ffmpeg
 
 ## Building the code
 
+Create a build directory and from inside it run
+
 ```shell
-qmake qcstudio.pro
+qmake ..
 make
 ```
 
 ## Installing
+
+From inside a build directory run
 
 ```shell
 su
 make install
 ```
 
+## :warning: Running
+
+In order to use **POV-Ray** or **FFmpeg**, the `PATH` environment variable may need to be extended.

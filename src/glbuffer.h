@@ -4,7 +4,7 @@
 
 #include <QVector>
 #include <QOpenGLBuffer>
-#include <QOpenGLFunctions_4_1_Core>
+#include <QOpenGLFunctions_4_0_Core>
 
 template<typename T>
 class OpenGLArraysBuffer
@@ -130,7 +130,7 @@ public:
         return buffer[i];
     }
 
-    inline void glDrawArrays(QOpenGLFunctions_4_1_Core* object) const
+    inline void glDrawArrays(QOpenGLFunctions_4_0_Core* object) const
     {
         object->glMultiDrawArrays(GL_POINTS, firsts.constData(), counts.constData(), firsts.size());
     }
@@ -219,7 +219,7 @@ public:
             buffer.resize(reinterpret_cast<GLintptr>(firsts.last()) / sizeof(T) + counts.last());
     }
 
-    inline void glDrawElements(QOpenGLFunctions_4_1_Core* object) const
+    inline void glDrawElements(QOpenGLFunctions_4_0_Core* object) const
     {
         object->glMultiDrawElements(GL_LINE_STRIP, counts.data(), GL_UNSIGNED_INT, firsts.data(), counts.size());
     }
