@@ -24,6 +24,11 @@ XVGSimulationSeries::~XVGSimulationSeries()
 
 }
 
+void XVGSimulationSeries::readEntry(int time, char*, std::size_t, std::size_t)
+{
+    cacheHeaders(time);
+}
+
 #include <QRegularExpression>
 #include "session.h"
 

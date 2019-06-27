@@ -22,7 +22,7 @@ void Simulation::readEntry(int time, char* data, std::size_t stride, std::size_t
         i->readEntry(time, data, stride, pointer);
 
     for (auto i : series)
-        i->cacheHeaders(time);
+        i->readEntry(time, data, stride, pointer);
 }
 
 int Simulation::cacheHeaders(int time)
