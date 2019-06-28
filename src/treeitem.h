@@ -236,7 +236,7 @@ public:
 
     QVariant data(int column, int role = Qt::DisplayRole) const;
 
-    //void write(QJsonObject& json) const;
+    void write(QJsonObject& json) const;
 
 protected:
     //void remove();

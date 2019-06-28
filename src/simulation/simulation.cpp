@@ -11,17 +11,13 @@ Simulation::Simulation(Session* s) :
 
 Simulation::~Simulation()
 {
-    qDeleteAll(layers);
-    qDeleteAll(series);
+    qDeleteAll(items);
     delete model;
 }
 
 void Simulation::readEntry(int time, char* data, std::size_t stride, std::size_t pointer)
 {
-    for (auto i : layers)
-        i->readEntry(time, data, stride, pointer);
-
-    for (auto i : series)
+    for (auto i : items)
         i->readEntry(time, data, stride, pointer);
 }
 
@@ -29,10 +25,7 @@ int Simulation::cacheHeaders(int time)
 {
     int ans = -1;
 
-    for (auto i : layers)
-        ans = qMax(ans, i->cacheHeaders(time));
-
-    for (auto i : series)
+    for (auto i : items)
         ans = qMax(ans, i->cacheHeaders(time));
 
     return ans;
@@ -43,52 +36,15 @@ TreeModel* Simulation::getModel() const
     return model;
 }
 
-void Simulation::prepend(SimulationLayer* value)
+void Simulation::prepend(SimulationItem* value)
 {
-    layers.prepend(value);
+    items.prepend(value);
     model->prepend(value->getModel());
 }
 
-void Simulation::prepend(SimulationSeries* value)
+void Simulation::removeOne(SimulationItem* layer)
 {
-    series.prepend(value);
-    model->prepend(value->getModel());
-}
-
-void Simulation::removeOne(SimulationLayer* layer)
-{
-    layers.removeOne(layer);
-}
-
-void Simulation::removeOne(SimulationSeries* value)
-{
-    series.removeOne(value);
-}
-
-#include "messagehandler.h"
-#include <QJsonArray>
-
-void Simulation::read(const QJsonArray& json)
-{
-    for (const auto& object : json)
-        try
-        {
-            series.append(SimulationSeries::read(object.toObject(), session));
-        }
-        catch (const MessageLog& log)
-        {
-            MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
-        }
-}
-
-void Simulation::write(QJsonArray& json) const
-{
-    for (auto s : series)
-    {
-        QJsonObject object;
-        s->write(object);
-        json.append(object);
-    }
+    items.removeOne(layer);
 }
 
 static QTextStream& operator<<(QTextStream& out, const QVector3D& vec)
@@ -162,10 +118,7 @@ int Simulation::lastEntry() const
 {
     int ans = 0;
 
-    for (auto i : layers)
-        ans = qMax(ans, i->lastEntry());
-
-    for (auto i : series)
+    for (auto i : items)
         ans = qMax(ans, i->lastEntry());
 
     return ans;

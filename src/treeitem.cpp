@@ -644,7 +644,7 @@ QVariant ChartItem::data(int column, int role) const
     }
 }
 
-/*void ChartItem::write(QJsonObject &json) const
+void ChartItem::write(QJsonObject &json) const
 {
     TreeItem::write(json);
 
@@ -653,14 +653,14 @@ QVariant ChartItem::data(int column, int role) const
     if (json.contains("Object"))
         object = json["Object"].toObject();
 
-    object["class"] = "Layer";
+    object["class"] = "Chart";
 
-    layer->write(object);
+    series->write(object);
 
     json["Object"] = object;
 }
 
-void ChartItem::remove()
+/*void ChartItem::remove()
 {
     layer->remove();
     delete layer;

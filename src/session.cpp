@@ -105,9 +105,6 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject objects = project["Objects"].toObject();
     simulation->getModel()->read(objects);
 
-    const QJsonArray series = project["Series"].toArray();
-    simulation->read(series);
-
     const QJsonObject projectSettings_ = project["Project Settings"].toObject();
     projectSettings->read(projectSettings_);
 
@@ -155,10 +152,6 @@ QJsonDocument Session::toJson() const
     QJsonObject objects_;
     simulation->getModel()->write(objects_);
     project["Objects"] = objects_;
-
-    QJsonArray series_;
-    simulation->write(series_);
-    project["Series"] = series_;
 
     QJsonObject renderSettings_;
     renderSettings->write(renderSettings_);

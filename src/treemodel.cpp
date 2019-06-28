@@ -394,6 +394,16 @@ void TreeModel::read(const QJsonObject &json)
                 MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
             }
 
+        if (object["class"] == "Chart")
+            try
+            {
+                session->simulation->prepend(SimulationSeries::read(object, session));
+            }
+            catch (const MessageLog& log)
+            {
+                MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
+            }
+
         if (object["class"] == "Camera")
             addCamera(new Camera(session));
     }
