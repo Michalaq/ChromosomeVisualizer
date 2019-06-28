@@ -387,17 +387,7 @@ void TreeModel::read(const QJsonObject &json)
         if (object["class"] == "Layer")
             try
             {
-                session->simulation->prepend(SimulationLayer::read(object, session));
-            }
-            catch (const MessageLog& log)
-            {
-                MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
-            }
-
-        if (object["class"] == "Chart")
-            try
-            {
-                session->simulation->prepend(SimulationSeries::read(object, session));
+                session->simulation->prepend(SimulationItem::read(object, session));
             }
             catch (const MessageLog& log)
             {

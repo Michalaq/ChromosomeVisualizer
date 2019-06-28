@@ -14,8 +14,6 @@ public:
     SimulationSeries(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1);
     virtual ~SimulationSeries();
 
-    static SimulationSeries* read(const QJsonObject& json, Session* session);
-
 protected:
     QVector<QtCharts::QLineSeries*> series;
 };

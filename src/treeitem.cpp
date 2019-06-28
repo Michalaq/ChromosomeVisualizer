@@ -653,7 +653,7 @@ void ChartItem::write(QJsonObject &json) const
     if (json.contains("Object"))
         object = json["Object"].toObject();
 
-    object["class"] = "Chart";
+    object["class"] = "Layer";
 
     series->write(object);
 

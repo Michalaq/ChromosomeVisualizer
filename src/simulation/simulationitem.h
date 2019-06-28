@@ -20,7 +20,7 @@ public:
 
     TreeItem* getModel() const;
 
-    //static SimulationItem* read(const QJsonObject& json, Session* session);
+    static SimulationItem* read(const QJsonObject& json, Session* session);
     void write(QJsonObject& json) const;
 
     virtual int lastEntry() const = 0;

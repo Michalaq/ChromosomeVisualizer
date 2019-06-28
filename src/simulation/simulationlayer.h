@@ -12,8 +12,6 @@ public:
     SimulationLayer(const QString& name, Session* s, int f = 0, int l = INT_MAX, int t = 1);
     virtual ~SimulationLayer();
 
-    static SimulationLayer* read(const QJsonObject& json, Session* session);
-
     virtual void remove() = 0;
 };
 
