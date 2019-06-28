@@ -104,6 +104,8 @@ public:
     int chainCount;
     QMap<QString, int> residueCount;
 
+    void writePOVFrames(QTextStream& stream, int fbeg, int fend);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;

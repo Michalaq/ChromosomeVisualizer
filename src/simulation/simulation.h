@@ -25,8 +25,6 @@ public:
     void prepend(SimulationItem* value);
     void removeOne(SimulationItem* layer);
 
-    void writePOVFrames(QTextStream& stream, int fbeg, int fend);
-
     int lastEntry() const;
 
 private:
