@@ -52,6 +52,7 @@ void Simulation::prepend(SimulationLayer* value)
 void Simulation::prepend(SimulationSeries* value)
 {
     series.prepend(value);
+    model->prepend(value->getModel());
 }
 
 void Simulation::removeOne(SimulationLayer* layer)

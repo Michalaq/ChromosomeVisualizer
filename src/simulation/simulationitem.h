@@ -6,6 +6,7 @@
 #include "iodevice.h"
 
 class Session;
+class TreeItem;
 
 class SimulationItem
 {
@@ -17,6 +18,8 @@ public:
 
     virtual int cacheHeaders(int time) = 0;
 
+    TreeItem* getModel() const;
+
     //static SimulationItem* read(const QJsonObject& json, Session* session);
     void write(QJsonObject& json) const;
 
@@ -27,6 +30,8 @@ protected:
     int first, last, stride;
 
     IODevice* file;
+
+    TreeItem* model;
 };
 
 #endif // SIMULATIONITEM_H

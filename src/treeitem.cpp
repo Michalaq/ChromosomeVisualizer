@@ -610,3 +610,58 @@ QVariant ResidueItem::data(int column, int role) const
         return TreeItem::data(column, role);
     }
 }
+
+ChartItem::ChartItem(const QString &name, SimulationSeries* s, TreeItem *parentItem) :
+    TreeItem({name, NodeType::ChartObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    series(s)
+{
+
+}
+
+ChartItem::~ChartItem()
+{
+
+}
+
+QVariant ChartItem::icon;
+
+QVariant ChartItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/database"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/database"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
+/*void ChartItem::write(QJsonObject &json) const
+{
+    TreeItem::write(json);
+
+    QJsonObject object;
+
+    if (json.contains("Object"))
+        object = json["Object"].toObject();
+
+    object["class"] = "Layer";
+
+    layer->write(object);
+
+    json["Object"] = object;
+}
+
+void ChartItem::remove()
+{
+    layer->remove();
+    delete layer;
+}*/

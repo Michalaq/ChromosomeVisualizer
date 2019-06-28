@@ -74,7 +74,8 @@ enum NodeType
     ChainObject,
     ResidueObject,
     AtomObject,
-    CameraObject
+    CameraObject,
+    ChartObject
 };
 
 enum Visibility
@@ -222,6 +223,27 @@ public:
     QVariant data(int column, int role = Qt::DisplayRole) const;
 
 private:
+    static QVariant icon;
+};
+
+#include "simulation/simulationseries.h"
+
+class ChartItem : public TreeItem
+{
+public:
+    explicit ChartItem(const QString& name, SimulationSeries* s, TreeItem *parentItem = 0);
+    ~ChartItem();
+
+    QVariant data(int column, int role = Qt::DisplayRole) const;
+
+    //void write(QJsonObject& json) const;
+
+protected:
+    //void remove();
+
+private:
+    SimulationSeries* series;
+
     static QVariant icon;
 };
 

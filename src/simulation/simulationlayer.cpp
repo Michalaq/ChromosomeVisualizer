@@ -3,7 +3,8 @@
 #include "treeitem.h"
 #include <QFileInfo>
 
-SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, int t) : SimulationItem(name, s, f, l, t)
+SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, int t) :
+    SimulationItem(name, s, f, l, t)
 {
     model = new LayerItem(QFileInfo(name).fileName(), this);
 }
@@ -11,11 +12,6 @@ SimulationLayer::SimulationLayer(const QString& name, Session* s, int f, int l, 
 SimulationLayer::~SimulationLayer()
 {
 
-}
-
-TreeItem* SimulationLayer::getModel() const
-{
-    return model;
 }
 
 #include "pdbsimulationlayer.h"

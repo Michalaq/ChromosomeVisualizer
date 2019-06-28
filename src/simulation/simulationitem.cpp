@@ -7,7 +7,8 @@ SimulationItem::SimulationItem(const QString& name, Session* s, int f, int l, in
     session(s),
     first(f),
     last(l),
-    stride(t)
+    stride(t),
+    model(nullptr)
 {
     QFileInfo info(name);
 
@@ -25,6 +26,11 @@ SimulationItem::SimulationItem(const QString& name, Session* s, int f, int l, in
 SimulationItem::~SimulationItem()
 {
     delete file;
+}
+
+TreeItem* SimulationItem::getModel() const
+{
+    return model;
 }
 
 void SimulationItem::write(QJsonObject& json) const
