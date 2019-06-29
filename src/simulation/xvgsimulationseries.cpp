@@ -31,15 +31,13 @@ bool XVGSimulationSeries::skipHeader()
 {
     static const QRegularExpression re("^@\\s*s(\\d+)\\b.*?\\blegend\\s*\"(.*?)\"");
 
+    if (i > last)
+        goto finished;
+
     while (true)
     {
         if (!file->readLine(buffer.data(), buffer.size()))
-        {
-            session->finished(file->fileName(), j);
-
-            atEnd = true;
-            return false;
-        }
+            goto finished;
 
         line++;
 
@@ -70,6 +68,12 @@ bool XVGSimulationSeries::skipHeader()
         atEnd = false;
         return true;
     }
+
+    finished:
+    session->finished(file->fileName(), j);
+
+    atEnd = true;
+    return false;
 }
 
 int XVGSimulationSeries::cacheHeaders(int time)
@@ -110,18 +114,8 @@ int XVGSimulationSeries::cacheHeaders(int time)
             }
 
             for (int k = 1; k < stride; k++)
-            {
                 if (!skipHeader())
                     return j;
-
-                if (i > last)
-                {
-                    session->finished(file->fileName(), j);
-
-                    atEnd = true;
-                    return j;
-                }
-            }
         }
         else
             return j;
