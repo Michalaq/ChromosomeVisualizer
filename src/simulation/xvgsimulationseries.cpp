@@ -58,6 +58,8 @@ bool XVGSimulationSeries::skipHeader()
                 auto s = new QtCharts::QLineSeries;
                 s->setName(i.captured(2));
 
+                new SeriesItem(s, model);
+
                 session->chart->addSeries(s);
                 legend.insert(i.captured(1).toInt(), s);
             }

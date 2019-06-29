@@ -665,3 +665,36 @@ void ChartItem::remove()
     series->remove();
     delete series;
 }
+
+SeriesItem::SeriesItem(QtCharts::QLineSeries* s, TreeItem *parentItem) :
+    TreeItem({s->name(), NodeType::SeriesObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    series(s)
+{
+
+}
+
+SeriesItem::~SeriesItem()
+{
+
+}
+
+QVariant SeriesItem::icon;
+
+QVariant SeriesItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/area chart"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/area chart"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
