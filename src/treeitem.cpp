@@ -698,3 +698,11 @@ QVariant SeriesItem::data(int column, int role) const
         return TreeItem::data(column, role);
     }
 }
+
+bool SeriesItem::setData(int column, const QVariant &value, int role)
+{
+    if (column == 0)
+        series->setName(value.toString());
+
+    return TreeItem::setData(column, value, role);
+}

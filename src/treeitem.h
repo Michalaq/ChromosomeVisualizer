@@ -255,6 +255,7 @@ public:
     ~SeriesItem();
 
     QVariant data(int column, int role = Qt::DisplayRole) const;
+    bool setData(int column, const QVariant &value, int role = Qt::EditRole);
 
 private:
     QtCharts::QLineSeries* series;

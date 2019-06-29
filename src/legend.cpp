@@ -1,7 +1,7 @@
 #include "legend.h"
 
-Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
-    QLabel(text, parent),
+Legend::Legend(QtCharts::QAbstractSeries *series, const QColor& color, QWidget *parent) :
+    QLabel(series->name(), parent),
     color(color),
     undergraph("Show undergraph", this),
     visible("Visible", this),
@@ -12,6 +12,8 @@ Legend::Legend(const QString & text, const QColor& color, QWidget *parent) :
 
     visible.setCheckable(true);
     visible.setChecked(true);
+
+    connect(series, &QtCharts::QAbstractSeries::nameChanged, [series,this]{setText(series->name());});
 }
 
 Legend::~Legend()
