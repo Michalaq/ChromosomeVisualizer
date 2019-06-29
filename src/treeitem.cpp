@@ -145,10 +145,14 @@ void TreeItem::read(const QJsonObject& json, const MaterialListModel* mlm, Mater
     if (vie != object.end())
         m_itemData[3] = (ve = vie.value().toBool()) ? On : Off;
 
+    setFlag(VisibleInEditor, ve);
+
     auto vir = object.find("Visible in renderer");
 
     if (vir != object.end())
         m_itemData[4] = (vr = vir.value().toBool()) ? On : Off;
+
+    setFlag(VisibleInRenderer, vr);
 
     auto cr = object.find("Cylinder radius");
 
@@ -518,13 +522,11 @@ void AtomItem::read(const QJsonObject& json, const MaterialListModel* mlm, Mater
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) session->atomBuffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) session->atomBuffer[id].size = rad->toDouble();
 
     auto lab = object.find("Label");
-    if (lab != object.end()) label = (*lab).toString();
+    if (lab != object.end()) label = lab->toString();
 
-    session->atomBuffer[id].flags.setFlag(VisibleInEditor, ve);
-    session->atomBuffer[id].flags.setFlag(VisibleInRenderer, vr);
     session->atomBuffer[id].material = mat->getIndex();
 }
 
