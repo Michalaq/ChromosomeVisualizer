@@ -104,6 +104,8 @@ public:
     int chainCount;
     QMap<QString, int> residueCount;
 
+    void finished(const QString& name, int time);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;
@@ -111,6 +113,8 @@ private:
     MaterialDelegate *md;
 
     int lastFrame;
+
+    QMap<int, QString> finishedLayers;
 
 signals:
     void documentTimeChanged(int);

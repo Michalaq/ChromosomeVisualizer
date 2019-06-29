@@ -35,6 +35,8 @@ bool XVGSimulationSeries::skipHeader()
     {
         if (!file->readLine(buffer.data(), buffer.size()))
         {
+            session->finished(file->fileName(), j);
+
             atEnd = true;
             return false;
         }
@@ -114,6 +116,8 @@ int XVGSimulationSeries::cacheHeaders(int time)
 
                 if (i > last)
                 {
+                    session->finished(file->fileName(), j);
+
                     atEnd = true;
                     return j;
                 }

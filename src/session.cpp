@@ -214,6 +214,8 @@ void Session::setFPS(int fps)
     renderSettings->updateFrames();
 }
 
+#include "messagehandler.h"
+
 void Session::setDocumentTime(int time)
 {
     simulation->readEntry(time, reinterpret_cast<char*>(atomBuffer.data()), sizeof(VizBallInstance), offsetof(VizBallInstance, position));
@@ -226,6 +228,12 @@ void Session::setDocumentTime(int time)
     SplineInterpolator::setFrame(time);
 
     emit documentTimeChanged(time);
+
+    while (!finishedLayers.isEmpty() && finishedLayers.cbegin().key() < time)
+    {
+        qcWarning("Reached end of file while running.", finishedLayers.cbegin().value(), -1, -1);
+        finishedLayers.erase(finishedLayers.begin());
+    }
 }
 
 void Session::setMinimumTime(int time)
@@ -306,4 +314,9 @@ void Session::setOrigin(const QModelIndex& index, bool selected)
 
     if (count > 0)
         this->origin = origin / count;
+}
+
+void Session::finished(const QString &name, int time)
+{
+    finishedLayers.insertMulti(time, name);
 }
