@@ -183,6 +183,7 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
         {
         case CameraObject:
         case LayerObject:
+        case ChartObject:
             beginRemoveRows(parent, row, row);
             (parent.isValid() ? reinterpret_cast<TreeItem*>(parent.internalPointer()) : header)->removeRows(row, 1);
             endRemoveRows();

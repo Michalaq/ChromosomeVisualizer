@@ -239,7 +239,7 @@ public:
     void write(QJsonObject& json) const;
 
 protected:
-    //void remove();
+    void remove();
 
 private:
     SimulationSeries* series;

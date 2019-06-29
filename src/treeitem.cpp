@@ -660,8 +660,8 @@ void ChartItem::write(QJsonObject &json) const
     json["Object"] = object;
 }
 
-/*void ChartItem::remove()
+void ChartItem::remove()
 {
-    layer->remove();
-    delete layer;
-}*/
+    series->remove();
+    delete series;
+}

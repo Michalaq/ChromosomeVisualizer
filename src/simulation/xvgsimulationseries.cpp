@@ -134,3 +134,15 @@ int XVGSimulationSeries::lastEntry() const
 {
     return j;
 }
+
+void XVGSimulationSeries::remove()
+{
+    session->simulation->removeOne(this);
+
+    for (auto series : legend)
+        session->chart->removeSeries(series);
+
+    session->setLastFrame(session->simulation->lastEntry());
+
+    session->plot->updateSimulation();
+}

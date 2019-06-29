@@ -16,6 +16,8 @@ public:
 
     int lastEntry() const override;
 
+    void remove() override;
+
 private:
     QByteArray buffer;
 
