@@ -257,6 +257,8 @@ public:
     QVariant data(int column, int role = Qt::DisplayRole) const;
     bool setData(int column, const QVariant &value, int role = Qt::EditRole);
 
+    void setFlag(VizFlag flag, bool on = true);
+
 private:
     QtCharts::QLineSeries* series;
 

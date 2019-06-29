@@ -706,3 +706,11 @@ bool SeriesItem::setData(int column, const QVariant &value, int role)
 
     return TreeItem::setData(column, value, role);
 }
+
+void SeriesItem::setFlag(VizFlag flag, bool on)
+{
+    if (flag == VisibleInEditor)
+        series->setVisible(on);
+
+    TreeItem::setFlag(flag, on);
+}

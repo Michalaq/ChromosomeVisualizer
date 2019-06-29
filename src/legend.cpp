@@ -11,9 +11,10 @@ Legend::Legend(QtCharts::QAbstractSeries *series, const QColor& color, QWidget *
     undergraph.setChecked(true);
 
     visible.setCheckable(true);
-    visible.setChecked(true);
+    visible.setChecked(series->isVisible());
 
     connect(series, &QtCharts::QAbstractSeries::nameChanged, [series,this]{setText(series->name());});
+    connect(series, &QtCharts::QAbstractSeries::visibleChanged, [series,this]{visible.setChecked(series->isVisible()); emit changed();});
 }
 
 Legend::~Legend()
@@ -81,7 +82,7 @@ void Legend::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::RightButton)
     {
-        if (QMenu::exec({ &undergraph, &visible }, event->globalPos()))
+        if (QMenu::exec({ &undergraph }, event->globalPos()))
         {
             update();
             emit changed();
