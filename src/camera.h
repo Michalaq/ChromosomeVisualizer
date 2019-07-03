@@ -64,7 +64,7 @@ public:
     void setUp(const QModelIndex& index);
     const QModelIndex& getUp() const;
 
-    void callibrate(int offset, bool selected, qreal scale = .75);
+    void callibrate(const QModelIndex& index, bool selected, qreal scale = .75);
 
     enum Mode {
         CM_Mono,
@@ -158,7 +158,7 @@ private:
     QPersistentModelIndex base, target, up;
 
     Session *session;
-    int id;
+    const int id;
 
     Mode mode;
     qreal eyeSeparation;

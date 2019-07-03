@@ -2,7 +2,7 @@
 #define VIZWIDGET_H
 
 #include <QtOpenGL>
-#include <QOpenGLFunctions_4_1_Core>
+#include <QOpenGLFunctions_4_0_Core>
 
 #include "selection.h"
 #include "pickwidget.h"
@@ -10,7 +10,7 @@
 class Session;
 
 class VizWidget :   public Selection,
-                    protected QOpenGLFunctions_4_1_Core,
+                    protected QOpenGLFunctions_4_0_Core,
                     public Pickable
 {
     Q_OBJECT

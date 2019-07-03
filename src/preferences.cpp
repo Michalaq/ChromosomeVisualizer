@@ -50,7 +50,7 @@ PointerToMemberFunction Preferences::coloringMethod() const
         return &TreeModel::colorByChain;
     }
 
-    Q_ASSERT(false);
+    Q_UNREACHABLE();
 }
 
 QVariant Preferences::materialAt(int i) const

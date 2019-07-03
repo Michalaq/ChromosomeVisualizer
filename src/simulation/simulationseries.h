@@ -4,6 +4,7 @@
 
 #include <QVector>
 #include <QLineSeries>
+#include <QJsonObject>
 #include "iodevice.h"
 
 class Session;
@@ -15,6 +16,9 @@ public:
     virtual ~SimulationSeries();
 
     virtual int cacheHeaders(int time) = 0;
+
+    static SimulationSeries* read(const QJsonObject& json, Session* session);
+    virtual void write(QJsonObject& json) const;
 
     virtual int lastEntry() const = 0;
 

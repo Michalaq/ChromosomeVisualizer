@@ -32,7 +32,7 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
         for (const auto& path : paths)
             openProject(path);
 
-    connect(ui->actionInfo, &QAction::triggered, [this] {
+    connect(ui->actionInfo, &QAction::triggered, [] {
         QMessageBox::about(0, "About QChromosome 4D Studio", QString(
                            "<h3>QChromosome 4D Studio</h3>"
                            "<p>Version 1.0</p>"
@@ -121,11 +121,11 @@ MainWindow::MainWindow(const QStringList &paths, QWidget *parent) :
     });
 
     connect(ui->actionFocus, &QAction::triggered, [this] {
-        session->currentCamera->callibrate(0, true);
+        session->currentCamera->callibrate(QModelIndex(), true);
     });
 
     connect(ui->actionPivot, &QAction::triggered, [this] {
-        session->setOrigin(0, true);
+        session->setOrigin(QModelIndex(), true);
     });
 
     connect(ui->actionSelect, &QAction::toggled, [this](bool checked) {
@@ -459,32 +459,31 @@ void MainWindow::addLayer()
     if (impd.exec() != QDialog::Accepted)
         return;
 
-    int offset = session->atomBuffer.size();
-
-    SimulationLayer* layer = Q_NULLPTR;
-
-    if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
-        layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
-
-    if (layer)
+    try
     {
-        session->simulation->prepend(layer);
-        (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
-        session->setDocumentTime(0);
-        session->currentCamera->callibrate(offset, false);
-        session->setOrigin(offset, false);
+        if (info.completeSuffix() == "pdb" || info.completeSuffix() == "pdb.gz")
+        {
+            SimulationLayer* layer = new PDBSimulationLayer(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+
+            session->simulation->prepend(layer);
+            (session->simulation->getModel()->*preferences->coloringMethod())(session->simulation->getModel()->index(0, 0));
+            session->setDocumentTime(0);
+            session->currentCamera->callibrate(session->simulation->getModel()->index(0, 0), false);
+            session->setOrigin(session->simulation->getModel()->index(0, 0), false);
+        }
+
+        if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
+        {
+            SimulationSeries* series = new XVGSimulationSeries(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
+
+            session->simulation->prepend(series);
+            session->setDocumentTime(0);
+            session->plot->updateSimulation();
+        }
     }
-
-    SimulationSeries* series = Q_NULLPTR;
-
-    if (info.completeSuffix() == "xvg" || info.completeSuffix() == "xvg.gz")
-        series = new XVGSimulationSeries(path, session, impd.first(), impd.last(), impd.stride(), impd.loadInBackground());
-
-    if (series)
+    catch (const MessageLog& log)
     {
-        session->simulation->prepend(series);
-        session->setDocumentTime(0);
-        session->plot->updateSimulation();
+        MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
     }
 }
 

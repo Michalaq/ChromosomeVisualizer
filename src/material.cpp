@@ -1,7 +1,7 @@
 #include "material.h"
 
 Material* Material::dm = nullptr;
-GLBuffer<material_data_t> Material::buffer;
+OpenGLArraysBuffer<material_data_t> Material::buffer;
 QVector<const Material*> Material::library;
 
 Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *parent) :
@@ -27,8 +27,7 @@ Material::Material(QString n, QColor c, float t, QColor sc, float se, QWidget *p
     setFixedSize(45, 45);
     updateIcon();
 
-    index = buffer.count();
-    buffer.append({color.rgba(), specularColor.rgba(), specularExponent});
+    index = buffer.append({color.rgba(), specularColor.rgba(), specularExponent});
 
     library.push_back(this);
 }
@@ -447,7 +446,7 @@ void Material::writePOVMaterials(QTextStream &stream)
             stream << *material;
 }
 
-GLBuffer<material_data_t> &Material::getBuffer()
+OpenGLArraysBuffer<material_data_t> &Material::getBuffer()
 {
     return buffer;
 }

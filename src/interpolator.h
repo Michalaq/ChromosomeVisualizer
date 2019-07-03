@@ -70,8 +70,8 @@ public:
     /* restores current state from frame */
     virtual void loadFrame(const SplineKeyframe& frame) = 0;
 
-    virtual void read(const QJsonArray& json);
-    virtual void write(QJsonArray &json) const;
+    void read(const QJsonArray& json);
+    void write(QJsonArray &json) const;
 
     void writePOVSpline(QTextStream &stream, std::function<void(QTextStream &, const SplineKeyframe &)> f) const;
 

@@ -37,11 +37,9 @@ public:
 
     QVector<QPersistentModelIndex> indices;
 
-    GLBuffer<VizCameraInstance> cameraBuffer;
-    GLBuffer<VizBallInstance> atomBuffer;
-    QVector<GLsizei> chainCountBuffer;
-    QVector<GLvoid*> chainOffsetsBuffer;
-    GLBuffer<GLuint> chainIndicesBuffer;
+    OpenGLArraysBuffer<VizCameraInstance> cameraBuffer;
+    OpenGLArraysBuffer<VizBallInstance> atomBuffer;
+    OpenGLElementsBuffer<GLuint> chainBuffer;
 
     LabelAtlas labelAtlas;
 
@@ -62,7 +60,7 @@ public:
     ListView* listView;
 
     Viewport* viewport;
-    GLBuffer<viewport_data_t> viewportUniformBuffer;
+    OpenGLArraysBuffer<viewport_data_t> viewportUniformBuffer;
 
     MediaPanel* mediaPanel;
 
@@ -101,7 +99,7 @@ public:
 
     PlayMode playMode;
 
-    void setOrigin(int offset, bool selected);
+    void setOrigin(const QModelIndex& index, bool selected);
 
     int chainCount;
     QMap<QString, int> residueCount;

@@ -75,7 +75,7 @@ void MovieMaker::captureScene(Session* session)
 
     session->currentCamera->writePOVCamera(povStream, interpolate);
 
-    const auto& viewport = *session->viewportUniformBuffer.constBegin();
+    const auto& viewport = session->viewportUniformBuffer[0];
 
     povStream << "background{color " << QColor(viewport.ucBackgroundColor) << "}\n";
 
@@ -109,7 +109,6 @@ void MovieMaker::captureScene(Session* session)
                 qcCritical("Files cannot be written - please check output paths!", pov.filePath(), -1, -1);
     }
 
-#ifdef Q_OS_UNIX
     // tracing
     if (session->renderSettings->render())
     {
@@ -121,7 +120,8 @@ void MovieMaker::captureScene(Session* session)
              << "+V"
              << "-GA"
              << "Fatal_File=true"
-             << "+Iscene";
+             << "povray.ini"
+             << "scene.pov";
 
         buffer.clear();
 
@@ -206,9 +206,20 @@ void MovieMaker::captureScene(Session* session)
                 QDesktopServices::openUrl(QUrl::fromLocalFile(dir->filePath(QString("scene.") + (interpolate ? "avi" : session->renderSettings->getExtension()))));
         });
 
+        connect(&p, &QProcess::errorOccurred, [this](QProcess::ProcessError) {
+            qcCritical(p.errorString(), "", -1, -1);
+
+            emit finished();
+
+            p.disconnect();
+        });
+
+#if defined(Q_OS_WIN)
+        p.start("pvengine", argv);
+#elif defined(Q_OS_UNIX)
         p.start("povray", argv);
-    }
 #endif
+    }
 }
 
 bool MovieMaker::stopRenderer()
