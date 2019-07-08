@@ -1,7 +1,7 @@
 #include "simulationitem.h"
 #include "messagehandler.h"
 #include "treeitem.h"
-#include <QFileInfo>
+#include <QFileDialog>
 
 SimulationItem::SimulationItem(const QString& name, Session* s, int f, int l, int t) :
     session(s),
@@ -20,7 +20,19 @@ SimulationItem::SimulationItem(const QString& name, Session* s, int f, int l, in
     file->setFileName(name);
 
     if (!file->open(QIODevice::ReadOnly))
-        throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
+    {
+        QString path = QFileDialog::getExistingDirectory(nullptr, "Choose input file location: " + info.fileName(), name);
+
+        if (path.isEmpty())
+            throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
+
+        QString name = QDir(path).filePath(info.fileName());
+
+        file->setFileName(name);
+
+        if (!file->open(QIODevice::ReadOnly))
+            throw MessageLog({QtCriticalMsg, "File could not be opened.", name, nullptr, -1, -1});
+    }
 }
 
 SimulationItem::~SimulationItem()
