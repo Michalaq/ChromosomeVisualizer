@@ -383,23 +383,28 @@ void TreeModel::read(const QJsonObject &json)
 
     for (auto child = children.end() - 1; child != children.begin() - 1; child--)
     {
-        const QJsonObject object = child.value().toObject()["Object"].toObject();
+        const QJsonObject object1 = child.value().toObject();
+        const QJsonObject object2 = object1["Object"].toObject();
 
-        if (object["class"] == "Layer")
+        if (object2["class"] == "Layer")
             try
             {
-                session->simulation->prepend(SimulationItem::read(object, session));
+                auto layer = SimulationItem::read(object2, session);
+                layer->getModel()->read(object1, reinterpret_cast<MaterialListModel*>(session->listView->model()));
+                session->simulation->prepend(layer);
             }
             catch (const MessageLog& log)
             {
                 MessageHandler::getInstance()->handleMessage(log.type, log.description, log.file, log.line, log.column);
             }
 
-        if (object["class"] == "Camera")
-            addCamera(new Camera(session));
+        if (object2["class"] == "Camera")
+        {
+            auto camera = new Camera(session);
+            camera->read(object2);
+            addCamera(camera);
+        }
     }
-
-    header->read(json, reinterpret_cast<MaterialListModel*>(session->listView->model()));
 
     // this could be moved to TreeItem::read if QStandardItem/QStandardItemModel were used
     std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root)
