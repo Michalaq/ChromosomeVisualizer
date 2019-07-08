@@ -2,13 +2,11 @@
 #define SIMULATION_H
 
 
-#include "simulationlayer.h"
-#include "simulationseries.h"
 #include <QVector>
-#include <QTextStream>
 
 class Session;
 class TreeModel;
+class SimulationItem;
 
 class Simulation
 {
