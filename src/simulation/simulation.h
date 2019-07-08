@@ -22,22 +22,13 @@ public:
 
     TreeModel* getModel() const;
 
-    void prepend(SimulationLayer* value);
-    void prepend(SimulationSeries* value);
-
-    void removeOne(SimulationLayer* layer);
-    void removeOne(SimulationSeries* layer);
-
-    void read(const QJsonArray& json);
-    void write(QJsonArray& json) const;
-
-    void writePOVFrames(QTextStream& stream, int fbeg, int fend);
+    void prepend(SimulationItem* value);
+    void removeOne(SimulationItem* layer);
 
     int lastEntry() const;
 
 private:
-    QVector<SimulationLayer*> layers;
-    QVector<SimulationSeries*> series;
+    QVector<SimulationItem*> items;
 
     TreeModel* model;
     Session* session;

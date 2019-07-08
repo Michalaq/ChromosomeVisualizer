@@ -105,9 +105,6 @@ void Session::fromJson(const QJsonDocument &json)
     const QJsonObject objects = project["Objects"].toObject();
     simulation->getModel()->read(objects);
 
-    const QJsonArray series = project["Series"].toArray();
-    simulation->read(series);
-
     const QJsonObject projectSettings_ = project["Project Settings"].toObject();
     projectSettings->read(projectSettings_);
 
@@ -155,10 +152,6 @@ QJsonDocument Session::toJson() const
     QJsonObject objects_;
     simulation->getModel()->write(objects_);
     project["Objects"] = objects_;
-
-    QJsonArray series_;
-    simulation->write(series_);
-    project["Series"] = series_;
 
     QJsonObject renderSettings_;
     renderSettings->write(renderSettings_);
@@ -319,4 +312,75 @@ void Session::setOrigin(const QModelIndex& index, bool selected)
 void Session::finished(const QString &name, int time)
 {
     finishedLayers.insertMulti(time, name);
+}
+
+static QTextStream& operator<<(QTextStream& out, const QVector3D& vec)
+{
+    return out << "<" << -vec.x() << ", " << vec.y() << ", " << vec.z() << ">";
+}
+
+#include "moviemaker.h"
+
+void Session::writePOVFrames(QTextStream& stream, int fbeg, int fend)
+{
+    const int a_count = atomBuffer.buffer.size();
+
+    QVector3D* data = new QVector3D[(fend - fbeg + 1) * a_count];
+
+    for (int time = fbeg; time <= fend; time++)
+        simulation->readEntry(time, reinterpret_cast<char*>(data + (time - fbeg) * a_count), sizeof(QVector3D), 0);
+
+    if (fbeg != fend)
+        for (int j = 0; j < atomBuffer.firsts.size(); j++)
+            for (int i = atomBuffer.firsts[j]; i < atomBuffer.firsts[j] + atomBuffer.counts[j]; i++)
+            {
+                const auto& atom = atomBuffer[i];
+
+                if (atom.flags.testFlag(VisibleInRenderer))
+                {
+                    stream << "#declare Atom" << i << "Pos = \nspline {\nnatural_spline\n";
+
+                    for (int time = fbeg; time <= fend; time++)
+                        stream << time << ", " << data[(time - fbeg) * a_count + i] << "\n";
+
+                    stream << "}\n";
+                }
+            }
+
+    // connections
+    for (int i = 0; i < chainBuffer.firsts.size(); i++)
+    {
+        GLuint* offset = chainBuffer.data() + reinterpret_cast<GLintptr>(chainBuffer.firsts[i]) / sizeof(GLuint);
+
+        for (int j = 0; j < chainBuffer.counts[i] - 1; j++, offset++)
+        {
+            const auto& first = atomBuffer[offset[0]];
+            const auto& second = atomBuffer[offset[1]];
+
+            if ((first.flags & second.flags).testFlag(VisibleInRenderer))
+            {
+                if (fbeg == fend)
+                    MovieMaker::addCylinder(stream, data[offset[0]], data[offset[1]], first.size / 2, second.size / 2, first.material, second.material);
+                else
+                    MovieMaker::addCylinder1(stream, offset[0], offset[1], first.size / 2, second.size / 2, first.material, second.material);
+            }
+        }
+    }
+
+    // atoms
+    for (int j = 0; j < atomBuffer.firsts.size(); j++)
+        for (int i = atomBuffer.firsts[j]; i < atomBuffer.firsts[j] + atomBuffer.counts[j]; i++)
+        {
+            const auto& atom = atomBuffer[i];
+
+            if (atom.flags.testFlag(VisibleInRenderer))
+            {
+                if (fbeg == fend)
+                    MovieMaker::addSphere(stream, data[i], atom.size, atom.material);
+                else
+                    MovieMaker::addSphere1(stream, i, atom.size, atom.material);
+            }
+        }
+
+    delete[] data;
 }

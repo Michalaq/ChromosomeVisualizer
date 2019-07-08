@@ -24,6 +24,11 @@ XVGSimulationSeries::~XVGSimulationSeries()
 
 }
 
+void XVGSimulationSeries::readEntry(int time, char*, std::size_t, std::size_t)
+{
+    cacheHeaders(time);
+}
+
 #include <QRegularExpression>
 #include "session.h"
 
@@ -52,6 +57,8 @@ bool XVGSimulationSeries::skipHeader()
             {
                 auto s = new QtCharts::QLineSeries;
                 s->setName(i.captured(2));
+
+                new SeriesItem(s, model);
 
                 session->chart->addSeries(s);
                 legend.insert(i.captured(1).toInt(), s);
@@ -126,4 +133,16 @@ int XVGSimulationSeries::cacheHeaders(int time)
 int XVGSimulationSeries::lastEntry() const
 {
     return j;
+}
+
+void XVGSimulationSeries::remove()
+{
+    session->simulation->removeOne(this);
+
+    for (auto series : legend)
+        session->chart->removeSeries(series);
+
+    session->setLastFrame(session->simulation->lastEntry());
+
+    session->plot->updateSimulation();
 }

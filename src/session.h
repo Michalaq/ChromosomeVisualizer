@@ -106,6 +106,8 @@ public:
 
     void finished(const QString& name, int time);
 
+    void writePOVFrames(QTextStream& stream, int fbeg, int fend);
+
 private:
     NameDelegate *nd;
     VisibilityDelegate *vd;
