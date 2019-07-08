@@ -411,7 +411,7 @@ void TreeModel::read(const QJsonObject &json)
             visit(index(r, 0, root));
     };
 
-    visit(index(0, 0));
+    visit(QModelIndex());
 }
 
 void TreeModel::write(QJsonObject &json) const
