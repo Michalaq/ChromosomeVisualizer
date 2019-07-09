@@ -89,7 +89,7 @@ void MovieMaker::captureScene(Session* session)
 
     Material::writePOVMaterials(povStream);
 
-    session->simulation->writePOVFrames(povStream, range.first, range.second);
+    session->writePOVFrames(povStream, range.first, range.second);
 
     povFile.close();
 

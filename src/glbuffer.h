@@ -148,7 +148,7 @@ private:
     QVector<GLint> firsts;
     QVector<GLsizei> counts;
 
-    friend class Simulation;
+    friend class Session;
 };
 
 template<typename T>
@@ -237,7 +237,7 @@ private:
     QVector<GLvoid*> firsts;
     QVector<GLsizei> counts;
 
-    friend class Simulation;
+    friend class Session;
 };
 
 #endif // GLBUFFER_H

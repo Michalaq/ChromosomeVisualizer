@@ -145,10 +145,14 @@ void TreeItem::read(const QJsonObject& json, const MaterialListModel* mlm, Mater
     if (vie != object.end())
         m_itemData[3] = (ve = vie.value().toBool()) ? On : Off;
 
+    setFlag(VisibleInEditor, ve);
+
     auto vir = object.find("Visible in renderer");
 
     if (vir != object.end())
         m_itemData[4] = (vr = vir.value().toBool()) ? On : Off;
+
+    setFlag(VisibleInRenderer, vr);
 
     auto cr = object.find("Cylinder radius");
 
@@ -518,13 +522,11 @@ void AtomItem::read(const QJsonObject& json, const MaterialListModel* mlm, Mater
     const QJsonObject object = json["Object"].toObject();
 
     auto rad = object.find("Radius");
-    if (rad != object.end()) session->atomBuffer[id].size = (*rad).toDouble();
+    if (rad != object.end()) session->atomBuffer[id].size = rad->toDouble();
 
     auto lab = object.find("Label");
-    if (lab != object.end()) label = (*lab).toString();
+    if (lab != object.end()) label = lab->toString();
 
-    session->atomBuffer[id].flags.setFlag(VisibleInEditor, ve);
-    session->atomBuffer[id].flags.setFlag(VisibleInRenderer, vr);
     session->atomBuffer[id].material = mat->getIndex();
 }
 
@@ -609,4 +611,108 @@ QVariant ResidueItem::data(int column, int role) const
     default:
         return TreeItem::data(column, role);
     }
+}
+
+ChartItem::ChartItem(const QString &name, SimulationSeries* s, TreeItem *parentItem) :
+    TreeItem({name, NodeType::ChartObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    series(s)
+{
+
+}
+
+ChartItem::~ChartItem()
+{
+
+}
+
+QVariant ChartItem::icon;
+
+QVariant ChartItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/database"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/database"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
+void ChartItem::write(QJsonObject &json) const
+{
+    TreeItem::write(json);
+
+    QJsonObject object;
+
+    if (json.contains("Object"))
+        object = json["Object"].toObject();
+
+    object["class"] = "Layer";
+
+    series->write(object);
+
+    json["Object"] = object;
+}
+
+void ChartItem::remove()
+{
+    series->remove();
+    delete series;
+}
+
+SeriesItem::SeriesItem(QtCharts::QLineSeries* s, TreeItem *parentItem) :
+    TreeItem({s->name(), NodeType::SeriesObject, QVariant(), Visibility::Default, Visibility::Default, QVariant()}, parentItem),
+    series(s)
+{
+
+}
+
+SeriesItem::~SeriesItem()
+{
+
+}
+
+QVariant SeriesItem::icon;
+
+QVariant SeriesItem::data(int column, int role) const
+{
+    switch (role)
+    {
+    case Qt::DecorationRole:
+        if (!icon.isValid())
+        {
+            QIcon icon;
+            icon.addPixmap(QPixmap(":/create/area chart"), QIcon::Normal);
+            icon.addPixmap(QPixmap(":/create/area chart"), QIcon::Selected);
+            this->icon = icon;
+        }
+
+        return icon;
+    default:
+        return TreeItem::data(column, role);
+    }
+}
+
+bool SeriesItem::setData(int column, const QVariant &value, int role)
+{
+    if (column == 0)
+        series->setName(value.toString());
+
+    return TreeItem::setData(column, value, role);
+}
+
+void SeriesItem::setFlag(VizFlag flag, bool on)
+{
+    if (flag == VisibleInEditor)
+        series->setVisible(on);
+
+    TreeItem::setFlag(flag, on);
 }

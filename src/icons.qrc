@@ -42,6 +42,8 @@
         <file alias="chain">icons/create/chain_icon.svg</file>
         <file alias="residue">icons/create/residue_icon.svg</file>
         <file alias="film camera">icons/create/camera_icon.svg</file>
+        <file alias="database">icons/create/database_icon.svg</file>
+        <file alias="area chart">icons/create/area_chart_icon.svg</file>
     </qresource>
     <qresource prefix="/dialogs">
         <file alias="view">icons/dialogs/view_icon.svg</file>

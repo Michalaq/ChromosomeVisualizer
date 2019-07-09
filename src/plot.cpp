@@ -73,7 +73,7 @@ void Plot::addLegend(QtCharts::QAbstractSeries *series)
 {
     const auto color = colorOrder[legend.size() % colorOrder.size()];
 
-    auto entry = new Legend(series->name(), color, this);
+    auto entry = new Legend(series, color, this);
 
     connect(entry, SIGNAL(changed()), this, SLOT(update()));
     layout()->addWidget(entry);

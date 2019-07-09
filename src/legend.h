@@ -3,12 +3,13 @@
 
 #include <QLabel>
 #include <QAction>
+#include <QtCharts/QAbstractSeries>
 
 class Legend : public QLabel
 {
     Q_OBJECT
 public:
-    explicit Legend(const QString & text, const QColor& color, QWidget *parent = 0);
+    explicit Legend(QtCharts::QAbstractSeries *series, const QColor& color, QWidget *parent = 0);
     ~Legend();
 
     QColor pen() const;
