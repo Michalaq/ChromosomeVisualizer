@@ -86,13 +86,13 @@ void PDBSimulationLayer::readEntry(int time, char* data, std::size_t stride, std
 
 bool PDBSimulationLayer::skipHeader()
 {
+    if (i > last)
+        goto finished;
+
     do
     {
         if (!file->readLine(buffer.data(), buffer.size()))
-        {
-            atEnd = true;
-            return false;
-        }
+            goto finished;
 
         line++;
     }
@@ -104,10 +104,7 @@ bool PDBSimulationLayer::skipHeader()
     do
     {
         if (!file->readLine(buffer.data(), buffer.size()))
-        {
-            atEnd = true;
-            return false;
-        }
+            goto finished;
 
         line++;
     }
@@ -119,6 +116,12 @@ bool PDBSimulationLayer::skipHeader()
 
     atEnd = false;
     return true;
+
+    finished:
+    session->finished(file->fileName(), j);
+
+    atEnd = true;
+    return false;
 }
 
 int PDBSimulationLayer::cacheHeaders(int time)
@@ -139,16 +142,8 @@ int PDBSimulationLayer::cacheHeaders(int time)
             cache.append(range);
 
             for (int k = 1; k < stride; k++)
-            {
                 if (!skipHeader())
                     return j;
-
-                if (i > last)
-                {
-                    atEnd = true;
-                    return j;
-                }
-            }
         }
         else
             return j;

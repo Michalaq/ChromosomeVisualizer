@@ -24,6 +24,11 @@ XVGSimulationSeries::~XVGSimulationSeries()
 
 }
 
+void XVGSimulationSeries::readEntry(int time, char*, std::size_t, std::size_t)
+{
+    cacheHeaders(time);
+}
+
 #include <QRegularExpression>
 #include "session.h"
 
@@ -31,13 +36,13 @@ bool XVGSimulationSeries::skipHeader()
 {
     static const QRegularExpression re("^@\\s*s(\\d+)\\b.*?\\blegend\\s*\"(.*?)\"");
 
+    if (i > last)
+        goto finished;
+
     while (true)
     {
         if (!file->readLine(buffer.data(), buffer.size()))
-        {
-            atEnd = true;
-            return false;
-        }
+            goto finished;
 
         line++;
 
@@ -52,6 +57,8 @@ bool XVGSimulationSeries::skipHeader()
             {
                 auto s = new QtCharts::QLineSeries;
                 s->setName(i.captured(2));
+
+                new SeriesItem(s, model);
 
                 session->chart->addSeries(s);
                 legend.insert(i.captured(1).toInt(), s);
@@ -68,6 +75,12 @@ bool XVGSimulationSeries::skipHeader()
         atEnd = false;
         return true;
     }
+
+    finished:
+    session->finished(file->fileName(), j);
+
+    atEnd = true;
+    return false;
 }
 
 int XVGSimulationSeries::cacheHeaders(int time)
@@ -108,16 +121,8 @@ int XVGSimulationSeries::cacheHeaders(int time)
             }
 
             for (int k = 1; k < stride; k++)
-            {
                 if (!skipHeader())
                     return j;
-
-                if (i > last)
-                {
-                    atEnd = true;
-                    return j;
-                }
-            }
         }
         else
             return j;
@@ -128,4 +133,16 @@ int XVGSimulationSeries::cacheHeaders(int time)
 int XVGSimulationSeries::lastEntry() const
 {
     return j;
+}
+
+void XVGSimulationSeries::remove()
+{
+    session->simulation->removeOne(this);
+
+    for (auto series : legend)
+        session->chart->removeSeries(series);
+
+    session->setLastFrame(session->simulation->lastEntry());
+
+    session->plot->updateSimulation();
 }

@@ -70,7 +70,8 @@ SOURCES += \
     src/opengl/defaultlight.cpp \
     src/messagehandler.cpp \
     src/simulation/simulationseries.cpp \
-    src/simulation/xvgsimulationseries.cpp
+    src/simulation/xvgsimulationseries.cpp \
+    src/simulation/simulationitem.cpp
 
 HEADERS += \
     src/mainwindow.h \
@@ -138,7 +139,8 @@ HEADERS += \
     src/opengl/defaultlight.h \
     src/messagehandler.h \
     src/simulation/simulationseries.h \
-    src/simulation/xvgsimulationseries.h
+    src/simulation/xvgsimulationseries.h \
+    src/simulation/simulationitem.h
 
 FORMS += \
     src/mainwindow.ui \
