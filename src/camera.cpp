@@ -962,6 +962,83 @@ void Camera::writePOVCamera(QTextStream &stream, bool interpolate) const
                << "rotate -<odsAngles.x, odsAngles.y, 0>\n"
                << "}\n";
         break;
+
+    case CM_ODS:
+        stream << "#declare odsIPD = " << eyeSeparation / 100 << ";\n";
+
+        if (interpolate)
+        {
+            stream << "#declare MySplinePos = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("X"), frame.value("Y"), frame.value("Z"));
+            });
+
+            stream << "#declare MySplineAng = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector3D(frame.value("P"), frame.value("H"), frame.value("B"));
+            });
+
+            stream << "#declare MySplineFlSs = \n";
+            writePOVSpline(stream, [](QTextStream &stream, const SplineKeyframe &frame) {
+                stream << QVector2D(frame.value("Focal length"), frame.value("Sensor size"));
+            });
+
+            stream << "#declare odsLocation = MySplinePos(clock);\n"
+                   << "#declare odsAngles = MySplineAng(clock);\n"
+                   << "#declare fl = MySplineFlSs(clock).x;\n"
+                   << "#declare ss = MySplineFlSs(clock).y;\n";
+        }
+        else
+            stream << "#declare odsLocation = " << eye << ";\n"
+                   << "#declare odsAngles = " << phb.toEulerAngles() << ";\n"
+                   << "#declare fl = " << focalLength << ";\n"
+                   << "#declare ss = " << sensorSize << ";\n";
+
+        stream << "#declare odsX = <1, 0, 0>;\n"
+               << "#declare odsY = <0, 1, 0>;\n"
+               << "#declare odsZ = <0, 0, 1>;\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsY, odsAngles.y);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsY, odsAngles.y);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsX, -odsAngles.x);\n"
+               << "#declare odsZ = vaxis_rotate(odsZ, odsX, -odsAngles.x);\n"
+               << "#declare odsX = vaxis_rotate(odsX, odsZ, odsAngles.z);\n"
+               << "#declare odsY = vaxis_rotate(odsY, odsZ, odsAngles.z);\n";
+
+        stream << "#declare odsLocationX = odsLocation.x;\n"
+               << "#declare odsLocationY = odsLocation.y;\n"
+               << "#declare odsLocationZ = odsLocation.z;\n"
+               << "#declare odsXX = -odsX.x;\n"
+               << "#declare odsXY = odsX.y;\n"
+               << "#declare odsXZ = odsX.z;\n"
+               << "#declare odsYX = -odsY.x;\n"
+               << "#declare odsYY = odsY.y;\n"
+               << "#declare odsYZ = odsY.z;\n"
+               << "#declare odsZX = -odsZ.x;\n"
+               << "#declare odsZY = odsZ.y;\n"
+               << "#declare odsZZ = odsZ.z;\n";
+
+        stream << "camera {\n"
+               << "user_defined\n"
+               << "location {\n"
+               << "function { odsLocationX + select(x, -1, 1) * (fl * odsXX + select(x, 2*x+0.5, 2*x-0.5) * ss * odsZX) / sqrt(select(x, 4*x*x+2*x+0.25, 4*x*x-2*x+0.25) * ss * ss + fl * fl) * odsIPD / 2 }\n"
+               << "function { odsLocationY + select(x, -1, 1) * (fl * odsXY + select(x, 2*x+0.5, 2*x-0.5) * ss * odsZY) / sqrt(select(x, 4*x*x+2*x+0.25, 4*x*x-2*x+0.25) * ss * ss + fl * fl) * odsIPD / 2 }\n"
+               << "function { odsLocationZ + select(x, -1, 1) * (fl * odsXZ + select(x, 2*x+0.5, 2*x-0.5) * ss * odsZZ) / sqrt(select(x, 4*x*x+2*x+0.25, 4*x*x-2*x+0.25) * ss * ss + fl * fl) * odsIPD / 2 }\n"
+               << "}\n"
+               << "direction {\n"
+               << "function { select(x, 2*x+0.5, 2*x-0.5) * image_width/2 * ss * odsXX + y * image_height * ss * odsYX - image_width/2 * fl * odsZX }\n"
+               << "function { select(x, 2*x+0.5, 2*x-0.5) * image_width/2 * ss * odsXY + y * image_height * ss * odsYY - image_width/2 * fl * odsZY }\n"
+               << "function { select(x, 2*x+0.5, 2*x-0.5) * image_width/2 * ss * odsXZ + y * image_height * ss * odsYZ - image_width/2 * fl * odsZZ }\n"
+               << "}\n"
+               << "}\n";
+
+        stream << "light_source {\n"
+               << QVector3D() << "," << QColor(Qt::white) << "\n"
+               << "parallel\n"
+               << "point_at " << -session->viewportUniformBuffer[0].uvDefaultLight << "\n"
+               << "rotate -<0, 0, odsAngles.z>\n"
+               << "rotate -<odsAngles.x, odsAngles.y, 0>\n"
+               << "}\n";
+        break;
     }
 }
 

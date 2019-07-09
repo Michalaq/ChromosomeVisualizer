@@ -78,7 +78,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>192</height>
+            <height>191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -220,7 +220,7 @@
             <x>0</x>
             <y>0</y>
             <width>458</width>
-            <height>178</height>
+            <height>177</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -485,7 +485,7 @@
             <x>0</x>
             <y>0</y>
             <width>362</width>
-            <height>222</height>
+            <height>229</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -759,7 +759,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>192</height>
+            <height>191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -916,7 +916,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>192</height>
+            <height>191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -986,6 +986,11 @@
                  <string>Right</string>
                 </property>
                </item>
+               <item>
+                <property name="text">
+                 <string>ODS</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item row="1" column="1">
@@ -1044,7 +1049,7 @@
             <x>0</x>
             <y>0</y>
             <width>376</width>
-            <height>192</height>
+            <height>191</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">

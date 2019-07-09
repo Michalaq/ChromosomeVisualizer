@@ -70,7 +70,8 @@ public:
         CM_Mono,
         CM_Symmetrical,
         CM_Left,
-        CM_Right
+        CM_Right,
+        CM_ODS
     };
 
     Mode getMode() const;
