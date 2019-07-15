@@ -531,7 +531,7 @@ void MainWindow::handleModelSelection()
             break;
         }
 
-    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5},{AtomObject, ui->page_2},{LayerObject, ui->page_3}});
+    static const QMap<int, MetaAttributes*> map({{CameraObject, ui->page_5},{AtomObject, ui->page_2},{LayerObject, ui->page_3},{SeriesObject, ui->page_10}});
 
     auto i = map.find(selectionType);
     recent = i == map.end() ? ui->page_8 : *i;

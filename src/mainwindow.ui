@@ -726,6 +726,7 @@ QLineEdit {
     <widget class="MaterialAttributes" name="page_7"/>
     <widget class="Attributes" name="page_8"/>
     <widget class="QWidget" name="page_9"/>
+    <widget class="SeriesAttributes" name="page_10"/>
    </widget>
   </widget>
   <widget class="DockWidget" name="dockWidget_3">
@@ -1400,6 +1401,12 @@ QTableView::item:selected {
    <class>StatusBar</class>
    <extends>QStatusBar</extends>
    <header>statusbar.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SeriesAttributes</class>
+   <extends>QWidget</extends>
+   <header>seriesattributes.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

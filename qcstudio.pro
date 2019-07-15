@@ -12,6 +12,7 @@ SOURCES += \
     src/plot.cpp \
     src/mediacontrol.cpp \
     src/dockwidget.cpp \
+    src/seriesattributes.cpp \
     src/spinbox.cpp \
     src/rangeslider.cpp \
     src/legend.cpp \
@@ -80,6 +81,7 @@ HEADERS += \
     src/plot.h \
     src/mediacontrol.h \
     src/dockwidget.h \
+    src/seriesattributes.h \
     src/spinbox.h \
     src/rangeslider.h \
     src/legend.h \
@@ -149,6 +151,7 @@ FORMS += \
     src/rendersettings.ui \
     src/atomattributes.ui \
     src/layerattributes.ui \
+    src/seriesattributes.ui \
     src/viewport.ui \
     src/keyframe.ui \
     src/preferences.ui \
