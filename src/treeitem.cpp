@@ -716,3 +716,23 @@ void SeriesItem::setFlag(VizFlag flag, bool on)
 
     TreeItem::setFlag(flag, on);
 }
+
+void SeriesItem::setColor(QColor c)
+{
+    series->setColor(c);
+}
+
+QColor SeriesItem::getColor() const
+{
+    return series->color();
+}
+
+void SeriesItem::setOpacity(qreal u)
+{
+    series->setOpacity(u);
+}
+
+qreal SeriesItem::getOpacity() const
+{
+    return series->opacity();
+}

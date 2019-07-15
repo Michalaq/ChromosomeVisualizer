@@ -259,6 +259,12 @@ public:
 
     void setFlag(VizFlag flag, bool on = true);
 
+    void setColor(QColor c);
+    QColor getColor() const;
+
+    void setOpacity(qreal u);
+    qreal getOpacity() const;
+
 private:
     QtCharts::QLineSeries* series;
 

@@ -23,6 +23,18 @@ SeriesAttributes::SeriesAttributes(QWidget *parent) :
     connect(ui->comboBox_2, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
         model->setVisibility(rows, (Visibility)index, Renderer);
     });
+
+    // connect color
+    connect(ui->comboBox_3, &Picker::valueChanged, [this](QColor val) {
+        for (auto s : series)
+            s->setColor(val);
+    });
+
+    // connect opacity
+    connect(ui->doubleSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double val) {
+        for (auto s : series)
+            s->setOpacity(val / 100);
+    });
 }
 
 SeriesAttributes::~SeriesAttributes()
@@ -56,6 +68,41 @@ void SeriesAttributes::setSelection(TreeModel* selectedModel, const QModelIndexL
     ui->label->setTitle(title);
 
     updateModelSelection();
+
+    auto fst = series.first();
+    bool multiple;
+
+    // set color
+    QColor c = fst->getColor();
+    multiple = false;
+
+    for (const auto& s : series)
+        if (c != s->getColor())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->comboBox_3->setMultipleValues();
+    else
+        ui->comboBox_3->setValue(c, false);
+
+    // set opacity
+    qreal o = fst->getOpacity();
+    multiple = false;
+
+    for (const auto& s : series)
+        if (o != s->getOpacity())
+        {
+            multiple = true;
+            break;
+        }
+
+    if (multiple)
+        ui->doubleSpinBox->setMultipleValues();
+    else
+        ui->doubleSpinBox->setValue(o * 100, false);
 }
 
 void SeriesAttributes::unsetSelection()
