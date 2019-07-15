@@ -2,9 +2,6 @@
 #include <QHBoxLayout>
 #include "session.h"
 
-// MathWorks predefined colorOrder
-const QList<QColor> Plot::colorOrder = {"#0072bd", "#d95319", "#edb120", "#7e2f8e", "#77ac30", "#4dbeee", "#a2142f"};
-
 Plot::Plot(Session* s, QWidget *parent) :
     SoftSlider(parent),
     session(s)
@@ -71,9 +68,8 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
 
 void Plot::addLegend(QtCharts::QAbstractSeries *series)
 {
-    const auto color = colorOrder[legend.size() % colorOrder.size()];
-
-    auto entry = new Legend(series, color, this);
+    series->setOpacity(.1);
+    auto entry = new Legend(series);
 
     connect(entry, SIGNAL(changed()), this, SLOT(update()));
     layout()->addWidget(entry);

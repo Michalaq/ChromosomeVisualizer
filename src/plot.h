@@ -32,8 +32,6 @@ private:
     QMap<QtCharts::QAbstractSeries*, Legend*> legend;
 
     void addLegend(QtCharts::QAbstractSeries* series);
-
-    static const QList<QColor> colorOrder;
 };
 
 #endif // PLOT_H

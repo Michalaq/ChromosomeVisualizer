@@ -1,20 +1,15 @@
 #include "legend.h"
+#include <QLineSeries>
 
-Legend::Legend(QtCharts::QAbstractSeries *series, const QColor& color, QWidget *parent) :
-    QLabel(series->name(), parent),
-    color(color),
-    undergraph("Show undergraph", this),
-    visible("Visible", this),
+Legend::Legend(QtCharts::QAbstractSeries *s, QWidget *parent) :
+    QLabel(s->name(), parent),
+    series(s),
     hover(false)
 {
-    undergraph.setCheckable(true);
-    undergraph.setChecked(true);
-
-    visible.setCheckable(true);
-    visible.setChecked(series->isVisible());
-
-    connect(series, &QtCharts::QAbstractSeries::nameChanged, [series,this]{setText(series->name());});
-    connect(series, &QtCharts::QAbstractSeries::visibleChanged, [series,this]{visible.setChecked(series->isVisible()); emit changed();});
+    connect(series, &QtCharts::QAbstractSeries::nameChanged, [this]{setText(series->name());});
+    connect(series, &QtCharts::QAbstractSeries::visibleChanged, [this]{emit changed();});
+    connect(reinterpret_cast<QtCharts::QLineSeries*>(series), &QtCharts::QLineSeries::colorChanged, [this]{emit changed();});
+    connect(series, &QtCharts::QAbstractSeries::opacityChanged, [this]{emit changed();});
 }
 
 Legend::~Legend()
@@ -24,12 +19,15 @@ Legend::~Legend()
 
 QColor Legend::pen() const
 {
-    return visible.isChecked() ? color : Qt::transparent;
+    return series->isVisible() ? reinterpret_cast<QtCharts::QLineSeries*>(series)->color() : Qt::transparent;
 }
 
 QColor Legend::brush() const
 {
-    return undergraph.isChecked() && visible.isChecked() ? QColor(color.red(), color.green(), color.blue(), 0x10) : Qt::transparent;
+    QColor ans = reinterpret_cast<QtCharts::QLineSeries*>(series)->color();
+    ans.setAlphaF(reinterpret_cast<QtCharts::QLineSeries*>(series)->opacity());
+
+    return series->isVisible() ? ans : Qt::transparent;
 }
 
 #include <QPainter>
@@ -38,22 +36,22 @@ void Legend::paintEvent(QPaintEvent *event)
 {
     QLabel::paintEvent(event);
 
-    if (!visible.isChecked())
+    if (!series->isVisible())
         return;
 
     QPainter painter(this);
 
     painter.setRenderHint(QPainter::Antialiasing);
 
-    painter.setPen(QPen(color, 2.));
-    painter.setBrush(undergraph.isChecked() ? QBrush(color) : Qt::NoBrush);
+    painter.setPen(pen());
+    painter.setBrush(brush());
 
     painter.drawEllipse(8, 8, 9, 9);
 
     if (hover)
     {
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QBrush(color));
+        painter.setBrush(QBrush(pen()));
         painter.setOpacity(.25);
         painter.drawEllipse(3, 3, 19, 19);
     }
@@ -67,7 +65,7 @@ void Legend::mousePressEvent(QMouseEvent *event)
 {
     QLabel::mousePressEvent(event);
 
-    if (event->button() == Qt::LeftButton)
+    /*if (event->button() == Qt::LeftButton)
     {
         QColor tmp = QColorDialog::getColor(color);
 
@@ -87,7 +85,7 @@ void Legend::mousePressEvent(QMouseEvent *event)
             update();
             emit changed();
         }
-    }
+    }*/
 }
 
 void Legend::enterEvent(QEvent *event)
