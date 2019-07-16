@@ -717,6 +717,11 @@ void SeriesItem::setFlag(VizFlag flag, bool on)
     TreeItem::setFlag(flag, on);
 }
 
+const QtCharts::QLineSeries* SeriesItem::getSeries() const
+{
+    return series;
+}
+
 void SeriesItem::setColor(QColor c)
 {
     series->setColor(c);

@@ -259,6 +259,8 @@ public:
 
     void setFlag(VizFlag flag, bool on = true);
 
+    const QtCharts::QLineSeries* getSeries() const;
+
     void setColor(QColor c);
     QColor getColor() const;
 

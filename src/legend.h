@@ -15,7 +15,7 @@ public:
     QColor brush() const;
 
 signals:
-    void changed();
+    void selected();
 
 public slots:
 

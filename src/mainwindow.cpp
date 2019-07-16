@@ -357,6 +357,9 @@ Session* MainWindow::makeSession()
     // add render settings to stack
     renderSettings->addTabWidget(s->renderSettings);
 
+    // connect plot with GUI
+    connect(s->plot, &Plot::selectionChanged, this, &MainWindow::handleSceneSelection);
+
     return s;
 }
 

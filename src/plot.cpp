@@ -69,9 +69,15 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
 void Plot::addLegend(QtCharts::QAbstractSeries *series)
 {
     series->setOpacity(.1);
+
+    connect(series, SIGNAL(visibleChanged()), this, SLOT(update()));
+    connect(series, SIGNAL(colorChanged(QColor)), this, SLOT(update()));
+    connect(series, SIGNAL(opacityChanged()), this, SLOT(update()));
+
     auto entry = new Legend(series);
 
-    connect(entry, SIGNAL(changed()), this, SLOT(update()));
+    connect(entry, &Legend::selected, [this, series]{emit selectionChanged({session->series[series], session->series[series]}, QItemSelectionModel::ClearAndSelect);});
+
     layout()->addWidget(entry);
     legend[series] = entry;
 }

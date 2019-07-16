@@ -36,6 +36,7 @@ public:
     Simulation *simulation;
 
     QVector<QPersistentModelIndex> indices;
+    QMap<const QtCharts::QAbstractSeries*, QPersistentModelIndex> series;
 
     OpenGLArraysBuffer<VizCameraInstance> cameraBuffer;
     OpenGLArraysBuffer<VizBallInstance> atomBuffer;

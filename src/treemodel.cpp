@@ -435,9 +435,12 @@ void TreeModel::prepend(TreeItem* item)
     std::function<void(const QModelIndex&)> visit = [&](const QModelIndex& root)
     {
         // update index buffer
-        auto item = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+        auto item1 = dynamic_cast<AtomItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+        if (item1) session->indices[item1->getId()] = root;
 
-        if (item) session->indices[item->getId()] = root;
+        // update series buffer
+        auto item2 = dynamic_cast<SeriesItem*>(reinterpret_cast<TreeItem*>(root.internalPointer()));
+        if (item2) session->series[item2->getSeries()] = root;
 
         for (int r = 0; r < rowCount(root); r++)
             visit(index(r, 0, root));

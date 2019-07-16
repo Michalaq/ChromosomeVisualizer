@@ -4,6 +4,7 @@
 #include "softslider.h"
 #include "legend.h"
 #include <QAbstractSeries>
+#include <QItemSelection>
 
 class Session;
 
@@ -15,6 +16,9 @@ public:
     ~Plot();
 
     void updateSimulation();
+
+signals:
+    void selectionChanged(const QItemSelection&, QItemSelectionModel::SelectionFlags);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

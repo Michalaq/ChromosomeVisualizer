@@ -7,9 +7,6 @@ Legend::Legend(QtCharts::QAbstractSeries *s, QWidget *parent) :
     hover(false)
 {
     connect(series, &QtCharts::QAbstractSeries::nameChanged, [this]{setText(series->name());});
-    connect(series, &QtCharts::QAbstractSeries::visibleChanged, [this]{emit changed();});
-    connect(reinterpret_cast<QtCharts::QLineSeries*>(series), &QtCharts::QLineSeries::colorChanged, [this]{emit changed();});
-    connect(series, &QtCharts::QAbstractSeries::opacityChanged, [this]{emit changed();});
 }
 
 Legend::~Legend()
@@ -57,35 +54,11 @@ void Legend::paintEvent(QPaintEvent *event)
     }
 }
 
-#include <QMouseEvent>
-#include <QColorDialog>
-#include <QMenu>
-
 void Legend::mousePressEvent(QMouseEvent *event)
 {
     QLabel::mousePressEvent(event);
 
-    /*if (event->button() == Qt::LeftButton)
-    {
-        QColor tmp = QColorDialog::getColor(color);
-
-        if (tmp.isValid())
-        {
-            color = tmp;
-
-            update();
-            emit changed();
-        }
-    }
-
-    if (event->button() == Qt::RightButton)
-    {
-        if (QMenu::exec({ &undergraph }, event->globalPos()))
-        {
-            update();
-            emit changed();
-        }
-    }*/
+    emit selected();
 }
 
 void Legend::enterEvent(QEvent *event)

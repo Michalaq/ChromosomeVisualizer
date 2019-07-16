@@ -140,7 +140,10 @@ void XVGSimulationSeries::remove()
     session->simulation->removeOne(this);
 
     for (auto series : legend)
+    {
         session->chart->removeSeries(series);
+        session->series.remove(series);
+    }
 
     session->setLastFrame(session->simulation->lastEntry());
 
